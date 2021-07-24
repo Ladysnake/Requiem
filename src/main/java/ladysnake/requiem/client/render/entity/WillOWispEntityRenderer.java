@@ -64,7 +64,8 @@ public class WillOWispEntityRenderer extends EntityRenderer<SoulEntity> {
         matrices.scale(0.5F, -0.5F, 0.5F);
         matrices.translate(0, -1, 0);
         VertexConsumer vertexConsumer = vertexConsumers.getBuffer(this.model.getLayer(this.getTexture(entity)));
-        this.model.render(matrices, vertexConsumer, 0xf000f0, OverlayTexture.DEFAULT_UV, 1.0F, 1.0F, 1.0F, 1.0F);
+        float alpha = 1.0F;
+        this.model.render(matrices, vertexConsumer, 0x00f0_00f0, OverlayTexture.DEFAULT_UV, 1.0F, 1.0F, 1.0F, alpha);
         matrices.pop();
         super.render(entity, yaw, tickDelta, matrices, vertexConsumers, light);
     }

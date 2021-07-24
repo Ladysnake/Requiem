@@ -73,11 +73,11 @@ public class WillOWispModel extends Model {
                         .cuboid(-3.0F, -3.0F, -3.0F, 6.0F, 7.0F, 6.0F, new Dilation(0.25F)),
                 ModelTransform.pivot(0.0F, 16.0F, 0.0F)
         );
-        return TexturedModelData.of(modelData, 32, 32);
+        return TexturedModelData.of(modelData, 64, 64);
     }
 
     @Override
     public void render(MatrixStack matrixStack, VertexConsumer buffer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
-        skull.render(matrixStack, buffer, packedLight, packedOverlay);
+        skull.render(matrixStack, buffer, packedLight, packedOverlay, red, green, blue, alpha);
     }
 }
