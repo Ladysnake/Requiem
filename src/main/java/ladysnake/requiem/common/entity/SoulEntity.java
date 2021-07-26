@@ -71,7 +71,7 @@ public class SoulEntity extends Entity {
     protected int maxAge;
     protected int targetChangeCooldown = 0;
     protected int timeInSolid = -1;
-    private int targetChanges = 0;
+    protected int targetChanges = 0;
 
     public SoulEntity(EntityType<? extends SoulEntity> type, World world) {
         super(type, world);
@@ -251,18 +251,4 @@ public class SoulEntity extends Entity {
         return new EntitySpawnS2CPacket(this);
     }
 
-    protected Vec3d selectPosTowards(Vec3d targetPos) {
-        double distanceToTarget = this.getPos().distanceTo(targetPos);
-        final double maxStepDistance = 15.0;
-        double scuffedDistanceToTarget = Math.min(maxStepDistance, distanceToTarget);
-        Vec3d towardsTarget = targetPos.subtract(this.getPos()).normalize().multiply(scuffedDistanceToTarget);
-        assert targetChanges > 0;
-        double fuzzyFactor = (scuffedDistanceToTarget * 1.5) / this.targetChanges;
-        Vec3d fuzzyTarget = towardsTarget.multiply(
-            Math.abs(1 + random.nextGaussian() * fuzzyFactor),
-            Math.abs(1 + random.nextGaussian() * fuzzyFactor),
-            Math.abs(1 + random.nextGaussian() * fuzzyFactor)
-        );
-        return this.getPos().add(fuzzyTarget);
-    }
 }

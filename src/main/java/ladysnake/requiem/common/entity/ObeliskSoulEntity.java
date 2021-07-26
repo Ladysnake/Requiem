@@ -48,6 +48,7 @@ import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
@@ -146,7 +147,7 @@ public class ObeliskSoulEntity extends SoulEntity {
     @Override
     protected Vec3d selectNextTarget() {
         if (this.targetPos != null) {
-            return this.selectPosTowards(Vec3d.ofCenter(targetPos));
+            return this.selectPosAround(Vec3d.ofCenter(targetPos));
         } else {
             return super.selectNextTarget();
         }
@@ -177,5 +178,16 @@ public class ObeliskSoulEntity extends SoulEntity {
 
     private static boolean isActivatedRunestone(BlockState blockState) {
         return blockState.getBlock() instanceof InertRunestoneBlock && blockState.get(InertRunestoneBlock.ACTIVATED);
+    }
+
+    protected Vec3d selectPosAround(Vec3d targetPos) {
+        float convergenceFactor = Math.max(1, MathHelper.sqrt(this.targetChanges / 4f));
+        float wanderingRange = 15f;
+        double fuzzyFactor = wanderingRange / convergenceFactor;
+        return targetPos.add(
+            random.nextGaussian() * fuzzyFactor,
+            random.nextGaussian() * fuzzyFactor,
+            random.nextGaussian() * fuzzyFactor
+        );
     }
 }

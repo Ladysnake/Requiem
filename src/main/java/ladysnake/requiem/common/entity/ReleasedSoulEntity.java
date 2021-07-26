@@ -222,4 +222,20 @@ public class ReleasedSoulEntity extends SoulEntity {
             nbt.putUuid("owner_record", this.ownerRecord);
         }
     }
+
+    protected Vec3d selectPosTowards(Vec3d targetPos) {
+        float convergenceFactor = (float) this.targetChanges;
+        double distanceToTarget = this.getPos().distanceTo(targetPos);
+        final double maxStepDistance = 15.0;
+        double scuffedDistanceToTarget = Math.min(maxStepDistance, distanceToTarget);
+        Vec3d towardsTarget = targetPos.subtract(this.getPos()).normalize().multiply(scuffedDistanceToTarget);
+        assert convergenceFactor > 0;
+        double fuzzyFactor = (scuffedDistanceToTarget * 1.5) / convergenceFactor;
+        Vec3d fuzzyTarget = towardsTarget.multiply(
+            Math.abs(1 + random.nextGaussian() * fuzzyFactor),
+            Math.abs(1 + random.nextGaussian() * fuzzyFactor),
+            Math.abs(1 + random.nextGaussian() * fuzzyFactor)
+        );
+        return this.getPos().add(fuzzyTarget);
+    }
 }
