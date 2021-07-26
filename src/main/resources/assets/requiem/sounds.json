@@ -29,6 +29,56 @@
       "block/respawn_anchor/deplete2"
     ]
   },
+  "block.runestone.carve": {
+    "subtitle": "requiem:subtitles.block.runestone.carve",
+    "sounds": [
+      {
+        "name": "ui/stonecutter/cut1",
+        "volume": 1,
+        "pitch": 0.8
+      },
+      {
+        "name": "ui/stonecutter/cut1",
+        "volume": 1,
+        "pitch": 0.72
+      },
+      {
+        "name": "ui/stonecutter/cut2",
+        "volume": 1,
+        "pitch": 0.8
+      },
+      {
+        "name": "ui/stonecutter/cut2",
+        "volume": 1,
+        "pitch": 0.72
+      }
+    ]
+  },
+  "block.runestone.clear": {
+    "subtitle": "requiem:subtitles.block.runestone.clear",
+    "sounds": [
+      {
+        "name": "ui/stonecutter/cut1",
+        "volume": 1,
+        "pitch": 1.42
+      },
+      {
+        "name": "ui/stonecutter/cut1",
+        "volume": 1,
+        "pitch": 1.3
+      },
+      {
+        "name": "ui/stonecutter/cut2",
+        "volume": 1,
+        "pitch": 1.42
+      },
+      {
+        "name": "ui/stonecutter/cut2",
+        "volume": 1,
+        "pitch": 1.3
+      }
+    ]
+  },
   "effect.become.remnant": {
     "subtitle": "requiem:subtitles.effect.become.remnant",
     "sounds": [
@@ -88,6 +138,27 @@
       "block/soul_sand/break7",
       "block/soul_sand/break8",
       "block/soul_sand/break9"
+    ]
+  },
+  "entity.obelisk_soul.disintegrate": {
+    "subtitle": "requiem:subtitles.entity.soul.disintegrate",
+    "sounds": [
+      {
+        "name": "block/amethyst/break1",
+        "volume": 1
+      },
+      {
+        "name": "block/amethyst/break2",
+        "volume": 1
+      },
+      {
+        "name": "block/amethyst/break3",
+        "volume": 1
+      },
+      {
+        "name": "block/amethyst/break4",
+        "volume": 1
+      }
     ]
   },
   "entity.soul.teleport": {

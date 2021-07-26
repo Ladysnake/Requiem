@@ -1,4 +1,4 @@
-#version 120
+#version 130
 
 // The main texture
 uniform sampler2D DiffuseSampler;
@@ -22,8 +22,10 @@ uniform mat4 InverseTransformMatrix;
 // The size of the viewport (typically, [0,0,1080,720])
 uniform ivec4 ViewPort;
 
-varying vec2 texCoord;
-varying vec4 vPosition;
+in vec2 texCoord;
+in vec4 vPosition;
+
+out vec4 fragColor;
 
 vec4 CalcEyeFromWindow(in float depth)
 {
@@ -65,7 +67,7 @@ void main()
     vec2 viewportCoord = ndc.xy * 0.5 + 0.5; //ndc is -1 to 1 in GL. scale for 0 to 1
 
     // Depth fading
-    float sceneDepth = texture2D(DepthSampler, viewportCoord).x;
+    float sceneDepth = texture(DepthSampler, viewportCoord).x;
     vec3 pixelPosition = CalcEyeFromWindow(sceneDepth).xyz + CameraPosition;
 
     float pct = distance(pixelPosition, Center);
@@ -105,7 +107,7 @@ void main()
 
     //Second part of cheat
     //for round effect, not elliptical
-    vec3 color = texture2D(DiffuseSampler, vec2(uv.x, uv.y * prop)).rgb;
+    vec3 color = texture(DiffuseSampler, vec2(uv.x, uv.y * prop)).rgb;
 
     // Part 2: Color schenanigans
 
@@ -117,5 +119,5 @@ void main()
     hsv[1] = mix(hsv[1], hsv[1] * OuterSat, outside); // Desaturate outside the first circle
     color = hsv2rgb(hsv);
 
-    gl_FragColor = vec4(color, 1.0);
+    fragColor = vec4(color, 1.0);
 }

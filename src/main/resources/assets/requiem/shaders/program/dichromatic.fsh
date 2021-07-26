@@ -1,14 +1,16 @@
-#version 110
+#version 130
 
 #define PI 3.14159265359
 #define TWO_PI 6.28318530718
 
 uniform sampler2D DiffuseSampler;
 
-varying vec2 texCoord;
-varying vec2 oneTexel;
+in vec2 texCoord;
+in vec2 oneTexel;
 
 uniform vec2 InSize;
+
+out vec4 fragColor;
 
 // Conversion functions between the RGB and HSV color spaces
 // Source: http://lolengine.net/blog/2013/07/27/rgb-to-hsv-in-glsl
@@ -31,7 +33,7 @@ vec3 hsv2rgb(vec3 c)
 }
 
 void main() {
-    vec4 inTexel = texture2D(DiffuseSampler, texCoord);
+    vec4 inTexel = texture(DiffuseSampler, texCoord);
 
     vec3 hsvColor = rgb2hsv(inTexel.rgb);
     // Hue is represented as a trigonometric circle where red is 0 and blue is 1
@@ -44,5 +46,5 @@ void main() {
     hsvColor.z -= hueShift*0.5;
     vec3 outColor = hsv2rgb(hsvColor);
 
-    gl_FragColor = vec4(outColor.rgb, 1.0);
+    fragColor = vec4(outColor.rgb, 1.0);
 }

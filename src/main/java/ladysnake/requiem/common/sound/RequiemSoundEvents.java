@@ -44,6 +44,8 @@ public final class RequiemSoundEvents {
     public static final SoundEvent BLOCK_OBELISK_AMBIENT = register("block.obelisk.ambient");
     public static final SoundEvent BLOCK_OBELISK_CHARGE = register("block.obelisk.charge");
     public static final SoundEvent BLOCK_OBELISK_DEACTIVATE = register("block.obelisk.deactivate");
+    public static final SoundEvent BLOCK_RUNESTONE_CARVE = register("block.runestone.carve");
+    public static final SoundEvent BLOCK_RUNESTONE_CLEAR = register("block.runestone.clear");
     public static final SoundEvent EFFECT_BECOME_MORTAL = register("effect.become.mortal");
     public static final SoundEvent EFFECT_BECOME_REMNANT = register("effect.become.remnant");
     public static final SoundEvent EFFECT_DISSOCIATE = register("effect.dissociate");
@@ -53,6 +55,7 @@ public final class RequiemSoundEvents {
     public static final SoundEvent EFFECT_TIME_STOP = register("effect.time.stop");
     public static final SoundEvent ENTITY_SOUL_TELEPORT = register("entity.soul.teleport");
     public static final SoundEvent ENTITY_SOUL_DISINTEGRATES = register("entity.soul.disintegrate");
+    public static final SoundEvent ENTITY_OBELISK_SOUL_DISINTEGRATES = register("entity.obelisk_soul.disintegrate");
     public static final SoundEvent ITEM_OPUS_USE = register("item.opus.use");
     public static final SoundEvent ITEM_EMPTY_VESSEL_USE = register("item.empty_vessel.use");
     public static final SoundEvent ITEM_FILLED_VESSEL_USE = register("item.filled_vessel.use");

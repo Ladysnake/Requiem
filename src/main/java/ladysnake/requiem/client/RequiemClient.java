@@ -45,7 +45,8 @@ import ladysnake.requiem.client.particle.GhostParticle;
 import ladysnake.requiem.client.particle.wisp.WispTrailParticle;
 import ladysnake.requiem.client.render.entity.CuredPiglinEntityRenderer;
 import ladysnake.requiem.client.render.entity.CuredVillagerEntityRenderer;
-import ladysnake.requiem.client.render.entity.WillOWispEntityRenderer;
+import ladysnake.requiem.client.render.entity.ObeliskSoulEntityRenderer;
+import ladysnake.requiem.client.render.entity.SoulEntityRenderer;
 import ladysnake.requiem.client.render.entity.model.MorticianEntityModel;
 import ladysnake.requiem.client.render.entity.model.WillOWispModel;
 import ladysnake.requiem.common.entity.RequiemEntities;
@@ -175,11 +176,12 @@ public final class RequiemClient {
 
     private void registerEntityModels() {
         EntityModelLayerRegistry.registerModelLayer(MorticianEntityModel.MODEL_LAYER, MorticianEntityModel::getTexturedModelData);
-        EntityModelLayerRegistry.registerModelLayer(WillOWispModel.MODEL_LAYER, WillOWispModel::getTexturedModelData);
+        EntityModelLayerRegistry.registerModelLayer(WillOWispModel.BASE_MODEL_LAYER, WillOWispModel::getTexturedModelData);
     }
 
     private void registerEntityRenderers() {
-        EntityRendererRegistry.INSTANCE.register(RequiemEntities.RELEASED_SOUL, WillOWispEntityRenderer::new);
+        EntityRendererRegistry.INSTANCE.register(RequiemEntities.OBELISK_SOUL, ObeliskSoulEntityRenderer::new);
+        EntityRendererRegistry.INSTANCE.register(RequiemEntities.RELEASED_SOUL, SoulEntityRenderer::new);
         EntityRendererRegistry.INSTANCE.register(RequiemEntities.CURED_VILLAGER, CuredVillagerEntityRenderer::new);
         EntityRendererRegistry.INSTANCE.register(RequiemEntities.CURED_PIGLIN, (ctx) -> new CuredPiglinEntityRenderer(ctx, EntityModelLayers.PIGLIN, EntityModelLayers.PIGLIN_INNER_ARMOR, EntityModelLayers.PIGLIN_OUTER_ARMOR, false));
         EntityRendererRegistry.INSTANCE.register(RequiemEntities.CURED_PIGLIN_BRUTE, (ctx) -> new CuredPiglinEntityRenderer(ctx, EntityModelLayers.PIGLIN_BRUTE, EntityModelLayers.PIGLIN_BRUTE_INNER_ARMOR, EntityModelLayers.PIGLIN_BRUTE_OUTER_ARMOR, false));

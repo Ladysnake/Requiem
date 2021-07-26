@@ -225,6 +225,8 @@ dependencies {
     include "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-entity:${cca_version}"
     modImplementation "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-scoreboard:${cca_version}"
     include "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-scoreboard:${cca_version}"
+    // Required by automatone but nothing else
+    include "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-world:${cca_version}"
     modImplementation "io.github.ladysnake:PlayerAbilityLib:${pal_version}"
     include "io.github.ladysnake:PlayerAbilityLib:${pal_version}"
     modImplementation "io.github.ladysnake:locki:${locki_version}"
@@ -232,7 +234,7 @@ dependencies {
     modImplementation "io.github.ladysnake:impersonate:${impersonate_version}"
     include "io.github.ladysnake:impersonate:${impersonate_version}"
     modImplementation "io.github.ladysnake:automatone:${automatone_version}"
-    include "io.github.ladysnake:automatone:${automatone_version}:optimized"
+    include "io.github.ladysnake:automatone:${automatone_version}"
     modImplementation "dev.emi.chime:chime:${chime_version}"
     include "dev.emi.chime:chime:${chime_version}"
     modImplementation "com.jamieswhiteshirt:reach-entity-attributes:${reach_version}"
@@ -290,6 +292,7 @@ dependencies {
 //    modRuntime("curse.maven:golems-galore-387197:${golems_galore_version}")
 //    modRuntime 'com.github.Draylar:structurized:1.3.0-21w20a'
     modCompileOnly("curse.maven:the-bumblezone-fabric-363949:${bumblezone_version}")
+//    modRuntime("curse.maven:the-bumblezone-fabric-363949:${bumblezone_version}")
     modCompileOnly "curse.maven:bewitchment-394915:${bewitchment_version}"
 }
 

@@ -35,10 +35,18 @@
 package ladysnake.requiem.common.block;
 
 import ladysnake.requiem.api.v1.block.ObeliskEffectRune;
+import ladysnake.requiem.common.entity.SoulEntity;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.EntityShapeContext;
+import net.minecraft.block.ShapeContext;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.shape.VoxelShape;
+import net.minecraft.util.shape.VoxelShapes;
+import net.minecraft.world.BlockView;
 
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -67,5 +75,13 @@ public class RunestoneBlock extends InertRunestoneBlock implements ObeliskEffect
     @Override
     public int getMaxLevel() {
         return this.maxLevel;
+    }
+
+    @Override
+    public VoxelShape getCollisionShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+        if (context instanceof EntityShapeContext ctx && ctx.getEntity().orElse(null) instanceof SoulEntity) {
+            return VoxelShapes.empty();
+        }
+        return super.getCollisionShape(state, world, pos, context);
     }
 }

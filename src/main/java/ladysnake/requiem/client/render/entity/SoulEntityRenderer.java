@@ -32,37 +32,49 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.pandemonium.client.render.entity;
+package ladysnake.requiem.client.render.entity;
 
-import ladysnake.pandemonium.common.entity.MorticianEntity;
 import ladysnake.requiem.Requiem;
-import ladysnake.requiem.client.render.entity.model.MorticianEntityModel;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
+import ladysnake.requiem.client.render.entity.model.WillOWispModel;
+import net.minecraft.client.render.OverlayTexture;
+import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.render.entity.EntityRendererFactory;
-import net.minecraft.client.render.entity.MobEntityRenderer;
-import net.minecraft.client.render.entity.feature.HeadFeatureRenderer;
-import net.minecraft.client.render.entity.feature.VillagerHeldItemFeatureRenderer;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.entity.Entity;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3f;
 
-@Environment(EnvType.CLIENT)
-public class MorticianEntityRenderer extends MobEntityRenderer<MorticianEntity, MorticianEntityModel<MorticianEntity>> {
-    private static final Identifier TEXTURE = Requiem.id("textures/entity/mortician.png");
+public class SoulEntityRenderer<E extends Entity> extends EntityRenderer<E> {
+    public static final Identifier TEXTURE = Requiem.id("textures/entity/soul.png");
+    private final WillOWispModel model;
 
-    public MorticianEntityRenderer(EntityRendererFactory.Context ctx) {
-        super(ctx, new MorticianEntityModel<>(ctx.getModelLoader().getModelPart(MorticianEntityModel.MODEL_LAYER)), 0.5F);
-        this.addFeature(new HeadFeatureRenderer<>(this, ctx.getModelLoader()));
-        this.addFeature(new VillagerHeldItemFeatureRenderer<>(this));
+    public SoulEntityRenderer(EntityRendererFactory.Context ctx) {
+        super(ctx);
+        this.model = new WillOWispModel(ctx.getPart(WillOWispModel.BASE_MODEL_LAYER));
     }
 
     @Override
-    public Identifier getTexture(MorticianEntity entity) {
+    public void render(E entity, float yaw, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light) {
+        matrices.push();
+        matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(MathHelper.lerp(tickDelta, entity.prevYaw, entity.getYaw()) - 180));
+        matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(MathHelper.lerp(tickDelta, entity.prevPitch, entity.getPitch())));
+        matrices.scale(0.5F, -0.5F, 0.5F);
+        matrices.translate(0, -1, 0);
+        VertexConsumer vertexConsumer = vertexConsumers.getBuffer(this.model.getLayer(this.getTexture(entity)));
+        this.model.render(matrices, vertexConsumer, 0x00f0_00f0, OverlayTexture.DEFAULT_UV, 1.0F, 1.0F, 1.0F, getAlpha(entity));
+        matrices.pop();
+        super.render(entity, yaw, tickDelta, matrices, vertexConsumers, light);
+    }
+
+    protected float getAlpha(E entity) {
+        return 1.0F;
+    }
+
+    @Override
+    public Identifier getTexture(E entity) {
         return TEXTURE;
-    }
-
-    @Override
-    protected void scale(MorticianEntity morticianEntity, MatrixStack matrixStack, float f) {
-        matrixStack.scale(0.9375F, 0.9375F, 0.9375F);
     }
 }

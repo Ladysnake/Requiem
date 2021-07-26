@@ -34,43 +34,19 @@
  */
 package ladysnake.requiem.client.render.entity;
 
-import ladysnake.requiem.Requiem;
-import ladysnake.requiem.client.render.entity.model.WillOWispModel;
-import ladysnake.requiem.common.entity.SoulEntity;
-import net.minecraft.client.render.OverlayTexture;
-import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.entity.EntityRenderer;
+import ladysnake.requiem.common.entity.ObeliskSoulEntity;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.render.entity.EntityRendererFactory;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3f;
 
-public class WillOWispEntityRenderer extends EntityRenderer<SoulEntity> {
-    public static final Identifier TEXTURE = Requiem.id("textures/entity/soul.png");
-    private final WillOWispModel model;
+public class ObeliskSoulEntityRenderer<E extends ObeliskSoulEntity> extends SoulEntityRenderer<E> {
+    private static final boolean fancyShmancyShaders = FabricLoader.getInstance().isModLoaded("canvas");
 
-    public WillOWispEntityRenderer(EntityRendererFactory.Context ctx) {
+    public ObeliskSoulEntityRenderer(EntityRendererFactory.Context ctx) {
         super(ctx);
-        this.model = new WillOWispModel(ctx.getPart(WillOWispModel.MODEL_LAYER));
     }
 
     @Override
-    public void render(SoulEntity entity, float yaw, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light) {
-        matrices.push();
-        matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(MathHelper.lerp(tickDelta, entity.prevYaw, entity.getYaw()) - 180));
-        matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(MathHelper.lerp(tickDelta, entity.prevPitch, entity.getPitch())));
-        matrices.scale(0.5F, -0.5F, 0.5F);
-        matrices.translate(0, -1, 0);
-        VertexConsumer vertexConsumer = vertexConsumers.getBuffer(this.model.getLayer(this.getTexture(entity)));
-        this.model.render(matrices, vertexConsumer, 0xf000f0, OverlayTexture.DEFAULT_UV, 1.0F, 1.0F, 1.0F, 1.0F);
-        matrices.pop();
-        super.render(entity, yaw, tickDelta, matrices, vertexConsumers, light);
-    }
-
-    @Override
-    public Identifier getTexture(SoulEntity entity) {
-        return TEXTURE;
+    protected float getAlpha(E entity) {
+        return fancyShmancyShaders ? 1f - entity.getConversionProgress() : 1f;
     }
 }

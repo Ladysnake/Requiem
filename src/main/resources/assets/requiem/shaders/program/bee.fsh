@@ -1,3 +1,5 @@
+#version 130
+
 #define PI 3.14159265359
 #define TWO_PI 6.28318530718
 #define SIDES 6.
@@ -8,7 +10,9 @@ uniform vec2 OutSize;
 uniform float TileCount;
 uniform float TileRatioX;
 
-varying vec2 texCoord;
+in vec2 texCoord;
+
+out vec4 fragColor;
 
 // Reference to
 // http://thndl.com/square-shaped-shaders.html
@@ -76,11 +80,11 @@ void main(){
     paving = hexagon(tile(st, vec2(0)));
     paving += hexagon(tile(st, vec2(0.5)));
 
-    vec3 col = texture2D(DiffuseSampler, texCoord).rgb;
+    vec3 col = texture(DiffuseSampler, texCoord).rgb;
     vec3 Gray = vec3(0.3, 0.59, 0.11);
     float Saturation = 1.4;
     float Luma = dot(col, Gray);
     vec3 Chroma = col - Luma;
     col = (Chroma * Saturation) + Luma * paving;
-    gl_FragColor = vec4(col, 1.0);
+    fragColor = vec4(col, 1.0);
 }

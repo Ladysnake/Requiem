@@ -54,7 +54,7 @@ import net.minecraft.client.render.entity.model.EntityModelLayer;
 import net.minecraft.client.util.math.MatrixStack;
 
 public class WillOWispModel extends Model {
-    public static final EntityModelLayer MODEL_LAYER = new EntityModelLayer(Requiem.id("will_o_wisp"), "main");
+    public static final EntityModelLayer BASE_MODEL_LAYER = new EntityModelLayer(Requiem.id("soul"), "main");
 
     private final ModelPart skull;
 
@@ -64,6 +64,10 @@ public class WillOWispModel extends Model {
     }
 
     public static TexturedModelData getTexturedModelData() {
+        return TexturedModelData.of(getModelData(), 32, 64);
+    }
+
+    public static ModelData getModelData() {
         ModelData modelData = new ModelData();
         ModelPartData root = modelData.getRoot();
         root.addChild("skull", ModelPartBuilder.create()
@@ -73,11 +77,11 @@ public class WillOWispModel extends Model {
                         .cuboid(-3.0F, -3.0F, -3.0F, 6.0F, 7.0F, 6.0F, new Dilation(0.25F)),
                 ModelTransform.pivot(0.0F, 16.0F, 0.0F)
         );
-        return TexturedModelData.of(modelData, 32, 32);
+        return modelData;
     }
 
     @Override
     public void render(MatrixStack matrixStack, VertexConsumer buffer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
-        skull.render(matrixStack, buffer, packedLight, packedOverlay);
+        skull.render(matrixStack, buffer, packedLight, packedOverlay, red, green, blue, alpha);
     }
 }

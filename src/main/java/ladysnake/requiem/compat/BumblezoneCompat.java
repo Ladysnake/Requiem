@@ -35,8 +35,7 @@
 package ladysnake.requiem.compat;
 
 import com.telepathicgrunt.bumblezone.Bumblezone;
-import com.telepathicgrunt.bumblezone.entities.PlayerTeleportation;
-import ladysnake.requiem.Requiem;
+import com.telepathicgrunt.bumblezone.modcompat.BumblezoneAPI;
 import ladysnake.requiem.api.v1.annotation.CalledThroughReflection;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
@@ -50,30 +49,12 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.function.Consumer;
-
 public final class BumblezoneCompat implements UseBlockCallback {
     public static final RegistryKey<World> BZ_WORLD_KEY = RegistryKey.of(Registry.WORLD_KEY, Bumblezone.MOD_DIMENSION_ID);
 
-    private final Consumer<PlayerEntity> tpOutOfBz;
-
     @CalledThroughReflection
     public static void init() throws NoSuchMethodException {
-        Method teleportOutOfBz = PlayerTeleportation.class.getDeclaredMethod("teleportOutOfBz", PlayerEntity.class);
-        teleportOutOfBz.setAccessible(true);
-        UseBlockCallback.EVENT.register(new BumblezoneCompat(p -> {
-            try {
-                teleportOutOfBz.invoke(null, p);
-            } catch (IllegalAccessException | InvocationTargetException e) {
-                Requiem.LOGGER.error("[Requiem] Failed to teleport bee out of Bumblezone", e);
-            }
-        }));
-    }
-
-    private BumblezoneCompat(Consumer<PlayerEntity> tpOutOfBz) {
-        this.tpOutOfBz = tpOutOfBz;
+        UseBlockCallback.EVENT.register(new BumblezoneCompat());
     }
 
     @Override
@@ -81,7 +62,7 @@ public final class BumblezoneCompat implements UseBlockCallback {
         if (world.getRegistryKey() == BumblezoneCompat.BZ_WORLD_KEY) {
             if (PossessionComponent.getHost(player) instanceof BeeEntity) {
                 if (world.getBlockState(hitResult.getBlockPos()).isOf(Blocks.HONEYCOMB_BLOCK)) {
-                    if (!world.isClient) this.tpOutOfBz.accept(player);
+                    if (!world.isClient) BumblezoneAPI.teleportOutOfBz(player);
                     return ActionResult.SUCCESS;
                 }
             }

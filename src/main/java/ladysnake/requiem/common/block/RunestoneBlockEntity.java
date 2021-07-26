@@ -41,13 +41,14 @@ import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import ladysnake.requiem.api.v1.block.ObeliskRune;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
+import ladysnake.requiem.common.entity.ObeliskSoulEntity;
+import ladysnake.requiem.common.entity.RequiemEntities;
 import ladysnake.requiem.common.sound.RequiemSoundEvents;
 import ladysnake.requiem.common.tag.RequiemBlockTags;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
@@ -65,6 +66,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 import java.util.function.Consumer;
 
 public class RunestoneBlockEntity extends BlockEntity {
@@ -74,6 +76,7 @@ public class RunestoneBlockEntity extends BlockEntity {
     public static final DataResult<ObeliskMatch> INVALID_BASE = DataResult.error("Structure does not have a matching base");
     public static final DataResult<ObeliskMatch> INVALID_CORE = DataResult.error("Structure does not have a matching runic core");
     public static final DataResult<ObeliskMatch> INVALID_CAP = DataResult.error("Structure does not have a matching cap");
+    private static final Random random = new Random();
 
     private final Object2IntMap<ObeliskRune> levels = new Object2IntOpenHashMap<>();
     private boolean requiresInit = true;
@@ -166,13 +169,20 @@ public class RunestoneBlockEntity extends BlockEntity {
 
             if (state.isIn(BlockTags.SOUL_SPEED_BLOCKS)) {
                 Vec3d particleSrc = new Vec3d(checked.getX() + 0.5, checked.getY() + 0.9, checked.getZ() + 0.5);
-                Vec3d toObelisk = center.subtract(particleSrc).normalize();
-                world.spawnParticles(ParticleTypes.SOUL, particleSrc.x, particleSrc.y, particleSrc.z, 0, toObelisk.x, 1, toObelisk.z, 0.1);
+                ObeliskSoulEntity soul = new ObeliskSoulEntity(RequiemEntities.OBELISK_SOUL, world, getRandomCorePos());
+                soul.setPosition(particleSrc);
+                soul.setVelocity(0, 0.1, 0);
+                soul.setYaw(random.nextFloat());
+                world.spawnEntity(soul);
                 return true;
             }
         }
 
         return false;
+    }
+
+    private BlockPos getRandomCorePos() {
+        return this.pos.add(random.nextInt(this.obeliskCoreWidth), random.nextInt(this.obeliskCoreHeight), random.nextInt(this.obeliskCoreWidth));
     }
 
     public int getRangeLevel() {
