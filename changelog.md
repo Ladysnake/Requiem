@@ -5,6 +5,11 @@ Version 2.0.0
 
 **Really important warning: future alphas are extremely likely to break compatibility with worlds started with this alpha. Don't start using those versions on any world you care about.**
 
+### Changes in Alpha 6
+- Converted the shaders to OpenGL 3.1 *because 3.0 wasn't enough apparently*
+- Fixed obelisks not refreshing their effects when toggling runestones
+- Tweaked obelisk soul movement a bit
+
 ### Changes in Alpha 5
 - Added the base Tachylite Runestone
     - It can be imbued by an ichor vessel to create the other runestones
