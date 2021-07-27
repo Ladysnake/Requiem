@@ -93,18 +93,13 @@ public class RunestoneBlockEntity extends BlockEntity {
 
         // Salt the time to avoid checking every potential obelisk on the same tick
         if ((world.getTime() + pos.hashCode()) % 80L == 0L) {
-            InertRunestoneBlock.tryActivateObelisk((ServerWorld) world, pos, false);
-
-            if (!state.get(InertRunestoneBlock.ACTIVATED)) {
+            if (!state.get(InertRunestoneBlock.HEAD)) {
                 world.removeBlockEntity(pos);
                 be.markRemoved();
                 return;
             }
 
-            if (be.requiresInit) {
-                be.init(state);
-                be.requiresInit = false;
-            }
+            be.refreshStructure(state);
 
             int obeliskWidth = be.obeliskCoreWidth;
             Vec3d obeliskCenter = getObeliskCenter(pos, obeliskWidth);
@@ -202,20 +197,21 @@ public class RunestoneBlockEntity extends BlockEntity {
         return this.obeliskCoreHeight;
     }
 
-    private void init(BlockState state) {
+    private void refreshStructure(BlockState state) {
         assert this.world != null;
         this.levels.clear();
         this.obeliskCoreWidth = 0;
         this.obeliskCoreHeight = 0;
 
-        Optional.ofNullable(tryMatchObeliskOrigin(this.world, this.pos).origin).ifPresentOrElse(
-            obeliskOrigin -> matchObelisk(world, obeliskOrigin).result().ifPresent(match -> {
-                this.obeliskCoreWidth = match.coreWidth();
-                this.obeliskCoreHeight = match.coreHeight();
-                this.levels.putAll(match.collectRunes());
-            }),
-            () -> this.world.getBlockTickScheduler().schedule(this.pos, state.getBlock(), 0)
-        );
+        matchObelisk(this.world, this.pos).result()
+            .ifPresentOrElse(
+                match -> {
+                    this.obeliskCoreWidth = match.coreWidth();
+                    this.obeliskCoreHeight = match.coreHeight();
+                    this.levels.putAll(match.collectRunes());
+                },
+                () -> this.world.getBlockTickScheduler().schedule(this.pos, state.getBlock(), 0)
+            );
     }
 
     /**
