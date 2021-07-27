@@ -85,7 +85,7 @@ public class ObeliskSoulEntity extends SoulEntity {
 
     @Override
     public void tick() {
-        this.noClip = this.isPhasing();
+        this.noClip = this.isPhasing() || this.age >= this.maxAge;
 
         if (!world.isClient) {
             if (this.targetPos != null && this.isTargetStale(targetPos)) {
@@ -154,6 +154,14 @@ public class ObeliskSoulEntity extends SoulEntity {
     }
 
     @Override
+    protected void expire() {
+        // obelisk souls head straight to the core instead of disappearing instantly
+        if (this.targetPos == null) {
+            super.expire();
+        }
+    }
+
+    @Override
     protected void readCustomDataFromNbt(NbtCompound nbt) {
         super.writeCustomDataToNbt(nbt);
         if (nbt.contains("target_pos", NbtElement.COMPOUND_TYPE)) {
@@ -181,7 +189,9 @@ public class ObeliskSoulEntity extends SoulEntity {
     }
 
     protected Vec3d selectPosAround(Vec3d targetPos) {
-        float convergenceFactor = Math.max(1, MathHelper.sqrt(this.targetChanges / 4f));
+        if (this.age >= this.maxAge) return targetPos;
+
+        float convergenceFactor = Math.max(1, MathHelper.sqrt(this.targetChanges / 3f));
         float wanderingRange = 15f;
         double fuzzyFactor = wanderingRange / convergenceFactor;
         return targetPos.add(
