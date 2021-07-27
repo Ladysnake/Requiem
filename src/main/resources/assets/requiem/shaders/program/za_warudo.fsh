@@ -1,4 +1,4 @@
-#version 130
+#version 150
 
 // The main texture
 uniform sampler2D DiffuseSampler;

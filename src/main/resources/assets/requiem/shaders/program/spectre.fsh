@@ -1,7 +1,7 @@
 // Adapted from a shader by @patriciogv
 // https://thebookofshaders.com/edit.php#11/circleWave-noise.frag
 
-#version 130
+#version 150
 
 uniform sampler2D DiffuseSampler;
 
