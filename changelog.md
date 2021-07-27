@@ -5,6 +5,27 @@ Version 2.0.0
 
 **Really important warning: future alphas are extremely likely to break compatibility with worlds started with this alpha. Don't start using those versions on any world you care about.**
 
+### Changes in Alpha 6
+- Converted the shaders to OpenGL 3.1 *because 3.0 wasn't enough apparently*
+- Fixed obelisks not refreshing their effects when toggling runestones
+- Tweaked obelisk soul movement a bit
+
+### Changes in Alpha 5
+- Added the base Tachylite Runestone
+    - It can be imbued by an ichor vessel to create the other runestones
+- Added cool glowing models for the activated runestones
+- Made soul entities glow with canvas
+- Improved the creative soul vessel's texture
+- Made some of the souls pulled out by the obelisks actual entities
+- Added some sound effects to the obelisks
+- Simplified the obelisk structure
+    - you now only need tachylite edges around a runestone core, no stairs or slabs required
+- Updated Bumblezone compatibility
+- Added subtitles for the sounds
+- Added loot tables for all the blocks
+- Converted all shaders to OpenGL 3.0
+- Fixed missing automatone dependency
+
 ### The "Cry of the Obelisks" update
 
 Updated to MC 1.17
@@ -16,12 +37,13 @@ Updated to MC 1.17
     - Added the Reclamation status effect, letting you cure attrition over time
 - Added Tachylite blocks:
     - Added Tachylite, Chiseled Tachylite (+slabs, stairs and pillars), Polished Tachylite (+slabs, stairs and pillars), and Scraped Tachylite
-    - Added Runic Tachylite for all soulbound status effects
+    - Added Tachylite Runestone for all soulbound status effects
 - Added Tachylite Obelisks, a new player-made structure
 - Added Soul Vessel items:
     - Added the Empty Soul Vessel, a rare item that is used to obtain most of the new content
         - Added the Creative Soul Vessel, a creative-only soul vessel that succeeds every time
     - Added Ichor Vessels, Soul Vessels filled with mysterious substances that act like potions
+        - When used on a Tachylite Runestone, they imbue it with their respective effect
     - Added the Sealed Remnant Vessel, an item that acts as a replacement for the Cursed Opus Daemonium
 - Added the Soul Capture mechanic, letting you store a mob's soul into a Vessel thereby making the mob fit for possession
     - Filled Soul Vessels can be emptied to restore the mob's soul (provided the mob's shell is still alive)
@@ -43,6 +65,7 @@ Updated to MC 1.17
 - Updated Origins compatibility
 - Updated Golems Galore compatibility
 - Updated Mod Menu metadata
+- Updated The Bumblezone compatibility
 - **Requiem's API got breaking changes, if you are a modder doing compatibility with Requiem make sure to check things work fine !**
 
 **Removals**
@@ -55,6 +78,7 @@ Updated to MC 1.17
 #### Pandemonium
 **Additions**
 - Added the Wandering Spirit alternative remnant type previously available in Requiem
+- Added the Mortician, a new wandering merchant found in the warped forests of the nether
 
 **Changes**
 - The "possess all mobs" config option is now off by default

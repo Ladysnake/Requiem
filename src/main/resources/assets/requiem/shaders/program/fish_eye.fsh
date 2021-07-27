@@ -1,7 +1,7 @@
 /*
 Source: https://www.shadertoy.com/view/4s2GRR
 */
-#version 130
+#version 150
 uniform sampler2D DiffuseSampler;
 uniform vec2 OutSize;
 uniform float Slider;

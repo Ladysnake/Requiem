@@ -49,6 +49,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
@@ -92,18 +93,13 @@ public class RunestoneBlockEntity extends BlockEntity {
 
         // Salt the time to avoid checking every potential obelisk on the same tick
         if ((world.getTime() + pos.hashCode()) % 80L == 0L) {
-            InertRunestoneBlock.tryActivateObelisk((ServerWorld) world, pos, false);
-
-            if (!state.get(InertRunestoneBlock.ACTIVATED)) {
+            if (!state.get(InertRunestoneBlock.HEAD)) {
                 world.removeBlockEntity(pos);
                 be.markRemoved();
                 return;
             }
 
-            if (be.requiresInit) {
-                be.init(state);
-                be.requiresInit = false;
-            }
+            be.refreshStructure(state);
 
             int obeliskWidth = be.obeliskCoreWidth;
             Vec3d obeliskCenter = getObeliskCenter(pos, obeliskWidth);
@@ -168,17 +164,25 @@ public class RunestoneBlockEntity extends BlockEntity {
             }
 
             if (state.isIn(BlockTags.SOUL_SPEED_BLOCKS)) {
-                Vec3d particleSrc = new Vec3d(checked.getX() + 0.5, checked.getY() + 0.9, checked.getZ() + 0.5);
-                ObeliskSoulEntity soul = new ObeliskSoulEntity(RequiemEntities.OBELISK_SOUL, world, getRandomCorePos());
-                soul.setPosition(particleSrc);
-                soul.setVelocity(0, 0.1, 0);
-                soul.setYaw(random.nextFloat());
-                world.spawnEntity(soul);
+                this.spawnSoul(world, center, Vec3d.ofCenter(checked, 0.9));
                 return true;
             }
         }
 
         return false;
+    }
+
+    private void spawnSoul(ServerWorld world, Vec3d center, Vec3d particleSrc) {
+        if (world.random.nextFloat() < 0.3f) {
+            ObeliskSoulEntity soul = new ObeliskSoulEntity(RequiemEntities.OBELISK_SOUL, world, getRandomCorePos());
+            soul.setPosition(particleSrc);
+            soul.setVelocity(0, 0.1, 0);
+            soul.setYaw(random.nextFloat());
+            world.spawnEntity(soul);
+        } else {
+            Vec3d toObelisk = center.subtract(particleSrc).normalize();
+            world.spawnParticles(ParticleTypes.SOUL, particleSrc.x, particleSrc.y, particleSrc.z, 0, toObelisk.x, 1, toObelisk.z, 0.1);
+        }
     }
 
     private BlockPos getRandomCorePos() {
@@ -193,20 +197,21 @@ public class RunestoneBlockEntity extends BlockEntity {
         return this.obeliskCoreHeight;
     }
 
-    private void init(BlockState state) {
+    private void refreshStructure(BlockState state) {
         assert this.world != null;
         this.levels.clear();
         this.obeliskCoreWidth = 0;
         this.obeliskCoreHeight = 0;
 
-        Optional.ofNullable(tryMatchObeliskOrigin(this.world, this.pos).origin).ifPresentOrElse(
-            obeliskOrigin -> matchObelisk(world, obeliskOrigin).result().ifPresent(match -> {
-                this.obeliskCoreWidth = match.coreWidth();
-                this.obeliskCoreHeight = match.coreHeight();
-                this.levels.putAll(match.collectRunes());
-            }),
-            () -> this.world.getBlockTickScheduler().schedule(this.pos, state.getBlock(), 0)
-        );
+        matchObelisk(this.world, this.pos).result()
+            .ifPresentOrElse(
+                match -> {
+                    this.obeliskCoreWidth = match.coreWidth();
+                    this.obeliskCoreHeight = match.coreHeight();
+                    this.levels.putAll(match.collectRunes());
+                },
+                () -> this.world.getBlockTickScheduler().schedule(this.pos, state.getBlock(), 0)
+            );
     }
 
     /**
