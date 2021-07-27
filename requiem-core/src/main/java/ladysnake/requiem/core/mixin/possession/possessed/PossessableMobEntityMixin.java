@@ -35,19 +35,25 @@
 package ladysnake.requiem.core.mixin.possession.possessed;
 
 import ladysnake.requiem.api.v1.possession.Possessable;
+import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.core.possession.PossessedDataBase;
 import ladysnake.requiem.core.util.PossessionHooks;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.Hand;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
@@ -63,6 +69,13 @@ public abstract class PossessableMobEntityMixin extends PossessableLivingEntityM
 
     @Shadow
     protected abstract void mobTick();
+
+    @Shadow
+    @Nullable
+    public abstract Entity getHoldingEntity();
+
+    @Shadow
+    public abstract void detachLeash(boolean sendPacket, boolean dropItem);
 
     @Unique
     private int attackingCountdown;
@@ -132,5 +145,22 @@ public abstract class PossessableMobEntityMixin extends PossessableLivingEntityM
     private <T extends MobEntity> void possessConvertedZombie(EntityType<T> type, boolean bl, CallbackInfoReturnable<T> ci, T converted) {
         PossessionHooks.dropArmorIfBanned(converted);
         PossessedDataBase.onMobConverted((MobEntity) (Object) this, converted);
+    }
+
+    @Inject(method = "interact", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/mob/MobEntity;getHoldingEntity()Lnet/minecraft/entity/Entity;"), cancellable = true)
+    private void detachFromPossessedEntity(PlayerEntity player, Hand hand, CallbackInfoReturnable<ActionResult> cir) {
+        if (this.getHoldingEntity() == PossessionComponent.getHost(player)) {
+            this.detachLeash(true, !player.getAbilities().creativeMode);
+            cir.setReturnValue(ActionResult.success(this.world.isClient));
+        }
+    }
+
+    @ModifyVariable(method = "attachLeash", at = @At("HEAD"), argsOnly = true)
+    private Entity attachToPossessedEntity(Entity original) {
+        MobEntity host = PossessionComponent.getHost(original);
+        if (host != null) {
+            return host;
+        }
+        return original;
     }
 }

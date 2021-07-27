@@ -54,6 +54,7 @@ import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.mob.PhantomEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
@@ -101,8 +102,14 @@ public final class RequiemFx implements ShaderEffectRenderCallback, ClientTickEv
         delegate.prevBodyYaw = rendered.prevBodyYaw;
         delegate.setYaw(rendered.getYaw());
         delegate.prevYaw = rendered.prevYaw;
-        delegate.setPitch(rendered.getPitch());
-        delegate.prevPitch = rendered.prevPitch;
+        if (delegate instanceof PhantomEntity) {
+            // phantoms use inverted pitch for whatever reason
+            delegate.setPitch(-rendered.getPitch());
+            delegate.prevPitch = -rendered.prevPitch;
+        } else {
+            delegate.setPitch(rendered.getPitch());
+            delegate.prevPitch = rendered.prevPitch;
+        }
         delegate.headYaw = rendered.headYaw;
         delegate.prevHeadYaw = rendered.prevHeadYaw;
     }

@@ -96,6 +96,9 @@ public class ObeliskSoulEntity extends SoulEntity {
                 this.world.sendEntityStatus(this, SOUL_EXPIRED_STATUS);
                 this.discard();
             }
+        }
+        super.tick();
+        if (!this.world.isClient()) {
             if (this.prevX == this.getX() && this.prevY == this.getY() && this.prevZ == this.getZ()) {
                 this.ticksAgainstWall++;
                 if (this.ticksAgainstWall > PlayerMovementAlterer.TICKS_BEFORE_PHASING) {
@@ -106,7 +109,6 @@ public class ObeliskSoulEntity extends SoulEntity {
                 this.ticksAgainstWall = 0;
             }
         }
-        super.tick();
     }
 
     @Override

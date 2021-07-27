@@ -173,7 +173,7 @@ public class RunestoneBlockEntity extends BlockEntity {
     }
 
     private void spawnSoul(ServerWorld world, Vec3d center, Vec3d particleSrc) {
-        if (world.random.nextFloat() < 0.3f) {
+        if (world.random.nextFloat() < 0.1f) {
             ObeliskSoulEntity soul = new ObeliskSoulEntity(RequiemEntities.OBELISK_SOUL, world, getRandomCorePos());
             soul.setPosition(particleSrc);
             soul.setVelocity(0, 0.1, 0);
