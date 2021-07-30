@@ -35,7 +35,6 @@
 package ladysnake.pandemonium.common.entity;
 
 import ladysnake.requiem.Requiem;
-import ladysnake.requiem.common.entity.RequiemEntities;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityType;
@@ -51,7 +50,6 @@ public final class PandemoniumEntities {
         .build();
 
     public static void init() {
-        Registry.register(Registry.ENTITY_TYPE, Requiem.id("player_shell"), RequiemEntities.PLAYER_SHELL);
         Registry.register(Registry.ENTITY_TYPE, Requiem.id("mortician"), MORTICIAN);
     }
 }

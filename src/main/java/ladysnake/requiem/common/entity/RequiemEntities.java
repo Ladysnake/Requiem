@@ -104,6 +104,7 @@ public final class RequiemEntities {
         .build();
 
     public static void init() {
+        Registry.register(Registry.ENTITY_TYPE, Requiem.id("player_shell"), PLAYER_SHELL);
         Registry.register(Registry.ENTITY_TYPE, Requiem.id("obelisk_soul"), OBELISK_SOUL);
         Registry.register(Registry.ENTITY_TYPE, Requiem.id("released_soul"), RELEASED_SOUL);
         Registry.register(Registry.ENTITY_TYPE, Requiem.id("cured_villager"), CURED_VILLAGER);
