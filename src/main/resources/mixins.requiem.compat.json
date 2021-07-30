@@ -4,7 +4,6 @@
   "plugin": "ladysnake.requiem.compat.RequiemCompatMixinPlugin",
   "required": false,
   "client": [
-    "healthoverlay.HealthRendererMixin"
   ],
   "mixins": [
     "bettergraves.BetterGravesMixin",
