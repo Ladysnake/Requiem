@@ -41,9 +41,26 @@ import ladysnake.requiem.core.util.serde.MoreCodecs;
 
 import java.util.Map;
 
-public record DialogueTemplate(String start, Map<String, DialogueState> states) {
+public final class DialogueTemplate {
+    // SO
+    // Mojang just decided to use the identity hash strategy for SimpleRegistry#entryToRawId
+    // but not for anything else
+    // and the fastutil maps do not update a mapping if Objects.equals(oldValue, newValue)
+    // and dynamic registries use Registry#replace every time they are reloaded
+    // so with a proper equals and hashcode implementation, we end up with a stupid identity mismatch
+    // and this identity mismatch snowballs into an error if a third reload happens (which always happens with datapacks on)
+    // this was hell to debug and I hate mojang but here we are
+    // so what does all this mean ? It means no record lol (or having to break Record's contract)
+
     public static final Codec<DialogueTemplate> CODEC = codec(MoreCodecs.DYNAMIC_JSON);
     public static final Codec<DialogueTemplate> NETWORK_CODEC = codec(MoreCodecs.STRING_JSON);
+    private final String start;
+    private final Map<String, DialogueState> states;
+
+    private DialogueTemplate(String start, Map<String, DialogueState> states) {
+        this.start = start;
+        this.states = Map.copyOf(states);
+    }
 
     private static Codec<DialogueTemplate> codec(Codec<JsonElement> jsonCodec) {
         return RecordCodecBuilder.create(instance -> instance.group(
@@ -51,4 +68,20 @@ public record DialogueTemplate(String start, Map<String, DialogueState> states) 
             Codec.unboundedMap(Codec.STRING, DialogueState.codec(jsonCodec)).fieldOf("states").forGetter(DialogueTemplate::states)
         ).apply(instance, DialogueTemplate::new));
     }
+
+    public String start() {
+        return start;
+    }
+
+    public Map<String, DialogueState> states() {
+        return states;
+    }
+
+    @Override
+    public String toString() {
+        return "DialogueTemplate[" +
+            "start=" + start + ", " +
+            "states=" + states + ']';
+    }
+
 }
