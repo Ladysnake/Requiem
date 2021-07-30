@@ -37,6 +37,7 @@ package ladysnake.requiem.client.render.entity;
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.client.render.entity.model.WillOWispModel;
 import net.minecraft.client.render.OverlayTexture;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRenderer;
@@ -53,7 +54,7 @@ public class SoulEntityRenderer<E extends Entity> extends EntityRenderer<E> {
 
     public SoulEntityRenderer(EntityRendererFactory.Context ctx) {
         super(ctx);
-        this.model = new WillOWispModel(ctx.getPart(WillOWispModel.BASE_MODEL_LAYER));
+        this.model = new WillOWispModel(ctx.getPart(WillOWispModel.BASE_MODEL_LAYER), this::getRenderLayer);
     }
 
     @Override
@@ -71,6 +72,10 @@ public class SoulEntityRenderer<E extends Entity> extends EntityRenderer<E> {
 
     protected float getAlpha(E entity) {
         return 1.0F;
+    }
+
+    protected RenderLayer getRenderLayer(Identifier texture) {
+        return RenderLayer.getEntityTranslucent(texture);
     }
 
     @Override

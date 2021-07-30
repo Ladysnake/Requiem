@@ -34,12 +34,15 @@
  */
 package ladysnake.requiem.client.render.entity;
 
+import ladysnake.requiem.client.RequiemFx;
 import ladysnake.requiem.common.entity.ObeliskSoulEntity;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.entity.EntityRendererFactory;
+import net.minecraft.util.Identifier;
 
 public class ObeliskSoulEntityRenderer<E extends ObeliskSoulEntity> extends SoulEntityRenderer<E> {
-    private static final boolean fancyShmancyShaders = FabricLoader.getInstance().isModLoaded("canvas");
+    private static final boolean canvas = FabricLoader.getInstance().isModLoaded("canvas");
 
     public ObeliskSoulEntityRenderer(EntityRendererFactory.Context ctx) {
         super(ctx);
@@ -47,6 +50,12 @@ public class ObeliskSoulEntityRenderer<E extends ObeliskSoulEntity> extends Soul
 
     @Override
     protected float getAlpha(E entity) {
-        return fancyShmancyShaders ? 1f - entity.getConversionProgress() : 1f;
+        return entity.getConversionProgress();
+    }
+
+    @Override
+    protected RenderLayer getRenderLayer(Identifier texture) {
+        RenderLayer baseLayer = super.getRenderLayer(texture);
+        return canvas ? baseLayer : RequiemFx.OBELISK_SOUL_SHADER.getRenderLayer(baseLayer);
     }
 }

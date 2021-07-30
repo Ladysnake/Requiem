@@ -52,14 +52,17 @@ import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.entity.model.EntityModelLayer;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.util.Identifier;
+
+import java.util.function.Function;
 
 public class WillOWispModel extends Model {
     public static final EntityModelLayer BASE_MODEL_LAYER = new EntityModelLayer(Requiem.id("soul"), "main");
 
     private final ModelPart skull;
 
-    public WillOWispModel(ModelPart root) {
-        super(RenderLayer::getEntityTranslucent);
+    public WillOWispModel(ModelPart root, Function<Identifier, RenderLayer> layerFactory) {
+        super(layerFactory);
         this.skull = root.getChild("skull");
     }
 

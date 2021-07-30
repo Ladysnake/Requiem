@@ -39,6 +39,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.satin.api.event.ShaderEffectRenderCallback;
+import ladysnake.satin.api.managed.ManagedCoreShader;
 import ladysnake.satin.api.managed.ManagedFramebuffer;
 import ladysnake.satin.api.managed.ManagedShaderEffect;
 import ladysnake.satin.api.managed.ShaderEffectManager;
@@ -64,6 +65,8 @@ import java.lang.ref.WeakReference;
 import static ladysnake.requiem.client.FxHelper.impulse;
 
 public final class RequiemFx implements ShaderEffectRenderCallback, ClientTickEvents.EndTick {
+    public static final ManagedCoreShader OBELISK_SOUL_SHADER = ShaderEffectManager.getInstance().manageCoreShader(Requiem.id("rendertype_obelisk_soul"));
+
     public static final Identifier SPECTRE_SHADER_ID = Requiem.id("shaders/post/spectre.json");
     public static final Identifier ZOOM_SHADER_ID = Requiem.id("shaders/post/zoom.json");
     private static final Identifier PENANCE_OVERLAY = new Identifier("textures/misc/nausea.png");
