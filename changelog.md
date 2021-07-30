@@ -5,6 +5,14 @@ Version 2.0.0
 
 **Really important warning: future alphas are extremely likely to break compatibility with worlds started with this alpha. Don't start using those versions on any world you care about.**
 
+### Changes in Alpha 7
+- Added little custom soul particles for obelisks
+- Made Cool Kid Blending work on obelisk souls without canvas
+- Fixed player shells turning to pigs when reloading a world (goodbye Registry Circe)
+- Fixed shell creation issues with Origins
+- Fixed datapack errors caused by dialogue loading
+- Updated Automatone - should fix height-related crashes
+
 ### Changes in Alpha 6
 - Converted the shaders to OpenGL 3.1 *because 3.0 wasn't enough apparently*
 - Fixed obelisks not refreshing their effects when toggling runestones
@@ -67,6 +75,7 @@ Updated to MC 1.17
 - Updated Mod Menu metadata
 - Updated The Bumblezone compatibility
 - **Requiem's API got breaking changes, if you are a modder doing compatibility with Requiem make sure to check things work fine !**
+- Fixed shell creation issues with Origins
 
 **Removals**
 - Removed the Opus Daemonium and its derivatives
