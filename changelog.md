@@ -8,10 +8,14 @@ Version 2.0.0
 ### Changes in Alpha 7
 - Added little custom soul particles for obelisks
 - Made Cool Kid Blending work on obelisk souls without canvas
+- Tweaked the reclamation ichor vessel's texture
 - Fixed player shells turning to pigs when reloading a world (goodbye Registry Circe)
 - Fixed shell creation issues with Origins
 - Fixed datapack errors caused by dialogue loading
+- Fixed leads getting attached to your soul rather than to your host during possession
+- Fixed possessed phantoms looking the wrong way
 - Updated Automatone - should fix height-related crashes
+- Updated Satin - should fix Iris crashes
 
 ### Changes in Alpha 6
 - Converted the shaders to OpenGL 3.1 *because 3.0 wasn't enough apparently*
@@ -76,6 +80,7 @@ Updated to MC 1.17
 - Updated The Bumblezone compatibility
 - **Requiem's API got breaking changes, if you are a modder doing compatibility with Requiem make sure to check things work fine !**
 - Fixed shell creation issues with Origins
+- Fixed crash with Iris
 
 **Removals**
 - Removed the Opus Daemonium and its derivatives
@@ -83,6 +88,8 @@ Updated to MC 1.17
 
 **Fixes**
 - Fixed possessed mobs sleeping standing up
+- Fixed leads getting attached to your soul rather than to your host during possession
+- Fixed possessed phantoms looking the wrong way
 
 #### Pandemonium
 **Additions**
