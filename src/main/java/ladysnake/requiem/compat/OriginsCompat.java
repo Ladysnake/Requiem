@@ -123,8 +123,8 @@ public final class OriginsCompat {
                     APOLI_HOLDER_KEY.get(player).storeData(player);
                     applyVagrantOrigin(player);
                 } else {
-                    APOLI_HOLDER_KEY.get(player).restoreData(player);
-                    ORIGIN_HOLDER_KEY.get(player).restoreData(player);
+                    APOLI_HOLDER_KEY.get(player).restoreData(player, true);
+                    ORIGIN_HOLDER_KEY.get(player).restoreData(player, true);
                 }
             }
         });

@@ -65,7 +65,7 @@ public class ComponentDataHolder<C extends Component> implements Component {
         }
     }
 
-    public void restoreData(PlayerEntity player) {
+    public void restoreData(PlayerEntity player, boolean clear) {
         if (!player.world.isClient && this.data != null) {
             C component = this.dataKey.get(player);
             NbtCompound backup = Util.make(new NbtCompound(), component::writeToNbt);
@@ -75,7 +75,7 @@ public class ComponentDataHolder<C extends Component> implements Component {
                 Requiem.LOGGER.error("[Requiem] Failed to deserialize data from " + this.dataKey.getId(), e);
                 restoreData0(component, backup);
             }
-            this.data = null;
+            if (clear) this.data = null;
             this.dataKey.sync(player);
         }
     }

@@ -58,7 +58,7 @@ public final class HaemaCompat {
                     vampireComponent.setPermanentVampire(false);
                     vampireComponent.setVampire(false);
                 } else {
-                    HOLDER_KEY.get(player).restoreData(player);
+                    HOLDER_KEY.get(player).restoreData(player, true);
                 }
 
                 VAMPIRE_KEY.sync(player);

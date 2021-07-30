@@ -114,12 +114,12 @@ public final class RequiemCompatibilityManager {
             // First, store a backup of the player's actual origin
             if (merge) holderKey.get(to).storeData(to);
 
-            if (RemnantComponent.isVagrant(from)) {    // can happen with /pandemonium shell create
-                holderKey.get(from).restoreData(to);
+            if (RemnantComponent.isVagrant(from)) {    // can happen with /requiem shell create
+                holderKey.get(from).restoreData(to, false);
             } else {
                 ComponentDataHolder<C> holder = holderKey.get(merge ? from : to);
                 holder.storeData(from);
-                holder.restoreData(to);
+                holder.restoreData(to, true);
             }
         });
     }
