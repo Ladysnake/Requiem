@@ -5,6 +5,9 @@ Version 2.0.0
 
 **Really important warning: future alphas are extremely likely to break compatibility with worlds started with this alpha. Don't start using those versions on any world you care about.**
 
+### Changes in Alpha 8
+- Updated Satin - should fix the architectury crashes for real
+
 ### Changes in Alpha 7
 - Added little custom soul particles for obelisks
 - Made Cool Kid Blending work on obelisk souls without canvas
