@@ -43,10 +43,7 @@ import ladysnake.requiem.client.particle.CureParticle;
 import ladysnake.requiem.client.particle.EntityDustParticle;
 import ladysnake.requiem.client.particle.GhostParticle;
 import ladysnake.requiem.client.particle.wisp.WispTrailParticle;
-import ladysnake.requiem.client.render.entity.CuredPiglinEntityRenderer;
-import ladysnake.requiem.client.render.entity.CuredVillagerEntityRenderer;
-import ladysnake.requiem.client.render.entity.ObeliskSoulEntityRenderer;
-import ladysnake.requiem.client.render.entity.SoulEntityRenderer;
+import ladysnake.requiem.client.render.entity.*;
 import ladysnake.requiem.client.render.entity.model.MorticianEntityModel;
 import ladysnake.requiem.client.render.entity.model.WillOWispModel;
 import ladysnake.requiem.common.entity.RequiemEntities;
@@ -191,6 +188,7 @@ public final class RequiemClient {
         // shh, it's fine
         @SuppressWarnings({"unchecked", "RedundantCast"}) EntityType<? extends AbstractClientPlayerEntity> playerShellType = (EntityType<? extends AbstractClientPlayerEntity>) (EntityType<?>) RequiemEntities.PLAYER_SHELL;
         EntityRendererRegistry.INSTANCE.register(playerShellType, ctx -> new PlayerEntityRenderer(ctx, false));
+        //EntityRendererRegistry.INSTANCE.register(RequiemEntities.MORTICIAN, MorticianEntityRenderer::new);
     }
 
     private void initListeners() {
