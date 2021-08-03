@@ -157,6 +157,7 @@
   "requiem:merge_hint": "Press %s to return",
 
   "entity.requiem.cured_piglin": "Pigman",
+  "entity.requiem.mortician": "Mortician",
   "entity.requiem.cured_piglin_brute": "Pigman Brute",
   "entity.requiem.player_shell": "Player Shell",
 
