@@ -2,6 +2,7 @@
   "replace": false,
   "values": [
     "#requiem:bosses",
-    "#requiem:ghosts"
+    "#requiem:ghosts",
+    "requiem:mortician"
   ]
 }
