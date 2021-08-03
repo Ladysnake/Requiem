@@ -149,7 +149,9 @@ public abstract class PossessableMobEntityMixin extends PossessableLivingEntityM
 
     @Inject(method = "interact", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/mob/MobEntity;getHoldingEntity()Lnet/minecraft/entity/Entity;"), cancellable = true)
     private void detachFromPossessedEntity(PlayerEntity player, Hand hand, CallbackInfoReturnable<ActionResult> cir) {
-        if (this.getHoldingEntity() == PossessionComponent.getHost(player)) {
+        Entity holdingEntity = this.getHoldingEntity();
+        // reminder that in most cases the entity is unleashed and the player is not possessing anything
+        if (holdingEntity != null && holdingEntity == PossessionComponent.getHost(player)) {
             this.detachLeash(true, !player.getAbilities().creativeMode);
             cir.setReturnValue(ActionResult.success(this.world.isClient));
         }
