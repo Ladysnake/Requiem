@@ -54,8 +54,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.Supplier;
 
-public class RequiemBlocks {
-    private static final Map<Block, String> allBlocks = new LinkedHashMap<>();
+public final class RequiemBlocks {
+    private static final Map<Block, BlockRegistration> allBlocks = new LinkedHashMap<>();
 
     public static final Block TACHYLITE = makeVariant(Blocks.OBSIDIAN, "tachylite/tachylite");
     public static final Block CHISELED_TACHYLITE = makeVariant(TACHYLITE, "tachylite/chiseled");
@@ -67,28 +67,26 @@ public class RequiemBlocks {
     public static final SlabBlock POLISHED_TACHYLITE_SLAB = makeSlab(POLISHED_TACHYLITE);
     public static final StairsBlock POLISHED_TACHYLITE_STAIRS = makeStairs(POLISHED_TACHYLITE);
     public static final Block SCRAPED_TACHYLITE = makeVariant(TACHYLITE, "tachylite/scraped");
-    public static final Block TACHYLITE_RUNESTONE = new InertRunestoneBlock(AbstractBlock.Settings.copy(TACHYLITE));
+    public static final Block TACHYLITE_RUNESTONE = make(() -> new InertRunestoneBlock(AbstractBlock.Settings.copy(TACHYLITE)), "tachylite/runestone");
     public static final RunestoneBlock RUNIC_TACHYLITE_ATTRITION = makeRunic("attrition", 3);
     public static final RunestoneBlock RUNIC_TACHYLITE_EMANCIPATION = makeRunic("emancipation", 1);
     public static final RunestoneBlock RUNIC_TACHYLITE_PENANCE = makeRunic("penance", 3);
-    public static final ReclamationRunestoneBlock RUNIC_TACHYLITE_RECLAMATION = new ReclamationRunestoneBlock(AbstractBlock.Settings.copy(Blocks.OBSIDIAN), () -> RequiemStatusEffects.RECLAMATION, 1);
+    public static final ReclamationRunestoneBlock RUNIC_TACHYLITE_RECLAMATION = make(() -> new ReclamationRunestoneBlock(AbstractBlock.Settings.copy(Blocks.OBSIDIAN), () -> RequiemStatusEffects.RECLAMATION, 1), "tachylite/runic/reclamation");
 
     private static Block makeVariant(Block base, String id) {
-        Block ret = new Block(AbstractBlock.Settings.copy(base));
-        allBlocks.put(ret, id);
-        return ret;
+        return make(() -> new Block(AbstractBlock.Settings.copy(base)), id);
     }
 
     private static PillarBlock makePillar(Block base) {
-        return make(() -> new PillarBlock(AbstractBlock.Settings.copy(base)), allBlocks.get(base) + "_pillar");
+        return make(() -> new PillarBlock(AbstractBlock.Settings.copy(base)), allBlocks.get(base).name() + "_pillar");
     }
 
     private static StairsBlock makeStairs(Block base) {
-        return make(() -> new StairsBlock(base.getDefaultState(), AbstractBlock.Settings.copy(base)), allBlocks.get(base) + "_stairs");
+        return make(() -> new StairsBlock(base.getDefaultState(), AbstractBlock.Settings.copy(base)), allBlocks.get(base).name() + "_stairs");
     }
 
     private static SlabBlock makeSlab(Block base) {
-        return make(() -> new SlabBlock(AbstractBlock.Settings.copy(base)), allBlocks.get(base) + "_slab");
+        return make(() -> new SlabBlock(AbstractBlock.Settings.copy(base)), allBlocks.get(base).name() + "_slab");
     }
 
     private static RunestoneBlock makeRunic(String effectName, int maxLevel) {
@@ -101,33 +99,32 @@ public class RequiemBlocks {
 
     private static <B extends Block> B make(Supplier<B> factory, String name) {
         B ret = factory.get();
-        allBlocks.put(ret, name);
+        allBlocks.put(ret, new BlockRegistration(name, new BlockRegistration.BlockItemRegistration(ItemGroup.BUILDING_BLOCKS, BlockItem::new)));
         return ret;
     }
 
     public static void init() {
         allBlocks.forEach(RequiemBlocks::register);
-        register(RUNIC_TACHYLITE_RECLAMATION, "tachylite/runic/reclamation");
-        register(TACHYLITE_RUNESTONE, "tachylite/runestone");
         InertRunestoneBlock.registerCallbacks();
     }
 
-    public static void register(Block block, String name) {
-        register(block, name, true);
+    public static void register(Block block, String name, ItemGroup itemGroup) {
+        register(block, new BlockRegistration(name, new BlockRegistration.BlockItemRegistration(itemGroup, BlockItem::new)));
+    }
+
+    private static void register(Block block, BlockRegistration registration) {
+        Registry.register(Registry.BLOCK, Requiem.id(registration.name()), block);
+
+        BlockRegistration.BlockItemRegistration blockItemRegistration = registration.blockItemRegistration();
+        if (blockItemRegistration != null) {
+            BlockItem item = blockItemRegistration.blockItemFactory().apply(block, new Item.Settings().group(blockItemRegistration.group()));
+            item.appendBlocks(Item.BLOCK_ITEMS, item);
+            RequiemItems.registerItem(item, registration.name());
+        }
+
         if (block instanceof ObeliskRune rune) {
             ObeliskRune.LOOKUP.registerForBlocks((world, pos, state, blockEntity, context) -> rune, block);
         }
-    }
-
-    private static void register(Block block, String name, boolean doItem) {
-        Registry.register(Registry.BLOCK, Requiem.id(name), block);
-
-        if (doItem) {
-            BlockItem item = new BlockItem(block, new Item.Settings().group(ItemGroup.DECORATIONS));
-            item.appendBlocks(Item.BLOCK_ITEMS, item);
-            RequiemItems.registerItem(item, name);
-        }
-
     }
 
     // haha protected constructor haha

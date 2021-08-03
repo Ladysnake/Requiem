@@ -1,6 +1,9 @@
 {
   "replace": false,
   "values": [
-    "#requiem:tachylite"
+    "#requiem:tachylite",
+    "#requiem:tachylite_slabs",
+    "#requiem:tachylite_stairs",
+    "#requiem:tachylite_runestones"
   ]
 }
