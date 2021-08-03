@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": {
+    "tag": "requiem:tachylite"
+  },
+  "result": "requiem:tachylite/chiseled_stairs",
+  "count": 1
+}
