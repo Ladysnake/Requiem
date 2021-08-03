@@ -5,6 +5,13 @@ Version 2.0.0
 
 **Really important warning: future alphas are extremely likely to break compatibility with worlds started with this alpha. Don't start using those versions on any world you care about.**
 
+### Changes in Alpha 9
+- Added recipes for all tachylite derivatives (tachylite itself is still unobtainable in survival)
+- Fixed inability to right-click mobs unleashed mobs unless the players themselves are possessing a mob
+
+#### Pandemonium
+- Couple mortician fixes and tweaks - still no functionality there
+
 ### Changes in Alpha 8
 - Updated Satin - should fix the architectury crashes for real
 
