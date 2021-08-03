@@ -73,41 +73,33 @@ public class MorticianEntityModel<T extends Entity> extends SinglePartEntityMode
         ModelData modelData = new ModelData();
         ModelPartData root = modelData.getRoot();
         root.addChild(EntityModelPartNames.HEAD, ModelPartBuilder.create()
+                .mirrored()
                 .uv(0, 0).cuboid(-5.0F, -8.0F, -4.0F, 10.0F, 8.0F, 8.0F)
                 .uv(31, 1).cuboid(-2.0F, -4.0F, -5.0F, 4.0F, 4.0F, 1.0F)
                 .uv(2, 0).cuboid(-3.0F, -2.0F, -5.0F, 1.0F, 2.0F, 1.0F)
                 .uv(2, 4).cuboid(2.0F, -2.0F, -5.0F, 1.0F, 2.0F, 1.0F),
-            ModelTransform.NONE
-        );
-        ModelPartData body = root.addChild(EntityModelPartNames.BODY, ModelPartBuilder.create()
-                .uv(16, 16).cuboid(-4.0F, 0.0F, -3.0F, 8.0F, 12.0F, 6.0F),
-                ModelTransform.NONE
-            );
-        body.addChild(EntityModelPartNames.JACKET, ModelPartBuilder.create()
+            ModelTransform.NONE);
+        root.addChild(EntityModelPartNames.BODY, ModelPartBuilder.create()
+                .mirrored()
+                .uv(16, 16).cuboid(-4.0F, 0.0F, -3.0F, 8.0F, 12.0F, 6.0F)
                 .uv(0, 34).cuboid(-4.0F, 0.0F, -3.0F, 8.0F, 18.0F, 6.0F, new Dilation(0.5F)),
-                ModelTransform.NONE
-        );
-        ModelPartData arms = root.addChild(EntityModelPartNames.ARMS, ModelPartBuilder.create()
-                .uv(40, 34).cuboid(-4.0F, 2.0F, -2.0F, 8.0F, 4.0F, 4.0F)
-                .uv(34, 42).cuboid(-6.0F, 2.5F, -1.5F, 12.0F, 3.0F, 3.0F)
-                .uv(44, 18).cuboid(4.0F, -2.0F, -2.0F, 3.0F, 8.0F, 4.0F, true)
-                .uv(44, 18).cuboid(-7.0F, -2.0F, -2.0F, 3.0F, 8.0F, 4.0F),
-            ModelTransform.of(0.0F, 2.0F, 0.0F, -0.9163F, 0.0F, 0.0F)
-        );
+            ModelTransform.NONE);
         root.addChild(EntityModelPartNames.RIGHT_LEG, ModelPartBuilder.create()
-            .uv(0, 18).cuboid(-2.0F, 0.0F, -2.0F, 4.0F, 12.0F, 4.0F),
-            ModelTransform.pivot(-2.0F, 12.0F, 0.0F)
-        );
+                .uv(0, 18).cuboid(-2.0F, 0.0F, -2.0F, 4.0F, 12.0F, 4.0F, true),
+            ModelTransform.pivot(-2.0F, 12.0F, 0.0F));
         root.addChild(EntityModelPartNames.LEFT_LEG, ModelPartBuilder.create()
-            .uv(0, 18).mirrored().cuboid(-2.0F, 0.0F, -2.0F, 4.0F, 12.0F, 4.0F),
-            ModelTransform.pivot(2.0F, 12.0F, 0.0F)
-        );
+                .uv(0, 18).cuboid(-2.0F, 0.0F, -2.0F, 4.0F, 12.0F, 4.0F),
+            ModelTransform.pivot(2.0F, 12.0F, 0.0F));
+        ModelPartData arms = root.addChild("arms", ModelPartBuilder.create()
+                .uv(40, 34).cuboid(-4.0F, 2.0F, -2.0F, 8.0F, 4.0F, 4.0F, true)
+                .uv(34, 42).cuboid(-6.0F, 2.5F, -1.5F, 12.0F, 3.0F, 3.0F, true)
+                .uv(44, 18).cuboid(4.0F, -2.0F, -2.0F, 3.0F, 8.0F, 4.0F)
+                .uv(44, 18).cuboid(-7.0F, -2.0F, -2.0F, 3.0F, 8.0F, 4.0F, true),
+            ModelTransform.of(0.0F, 2.0F, 0.0F, -0.9163F, 0.0F, 0.0F));
         arms.addChild("sleeves", ModelPartBuilder.create()
-            .uv(42, 48).cuboid(-6.999F, -0.2F, -0.4F, 5.0F, 3.0F, 6.0F, true)
-            .uv(42, 48).cuboid(1.999F, -0.2F, -0.4F, 5.0F, 3.0F, 6.0F, true),
-            ModelTransform.of(0.0F, 4.0F, 0.0F, 0.6545F, 0.0F, 0.0F)
-        );
-
+                .uv(42, 48).cuboid(-6.999F, -0.2F, -0.4F, 5.0F, 3.0F, 6.0F)
+                .uv(42, 48).cuboid(1.999F, -0.2F, -0.4F, 5.0F, 3.0F, 6.0F, true),
+            ModelTransform.of(0.0F, 4.0F, 0.0F, -0.6545F, 0.0F, 0.0F));
         return TexturedModelData.of(modelData, 64, 64);
     }
 
