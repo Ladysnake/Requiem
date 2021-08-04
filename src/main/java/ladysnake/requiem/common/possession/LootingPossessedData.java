@@ -34,8 +34,11 @@
  */
 package ladysnake.requiem.common.possession;
 
+import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.common.loot.RequiemLootTables;
+import ladysnake.requiem.common.particle.RequiemParticleTypes;
 import ladysnake.requiem.core.possession.PossessedDataBase;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.loot.LootTable;
@@ -45,6 +48,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.world.World;
 
 public class LootingPossessedData extends PossessedDataBase {
     private boolean previouslyPossessed;
@@ -58,6 +62,22 @@ public class LootingPossessedData extends PossessedDataBase {
         if (!this.previouslyPossessed) {
             this.dropLoot(player);
             this.previouslyPossessed = true;
+        }
+    }
+
+    @Override
+    public void clientTick() {
+        if (this.wasConvertedUnderPossession()) {
+            Entity camera = MinecraftClient.getInstance().getCameraEntity();
+            World world = holder.world;
+            if (camera != null && RemnantComponent.isIncorporeal(camera) && world.random.nextBoolean()) {
+                for (int i = 0; i < world.random.nextInt(4); i++) {
+                    double vx = world.random.nextGaussian() * 0.04D;
+                    double vy = world.random.nextGaussian() * 0.04D;
+                    double vz = world.random.nextGaussian() * 0.04D;
+                    world.addParticle(RequiemParticleTypes.ATTUNED, holder.getParticleX(0.5D), holder.getRandomBodyY(), holder.getParticleZ(0.5D), vx, vy, vz);
+                }
+            }
         }
     }
 

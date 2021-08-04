@@ -162,6 +162,7 @@ public final class RequiemClient {
     private void registerParticleFactories() {
         ParticleFactoryRegistry registry = ParticleFactoryRegistry.getInstance();
         registry.register(RequiemParticleTypes.ATTRITION, PortalParticle.Factory::new);
+        registry.register(RequiemParticleTypes.ATTUNED, CureParticle.Factory::new);
         registry.register(RequiemParticleTypes.CURE, CureParticle.Factory::new);
         registry.register(RequiemParticleTypes.GHOST, GhostParticle.Factory::new);
         registry.register(RequiemParticleTypes.ENTITY_DUST, new EntityDustParticle.Factory());

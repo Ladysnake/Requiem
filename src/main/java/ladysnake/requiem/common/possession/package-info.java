@@ -1,7 +1,10 @@
+/**
+ * Classes implementing the possession mechanic
+ */
 @FieldsAreNonnullByDefault
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
-package ladysnake.requiem.common.possession.item;
+package ladysnake.requiem.common.possession;
 
 import ladysnake.requiem.api.v1.annotation.FieldsAreNonnullByDefault;
 import ladysnake.requiem.api.v1.annotation.MethodsReturnNonnullByDefault;
