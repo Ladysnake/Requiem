@@ -48,6 +48,7 @@ import ladysnake.requiem.common.remnant.WandererRemnantState;
 import ladysnake.requiem.common.sound.RequiemSoundEvents;
 import ladysnake.requiem.core.entity.EntityAiToggle;
 import ladysnake.requiem.core.record.EntityPositionClerk;
+import ladysnake.requiem.core.tag.RequiemCoreTags;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -124,7 +125,8 @@ public class EmptySoulVesselItem extends Item {
      */
     @Override
     public ActionResult useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
-        if (SoulCaptureEvents.BEFORE_ATTEMPT.invoker().canAttemptCapturing(user, entity)) {
+        if (!RequiemCoreTags.Entity.SOUL_CAPTURE_BLACKLIST.contains(entity.getType())
+            && SoulCaptureEvents.BEFORE_ATTEMPT.invoker().canAttemptCapturing(user, entity)) {
             int targetSoulStrength = computeSoulDefense(entity);
             int playerSoulStrength = computeSoulOffense(user);
             NbtCompound activeData = stack.getOrCreateSubNbt(ACTIVE_DATA_TAG);
