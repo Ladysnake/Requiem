@@ -119,6 +119,9 @@ public class EmptySoulVesselItem extends Item {
         return TypedActionResult.pass(stack);
     }
 
+    /**
+     * Requires {@link ladysnake.requiem.mixin.common.vessel.MobEntityMixin} to work because ugh mojang
+     */
     @Override
     public ActionResult useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
         if (SoulCaptureEvents.BEFORE_ATTEMPT.invoker().canAttemptCapturing(user, entity)) {

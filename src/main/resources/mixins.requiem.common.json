@@ -73,7 +73,8 @@
     "shell.ai.MemoryModuleTypeAccessor",
     "shell.ai.SensorTypeAccessor",
     "shell.ai.SerializableMemoryModuleTypeAccessor",
-    "shell.ai.TargetPredicateAccessor"
+    "shell.ai.TargetPredicateAccessor",
+    "vessel.MobEntityMixin"
   ],
   "injectors": {
     "defaultRequire": 1
