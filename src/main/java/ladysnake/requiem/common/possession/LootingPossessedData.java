@@ -70,12 +70,14 @@ public class LootingPossessedData extends PossessedDataBase {
         if (this.wasConvertedUnderPossession()) {
             Entity camera = MinecraftClient.getInstance().getCameraEntity();
             World world = holder.world;
-            if (camera != null && RemnantComponent.isIncorporeal(camera) && world.random.nextBoolean()) {
-                for (int i = 0; i < world.random.nextInt(4); i++) {
-                    double vx = world.random.nextGaussian() * 0.04D;
-                    double vy = world.random.nextGaussian() * 0.04D;
-                    double vz = world.random.nextGaussian() * 0.04D;
-                    world.addParticle(RequiemParticleTypes.ATTUNED, holder.getParticleX(0.5D), holder.getRandomBodyY(), holder.getParticleZ(0.5D), vx, vy, vz);
+            if (camera != null && RemnantComponent.isIncorporeal(camera)) {
+                if (world.random.nextFloat() > 0.9f) {
+                    for (int i = 0; i < world.random.nextInt(3); i++) {
+                        double vx = world.random.nextGaussian() * 0.03D;
+                        double vy = world.random.nextGaussian() * 0.03D;
+                        double vz = world.random.nextGaussian() * 0.03D;
+                        world.addParticle(RequiemParticleTypes.ATTUNED, holder.getParticleX(0.5D), holder.getRandomBodyY(), holder.getParticleZ(0.5D), vx, vy, vz);
+                    }
                 }
             }
         }
