@@ -1,6 +1,6 @@
 {
   "type": "requiem:soul_type",
-  "value": "requiem:wandering_spirit",
+  "value": "pandemonium:wandering_spirit",
   "name": "origins:power.pandemonium.wandering_spirit.name",
   "description": "origins:power.pandemonium.wandering_spirit.description"
 }
