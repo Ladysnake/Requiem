@@ -46,7 +46,6 @@ import ladysnake.requiem.common.entity.RequiemEntities;
 import ladysnake.requiem.common.particle.RequiemParticleTypes;
 import ladysnake.requiem.common.sound.RequiemSoundEvents;
 import ladysnake.requiem.common.tag.RequiemBlockTags;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -54,7 +53,6 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.tag.BlockTags;
-import net.minecraft.tag.Tag;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
@@ -73,14 +71,14 @@ import java.util.function.Consumer;
 public class RunestoneBlockEntity extends BlockEntity {
     public static final Direction[] OBELISK_SIDES = {Direction.SOUTH, Direction.EAST, Direction.NORTH, Direction.WEST};
     public static final int POWER_ATTEMPTS = 1;
-    public static final int MAX_OBELISK_WIDTH = 7;
+    public static final int MAX_OBELISK_CORE_WIDTH = 5;
     public static final DataResult<ObeliskMatch> INVALID_BASE = DataResult.error("Structure does not have a matching base");
     public static final DataResult<ObeliskMatch> INVALID_CORE = DataResult.error("Structure does not have a matching runic core");
     public static final DataResult<ObeliskMatch> INVALID_CAP = DataResult.error("Structure does not have a matching cap");
     private static final Random random = new Random();
+    public static final int NO_MATCH = 0;
 
     private final Object2IntMap<ObeliskRune> levels = new Object2IntOpenHashMap<>();
-    private boolean requiresInit = true;
     private int obeliskCoreWidth = 0;
     private int obeliskCoreHeight = 0;
 
@@ -260,8 +258,8 @@ public class RunestoneBlockEntity extends BlockEntity {
     }
 
     public static DataResult<ObeliskMatch> matchObelisk(World world, BlockPos origin) {
-        int tentativeWidth = matchObeliskBase(world, origin);
-        if (tentativeWidth > 0) {
+        int tentativeWidth = getObeliskCoreWidth(world, origin);
+        if (tentativeWidth != NO_MATCH && matchObeliskBase(world, origin, tentativeWidth)) {
             ObeliskMatch attempt = matchObeliskCore(world, origin, tentativeWidth);
             if (attempt.coreHeight() > 0) {
                 if (matchObeliskCap(world, origin, tentativeWidth, attempt.coreHeight())) {
@@ -274,33 +272,49 @@ public class RunestoneBlockEntity extends BlockEntity {
         return INVALID_BASE;
     }
 
-    private static ObeliskMatch matchObeliskCore(World world, BlockPos origin, int sideLength) {
+    private static int getObeliskCoreWidth(World world, BlockPos origin) {
+        // We assume that the origin got already tested
+        int sideLength = 1;
+
+        while (world.getBlockState(origin.offset(OBELISK_SIDES[0], sideLength)).isIn(RequiemBlockTags.OBELISK_CORE)) {
+            sideLength++;
+
+            if (sideLength > MAX_OBELISK_CORE_WIDTH) {
+                // Too large: not a valid obelisk
+                return NO_MATCH;
+            }
+        }
+
+        return sideLength;
+    }
+
+    private static ObeliskMatch matchObeliskCore(World world, BlockPos origin, int coreWidth) {
         // start at north-west corner
         BlockPos start = origin.add(-1, 0, -1);
         BlockPos.Mutable pos = start.mutableCopy();
         List<RuneSearchResult> layers = new ArrayList<>();
         int height;
 
-        for (height = 0; testCoreLayerFrame(world, start, pos, sideLength, height); height++) {
-            RuneSearchResult result = findRune(world, origin, sideLength, height);
+        for (height = 0; testCoreLayerFrame(world, start, pos, coreWidth, height); height++) {
+            RuneSearchResult result = findRune(world, origin, coreWidth, height);
             if (!result.valid()) break;
             layers.add(result);
         }
 
-        return new ObeliskMatch(origin, sideLength - 2, height, layers);
+        return new ObeliskMatch(origin, coreWidth, height, layers);
     }
 
-    private static boolean testCoreLayerFrame(World world, BlockPos start, BlockPos.Mutable pos, int sideLength, int height) {
+    private static boolean testCoreLayerFrame(World world, BlockPos start, BlockPos.Mutable pos, int width, int height) {
         return world.getBlockState(pos.set(start.getX(), start.getY() + height, start.getZ())).isIn(RequiemBlockTags.OBELISK_FRAME)
-            && world.getBlockState(pos.set(start.getX() + sideLength - 1, start.getY() + height, start.getZ())).isIn(RequiemBlockTags.OBELISK_FRAME)
-            && world.getBlockState(pos.set(start.getX() + sideLength - 1, start.getY() + height, start.getZ() + sideLength - 1)).isIn(RequiemBlockTags.OBELISK_FRAME)
-            && world.getBlockState(pos.set(start.getX(), start.getY() + height, start.getZ() + sideLength - 1)).isIn(RequiemBlockTags.OBELISK_FRAME);
+            && world.getBlockState(pos.set(start.getX() + width + 1, start.getY() + height, start.getZ())).isIn(RequiemBlockTags.OBELISK_FRAME)
+            && world.getBlockState(pos.set(start.getX() + width + 1, start.getY() + height, start.getZ() + width + 1)).isIn(RequiemBlockTags.OBELISK_FRAME)
+            && world.getBlockState(pos.set(start.getX(), start.getY() + height, start.getZ() + width + 1)).isIn(RequiemBlockTags.OBELISK_FRAME);
     }
 
     private static RuneSearchResult findRune(World world, BlockPos origin, int width, int height) {
         ObeliskRune rune = null;
         boolean first = true;
-        for (BlockPos corePos : iterateCoreBlocks(origin, width - 2, height)) {
+        for (BlockPos corePos : iterateCoreBlocks(origin, width, height)) {
             BlockState state = world.getBlockState(corePos);
             if (state.isIn(RequiemBlockTags.OBELISK_CORE)) {
                 @Nullable ObeliskRune foundRune = ObeliskRune.LOOKUP.find(world, corePos, state, null, null);
@@ -317,47 +331,41 @@ public class RunestoneBlockEntity extends BlockEntity {
         return RuneSearchResult.of(rune);
     }
 
-    private static int matchObeliskBase(BlockView world, BlockPos origin) {
-        return checkObeliskExtremity(world, origin.add(-1, -1, -1), RequiemBlockTags.OBELISK_FRAME);
+    private static boolean matchObeliskBase(BlockView world, BlockPos origin, int coreWidth) {
+        return checkObeliskExtremity(world, origin.add(-1, -1, -1), coreWidth + 2);
     }
 
-    private static boolean matchObeliskCap(BlockView world, BlockPos origin, int width, int height) {
-        return checkObeliskExtremity(world, origin.add(-1, height, -1), RequiemBlockTags.OBELISK_FRAME) == width;
+    private static boolean matchObeliskCap(BlockView world, BlockPos origin, int coreWidth, int height) {
+        return checkObeliskExtremity(world, origin.add(-1, height, -1), coreWidth + 2);
     }
 
     static Iterable<BlockPos> iterateCoreBlocks(BlockPos origin, int coreWidth, int height) {
         return BlockPos.iterate(origin.up(height), origin.add(coreWidth - 1, height, coreWidth - 1));
     }
 
-    private static int checkObeliskExtremity(BlockView world, BlockPos origin, Tag<Block> edgeTag) {
-        // start at bottom north-west corner
+    private static boolean checkObeliskExtremity(BlockView world, BlockPos origin, int expectedWidth) {
+        // We start at bottom north-west corner
         BlockPos.Mutable pos = origin.mutableCopy();
-        int lastSideLength = -1;
 
         for (Direction direction : OBELISK_SIDES) {
             int sideLength = 0;
 
-            while (world.getBlockState(pos).isIn(edgeTag)) {
-                sideLength++;
-                if (sideLength > MAX_OBELISK_WIDTH) {
-                    // Too large: not a valid base
-                    return 0;
+            while (true) {
+                if (!world.getBlockState(pos).isIn(RequiemBlockTags.OBELISK_FRAME)) {
+                    return false;
                 }
-                pos.move(direction);
-            }
 
-            // If we got here, we went one block too far: backtrack before turning
-            pos.move(direction.getOpposite());
+                sideLength++;
 
-            if (lastSideLength < 0) {
-                lastSideLength = sideLength;
-            } else if (lastSideLength != sideLength) {
-                // Not a square base: not a valid base
-                return 0;
+                if (sideLength < expectedWidth) {
+                    pos.move(direction);
+                } else {
+                    break;
+                }
             }
         }
 
-        return lastSideLength;
+        return true;
     }
 
     record RuneSearchResult(boolean valid, @Nullable ObeliskRune rune) {
