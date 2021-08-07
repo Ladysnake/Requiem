@@ -1,6 +1,7 @@
 {
-  "parent": "minecraft:block/cube_all",
+  "parent": "minecraft:block/cube_column",
   "textures": {
-    "all": "requiem:block/tachylite_runestone"
+    "end": "requiem:block/tachylite_runestone_top",
+    "side": "requiem:block/tachylite_runestone"
   }
 }
