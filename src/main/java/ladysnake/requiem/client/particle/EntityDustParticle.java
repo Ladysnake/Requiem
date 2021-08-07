@@ -34,6 +34,7 @@
  */
 package ladysnake.requiem.client.particle;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import ladysnake.requiem.common.particle.RequiemEntityParticleEffect;
 import net.fabricmc.api.EnvType;
@@ -81,6 +82,7 @@ public class EntityDustParticle extends BillboardParticle {
         this.colorRed = 0.6F;
         this.colorGreen = 0.6F;
         this.colorBlue = 0.6F;
+        this.colorAlpha = this.random.nextFloat() * 0.3F + 0.3F;
 
         this.scale /= 2.0F;
         this.sampleU = this.random.nextFloat() * 31.0F;
@@ -215,10 +217,11 @@ public class EntityDustParticle extends BillboardParticle {
 
         @Override
         public void begin(BufferBuilder bufferBuilder, TextureManager textureManager) {
-            RenderSystem.disableBlend();
             RenderSystem.depthMask(true);
             RenderSystem.setShader(GameRenderer::getParticleShader);
             RenderSystem.setShaderTexture(0, texture);
+            RenderSystem.enableBlend();
+            RenderSystem.blendFunc(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA);
             bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR_LIGHT);
         }
 

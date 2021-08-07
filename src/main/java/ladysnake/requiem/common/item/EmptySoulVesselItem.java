@@ -202,7 +202,7 @@ public class EmptySoulVesselItem extends Item {
                         serverWorld.spawnParticles(
                             new RequiemEntityParticleEffect(RequiemParticleTypes.ENTITY_DUST, target.getId(), user.getId()),
                             target.getX(), target.getBodyY(0.5), target.getZ(),
-                            world.random.nextInt(3) + 2,
+                            world.random.nextInt(6) + 4,
                             target.getWidth() * 0.2,
                             target.getHeight() * 0.2,
                             target.getWidth() * 0.2,
