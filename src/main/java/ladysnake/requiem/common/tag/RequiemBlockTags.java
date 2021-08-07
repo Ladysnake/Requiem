@@ -44,6 +44,4 @@ public final class RequiemBlockTags {
 
     public static final Tag<Block> OBELISK_FRAME = TagRegistry.block(Requiem.id("obelisk/frame"));
     public static final Tag<Block> OBELISK_CORE = TagRegistry.block(Requiem.id("obelisk/core"));
-    public static final Tag<Block> OBELISK_BASE_EDGES = TagRegistry.block(Requiem.id("obelisk/base_edges"));
-    public static final Tag<Block> OBELISK_CAP_EDGES = TagRegistry.block(Requiem.id("obelisk/cap_edges"));
 }

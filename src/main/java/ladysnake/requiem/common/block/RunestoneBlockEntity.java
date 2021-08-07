@@ -318,11 +318,11 @@ public class RunestoneBlockEntity extends BlockEntity {
     }
 
     private static int matchObeliskBase(BlockView world, BlockPos origin) {
-        return checkObeliskExtremity(world, origin.add(-1, -1, -1), RequiemBlockTags.OBELISK_BASE_EDGES);
+        return checkObeliskExtremity(world, origin.add(-1, -1, -1), RequiemBlockTags.OBELISK_FRAME);
     }
 
     private static boolean matchObeliskCap(BlockView world, BlockPos origin, int width, int height) {
-        return checkObeliskExtremity(world, origin.add(-1, height, -1), RequiemBlockTags.OBELISK_CAP_EDGES) == width;
+        return checkObeliskExtremity(world, origin.add(-1, height, -1), RequiemBlockTags.OBELISK_FRAME) == width;
     }
 
     static Iterable<BlockPos> iterateCoreBlocks(BlockPos origin, int coreWidth, int height) {
