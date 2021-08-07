@@ -41,7 +41,7 @@ import net.minecraft.util.registry.Registry;
 
 public class RequiemEntityAttributes {
     public static final EntityAttribute SOUL_OFFENSE = new ClampedEntityAttribute(
-        "attribute.name.remnant.requiem.soul_offense", 10, 0, 1024
+        "attribute.name.remnant.requiem.soul_offense", 15, 0, 1024
     ).setTracked(true);
     public static final EntityAttribute SOUL_DEFENSE = new ClampedEntityAttribute(
         "attribute.name.remnant.requiem.soul_defense", 0, -1024, 1024
