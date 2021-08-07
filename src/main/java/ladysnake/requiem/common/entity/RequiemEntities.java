@@ -101,6 +101,7 @@ public final class RequiemEntities {
         .trackRangeBlocks(64)
         .trackedUpdateRate(1)
         .forceTrackedVelocityUpdates(true)
+        .disableSummon()
         .build();
 
     public static void init() {
