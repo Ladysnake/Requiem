@@ -55,6 +55,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -125,7 +126,8 @@ public class EmptySoulVesselItem extends Item {
      */
     @Override
     public ActionResult useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
-        if (!RequiemCoreTags.Entity.SOUL_CAPTURE_BLACKLIST.contains(entity.getType())
+        if (entity instanceof MobEntity
+            && !RequiemCoreTags.Entity.SOUL_CAPTURE_BLACKLIST.contains(entity.getType())
             && SoulCaptureEvents.BEFORE_ATTEMPT.invoker().canAttemptCapturing(user, entity)) {
             int targetSoulStrength = computeSoulDefense(entity);
             int playerSoulStrength = computeSoulOffense(user);
