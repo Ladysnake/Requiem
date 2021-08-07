@@ -50,7 +50,6 @@ import net.minecraft.item.ItemUsageContext;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvent;
 import net.minecraft.stat.Stats;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
@@ -63,7 +62,7 @@ import net.minecraft.world.event.GameEvent;
 import java.util.Optional;
 
 public class IchorVesselItem extends Item {
-    private static final int MAX_USE_TIME = 32;
+    private static final int MAX_USE_TIME = 20;
 
     private final StatusEffectInstance effect;
 
@@ -111,12 +110,7 @@ public class IchorVesselItem extends Item {
 
     @Override
     public UseAction getUseAction(ItemStack stack) {
-        return UseAction.DRINK;
-    }
-
-    @Override
-    public SoundEvent getDrinkSound() {
-        return RequiemSoundEvents.ITEM_EMPTY_VESSEL_USE;
+        return UseAction.BOW;
     }
 
     @Override
