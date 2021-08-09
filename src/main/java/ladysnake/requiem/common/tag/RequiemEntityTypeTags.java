@@ -41,6 +41,8 @@ import net.minecraft.tag.Tag;
 
 public final class RequiemEntityTypeTags {
     public static final Tag<EntityType<?>> DICHROMATS = register("vision/dichromats");
+    public static final Tag<EntityType<?>> HEMERALOPES = register("vision/hemeralopes");
+    public static final Tag<EntityType<?>> NIGHT_EYED = register("vision/night_eyed");
     public static final Tag<EntityType<?>> TETRACHROMATS = register("vision/tetrachromats");
 
     public static final Tag<EntityType<?>> POSSESSABLES = register("possession/possessables");

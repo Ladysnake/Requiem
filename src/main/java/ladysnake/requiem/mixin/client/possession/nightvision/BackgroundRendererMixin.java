@@ -58,7 +58,7 @@ public abstract class BackgroundRendererMixin {
     private static float blue;
 
     @Inject(method = "render", slice = @Slice(from=@At(value = "FIELD:LAST", opcode = Opcodes.PUTSTATIC)), at = @At(value = "FIELD", opcode = Opcodes.GETSTATIC))
-    private static void render(Camera camera, float tickDelta, ClientWorld world, int i, float f, CallbackInfo ci) {
+    private static void neutralizeBackgroundTint(Camera camera, float tickDelta, ClientWorld world, int i, float f, CallbackInfo ci) {
         if (RemnantComponent.isIncorporeal(camera.getFocusedEntity())) {
             float greyscale = red * 0.3f + green * 0.59f + blue * 0.11f;
             red = Math.max(red, greyscale);

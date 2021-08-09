@@ -34,10 +34,14 @@
  */
 package ladysnake.requiem.mixin.client.possession.nightvision;
 
+import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
+import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.render.LightmapTextureManager;
+import net.minecraft.entity.mob.MobEntity;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -64,8 +68,14 @@ public abstract class LightmapTextureManagerMixin {
         ClientPlayerEntity player = this.client.player;
         assert player != null;
         if (RemnantComponent.isIncorporeal(player)) {
-            return Math.max(base, 0.5f);
+            return Math.max(base, 0.6f);
+        } else if (isNightEyed(PossessionComponent.getHost(player))) {
+            return Math.max(base, 0.2f);
         }
         return base;
+    }
+
+    private boolean isNightEyed(@Nullable MobEntity host) {
+        return host != null && host.getType().isIn(RequiemEntityTypeTags.NIGHT_EYED);
     }
 }

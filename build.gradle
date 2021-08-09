@@ -285,8 +285,8 @@ dependencies {
     modCompileOnly("io.github.HyperPigeon:Eldritch-Mobs:${eldritch_mobs_version}") { transitive = false }
 //    modRuntime "io.github.cottonmc:LibGui:${libgui_version}"
     modCompileOnly("curse.maven:haema-391257:${haema_version}")
-//    modRuntime("curse.maven:haema-391257:${haema_version}")
-//    modRuntime("vazkii.patchouli:Patchouli:${project.patchouli_version}")
+    modRuntime("curse.maven:haema-391257:${haema_version}")
+    modRuntime("vazkii.patchouli:Patchouli:${project.patchouli_version}")
     modRuntime("net.fabricmc:fabric-language-kotlin:${flk_version}")
     modRuntime("io.github.onyxstudios.Cardinal-Components-API:cardinal-components-world:${rootProject.cca_version}")
     modCompileOnly("curse.maven:golems-galore-387197:${golems_galore_version}")
