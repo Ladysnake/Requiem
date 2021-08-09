@@ -279,6 +279,7 @@ public abstract class PossessableLivingEntityMixin extends Entity implements Pos
     private void onDeath(DamageSource deathCause, CallbackInfo ci) {
         ServerPlayerEntity possessor = (ServerPlayerEntity) this.getPossessor();
         if (possessor != null) {
+            PossessionEvents.HOST_DEATH.invoker().onHostDeath(possessor, (LivingEntity) (Object) this, deathCause);
             PossessionComponent possessionComponent = PossessionComponent.get(possessor);
             MobEntity secondLife = ResurrectionDataLoader.INSTANCE.getNextBody(possessor, (LivingEntity) (Object) this, deathCause);
             possessor.setAttacker(this.getAttacker());
