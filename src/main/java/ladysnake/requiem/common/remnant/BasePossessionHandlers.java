@@ -47,7 +47,7 @@ import ladysnake.requiem.common.entity.effect.AttritionStatusEffect;
 import ladysnake.requiem.common.entity.effect.RequiemStatusEffects;
 import ladysnake.requiem.common.gamerule.RequiemGamerules;
 import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
-import ladysnake.requiem.core.entity.EntityAiToggle;
+import ladysnake.requiem.core.entity.SoulHolderComponent;
 import ladysnake.requiem.core.tag.RequiemCoreTags;
 import ladysnake.requiem.mixin.common.access.EndermanEntityAccessor;
 import net.fabricmc.fabric.api.util.TriState;
@@ -60,7 +60,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.world.World;
 
-public class BasePossessionHandlers {
+public final class BasePossessionHandlers {
 
     public static void register() {
         TrackingStartCallback.EVENT.register((player, tracked) -> {
@@ -97,7 +97,7 @@ public class BasePossessionHandlers {
         });
         PossessionStartCallback.EVENT.register(Requiem.id("emancipation"), (target, possessor, simulate) -> {
             if (possessor.hasStatusEffect(RequiemStatusEffects.EMANCIPATION)
-                && EntityAiToggle.isAiDisabled(target)) {
+                && SoulHolderComponent.isSoulless(target)) {
                 return PossessionStartCallback.Result.ALLOW;
             }
             return PossessionStartCallback.Result.PASS;

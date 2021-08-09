@@ -46,7 +46,7 @@ import ladysnake.requiem.common.particle.RequiemEntityParticleEffect;
 import ladysnake.requiem.common.particle.RequiemParticleTypes;
 import ladysnake.requiem.common.remnant.WandererRemnantState;
 import ladysnake.requiem.common.sound.RequiemSoundEvents;
-import ladysnake.requiem.core.entity.EntityAiToggle;
+import ladysnake.requiem.core.entity.SoulHolderComponent;
 import ladysnake.requiem.core.record.EntityPositionClerk;
 import ladysnake.requiem.core.tag.RequiemCoreTags;
 import net.minecraft.block.Block;
@@ -71,7 +71,6 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.UseAction;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 
@@ -176,7 +175,7 @@ public class EmptySoulVesselItem extends Item {
             NbtCompound data = result.getOrCreateSubNbt(FilledSoulVesselItem.SOUL_FRAGMENT_NBT);
             data.putString("type", EntityType.getId(entity.getType()).toString());
             this.setupRecord(entity, target, data);
-            EntityAiToggle.KEY.get(target).toggleAi(Registry.ITEM.getId(RequiemItems.EMPTY_SOUL_VESSEL), true, false);
+            SoulHolderComponent.get(target).removeSoul();
         }
         return ItemUsage.exchangeStack(stack, remnant, result, false);
     }

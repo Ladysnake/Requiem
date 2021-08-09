@@ -39,7 +39,7 @@ import ladysnake.requiem.common.RequiemRecordTypes;
 import ladysnake.requiem.common.entity.ReleasedSoulEntity;
 import ladysnake.requiem.common.entity.RequiemEntities;
 import ladysnake.requiem.common.sound.RequiemSoundEvents;
-import ladysnake.requiem.core.entity.EntityAiToggle;
+import ladysnake.requiem.core.entity.SoulHolderComponent;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
@@ -51,7 +51,6 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -70,8 +69,8 @@ public class FilledSoulVesselItem extends Item {
 
     public void registerCallbacks() {
         EntityRecordUpdateCallback.EVENT.register((entity, linkedRecord) ->
-            linkedRecord.get(RequiemRecordTypes.RELEASED_SOUL).flatMap(u -> EntityAiToggle.KEY.maybeGet(entity)).ifPresent(aiSwitch -> {
-                aiSwitch.toggleAi(Registry.ITEM.getId(RequiemItems.EMPTY_SOUL_VESSEL), false, false);
+            linkedRecord.get(RequiemRecordTypes.RELEASED_SOUL).flatMap(u -> SoulHolderComponent.KEY.maybeGet(entity)).ifPresent(soulHolder -> {
+                soulHolder.giveSoulBack();
                 linkedRecord.invalidate();
             }));
     }

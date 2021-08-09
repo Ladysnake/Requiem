@@ -51,6 +51,7 @@ public final class RequiemCoreTags {
         public static final Tag<EntityType<?>> SLEEPERS = register("behavior/regular_sleepers");
         public static final Tag<EntityType<?>> IMMOVABLE = register("behavior/immovable");
         public static final Tag<EntityType<?>> ARMOR_BANNED = register("inventory/armor_banned");
+        public static final Tag<EntityType<?>> SOULLESS = register("possession/soulless");
 
         private static Tag<EntityType<?>> register(String name) {
             return TagRegistry.entityType(RequiemCore.id(name));

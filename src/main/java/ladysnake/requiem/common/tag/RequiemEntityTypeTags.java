@@ -44,7 +44,6 @@ public final class RequiemEntityTypeTags {
     public static final Tag<EntityType<?>> TETRACHROMATS = register("vision/tetrachromats");
 
     public static final Tag<EntityType<?>> POSSESSABLES = register("possession/possessables");
-    public static final Tag<EntityType<?>> SOULLESS = register("possession/soulless");
 
     public static final Tag<EntityType<?>> ARMOR_USERS = register("inventory/armor_users");
     public static final Tag<EntityType<?>> SUPERCRAFTERS = register("inventory/supercrafters");

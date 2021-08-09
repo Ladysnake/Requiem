@@ -70,6 +70,7 @@ import ladysnake.requiem.common.remnant.SimpleAttritionFocus;
 import ladysnake.requiem.core.ability.ImmutableMobAbilityController;
 import ladysnake.requiem.core.ability.PlayerAbilityController;
 import ladysnake.requiem.core.entity.EntityAiToggle;
+import ladysnake.requiem.core.entity.SoulHolderComponent;
 import ladysnake.requiem.core.possession.PossessionComponentImpl;
 import ladysnake.requiem.core.record.EntityPositionClerk;
 import ladysnake.requiem.core.record.ServerRecordKeeper;
@@ -106,6 +107,7 @@ public final class RequiemComponents implements EntityComponentInitializer, Scor
         registry.registerFor(LivingEntity.class, EntityPositionClerk.KEY, EntityPositionClerk::new);
         registry.registerForPlayers(PlayerBodyTracker.KEY, PlayerBodyTracker::new, RespawnCopyStrategy.ALWAYS_COPY);
         registry.registerForPlayers(PenanceComponent.KEY, PenanceComponent::new, RespawnCopyStrategy.LOSSLESS_ONLY);
+        registry.registerFor(LivingEntity.class, SoulHolderComponent.KEY, SoulHolderComponent::new);
     }
 
     @Override
