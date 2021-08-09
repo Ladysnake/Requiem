@@ -41,6 +41,7 @@ import ladysnake.requiem.api.v1.record.RecordType;
 
 public final class RequiemRecordTypes {
     public static final RecordType<Unit> RELEASED_SOUL = register("released_soul", Codec.unit(Unit.INSTANCE));
+    public static final RecordType<Unit> RIFT_OBELISK = register("rift_obelisk", Codec.unit(Unit.INSTANCE));
 
     public static void init() {
         // NO-OP

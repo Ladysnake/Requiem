@@ -92,6 +92,7 @@ import ladysnake.requiem.common.remnant.BasePossessionHandlers;
 import ladysnake.requiem.common.remnant.PlayerSplitter;
 import ladysnake.requiem.common.remnant.RemnantTypes;
 import ladysnake.requiem.common.sound.RequiemSoundEvents;
+import ladysnake.requiem.common.tag.RequiemBlockTags;
 import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
 import ladysnake.requiem.core.ability.PlayerAbilityController;
 import ladysnake.requiem.core.entity.EntityAiToggle;
@@ -237,7 +238,12 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
             return isInteractionForbidden(player, true) ? ActionResult.FAIL : ActionResult.PASS;
         });
         // Prevent incorporeal players from interacting with anything
-        UseBlockCallback.EVENT.register((player, world, hand, hitResult) -> getInteractionResult(player));
+        UseBlockCallback.EVENT.register((player, world, hand, hitResult) -> {
+            if (isInteractionForbidden(player) && !world.getBlockState(hitResult.getBlockPos()).isIn(RequiemBlockTags.SOUL_INTERACTABLE)) {
+                return ActionResult.FAIL;
+            }
+            return ActionResult.PASS;
+        });
         AllowUseEntityCallback.EVENT.register((player, world, hand, target) -> !isInteractionForbidden(player));
         UseItemCallback.EVENT.register((player, world, hand) -> new TypedActionResult<>(getInteractionResult(player), player.getStackInHand(hand)));
         // Make players respawn in the right place with the right state

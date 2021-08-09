@@ -72,8 +72,14 @@ public abstract class CommonRecordKeeper implements GlobalRecordKeeper {
     }
 
     protected void addRecord(GlobalRecord anchor) {
-        anchorsByUuid.put(anchor.getUuid(), anchor);
-        anchorsById.put(anchor.getId(), anchor);
+        if (this.checkWorld(anchor)) {
+            anchorsByUuid.put(anchor.getUuid(), anchor);
+            anchorsById.put(anchor.getId(), anchor);
+        }
+    }
+
+    protected boolean checkWorld(GlobalRecord anchor) {
+        return true;
     }
 
     private int nextId() {
@@ -181,5 +187,10 @@ public abstract class CommonRecordKeeper implements GlobalRecordKeeper {
             list.add(anchor.toTag(new NbtCompound()));
         }
         if (!list.isEmpty()) tag.put("records", list);
+    }
+
+    @Override
+    public String toString() {
+        return this.anchorsByUuid.toString();
     }
 }

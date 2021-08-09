@@ -176,7 +176,7 @@ public class EmptySoulVesselItem extends Item {
             NbtCompound data = result.getOrCreateSubNbt(FilledSoulVesselItem.SOUL_FRAGMENT_NBT);
             data.putString("type", EntityType.getId(entity.getType()).toString());
             this.setupRecord(entity, target, data);
-            EntityAiToggle.KEY.get(target).toggleAi(Registry.ITEM.getId(RequiemItems.EMPTY_SOUL_VESSEL), true, true);
+            EntityAiToggle.KEY.get(target).toggleAi(Registry.ITEM.getId(RequiemItems.EMPTY_SOUL_VESSEL), true, false);
         }
         return ItemUsage.exchangeStack(stack, remnant, result, false);
     }

@@ -32,28 +32,24 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.requiem.common.block;
+package ladysnake.requiem.common.advancement;
 
 import ladysnake.requiem.Requiem;
-import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
-import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.stat.StatFormatter;
+import net.minecraft.stat.Stats;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
-public final class RequiemBlockEntities {
-    public static final BlockEntityType<RunestoneBlockEntity> RUNIC_OBSIDIAN = FabricBlockEntityTypeBuilder.create(RunestoneBlockEntity::new,
-        RequiemBlocks.TACHYLITE_RUNESTONE,
-        RequiemBlocks.RUNIC_TACHYLITE_ATTRITION,
-        RequiemBlocks.RUNIC_TACHYLITE_EMANCIPATION,
-        RequiemBlocks.RUNIC_TACHYLITE_PENANCE,
-        RequiemBlocks.RUNIC_TACHYLITE_RECLAMATION,
-        RequiemBlocks.RIFT_RUNE
-    ).build(null);
+public final class RequiemStats {
+    public static final Identifier INTERACT_WITH_RIFT = Requiem.id("interact_with_rift");
 
-    public static void init() {
-        register("runic_obsidian", RUNIC_OBSIDIAN);
+    private static Identifier register(Identifier id, StatFormatter formatter) {
+        Registry.register(Registry.CUSTOM_STAT, id, id);
+        Stats.CUSTOM.getOrCreateStat(id, formatter);
+        return id;
     }
 
-    private static void register(String id, BlockEntityType<?> type) {
-        Registry.register(Registry.BLOCK_ENTITY_TYPE, Requiem.id(id), type);
+    public static void init() {
+        register(INTERACT_WITH_RIFT, StatFormatter.DEFAULT);
     }
 }

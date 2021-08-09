@@ -32,28 +32,24 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.requiem.common.block;
+package ladysnake.requiem.common.screen;
 
 import ladysnake.requiem.Requiem;
-import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
-import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.util.registry.Registry;
+import net.fabricmc.fabric.api.screenhandler.v1.ScreenHandlerRegistry;
+import net.minecraft.screen.ScreenHandlerType;
+import net.minecraft.util.math.BlockPos;
 
-public final class RequiemBlockEntities {
-    public static final BlockEntityType<RunestoneBlockEntity> RUNIC_OBSIDIAN = FabricBlockEntityTypeBuilder.create(RunestoneBlockEntity::new,
-        RequiemBlocks.TACHYLITE_RUNESTONE,
-        RequiemBlocks.RUNIC_TACHYLITE_ATTRITION,
-        RequiemBlocks.RUNIC_TACHYLITE_EMANCIPATION,
-        RequiemBlocks.RUNIC_TACHYLITE_PENANCE,
-        RequiemBlocks.RUNIC_TACHYLITE_RECLAMATION,
-        RequiemBlocks.RIFT_RUNE
-    ).build(null);
+import java.util.LinkedHashSet;
+import java.util.Set;
 
-    public static void init() {
-        register("runic_obsidian", RUNIC_OBSIDIAN);
-    }
-
-    private static void register(String id, BlockEntityType<?> type) {
-        Registry.register(Registry.BLOCK_ENTITY_TYPE, Requiem.id(id), type);
-    }
+public final class RequiemScreenHandlers {
+    public static final ScreenHandlerType<RiftScreenHandler> RIFT_SCREEN_HANDLER = ScreenHandlerRegistry.registerExtended(Requiem.id("rift"), (syncId, inventory, buf) -> {
+        BlockPos source = buf.readBlockPos();
+        int size = buf.readVarInt();
+        Set<BlockPos> obeliskPositions = new LinkedHashSet<>();
+        for (int i = 0; i < size; i++) {
+            obeliskPositions.add(buf.readBlockPos());
+        }
+        return new RiftScreenHandler(syncId, source, obeliskPositions);
+    });
 }

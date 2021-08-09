@@ -47,12 +47,14 @@ import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.api.v1.remnant.DeathSuspender;
 import ladysnake.requiem.client.gui.CutsceneDialogueScreen;
 import ladysnake.requiem.client.particle.GhostParticle;
+import ladysnake.requiem.client.screen.RiftScreen;
 import ladysnake.requiem.common.possession.item.PossessionItemOverrideWrapper;
 import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
 import ladysnake.requiem.core.tag.RequiemCoreTags;
 import ladysnake.requiem.core.util.ItemUtil;
 import ladysnake.satin.api.event.ShaderEffectRenderCallback;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.client.util.math.MatrixStack;
@@ -138,6 +140,11 @@ public final class RequiemClientListener implements
             } else if (wasLookingAtShell.booleanValue()) {
                 client.inGameHud.setOverlayMessage(LiteralText.EMPTY, false);
                 wasLookingAtShell.setFalse();
+            }
+        });
+        WorldRenderEvents.BEFORE_DEBUG_RENDER.register(context -> {
+            if (mc.currentScreen instanceof RiftScreen riftScreen) {
+                riftScreen.updateMatrices(context.matrixStack(), context.projectionMatrix());
             }
         });
     }

@@ -32,28 +32,49 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.requiem.common.block;
+package ladysnake.requiem.common.screen;
 
-import ladysnake.requiem.Requiem;
-import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
-import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.util.registry.Registry;
+import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.network.PacketByteBuf;
+import net.minecraft.screen.ScreenHandler;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.Text;
+import net.minecraft.util.math.BlockPos;
 
-public final class RequiemBlockEntities {
-    public static final BlockEntityType<RunestoneBlockEntity> RUNIC_OBSIDIAN = FabricBlockEntityTypeBuilder.create(RunestoneBlockEntity::new,
-        RequiemBlocks.TACHYLITE_RUNESTONE,
-        RequiemBlocks.RUNIC_TACHYLITE_ATTRITION,
-        RequiemBlocks.RUNIC_TACHYLITE_EMANCIPATION,
-        RequiemBlocks.RUNIC_TACHYLITE_PENANCE,
-        RequiemBlocks.RUNIC_TACHYLITE_RECLAMATION,
-        RequiemBlocks.RIFT_RUNE
-    ).build(null);
+import java.util.Set;
+import java.util.function.Predicate;
 
-    public static void init() {
-        register("runic_obsidian", RUNIC_OBSIDIAN);
+public final class RiftScreenHandlerFactory implements ExtendedScreenHandlerFactory {
+    private final BlockPos source;
+    private final Set<BlockPos> obeliskPositions;
+    private final Text displayName;
+    private final Predicate<PlayerEntity> useCheck;
+
+    public RiftScreenHandlerFactory(Text displayName, BlockPos source, Set<BlockPos> obeliskPositions, Predicate<PlayerEntity> useCheck) {
+        this.displayName = displayName;
+        this.source = source;
+        this.obeliskPositions = obeliskPositions;
+        this.useCheck = useCheck;
     }
 
-    private static void register(String id, BlockEntityType<?> type) {
-        Registry.register(Registry.BLOCK_ENTITY_TYPE, Requiem.id(id), type);
+    @Override
+    public void writeScreenOpeningData(ServerPlayerEntity player, PacketByteBuf buf) {
+        buf.writeBlockPos(this.source);
+        buf.writeVarInt(obeliskPositions.size());
+        for (BlockPos obeliskPosition : obeliskPositions) {
+            buf.writeBlockPos(obeliskPosition);
+        }
+    }
+
+    @Override
+    public Text getDisplayName() {
+        return this.displayName;
+    }
+
+    @Override
+    public ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
+        return new RiftScreenHandler(RequiemScreenHandlers.RIFT_SCREEN_HANDLER, syncId, source, this.useCheck, this.obeliskPositions);
     }
 }

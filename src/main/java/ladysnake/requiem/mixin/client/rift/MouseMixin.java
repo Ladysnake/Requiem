@@ -32,28 +32,29 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.requiem.common.block;
+package ladysnake.requiem.mixin.client.rift;
 
-import ladysnake.requiem.Requiem;
-import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
-import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.util.registry.Registry;
+import ladysnake.requiem.common.screen.RiftScreenHandler;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Mouse;
+import org.objectweb.asm.Opcodes;
+import org.spongepowered.asm.mixin.Final;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-public final class RequiemBlockEntities {
-    public static final BlockEntityType<RunestoneBlockEntity> RUNIC_OBSIDIAN = FabricBlockEntityTypeBuilder.create(RunestoneBlockEntity::new,
-        RequiemBlocks.TACHYLITE_RUNESTONE,
-        RequiemBlocks.RUNIC_TACHYLITE_ATTRITION,
-        RequiemBlocks.RUNIC_TACHYLITE_EMANCIPATION,
-        RequiemBlocks.RUNIC_TACHYLITE_PENANCE,
-        RequiemBlocks.RUNIC_TACHYLITE_RECLAMATION,
-        RequiemBlocks.RIFT_RUNE
-    ).build(null);
+@Mixin(Mouse.class)
+public abstract class MouseMixin {
+    @Shadow
+    @Final
+    private MinecraftClient client;
 
-    public static void init() {
-        register("runic_obsidian", RUNIC_OBSIDIAN);
-    }
-
-    private static void register(String id, BlockEntityType<?> type) {
-        Registry.register(Registry.BLOCK_ENTITY_TYPE, Requiem.id(id), type);
+    @Inject(method = "unlockCursor", at = @At(value = "FIELD", opcode = Opcodes.PUTFIELD, target = "Lnet/minecraft/client/Mouse;cursorLocked:Z"), cancellable = true)
+    private void preventCursorUnlocking(CallbackInfo ci) {
+        if (this.client.player != null && this.client.player.currentScreenHandler instanceof RiftScreenHandler) {
+            ci.cancel();
+        }
     }
 }

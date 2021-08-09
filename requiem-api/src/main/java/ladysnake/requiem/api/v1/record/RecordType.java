@@ -20,15 +20,15 @@ package ladysnake.requiem.api.v1.record;
 import com.mojang.serialization.Codec;
 import net.fabricmc.fabric.api.event.registry.FabricRegistryBuilder;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.dynamic.GlobalPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.SimpleRegistry;
-
-import java.util.Objects;
 
 /**
  * A data type that can be stored in a {@link GlobalRecord}.
  *
  * @param <T> type for which the {@code RecordType} is being registered.
+ * @since 2.0.0
  */
 public final class RecordType<T> {
     @SuppressWarnings("unchecked")
@@ -36,19 +36,27 @@ public final class RecordType<T> {
         FabricRegistryBuilder.createSimple((Class<RecordType<?>>) (Class<?>) RecordType.class, new Identifier("requiem", "record_types")).buildAndRegister();
 
     public static final RecordType<EntityPointer> ENTITY_POINTER = register(new Identifier("requiem", "entity_ref"), EntityPointer.CODEC);
-
-    public static Identifier getId(RecordType<?> type) {
-        return Objects.requireNonNull(REGISTRY.getId(type));
-    }
+    public static final RecordType<GlobalPos> BLOCK_ENTITY_POINTER = register(new Identifier("requiem", "block_entity_ref"), GlobalPos.CODEC);
 
     public Codec<T> getCodec() {
         return codec;
     }
 
+    private final Identifier id;
     private final Codec<T> codec;
 
-    private RecordType(Codec<T> codec) {
+    private RecordType(Identifier id, Codec<T> codec) {
+        this.id = id;
         this.codec = codec;
+    }
+
+    public Identifier getId() {
+        return this.id;
+    }
+
+    @Override
+    public String toString() {
+        return this.id.toString();
     }
 
     /**
@@ -60,6 +68,6 @@ public final class RecordType<T> {
      * @return a newly registered {@link RecordType} for encoding instances of {@code T}
      */
     public static <T> RecordType<T> register(Identifier id, Codec<T> codec) {
-        return Registry.register(REGISTRY, id, new RecordType<>(codec));
+        return Registry.register(REGISTRY, id, new RecordType<>(id, codec));
     }
 }

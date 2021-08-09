@@ -37,8 +37,10 @@ package ladysnake.requiem.core.record;
 import ladysnake.requiem.api.v1.record.EntityPointer;
 import ladysnake.requiem.api.v1.record.GlobalRecord;
 import ladysnake.requiem.api.v1.record.RecordType;
+import ladysnake.requiem.core.RequiemCore;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.dynamic.GlobalPos;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
@@ -64,7 +66,13 @@ public class ServerRecordKeeper extends CommonRecordKeeper {
     }
 
     @Override
-    protected boolean isValid(GlobalRecord anchor) {
-        return super.isValid(anchor) && anchor.get(RecordType.ENTITY_POINTER).map(EntityPointer::world).map(w -> this.getWorld(w).isPresent()).orElse(true);
+    protected boolean checkWorld(GlobalRecord anchor) {
+        Optional<RegistryKey<World>> worldRef = anchor.get(RecordType.ENTITY_POINTER).map(EntityPointer::world)
+            .or(() -> anchor.get(RecordType.BLOCK_ENTITY_POINTER).map(GlobalPos::getDimension));
+        if (worldRef.map(this::getWorld).map(Optional::isPresent).orElse(true)) {
+            return true;
+        }
+        worldRef.ifPresent(w -> RequiemCore.LOGGER.error("{} references unknown world {}", anchor, w));
+        return false;
     }
 }

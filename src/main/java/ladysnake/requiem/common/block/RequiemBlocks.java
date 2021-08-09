@@ -71,7 +71,8 @@ public final class RequiemBlocks {
     public static final RunestoneBlock RUNIC_TACHYLITE_ATTRITION = makeRunic("attrition", 3);
     public static final RunestoneBlock RUNIC_TACHYLITE_EMANCIPATION = makeRunic("emancipation", 1);
     public static final RunestoneBlock RUNIC_TACHYLITE_PENANCE = makeRunic("penance", 3);
-    public static final ReclamationRunestoneBlock RUNIC_TACHYLITE_RECLAMATION = make(() -> new ReclamationRunestoneBlock(AbstractBlock.Settings.copy(Blocks.OBSIDIAN), () -> RequiemStatusEffects.RECLAMATION, 1), "tachylite/runic/reclamation");
+    public static final ReclamationRunestoneBlock RUNIC_TACHYLITE_RECLAMATION = make(() -> new ReclamationRunestoneBlock(AbstractBlock.Settings.copy(TACHYLITE_RUNESTONE), () -> RequiemStatusEffects.RECLAMATION, 1), "tachylite/runic/reclamation");
+    public static final RiftRunestoneBlock RIFT_RUNE = make(() -> new RiftRunestoneBlock(AbstractBlock.Settings.copy(TACHYLITE_RUNESTONE)), "tachylite/runic/rift");
 
     private static Block makeVariant(Block base, String id) {
         return make(() -> new Block(AbstractBlock.Settings.copy(base)), id);

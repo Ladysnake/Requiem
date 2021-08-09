@@ -96,13 +96,7 @@ public class InertRunestoneBlock extends BlockWithEntity {
                         world.playSound(null, pos, RequiemSoundEvents.BLOCK_OBELISK_CHARGE, SoundCategory.BLOCKS, 1, 0.6f);
                     }
                 },
-                () -> {
-                    if (toggleRune(world, pos, false, false)) {
-                        if (world.getBlockEntity(pos) instanceof RunestoneBlockEntity) {
-                            world.playSound(null, pos, RequiemSoundEvents.BLOCK_OBELISK_DEACTIVATE, SoundCategory.BLOCKS, 1, 0.3f);
-                        }
-                    }
-                }
+                () -> toggleRune(world, pos, false, false)
             );
     }
 
@@ -130,6 +124,15 @@ public class InertRunestoneBlock extends BlockWithEntity {
     public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
         if (!oldState.isIn(RequiemBlockTags.OBELISK_CORE)) {
             world.getBlockTickScheduler().schedule(pos, this, 0);
+        }
+    }
+
+    @Override
+    public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
+        if (state.get(HEAD) && (!(newState.getBlock() instanceof InertRunestoneBlock) || !newState.get(HEAD))) {
+            if (world.getBlockEntity(pos) instanceof RunestoneBlockEntity runestone) {
+                runestone.onDestroyed();
+            }
         }
     }
 
