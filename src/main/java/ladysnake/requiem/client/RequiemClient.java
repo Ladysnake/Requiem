@@ -188,7 +188,7 @@ public final class RequiemClient {
         // shh, it's fine
         @SuppressWarnings({"unchecked", "RedundantCast"}) EntityType<? extends AbstractClientPlayerEntity> playerShellType = (EntityType<? extends AbstractClientPlayerEntity>) (EntityType<?>) RequiemEntities.PLAYER_SHELL;
         EntityRendererRegistry.INSTANCE.register(playerShellType, ctx -> new PlayerEntityRenderer(ctx, false));
-        //EntityRendererRegistry.INSTANCE.register(RequiemEntities.MORTICIAN, MorticianEntityRenderer::new);
+        EntityRendererRegistry.INSTANCE.register(RequiemEntities.MORTICIAN, MorticianEntityRenderer::new);
     }
 
     private void initListeners() {
