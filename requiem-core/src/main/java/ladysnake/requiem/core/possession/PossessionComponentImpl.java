@@ -325,6 +325,9 @@ public final class PossessionComponentImpl implements PossessionComponent {
 
     @Override
     public void serverTick() {
+        if (this.player.isSpectator()) {
+            this.stopPossessing();
+        }
         if (this.isCuring()) {
             if (!this.isPossessionOngoing()) this.conversionTimer = 0;
             else this.conversionTimer--;
