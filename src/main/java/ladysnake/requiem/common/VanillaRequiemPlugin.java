@@ -37,6 +37,7 @@ package ladysnake.requiem.common;
 import baritone.api.fakeplayer.AutomatoneFakePlayer;
 import io.github.ladysnake.impersonate.Impersonate;
 import io.github.ladysnake.locki.DefaultInventoryNodes;
+import io.github.ladysnake.locki.ModdedInventoryNodes;
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.RequiemPlugin;
 import ladysnake.requiem.api.v1.dialogue.DialogueRegistry;
@@ -356,6 +357,7 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
                         }
                         if (canWearArmor(possessed)) {
                             inventoryLimiter.unlock(player, DefaultInventoryNodes.ARMOR);
+                            inventoryLimiter.unlock(player, ModdedInventoryNodes.TOOL_SPACE);
                         }
                         if (canCarryHotbar(possessed)) {
                             inventoryLimiter.unlock(player, DefaultInventoryNodes.HOTBAR);
