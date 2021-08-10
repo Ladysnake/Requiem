@@ -29,7 +29,8 @@
     "flopsOnLand": true
   },
   "minecraft:dolphin": {
-    "swimMode": "FORCED"
+    "swimMode": "FORCED",
+    "flopsOnLand": true
   },
   "minecraft:drowned": {
     "swimMode": "ENABLED"
