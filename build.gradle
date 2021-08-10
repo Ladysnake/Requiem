@@ -198,6 +198,12 @@ repositories {
         url = "https://maven.kotlindiscord.com/repository/terraformers/"
     }
     maven {
+        url = "https://maven.siphalor.de/"
+        content {
+            includeGroup 'de.siphalor'
+        }
+    }
+    maven {
         name = 'JitPack'
         url = 'https://jitpack.io'
         content {
@@ -282,6 +288,7 @@ dependencies {
     modRuntime("com.github.apace100:calio:${calio_version}") { transitive = false }
     modCompileOnly("com.github.apace100:origins-fabric:${origins_version}") { transitive = false }
     modRuntime("com.github.apace100:origins-fabric:${origins_version}") { transitive = false }
+    modRuntime "com.github.Globox1997:BackSlot:${backslot_version}"
     modCompileOnly("io.github.HyperPigeon:Eldritch-Mobs:${eldritch_mobs_version}") { transitive = false }
 //    modRuntime "io.github.cottonmc:LibGui:${libgui_version}"
     modCompileOnly("curse.maven:haema-391257:${haema_version}")

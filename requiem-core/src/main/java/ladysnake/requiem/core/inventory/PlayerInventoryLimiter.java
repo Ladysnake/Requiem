@@ -38,6 +38,7 @@ import io.github.ladysnake.locki.DefaultInventoryNodes;
 import io.github.ladysnake.locki.InventoryKeeper;
 import io.github.ladysnake.locki.InventoryLock;
 import io.github.ladysnake.locki.InventoryNode;
+import io.github.ladysnake.locki.impl.PlayerInventoryKeeper;
 import ladysnake.requiem.api.v1.entity.InventoryLimiter;
 import ladysnake.requiem.api.v1.entity.InventoryShape;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
@@ -98,10 +99,14 @@ public final class PlayerInventoryLimiter implements InventoryLimiter {
     @Override
     public boolean isSlotInvisible(PlayerEntity player, int playerSlot) {
         InventoryShape inventoryShape = this.getInventoryShape(player);
-        return player.currentScreenHandler == player.playerScreenHandler
-            && inventoryShape != InventoryShape.NORMAL
-            && (inventoryShape != InventoryShape.ALT_SMALL || playerSlot >= 9)
-            && (this.isSlotLocked(player, playerSlot) || (playerSlot == MAINHAND_SLOT && inventoryShape == InventoryShape.ALT));
+        return switch (playerSlot) {
+            // BackSlot's extra slots basically cannot be made invisible
+            case PlayerInventoryKeeper.BACK_SLOT, PlayerInventoryKeeper.BELT_SLOT -> false;
+            default -> player.currentScreenHandler == player.playerScreenHandler
+                && inventoryShape != InventoryShape.NORMAL
+                && (inventoryShape != InventoryShape.ALT_SMALL || playerSlot >= 9)
+                && (this.isSlotLocked(player, playerSlot) || (playerSlot == MAINHAND_SLOT && inventoryShape == InventoryShape.ALT));
+        };
     }
 
     @Override
