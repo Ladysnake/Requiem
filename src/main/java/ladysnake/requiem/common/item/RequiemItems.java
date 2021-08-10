@@ -66,7 +66,7 @@ public final class RequiemItems {
     public static final int ICHOR_DEFAULT_DURATION = 20 * 60 * 10;
 
     private static IchorVesselItem makeIchorVessel(StatusEffect statusEffect) {
-        IchorVesselItem item = new IchorVesselItem(new Item.Settings().group(ItemGroup.BREWING).maxCount(1), new StatusEffectInstance(statusEffect, ICHOR_DEFAULT_DURATION));
+        IchorVesselItem item = new IchorVesselItem(new Item.Settings().group(ItemGroup.BREWING).maxCount(1), new StatusEffectInstance(statusEffect, ICHOR_DEFAULT_DURATION, 0, false, false, true));
         vesselsByEffect.put(statusEffect, item);
         return item;
     }
