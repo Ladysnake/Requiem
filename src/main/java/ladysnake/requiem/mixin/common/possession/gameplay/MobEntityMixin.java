@@ -38,6 +38,7 @@ import ladysnake.requiem.api.v1.event.minecraft.MobTravelRidingCallback;
 import ladysnake.requiem.api.v1.possession.Possessable;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.ItemSteerable;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.mob.MobEntity;
@@ -101,7 +102,13 @@ public abstract class MobEntityMixin extends LivingEntityMixin implements Posses
             this.flyingSpeed = this.getMovementSpeed() * 0.1F;
             // isLogicalSideForUpdatingMovement but inlined
             if (passenger instanceof PlayerEntity player && player.isMainPlayer() || !this.world.isClient()) {
-                this.setMovementSpeed((float) this.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED));
+                float speed;
+                if (this instanceof ItemSteerable steerable) {
+                    speed = steerable.getSaddledSpeed();
+                } else {
+                    speed = (float) this.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED);
+                }
+                this.setMovementSpeed(speed);
                 return new Vec3d(sidewaysSpeed, movementInput.y, forwardSpeed);
             } else if (livingEntity instanceof PlayerEntity) {
                 this.setVelocity(Vec3d.ZERO);
