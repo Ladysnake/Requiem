@@ -74,6 +74,7 @@ import org.jetbrains.annotations.NotNull;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import java.util.UUID;
+import java.util.function.ToDoubleFunction;
 
 import static ladysnake.requiem.api.v1.entity.MovementConfig.MovementMode.*;
 
@@ -83,6 +84,7 @@ public abstract class PlayerMovementAlterer implements MovementAlterer {
     public static final byte SYNC_NO_CLIP = 1;
     public static final byte SYNC_PHASING_PARTICLES = 2;
     public static final UUID SPEED_MODIFIER_UUID = UUID.fromString("3708adba-b37f-413f-8b66-62e05330c7da");
+    public static final UUID WATER_SPEED_MODIFIER_UUID = UUID.fromString("0e602dd1-2672-4179-852e-2a26d1579df4");
     public static final int TICKS_BEFORE_PHASING = 60;
 
     @Nullable
@@ -115,16 +117,16 @@ public abstract class PlayerMovementAlterer implements MovementAlterer {
             }
             this.hugWall(false);
             this.underwaterJumpAscending = false;
-            this.applyWalkSpeedModifier();
+            this.updateSpeedModifier(getCurrentBody(this.player), SPEED_MODIFIER_UUID, MovementConfig::getLandedSpeedModifier, true);
         }
     }
 
-    private void applyWalkSpeedModifier() {
-        EntityAttributeInstance speedAttribute = getCurrentBody(this.player).getAttributes().getCustomInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED);
+    private void updateSpeedModifier(LivingEntity currentBody, UUID speedModifierUuid, ToDoubleFunction<MovementConfig> property, boolean shouldApplyModifier) {
+        EntityAttributeInstance speedAttribute = currentBody.getAttributes().getCustomInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED);
         if (speedAttribute != null) {
-            speedAttribute.removeModifier(SPEED_MODIFIER_UUID);
-            if (config != null && config.getWalkSpeedModifier() != 1.0f) {
-                speedAttribute.addTemporaryModifier(new EntityAttributeModifier(SPEED_MODIFIER_UUID, "Requiem altered movement", config.getWalkSpeedModifier(), EntityAttributeModifier.Operation.MULTIPLY_BASE));
+            speedAttribute.removeModifier(speedModifierUuid);
+            if (shouldApplyModifier && config != null && property.applyAsDouble(config) != 1.0) {
+                speedAttribute.addTemporaryModifier(new EntityAttributeModifier(speedModifierUuid, "Requiem altered movement", property.applyAsDouble(config), EntityAttributeModifier.Operation.MULTIPLY_BASE));
             }
         }
     }
@@ -221,6 +223,17 @@ public abstract class PlayerMovementAlterer implements MovementAlterer {
         } else {
             return Vec3d.ZERO;
         }
+    }
+
+    @Override
+    public void serverTick() {
+        this.updateSpeedModifier(
+            getCurrentBody(this.player),
+            WATER_SPEED_MODIFIER_UUID,
+            MovementConfig::getWaterSpeedModifier,
+            player.isTouchingWater()
+        );
+        MovementAlterer.super.serverTick();
     }
 
     @Override
