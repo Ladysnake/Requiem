@@ -48,6 +48,7 @@
     "possession.gameplay.PandaEntityMixin",
     "possession.gameplay.PigEntityMixin",
     "possession.gameplay.PlayerEntityMixin",
+    "possession.gameplay.RavagerEntityMixin",
     "possession.gameplay.TridentItemMixin",
     "possession.gameplay.VillagerEntityMixin",
     "possession.gameplay.WitchEntityMixin",
