@@ -101,7 +101,7 @@ public final class PlayerInventoryLimiter implements InventoryLimiter {
         InventoryShape inventoryShape = this.getInventoryShape(player);
         return switch (playerSlot) {
             // BackSlot's extra slots basically cannot be made invisible
-            case PlayerInventoryKeeper.BACK_SLOT, PlayerInventoryKeeper.BELT_SLOT -> false;
+            case PlayerInventoryKeeper.BACK_SLOT, PlayerInventoryKeeper.BELT_SLOT -> inventoryShape == InventoryShape.ALT_LARGE;
             default -> player.currentScreenHandler == player.playerScreenHandler
                 && inventoryShape != InventoryShape.NORMAL
                 && (inventoryShape != InventoryShape.ALT_SMALL || playerSlot >= 9)
@@ -115,7 +115,7 @@ public final class PlayerInventoryLimiter implements InventoryLimiter {
             InventoryKeeper keeper = InventoryKeeper.get(player);
             if (keeper.isEntirelyLocked(DefaultInventoryNodes.INVENTORY)) {
                 return InventoryShape.ALT_LARGE;
-            } else if (keeper.isLocked(DefaultInventoryNodes.MAIN_INVENTORY)) {
+            } else if (keeper.isEntirelyLocked(DefaultInventoryNodes.MAIN_INVENTORY)) {
                 return InventoryShape.ALT;
             }
             return InventoryShape.ALT_SMALL;
