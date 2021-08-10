@@ -89,6 +89,7 @@ import ladysnake.requiem.common.entity.ability.WitherSkullAbility;
 import ladysnake.requiem.common.entity.effect.ReclamationStatusEffect;
 import ladysnake.requiem.common.entity.effect.RequiemStatusEffects;
 import ladysnake.requiem.common.network.RequiemNetworking;
+import ladysnake.requiem.common.possession.MobRidingType;
 import ladysnake.requiem.common.remnant.BasePossessionHandlers;
 import ladysnake.requiem.common.remnant.PlayerSplitter;
 import ladysnake.requiem.common.remnant.RemnantTypes;
@@ -125,10 +126,7 @@ import net.minecraft.entity.mob.EndermanEntity;
 import net.minecraft.entity.mob.EvokerEntity;
 import net.minecraft.entity.mob.GuardianEntity;
 import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.entity.mob.RavagerEntity;
 import net.minecraft.entity.mob.ShulkerEntity;
-import net.minecraft.entity.mob.SkeletonEntity;
-import net.minecraft.entity.mob.SpiderEntity;
 import net.minecraft.entity.mob.WitchEntity;
 import net.minecraft.entity.passive.LlamaEntity;
 import net.minecraft.entity.passive.SnowGolemEntity;
@@ -139,7 +137,6 @@ import net.minecraft.item.Items;
 import net.minecraft.network.packet.s2c.play.EntityStatusEffectS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityTrackerUpdateS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.tag.EntityTypeTags;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
@@ -299,31 +296,18 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
     private void registerPossessionEventHandlers() {
         BasePossessionHandlers.register();
         UseEntityCallback.EVENT.register((player, world, hand, entity, hitResult) -> {
-            if (entity instanceof SpiderEntity) {
-                LivingEntity possessed = PossessionComponent.get(player).getHost();
-                if (possessed instanceof SkeletonEntity) {
-                    if (!world.isClient) {
-                        possessed.startRiding(entity);
-                    }
-                    return ActionResult.SUCCESS;
+            LivingEntity possessed = PossessionComponent.get(player).getHost();
+            if (possessed != null && MobRidingType.get(entity, possessed).canMount()) {
+                if (!world.isClient) {
+                    possessed.startRiding(entity);
                 }
-            } else if (entity instanceof RavagerEntity) {
-                LivingEntity possessed = PossessionComponent.get(player).getHost();
-                if (possessed != null && possessed.getType().isIn(EntityTypeTags.RAIDERS)) {
-                    if (!world.isClient) {
-                        possessed.startRiding(entity);
-                    }
-                    return ActionResult.SUCCESS;
-                }
+                return ActionResult.SUCCESS;
             }
             return ActionResult.PASS;
         });
         MobTravelRidingCallback.EVENT.register((mount, rider) -> {
-            if (mount.getType() == EntityType.RAVAGER) {
-                MobEntity possessedEntity = PossessionComponent.getHost(rider);
-                return possessedEntity != null && possessedEntity.getType().isIn(EntityTypeTags.RAIDERS);
-            }
-            return false;
+            MobEntity possessedEntity = PossessionComponent.getHost(rider);
+            return possessedEntity != null && MobRidingType.get(mount, possessedEntity).canSteer();
         });
         UseItemCallback.EVENT.register((player, world, hand) -> {
             LivingEntity possessed = PossessionComponent.getHost(player);
