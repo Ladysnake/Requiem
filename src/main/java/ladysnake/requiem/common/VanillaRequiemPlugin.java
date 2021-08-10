@@ -357,6 +357,9 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
                         if (canWearArmor(possessed)) {
                             inventoryLimiter.unlock(player, DefaultInventoryNodes.ARMOR);
                         }
+                        if (canCarryHotbar(possessed)) {
+                            inventoryLimiter.unlock(player, DefaultInventoryNodes.HOTBAR);
+                        }
                         PossessedData.KEY.get(possessed).giftFirstPossessionLoot(player);
                     }
                 }
@@ -377,6 +380,10 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
             return true;
         }
         return possessed.canPickUpLoot();
+    }
+
+    private static boolean canCarryHotbar(MobEntity possessed) {
+        return RequiemEntityTypeTags.HOTBAR_CARRIERS.contains(possessed.getType());
     }
 
     private static boolean canWearArmor(MobEntity possessed) {
