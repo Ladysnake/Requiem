@@ -32,46 +32,37 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.pandemonium.common.entity;
+package ladysnake.requiem.client.render.entity;
 
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.passive.MerchantEntity;
-import net.minecraft.entity.passive.PassiveEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.text.Text;
-import net.minecraft.village.TradeOffer;
-import net.minecraft.world.World;
-import org.jetbrains.annotations.Nullable;
+import ladysnake.requiem.common.entity.MorticianEntity;
+import ladysnake.requiem.Requiem;
+import ladysnake.requiem.client.render.entity.model.MorticianEntityModel;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.minecraft.client.render.entity.EntityRendererFactory;
+import net.minecraft.client.render.entity.MobEntityRenderer;
+import net.minecraft.client.render.entity.feature.HeadFeatureRenderer;
+import net.minecraft.client.render.entity.feature.VillagerHeldItemFeatureRenderer;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.util.Identifier;
 
-public class MorticianEntity extends MerchantEntity {
-    public MorticianEntity(EntityType<? extends MerchantEntity> entityType, World world) {
-        super(entityType, world);
+@Environment(EnvType.CLIENT)
+public class MorticianEntityRenderer extends MobEntityRenderer<MorticianEntity, MorticianEntityModel<MorticianEntity>> {
+    private static final Identifier TEXTURE = Requiem.id("textures/entity/mortician.png");
+
+    public MorticianEntityRenderer(EntityRendererFactory.Context ctx) {
+        super(ctx, new MorticianEntityModel<>(ctx.getModelLoader().getModelPart(MorticianEntityModel.MODEL_LAYER)), 0.5F);
+        this.addFeature(new HeadFeatureRenderer<>(this, ctx.getModelLoader()));
+        this.addFeature(new VillagerHeldItemFeatureRenderer<>(this));
     }
 
     @Override
-    protected void afterUsing(TradeOffer offer) {
-
+    public Identifier getTexture(MorticianEntity entity) {
+        return TEXTURE;
     }
 
     @Override
-    protected void fillRecipes() {
-
-    }
-
-    @Nullable
-    @Override
-    public PassiveEntity createChild(ServerWorld world, PassiveEntity entity) {
-        return null;
-    }
-
-    @Override
-    public boolean canRefreshTrades() {
-        return super.canRefreshTrades();
-    }
-
-    @Override
-    public void sendOffers(PlayerEntity playerEntity, Text text, int i) {
-        super.sendOffers(playerEntity, text, i);
+    protected void scale(MorticianEntity morticianEntity, MatrixStack matrixStack, float f) {
+        matrixStack.scale(0.9375F, 0.9375F, 0.9375F);
     }
 }

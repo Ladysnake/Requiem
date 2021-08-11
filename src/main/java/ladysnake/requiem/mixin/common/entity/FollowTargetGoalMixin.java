@@ -32,37 +32,49 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.pandemonium.client.render.entity;
+package ladysnake.requiem.mixin.common.entity;
 
-import ladysnake.pandemonium.common.entity.MorticianEntity;
-import ladysnake.requiem.Requiem;
-import ladysnake.requiem.client.render.entity.model.MorticianEntityModel;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.minecraft.client.render.entity.EntityRendererFactory;
-import net.minecraft.client.render.entity.MobEntityRenderer;
-import net.minecraft.client.render.entity.feature.HeadFeatureRenderer;
-import net.minecraft.client.render.entity.feature.VillagerHeldItemFeatureRenderer;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.util.Identifier;
+import ladysnake.requiem.common.entity.MorticianEntity;
+import ladysnake.requiem.mixin.common.shell.ai.TargetPredicateAccessor;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.ai.TargetPredicate;
+import net.minecraft.entity.ai.goal.FollowTargetGoal;
+import net.minecraft.entity.ai.goal.TrackTargetGoal;
+import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.entity.passive.MerchantEntity;
+import org.spongepowered.asm.mixin.Final;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Environment(EnvType.CLIENT)
-public class MorticianEntityRenderer extends MobEntityRenderer<MorticianEntity, MorticianEntityModel<MorticianEntity>> {
-    private static final Identifier TEXTURE = Requiem.id("textures/entity/mortician.png");
+import java.util.function.Predicate;
 
-    public MorticianEntityRenderer(EntityRendererFactory.Context ctx) {
-        super(ctx, new MorticianEntityModel<>(ctx.getModelLoader().getModelPart(MorticianEntityModel.MODEL_LAYER)), 0.5F);
-        this.addFeature(new HeadFeatureRenderer<>(this, ctx.getModelLoader()));
-        this.addFeature(new VillagerHeldItemFeatureRenderer<>(this));
+@Mixin(FollowTargetGoal.class)
+public abstract class FollowTargetGoalMixin extends TrackTargetGoal {
+    @Shadow protected TargetPredicate targetPredicate;
+
+    @Shadow
+    @Final
+    protected Class<? extends LivingEntity> targetClass;
+
+    public FollowTargetGoalMixin(MobEntity mobEntity_1, boolean boolean_1) {
+        super(mobEntity_1, boolean_1);
     }
 
-    @Override
-    public Identifier getTexture(MorticianEntity entity) {
-        return TEXTURE;
-    }
-
-    @Override
-    protected void scale(MorticianEntity morticianEntity, MatrixStack matrixStack, float f) {
-        matrixStack.scale(0.9375F, 0.9375F, 0.9375F);
+    @Inject(
+        method = "<init>(Lnet/minecraft/entity/mob/MobEntity;Ljava/lang/Class;Z)V",
+        at = @At("TAIL")
+    )
+    private void removeMorticiansAsTargets(CallbackInfo ci) {
+        if (this.targetClass.equals(MerchantEntity.class)) {
+            Predicate<LivingEntity> predicate = ((TargetPredicateAccessor) this.targetPredicate).getPredicate();
+            if (predicate != null) {
+                this.targetPredicate.setPredicate(predicate.and((e) -> !(e instanceof MorticianEntity)));
+            } else {
+                this.targetPredicate.setPredicate((e) -> !(e instanceof MorticianEntity));
+            }
+        }
     }
 }
