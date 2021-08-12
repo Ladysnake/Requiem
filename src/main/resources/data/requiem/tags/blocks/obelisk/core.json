@@ -1,7 +1,6 @@
 {
   "replace": false,
   "values": [
-    "#requiem:tachylite_runestones",
-    "minecraft:crying_obsidian"
+    "#requiem:tachylite_runestones"
   ]
 }

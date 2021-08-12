@@ -172,7 +172,7 @@ public abstract class PossessableLivingEntityMixin extends Entity implements Pos
         this.possessor = possessor;
 
         if (!this.world.isClient) {
-            EntityAiToggle.KEY.get(this).toggleAi(RequiemCore.POSSESSION_MECHANISM_ID, this.possessor != null, false);
+            EntityAiToggle.get((LivingEntity) (Object) this).toggleAi(RequiemCore.POSSESSION_MECHANISM_ID, this.possessor != null, false);
         }
 
         EntityAttributeInstance speedAttribute = this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED);
@@ -279,6 +279,7 @@ public abstract class PossessableLivingEntityMixin extends Entity implements Pos
     private void onDeath(DamageSource deathCause, CallbackInfo ci) {
         ServerPlayerEntity possessor = (ServerPlayerEntity) this.getPossessor();
         if (possessor != null) {
+            PossessionEvents.HOST_DEATH.invoker().onHostDeath(possessor, (LivingEntity) (Object) this, deathCause);
             PossessionComponent possessionComponent = PossessionComponent.get(possessor);
             MobEntity secondLife = ResurrectionDataLoader.INSTANCE.getNextBody(possessor, (LivingEntity) (Object) this, deathCause);
             possessor.setAttacker(this.getAttacker());

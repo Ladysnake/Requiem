@@ -38,6 +38,7 @@ import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
 import ladysnake.satin.api.event.PickEntityShaderCallback;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.ShaderEffect;
 import net.minecraft.entity.Entity;
@@ -52,8 +53,11 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public final class RequiemEntityShaderPicker implements PickEntityShaderCallback {
+    private static final boolean haemaAvailable = FabricLoader.getInstance().isModLoaded("haema");
+
     public static final Identifier DICHROMATIC_SHADER_ID = shader("dichromatic");
     public static final Identifier TETRACHROMATIC_SHADER_ID = shader("tetrachromatic");
+    public static final Identifier VAMPIRE_SHADER_ID = new Identifier("haema", "shaders/post/vampirevision.json");
 
     public static final Identifier BEE_SHADER_ID = shader("bee");
     public static final Identifier DOLPHIN_SHADER_ID = shader("dolphin");
@@ -77,9 +81,11 @@ public final class RequiemEntityShaderPicker implements PickEntityShaderCallback
                 loadShaderFunc.accept(DICHROMATIC_SHADER_ID);
             } else if (RequiemEntityTypeTags.TETRACHROMATS.contains(camera.getType())) {
                 loadShaderFunc.accept(TETRACHROMATIC_SHADER_ID);
+            } else if (haemaAvailable && RequiemEntityTypeTags.HEMERALOPES.contains(camera.getType())) {
+                loadShaderFunc.accept(VAMPIRE_SHADER_ID);
             } else if (camera instanceof BeeEntity) {
                 loadShaderFunc.accept(BEE_SHADER_ID);
-            }else if (camera instanceof MooshroomEntity) {
+            } else if (camera instanceof MooshroomEntity) {
                 loadShaderFunc.accept(MOOSHROOM_SHADER_ID);
             } else if (camera instanceof DolphinEntity) {
                 loadShaderFunc.accept(DOLPHIN_SHADER_ID);

@@ -103,6 +103,12 @@ public final class RequiemEntities {
         .forceTrackedVelocityUpdates(true)
         .disableSummon()
         .build();
+    public static final EntityType<MorticianEntity> MORTICIAN = FabricEntityTypeBuilder.createLiving()
+        .spawnGroup(SpawnGroup.CREATURE)
+        .entityFactory(MorticianEntity::new)
+        .defaultAttributes(MorticianEntity::createMobAttributes)
+        .dimensions(EntityDimensions.fixed(0.6f, 1.95f))
+        .build();
 
     public static void init() {
         Registry.register(Registry.ENTITY_TYPE, Requiem.id("player_shell"), PLAYER_SHELL);
@@ -111,6 +117,7 @@ public final class RequiemEntities {
         Registry.register(Registry.ENTITY_TYPE, Requiem.id("cured_villager"), CURED_VILLAGER);
         Registry.register(Registry.ENTITY_TYPE, Requiem.id("cured_piglin"), CURED_PIGLIN);
         Registry.register(Registry.ENTITY_TYPE, Requiem.id("cured_piglin_brute"), CURED_PIGLIN_BRUTE);
+        Registry.register(Registry.ENTITY_TYPE, Requiem.id("mortician"), MORTICIAN);
     }
 
 }

@@ -32,37 +32,44 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.pandemonium.client.render.entity;
+package ladysnake.requiem.mixin.common.possession.gameplay;
 
-import ladysnake.pandemonium.common.entity.MorticianEntity;
-import ladysnake.requiem.Requiem;
-import ladysnake.requiem.client.render.entity.model.MorticianEntityModel;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.minecraft.client.render.entity.EntityRendererFactory;
-import net.minecraft.client.render.entity.MobEntityRenderer;
-import net.minecraft.client.render.entity.feature.HeadFeatureRenderer;
-import net.minecraft.client.render.entity.feature.VillagerHeldItemFeatureRenderer;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.util.Identifier;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.mob.RavagerEntity;
+import net.minecraft.entity.raid.RaiderEntity;
+import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Slice;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Environment(EnvType.CLIENT)
-public class MorticianEntityRenderer extends MobEntityRenderer<MorticianEntity, MorticianEntityModel<MorticianEntity>> {
-    private static final Identifier TEXTURE = Requiem.id("textures/entity/mortician.png");
+@Mixin(RavagerEntity.class)
+public abstract class RavagerEntityMixin extends RaiderEntity {
+    private @Nullable Boolean requiem$horizontalCollision;
 
-    public MorticianEntityRenderer(EntityRendererFactory.Context ctx) {
-        super(ctx, new MorticianEntityModel<>(ctx.getModelLoader().getModelPart(MorticianEntityModel.MODEL_LAYER)), 0.5F);
-        this.addFeature(new HeadFeatureRenderer<>(this, ctx.getModelLoader()));
-        this.addFeature(new VillagerHeldItemFeatureRenderer<>(this));
+    protected RavagerEntityMixin(EntityType<? extends RaiderEntity> entityType, World world) {
+        super(entityType, world);
     }
 
-    @Override
-    public Identifier getTexture(MorticianEntity entity) {
-        return TEXTURE;
+    @Inject(
+        method = "tickMovement",
+        slice = @Slice(to = @At(value = "INVOKE", target = "Lnet/minecraft/world/GameRules;getBoolean(Lnet/minecraft/world/GameRules$Key;)Z")),
+        at = @At(value = "FIELD", target = "Lnet/minecraft/entity/mob/RavagerEntity;horizontalCollision:Z")
+    )
+    private void disableClientsideGriefing(CallbackInfo ci) {
+        if (this.world.isClient() && this.horizontalCollision) {
+            this.requiem$horizontalCollision = true;
+            this.horizontalCollision = false;
+        }
     }
 
-    @Override
-    protected void scale(MorticianEntity morticianEntity, MatrixStack matrixStack, float f) {
-        matrixStack.scale(0.9375F, 0.9375F, 0.9375F);
+    @Inject(method = "tickMovement", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/mob/RavagerEntity;roarTick:I"))
+    private void restoreHorizontalCollision(CallbackInfo ci) {
+        if (this.requiem$horizontalCollision != null) {
+            this.horizontalCollision = this.requiem$horizontalCollision;
+            this.requiem$horizontalCollision = null;
+        }
     }
 }

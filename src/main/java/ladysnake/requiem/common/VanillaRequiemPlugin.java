@@ -37,6 +37,7 @@ package ladysnake.requiem.common;
 import baritone.api.fakeplayer.AutomatoneFakePlayer;
 import io.github.ladysnake.impersonate.Impersonate;
 import io.github.ladysnake.locki.DefaultInventoryNodes;
+import io.github.ladysnake.locki.ModdedInventoryNodes;
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.RequiemPlugin;
 import ladysnake.requiem.api.v1.dialogue.DialogueRegistry;
@@ -88,13 +89,15 @@ import ladysnake.requiem.common.entity.ability.WitherSkullAbility;
 import ladysnake.requiem.common.entity.effect.ReclamationStatusEffect;
 import ladysnake.requiem.common.entity.effect.RequiemStatusEffects;
 import ladysnake.requiem.common.network.RequiemNetworking;
+import ladysnake.requiem.common.possession.MobRidingType;
 import ladysnake.requiem.common.remnant.BasePossessionHandlers;
 import ladysnake.requiem.common.remnant.PlayerSplitter;
 import ladysnake.requiem.common.remnant.RemnantTypes;
 import ladysnake.requiem.common.sound.RequiemSoundEvents;
+import ladysnake.requiem.common.tag.RequiemBlockTags;
 import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
 import ladysnake.requiem.core.ability.PlayerAbilityController;
-import ladysnake.requiem.core.entity.EntityAiToggle;
+import ladysnake.requiem.core.entity.SoulHolderComponent;
 import ladysnake.requiem.core.entity.ability.AutoAimAbility;
 import ladysnake.requiem.core.entity.ability.DelegatingDirectAbility;
 import ladysnake.requiem.core.entity.ability.RangedAttackAbility;
@@ -123,10 +126,7 @@ import net.minecraft.entity.mob.EndermanEntity;
 import net.minecraft.entity.mob.EvokerEntity;
 import net.minecraft.entity.mob.GuardianEntity;
 import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.entity.mob.RavagerEntity;
 import net.minecraft.entity.mob.ShulkerEntity;
-import net.minecraft.entity.mob.SkeletonEntity;
-import net.minecraft.entity.mob.SpiderEntity;
 import net.minecraft.entity.mob.WitchEntity;
 import net.minecraft.entity.passive.LlamaEntity;
 import net.minecraft.entity.passive.SnowGolemEntity;
@@ -137,7 +137,6 @@ import net.minecraft.item.Items;
 import net.minecraft.network.packet.s2c.play.EntityStatusEffectS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityTrackerUpdateS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.tag.EntityTypeTags;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
@@ -220,8 +219,8 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
         HumanityCheckCallback.EVENT.register(possessedEntity -> EnchantmentHelper.getEquipmentLevel(RequiemEnchantments.HUMANITY, possessedEntity));
         ConsumableItemEvents.POST_CONSUMED.register(RequiemCriteria.USED_TOTEM::trigger);
         SoulCaptureEvents.BEFORE_ATTEMPT.register((player, target) -> Optional.ofNullable(player.getStatusEffect(RequiemStatusEffects.ATTRITION)).map(StatusEffectInstance::getAmplifier).orElse(-1) < 3);
-        SoulCaptureEvents.BEFORE_ATTEMPT.register((player, target) -> !target.getType().isIn(RequiemEntityTypeTags.SOULLESS));
-        SoulCaptureEvents.BEFORE_ATTEMPT.register((player, target) -> !EntityAiToggle.isAiDisabled(target));
+        SoulCaptureEvents.BEFORE_ATTEMPT.register((player, target) -> !target.getType().isIn(RequiemCoreTags.Entity.SOULLESS));
+        SoulCaptureEvents.BEFORE_ATTEMPT.register((player, target) -> !SoulHolderComponent.isSoulless(target));
     }
 
     private void registerEtherealEventHandlers() {
@@ -237,7 +236,12 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
             return isInteractionForbidden(player, true) ? ActionResult.FAIL : ActionResult.PASS;
         });
         // Prevent incorporeal players from interacting with anything
-        UseBlockCallback.EVENT.register((player, world, hand, hitResult) -> getInteractionResult(player));
+        UseBlockCallback.EVENT.register((player, world, hand, hitResult) -> {
+            if (isInteractionForbidden(player) && !world.getBlockState(hitResult.getBlockPos()).isIn(RequiemBlockTags.SOUL_INTERACTABLE)) {
+                return ActionResult.FAIL;
+            }
+            return ActionResult.PASS;
+        });
         AllowUseEntityCallback.EVENT.register((player, world, hand, target) -> !isInteractionForbidden(player));
         UseItemCallback.EVENT.register((player, world, hand) -> new TypedActionResult<>(getInteractionResult(player), player.getStackInHand(hand)));
         // Make players respawn in the right place with the right state
@@ -292,31 +296,18 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
     private void registerPossessionEventHandlers() {
         BasePossessionHandlers.register();
         UseEntityCallback.EVENT.register((player, world, hand, entity, hitResult) -> {
-            if (entity instanceof SpiderEntity) {
-                LivingEntity possessed = PossessionComponent.get(player).getHost();
-                if (possessed instanceof SkeletonEntity) {
-                    if (!world.isClient) {
-                        possessed.startRiding(entity);
-                    }
-                    return ActionResult.SUCCESS;
+            LivingEntity possessed = PossessionComponent.get(player).getHost();
+            if (possessed != null && MobRidingType.get(entity, possessed).canMount()) {
+                if (!world.isClient) {
+                    possessed.startRiding(entity);
                 }
-            } else if (entity instanceof RavagerEntity) {
-                LivingEntity possessed = PossessionComponent.get(player).getHost();
-                if (possessed != null && possessed.getType().isIn(EntityTypeTags.RAIDERS)) {
-                    if (!world.isClient) {
-                        possessed.startRiding(entity);
-                    }
-                    return ActionResult.SUCCESS;
-                }
+                return ActionResult.SUCCESS;
             }
             return ActionResult.PASS;
         });
         MobTravelRidingCallback.EVENT.register((mount, rider) -> {
-            if (mount.getType() == EntityType.RAVAGER) {
-                MobEntity possessedEntity = PossessionComponent.getHost(rider);
-                return possessedEntity != null && possessedEntity.getType().isIn(EntityTypeTags.RAIDERS);
-            }
-            return false;
+            MobEntity possessedEntity = PossessionComponent.getHost(rider);
+            return possessedEntity != null && MobRidingType.get(mount, possessedEntity).canSteer();
         });
         UseItemCallback.EVENT.register((player, world, hand) -> {
             LivingEntity possessed = PossessionComponent.getHost(player);
@@ -350,6 +341,10 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
                         }
                         if (canWearArmor(possessed)) {
                             inventoryLimiter.unlock(player, DefaultInventoryNodes.ARMOR);
+                            inventoryLimiter.unlock(player, ModdedInventoryNodes.TOOL_SPACE);
+                        }
+                        if (canCarryHotbar(possessed)) {
+                            inventoryLimiter.unlock(player, DefaultInventoryNodes.HOTBAR);
                         }
                         PossessedData.KEY.get(possessed).giftFirstPossessionLoot(player);
                     }
@@ -371,6 +366,10 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
             return true;
         }
         return possessed.canPickUpLoot();
+    }
+
+    private static boolean canCarryHotbar(MobEntity possessed) {
+        return RequiemEntityTypeTags.HOTBAR_CARRIERS.contains(possessed.getType());
     }
 
     private static boolean canWearArmor(MobEntity possessed) {
@@ -427,7 +426,7 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
     public void registerVagrantInteractions(VagrantInteractionRegistry registry) {
         registry.registerPossessionInteraction(
             EndermanEntity.class,
-            (mob, player) -> !PossessionComponent.get(player).startPossessing(mob, true),
+            (mob, player) -> !SoulHolderComponent.isSoulless(mob) && !PossessionComponent.get(player).startPossessing(mob, true),
             BasePossessionHandlers::performEndermanSoulAction
         );
         registry.registerPossessionInteraction(PlayerEntity.class,

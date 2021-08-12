@@ -184,6 +184,12 @@ public final class PossessionComponentImpl implements PossessionComponent {
             ((Possessable) host).setPossessor(null);
 
             if (player instanceof ServerPlayerEntity serverPlayer) {
+                Entity ridden = player.getVehicle();
+                if (ridden != null) {
+                    player.stopRiding();
+                    host.startRiding(ridden);
+                }
+
                 if (transfer) {
                     dropEquipment(host, serverPlayer);
                 }
@@ -217,11 +223,6 @@ public final class PossessionComponentImpl implements PossessionComponent {
             ((LivingEntityAccessor) player).requiem$invokeDropInventory();
         }
         player.clearStatusEffects();
-        Entity ridden = player.getVehicle();
-        if (ridden != null) {
-            player.stopRiding();
-            possessed.startRiding(ridden);
-        }
         if (player.world.getLevelProperties().isHardcore()) {
             AttritionFocus.KEY.get(possessed).applyAttrition(player);
         }
@@ -325,6 +326,9 @@ public final class PossessionComponentImpl implements PossessionComponent {
 
     @Override
     public void serverTick() {
+        if (this.player.isSpectator()) {
+            this.stopPossessing();
+        }
         if (this.isCuring()) {
             if (!this.isPossessionOngoing()) this.conversionTimer = 0;
             else this.conversionTimer--;

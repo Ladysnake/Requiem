@@ -52,8 +52,8 @@ public final class ObeliskMatch {
     private final BlockPos origin;
 
     ObeliskMatch(BlockPos origin, int coreWidth, int coreHeight, List<RunestoneBlockEntity.RuneSearchResult> coreLayers) {
-        this.origin = origin;
         Preconditions.checkArgument(coreHeight == coreLayers.size());
+        this.origin = origin;
         this.coreWidth = coreWidth;
         this.coreHeight = coreHeight;
         this.layers = coreLayers;

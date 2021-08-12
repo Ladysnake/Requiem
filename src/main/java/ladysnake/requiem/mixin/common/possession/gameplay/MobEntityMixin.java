@@ -36,19 +36,24 @@ package ladysnake.requiem.mixin.common.possession.gameplay;
 
 import ladysnake.requiem.api.v1.event.minecraft.MobTravelRidingCallback;
 import ladysnake.requiem.api.v1.possession.Possessable;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.ItemSteerable;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(MobEntity.class)
 public abstract class MobEntityMixin extends LivingEntityMixin implements Possessable {
+    private @Nullable Float requiem$previousStepHeight;
+
     @Shadow
     public abstract boolean canBeControlledByRider();
 
@@ -61,12 +66,18 @@ public abstract class MobEntityMixin extends LivingEntityMixin implements Posses
 
     @Override
     protected Vec3d requiem$travelStart(Vec3d movementInput) {
-        // Straight up copied from HorseBaseEntity#travel, minus the jumping code
-        if (this.isAlive() && this.hasPassengers() && this.canBeControlledByRider()) {
-            LivingEntity livingEntity = (LivingEntity) this.getPrimaryPassenger();
-            assert livingEntity != null;
+        if (this.requiem$previousStepHeight != null) {
+            this.stepHeight = this.requiem$previousStepHeight;
+            this.requiem$previousStepHeight = null;
+        }
 
-            if (!MobTravelRidingCallback.EVENT.invoker().canBeControlled((MobEntity) (Object) this, livingEntity)) {
+        // Straight up copied from HorseBaseEntity#travel, minus the jumping code
+        // Also replaces canBeControlledByRider and getPrimaryPassenger with more generic alternatives
+        if (this.isAlive() && this.hasPassengers()) {
+            Entity primaryPassenger = this.getPrimaryPassenger();
+            Entity passenger = primaryPassenger != null ? primaryPassenger : this.getFirstPassenger();
+
+            if (!(passenger instanceof LivingEntity livingEntity) || !MobTravelRidingCallback.EVENT.invoker().canBeControlled((MobEntity) (Object) this, livingEntity)) {
                 return movementInput;
             }
 
@@ -76,6 +87,12 @@ public abstract class MobEntityMixin extends LivingEntityMixin implements Posses
             this.setRotation(this.getYaw(), this.getPitch());
             this.bodyYaw = this.getYaw();
             this.headYaw = this.bodyYaw;
+
+            if (this.stepHeight < 1.0F) {
+                this.requiem$previousStepHeight = this.stepHeight;
+                this.stepHeight = 1.0F;
+            }
+
             float sidewaysSpeed = livingEntity.sidewaysSpeed * 0.5F;
             float forwardSpeed = livingEntity.forwardSpeed;
             if (forwardSpeed <= 0.0F) {
@@ -83,8 +100,15 @@ public abstract class MobEntityMixin extends LivingEntityMixin implements Posses
             }
 
             this.flyingSpeed = this.getMovementSpeed() * 0.1F;
-            if (this.isLogicalSideForUpdatingMovement()) {
-                this.setMovementSpeed((float) this.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED));
+            // isLogicalSideForUpdatingMovement but inlined
+            if (passenger instanceof PlayerEntity player && player.isMainPlayer() || !this.world.isClient()) {
+                float speed;
+                if (this instanceof ItemSteerable steerable) {
+                    speed = steerable.getSaddledSpeed();
+                } else {
+                    speed = (float) this.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED);
+                }
+                this.setMovementSpeed(speed);
                 return new Vec3d(sidewaysSpeed, movementInput.y, forwardSpeed);
             } else if (livingEntity instanceof PlayerEntity) {
                 this.setVelocity(Vec3d.ZERO);

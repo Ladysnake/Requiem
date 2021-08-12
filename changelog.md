@@ -5,6 +5,40 @@ Version 2.0.0
 
 **Really important warning: future alphas are extremely likely to break compatibility with worlds started with this alpha. Don't start using those versions on any world you care about.**
 
+### Changes in Alpha 10
+- Added (heavily WIP) obelisk rifts, a new way to travel between obelisks as a dissociated soul
+- Added some particle effects for mobs that have been converted during possession (can be possessed without emancipation)
+- Added the `soul_capture_blacklist` tag to prevent capturing some mobs' souls
+- Added a texture for shattered soul vessels
+- Added an empty tag for mobs that carry a hotbar but not a whole inventory
+- Undead mobs now have improved night vision - although not as good as dissociated souls
+    - Undead mobs also use the Haema vampire vision shader when the latter is available
+- Baby zombies and piglins can now respectively ride chickens and striders
+- Made the Mortician functional (still WIP) \[Thanks Sekoia!]
+- Updated Romanian translation \[Thanks AwsAlex!]
+- Removed some useless obelisk structure tags
+- Removed crying obsidian from valid obelisk core blocks
+- Increased natural player soul offense stat from 10 to 15
+- Attrition now reduces soul offense
+- Increased ichor vessels' effect duration to 10mn
+- Tweaked the ichor vessel's use time and animation
+- Tweaked the soul capture particle effects
+- Ichor vessels and obelisks no longer give potion particles
+- Added compatibility with BackSlot
+- Made mounts also transfer in creative mode when possesion stops
+- Soulless endermen no longer teleport you around when you try possessing them without emancipation
+- Possession now ends when a player gets into spectator mode
+- Made dolphins flop on land
+- Optimized and fixed a couple bugs with obelisk detection
+- Fixed empty vessels not being able to capture souls at all
+- Fixed attrition not increasing on host death
+- Fixed possessed ravagers breaking leaves clientside when mobGriefing was disabled
+- Fixed axolotls going way too fast on land
+
+#### Pandemonium
+- Fixed the wandering spirit origin hopefully
+- Moved the mortician to base requiem
+
 ### Changes in Alpha 9
 - Added recipes for all tachylite derivatives (tachylite itself is still unobtainable in survival)
 - Fixed inability to right-click mobs unleashed mobs unless the players themselves are possessing a mob
@@ -60,6 +94,7 @@ Updated to MC 1.17
 - Added Tachylite blocks:
     - Added Tachylite, Chiseled Tachylite (+slabs, stairs and pillars), Polished Tachylite (+slabs, stairs and pillars), and Scraped Tachylite
     - Added Tachylite Runestone for all soulbound status effects
+- Added obelisk rifts, a new way to travel between obelisks as a dissociated soul
 - Added Tachylite Obelisks, a new player-made structure
 - Added Soul Vessel items:
     - Added the Empty Soul Vessel, a rare item that is used to obtain most of the new content
@@ -73,6 +108,7 @@ Updated to MC 1.17
     - yep, they use the same models as Illuminations' Will o' Wisp. What did you expect, they're souls.
 - Added player shells, static bodies of soulless players (previously available in Pandemonium)
     - Contrary to previous pandemonium versions, they are now tracked across dimensions
+- Undead mobs now have improved night vision - although not as good as dissociated souls
 
 **Changes**
 - Some datapack things have changed
@@ -82,6 +118,8 @@ Updated to MC 1.17
 - The texture for Humanity enchantment books has been slightly tweaked, because why not
 - Whether possessed entities can sleep is now controlled by the `requiem:regular_sleepers` tag
     - This tag includes villagers, foxes and cats by default
+- Possession now ends when a player gets into spectator mode
+- Updated Romanian translation \[Thanks AwsAlex!]
 
 **Mod Interaction**
 - Updated Origins compatibility
@@ -89,6 +127,9 @@ Updated to MC 1.17
 - Updated Mod Menu metadata
 - Updated The Bumblezone compatibility
 - **Requiem's API got breaking changes, if you are a modder doing compatibility with Requiem make sure to check things work fine !**
+- Added compatibility with BackSlot
+    - Belt and back slots' availability are linked to the ability to carry armor
+- Undead mobs now use the Haema vampire vision shader when the latter is available
 - Fixed shell creation issues with Origins
 - Fixed crash with Iris
 
@@ -100,6 +141,8 @@ Updated to MC 1.17
 - Fixed possessed mobs sleeping standing up
 - Fixed leads getting attached to your soul rather than to your host during possession
 - Fixed possessed phantoms looking the wrong way
+- Fixed possessed ravagers breaking leaves clientside when mobGriefing was disabled
+- Fixed dolphins not going flop flop outside water
 
 #### Pandemonium
 **Additions**

@@ -58,8 +58,12 @@ import java.util.stream.Collectors;
 public class EntityAiToggle implements AutoSyncedComponent {
     public static final ComponentKey<EntityAiToggle> KEY = ComponentRegistry.getOrCreate(RequiemCore.id("ai_toggle"), EntityAiToggle.class);
 
+    public static EntityAiToggle get(LivingEntity owner) {
+        return KEY.get(owner);
+    }
+
     public static boolean isAiDisabled(LivingEntity entity) {
-        return KEY.get(entity).isAiDisabled();
+        return get(entity).isAiDisabled();
     }
 
     private final LivingEntity owner;

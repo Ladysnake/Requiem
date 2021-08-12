@@ -40,20 +40,18 @@ import ladysnake.requiem.api.v1.remnant.RemnantType;
 import ladysnake.requiem.api.v1.util.SubDataManager;
 import ladysnake.requiem.api.v1.util.SubDataManagerHelper;
 import ladysnake.requiem.common.remnant.RemnantTypes;
-import ladysnake.requiem.core.RequiemCore;
 import ladysnake.requiem.core.RequiemCoreNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.c2s.play.CustomPayloadC2SPacket;
 import net.minecraft.network.packet.s2c.play.CustomPayloadS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.BlockPos;
 import org.jetbrains.annotations.Contract;
 
 import java.util.List;
@@ -62,18 +60,19 @@ import java.util.stream.Collectors;
 import static io.netty.buffer.Unpooled.buffer;
 
 public class RequiemNetworking {
-    public static final Identifier OPUS_USE = Requiem.id("opus_use");
+    // Server -> Client
+    public static final Identifier ANCHOR_DAMAGE = Requiem.id("anchor_damage");
     public static final Identifier DATA_SYNC = Requiem.id("data_sync");
+    public static final Identifier OPUS_USE = Requiem.id("opus_use");
     public static final Identifier ETHEREAL_ANIMATION = Requiem.id("ethereal_animation");
     public static final Identifier BODY_CURE = Requiem.id("body_cure");
 
     // Client -> Server
-    public static final Identifier USE_INDIRECT_ABILITY = Requiem.id("indirect_ability");
-    public static final Identifier ETHEREAL_FRACTURE = Requiem.id("ethereal_fracture");
-    public static final Identifier OPUS_UPDATE = Requiem.id("opus_update");
     public static final Identifier DIALOGUE_ACTION = Requiem.id("dialogue_action");
+    public static final Identifier ETHEREAL_FRACTURE = Requiem.id("ethereal_fracture");
     public static final Identifier OPEN_CRAFTING_MENU = Requiem.id("open_crafting");
-    public static final Identifier ANCHOR_DAMAGE = RequiemCore.id("anchor_damage");
+    public static final Identifier USE_INDIRECT_ABILITY = Requiem.id("indirect_ability");
+    public static final Identifier USE_RIFT = Requiem.id("use_rift");
 
     public static void sendToServer(Identifier identifier, PacketByteBuf data) {
         sendToServer(new CustomPayloadC2SPacket(identifier, data));
@@ -123,28 +122,16 @@ public class RequiemNetworking {
         return new PacketByteBuf(buffer());
     }
 
-    @Contract(pure = true)
-    public static PacketByteBuf createPossessionRequestBuffer(Entity entity) {
-        PacketByteBuf buf = new PacketByteBuf(buffer());
-        buf.writeInt(entity.getId());
-        return buf;
-    }
-
-    public static CustomPayloadC2SPacket createOpusUpdateBuffer(String content, boolean sign, RemnantType resultingBook, Hand hand) {
-        PacketByteBuf buf = new PacketByteBuf(buffer());
-        buf.writeString(content);
-        buf.writeBoolean(sign);
-        if (sign) {
-            buf.writeString(RemnantTypes.getId(resultingBook).toString());
-        }
-        buf.writeEnumConstant(hand);
-        return new CustomPayloadC2SPacket(OPUS_UPDATE, buf);
-    }
-
     public static void sendDialogueActionMessage(Identifier action) {
         PacketByteBuf buf = new PacketByteBuf(buffer());
         buf.writeIdentifier(action);
         sendToServer(new CustomPayloadC2SPacket(DIALOGUE_ACTION, buf));
+    }
+
+    public static void sendRiftUseMessage(BlockPos target) {
+        PacketByteBuf buf = PacketByteBufs.create();
+        buf.writeBlockPos(target);
+        sendToServer(USE_RIFT, buf);
     }
 
     public static void sendIndirectAbilityUseMessage(AbilityType type) {

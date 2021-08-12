@@ -47,7 +47,7 @@ import org.apiguardian.api.API;
  * A {@link MovementConfig} that can be easily manipulated by {@link Gson} and equivalent.
  */
 public class SerializableMovementConfig implements MovementConfig {
-    public static final SerializableMovementConfig SOUL = new SerializableMovementConfig(MovementMode.ENABLED, SwimMode.ENABLED, WalkMode.NORMAL, TriState.FALSE, TriState.FALSE, true, 0, 1f, 1f, 0.1F);
+    public static final SerializableMovementConfig SOUL = new SerializableMovementConfig(MovementMode.ENABLED, SwimMode.ENABLED, WalkMode.NORMAL, TriState.FALSE, TriState.FALSE, true, 0, 1F, 1F, 1F, 0.1F);
 
     private MovementMode flightMode;
     private SwimMode swimMode;
@@ -58,17 +58,18 @@ public class SerializableMovementConfig implements MovementConfig {
     private boolean phasesThroughWalls;
     private float gravity;
     private float fallSpeedModifier;
-    private float walkSpeedModifier;
+    private float waterSpeedModifier;
+    private float landedSpeedModifier;
     private float inertia;
 
     @CalledThroughReflection
     @API(status = API.Status.INTERNAL)
     public SerializableMovementConfig() {
-        this(MovementMode.UNSPECIFIED, SwimMode.UNSPECIFIED, WalkMode.UNSPECIFIED, TriState.DEFAULT, TriState.DEFAULT, false, 0, 1f, 1f, 0);
+        this(MovementMode.UNSPECIFIED, SwimMode.UNSPECIFIED, WalkMode.UNSPECIFIED, TriState.DEFAULT, TriState.DEFAULT, false, 0, 1f, 1f, 1f, 0);
     }
 
     @API(status = API.Status.INTERNAL)
-    public SerializableMovementConfig(MovementMode flightMode, SwimMode swimMode, WalkMode walkMode, TriState sinksInWater, TriState flopsOnLand, boolean phasesThroughWalls, float gravity, float fallSpeedModifier, float walkSpeedModifier, float inertia) {
+    public SerializableMovementConfig(MovementMode flightMode, SwimMode swimMode, WalkMode walkMode, TriState sinksInWater, TriState flopsOnLand, boolean phasesThroughWalls, float gravity, float fallSpeedModifier, float landedSpeedModifier, float waterSpeedModifier, float inertia) {
         this.flightMode = flightMode;
         this.swimMode = swimMode;
         this.walkMode = walkMode;
@@ -77,7 +78,8 @@ public class SerializableMovementConfig implements MovementConfig {
         this.phasesThroughWalls = phasesThroughWalls;
         this.gravity = gravity;
         this.fallSpeedModifier = fallSpeedModifier;
-        this.walkSpeedModifier = walkSpeedModifier;
+        this.landedSpeedModifier = landedSpeedModifier;
+        this.waterSpeedModifier = waterSpeedModifier;
         this.inertia = inertia;
     }
 
@@ -91,6 +93,8 @@ public class SerializableMovementConfig implements MovementConfig {
         buf.writeBoolean(this.phasesThroughWalls);
         buf.writeFloat(this.gravity);
         buf.writeFloat(this.fallSpeedModifier);
+        buf.writeFloat(this.landedSpeedModifier);
+        buf.writeFloat(this.waterSpeedModifier);
         buf.writeFloat(this.inertia);
     }
 
@@ -104,6 +108,8 @@ public class SerializableMovementConfig implements MovementConfig {
         this.phasesThroughWalls = buf.readBoolean();
         this.gravity = buf.readFloat();
         this.fallSpeedModifier = buf.readFloat();
+        this.landedSpeedModifier = buf.readFloat();
+        this.waterSpeedModifier = buf.readFloat();
         this.inertia = buf.readFloat();
     }
 
@@ -123,8 +129,13 @@ public class SerializableMovementConfig implements MovementConfig {
     }
 
     @Override
-    public float getWalkSpeedModifier() {
-        return walkSpeedModifier;
+    public float getLandedSpeedModifier() {
+        return landedSpeedModifier;
+    }
+
+    @Override
+    public float getWaterSpeedModifier() {
+        return waterSpeedModifier;
     }
 
     @Override

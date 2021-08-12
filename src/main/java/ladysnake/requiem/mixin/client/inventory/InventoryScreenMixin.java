@@ -172,6 +172,8 @@ public abstract class InventoryScreenMixin extends AbstractInventoryScreen<Playe
             }
             if (!InventoryLimiter.instance().isLocked(this.requiem$player, DefaultInventoryNodes.MAIN_INVENTORY)) {
                 this.drawTexture(matrices, x + 7, y + 83, 7, 83, 162, 76);
+            } else if (!InventoryLimiter.instance().isLocked(this.requiem$player, DefaultInventoryNodes.HOTBAR)) {
+                this.drawTexture(matrices, x + 7, y + 141, 7, 141, 162, 18);
             }
         }
     }

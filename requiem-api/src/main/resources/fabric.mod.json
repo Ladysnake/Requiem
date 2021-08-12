@@ -52,7 +52,8 @@
       "requiem:ai_toggle",
       "requiem:global_record_keeper",
       "requiem:entity_clerk",
-      "requiem:body_tracker"
+      "requiem:body_tracker",
+      "requiem:soul_holder"
     ]
   }
 }
