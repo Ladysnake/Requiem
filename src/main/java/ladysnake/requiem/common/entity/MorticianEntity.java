@@ -34,7 +34,12 @@
  */
 package ladysnake.requiem.common.entity;
 
+import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.api.v1.util.RequiemTargetPredicate;
+import ladysnake.requiem.common.enchantment.RequiemEnchantments;
+import ladysnake.requiem.common.item.FilledSoulVesselItem;
+import ladysnake.requiem.common.item.RequiemItems;
+import net.minecraft.enchantment.EnchantmentLevelEntry;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ExperienceOrbEntity;
 import net.minecraft.entity.ai.goal.EscapeDangerGoal;
@@ -49,6 +54,7 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.passive.MerchantEntity;
 import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.EnchantedBookItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
@@ -59,12 +65,27 @@ import net.minecraft.stat.Stats;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.village.TradeOffer;
-import net.minecraft.village.TradeOfferList;
 import net.minecraft.village.TradeOffers;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 public class MorticianEntity extends MerchantEntity {
+    public static final TradeOffers.Factory[] TRADES = new TradeOffers.Factory[]{
+                (entity, random) -> {
+                    // TODO create reverse offer
+                    if (entity instanceof PlayerEntity player && !RemnantComponent.get(player).getRemnantType().isDemon()) {
+                        return new TradeOffer(new ItemStack(RequiemItems.EMPTY_SOUL_VESSEL), new ItemStack(Items.GOLD_INGOT, 6), new ItemStack(RequiemItems.SEALED_REMNANT_VESSEL), 1, 1, 0.05F);
+                    }
+                    return null;
+                },
+                (entity, random) -> new TradeOffer(new ItemStack(RequiemItems.SHATTERED_SOUL_VESSEL), new ItemStack(Items.GOLD_INGOT), new ItemStack(RequiemItems.EMPTY_SOUL_VESSEL), 10, 1, 0.05F),
+                (entity, random) -> new TradeOffer(EnchantedBookItem.forEnchantment(new EnchantmentLevelEntry(RequiemEnchantments.HUMANITY, 1)), new ItemStack(Items.GOLD_INGOT, 20), EnchantedBookItem.forEnchantment(new EnchantmentLevelEntry(RequiemEnchantments.HUMANITY, 2)), 5, 1, 0.05F),
+                (entity, random) -> new TradeOffer(FilledSoulVesselItem.forEntityType(entity.getEntityWorld().getDimension().isUltrawarm() ? EntityType.PIGLIN : EntityType.VILLAGER), new ItemStack(Items.GOLD_INGOT), new ItemStack(RequiemItems.ICHOR_VESSEL_EMANCIPATION), 10, 1, 0.05F),
+                (entity, random) -> new TradeOffer(FilledSoulVesselItem.forEntityType(EntityType.AXOLOTL), new ItemStack(Items.GOLD_INGOT, 5), new ItemStack(RequiemItems.ICHOR_VESSEL_RECLAMATION), 10, 1, 0.05F),
+                (entity, random) -> new TradeOffer(FilledSoulVesselItem.forEntityType(EntityType.CAVE_SPIDER), new ItemStack(Items.GOLD_INGOT, 5), new ItemStack(RequiemItems.ICHOR_VESSEL_ATTRITION), 10, 1, 0.05F),
+                (entity, random) -> new TradeOffer(FilledSoulVesselItem.forEntityType(EntityType.PILLAGER), new ItemStack(Items.GOLD_INGOT, 5), new ItemStack(RequiemItems.ICHOR_VESSEL_PENANCE), 10, 1, 0.05F)
+            };
+
     public MorticianEntity(EntityType<? extends MerchantEntity> entityType, World world) {
         super(entityType, world);
     }
@@ -103,16 +124,12 @@ public class MorticianEntity extends MerchantEntity {
                 player.incrementStat(Stats.TALKED_TO_VILLAGER);
             }
 
-            if (this.getOffers().isEmpty()) {
-                return ActionResult.success(this.world.isClient);
-            } else {
-                if (!this.world.isClient) {
-                    this.setCurrentCustomer(player);
-                    this.sendOffers(player, this.getDisplayName(), 1);
-                }
-
-                return ActionResult.success(this.world.isClient);
+            if (!this.world.isClient && !this.getOffers().isEmpty()) {
+                this.setCurrentCustomer(player);
+                this.sendOffers(player, this.getDisplayName(), 1);
             }
+
+            return ActionResult.success(this.world.isClient);
         } else {
             return super.interactMob(player, hand);
         }
@@ -120,19 +137,7 @@ public class MorticianEntity extends MerchantEntity {
 
     @Override
     protected void fillRecipes() {
-        TradeOffers.Factory[] factorys = TradeOffers.WANDERING_TRADER_TRADES.get(1);
-        TradeOffers.Factory[] factorys2 = TradeOffers.WANDERING_TRADER_TRADES.get(2);
-        if (factorys != null && factorys2 != null) {
-            TradeOfferList tradeOfferList = this.getOffers();
-            this.fillRecipesFromPool(tradeOfferList, factorys, 5);
-            int i = this.random.nextInt(factorys2.length);
-            TradeOffers.Factory factory = factorys2[i];
-            TradeOffer tradeOffer = factory.create(this, this.random);
-            if (tradeOffer != null) {
-                tradeOfferList.add(tradeOffer);
-            }
-
-        }
+        this.fillRecipesFromPool(this.getOffers(), TRADES, 5);
     }
 
     @Override

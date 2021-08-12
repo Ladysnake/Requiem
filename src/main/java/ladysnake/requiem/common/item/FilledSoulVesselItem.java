@@ -60,6 +60,12 @@ import java.util.Optional;
 public class FilledSoulVesselItem extends Item {
     public static final String SOUL_FRAGMENT_NBT = "requiem:soul_fragment";
 
+    public static ItemStack forEntityType(EntityType<?> type) {
+        ItemStack result = new ItemStack(RequiemItems.FILLED_SOUL_VESSEL);
+        result.getOrCreateSubNbt(SOUL_FRAGMENT_NBT).putString("type", EntityType.getId(type).toString());
+        return result;
+    }
+
     private final EmptySoulVesselItem emptySoulVessel;
 
     public FilledSoulVesselItem(Settings settings, EmptySoulVesselItem emptySoulVessel) {
