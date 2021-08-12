@@ -36,11 +36,14 @@ package ladysnake.requiem.mixin.common.possession.gameplay;
 
 import ladysnake.requiem.api.v1.event.minecraft.MobTravelRidingCallback;
 import ladysnake.requiem.api.v1.possession.Possessable;
+import ladysnake.requiem.core.util.DetectionHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemSteerable;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.Vec3d;
@@ -49,6 +52,7 @@ import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(MobEntity.class)
 public abstract class MobEntityMixin extends LivingEntityMixin implements Possessable {
@@ -121,4 +125,27 @@ public abstract class MobEntityMixin extends LivingEntityMixin implements Posses
     protected void requiem$travelEnd(Vec3d movementInput, CallbackInfo ci) {
         this.updateLimbs((LivingEntity) (Object) this, false);
     }
+
+    @Override
+    public void requiem$pushed(Entity entity, CallbackInfo ci) {
+        if (this.isBeingPossessed()) {
+            if (DetectionHelper.isValidEnemy(entity)) {
+                DetectionHelper.inciteMobAndAllies((MobEntity) (Object) this, (HostileEntity) entity);
+            }
+        }
+    }
+
+    @Override
+    public void requiem$damaged(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
+        if (source.getAttacker() instanceof MobEntity attacker) {
+            if (this.isBeingPossessed() && attacker instanceof HostileEntity hostile) {
+                DetectionHelper.inciteMobAndAllies((MobEntity) (Object) this, hostile);
+            } else if ((Object) this instanceof HostileEntity hostile) {
+                if (attacker instanceof Possessable possessable && possessable.isBeingPossessed()) {
+                    DetectionHelper.inciteMobAndAllies(attacker, hostile);
+                }
+            }
+        }
+    }
+
 }

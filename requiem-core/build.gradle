@@ -33,4 +33,8 @@ dependencies {
     modImplementation "com.jamieswhiteshirt:reach-entity-attributes:${rootProject.reach_version}"
 }
 
+license {
+    exclude '**/DetectionHelper.java'
+}
+
 remapJar.dependsOn(project(":requiem-api").tasks.remapJar)
