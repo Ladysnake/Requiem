@@ -50,18 +50,33 @@ import java.util.List;
  */
 public class DetectionHelper {
 
-    //Controls what is defined as a valid enemy for the system to anger.
+    /**
+     * Controls what is defined as a valid enemy for the system to anger.
+     *
+     * @param mob the mob you to check.
+     * @return returns a boolean based on whether or not the mob is a valid enemy.
+     */
     public static boolean isValidEnemy(Entity mob) {
         return mob instanceof HostileEntity && !(mob instanceof Angerable);
     }
 
-    //Incites an individual mob to attack the host of a demon.
+    /**
+     * Incites an individual mob to attack the host of a demon.
+     *
+     * @param host the host you want to attack.
+     * @param mob the mob you want to anger.
+     */
     public static void inciteMob(MobEntity host, HostileEntity mob) {
         mob.setTarget(host);
         mob.getBrain().remember(MemoryModuleType.ANGRY_AT, host.getUuid(), 600L);
     }
 
-    //Incites an individual mob and their buddies in a range. Currently it is capped at 50 because no vanilla mob usually exceeds that.
+    /**
+     * Incites an individual mob and their buddies in a range.
+     *
+     * @param host the host you want to be attacked.
+     * @param mob the mob you want to anger and find allies around.
+     */
     public static void inciteMobAndAllies(MobEntity host, HostileEntity mob) {
         inciteMob(host, mob);
 
