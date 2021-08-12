@@ -1,4 +1,9 @@
 {
+  "minecraft:axolotl": {
+    "landedSpeedModifier": -0.85,
+    "waterSpeedModifier": 0.85,
+    "swimMode": "ENABLED"
+  },
   "minecraft:bat": {
     "fallSpeedModifier": 0.9,
     "flightMode": "FORCED",
@@ -29,7 +34,8 @@
     "flopsOnLand": true
   },
   "minecraft:dolphin": {
-    "swimMode": "FORCED"
+    "swimMode": "FORCED",
+    "flopsOnLand": true
   },
   "minecraft:drowned": {
     "swimMode": "ENABLED"
@@ -57,7 +63,7 @@
     "swimMode": "DISABLED",
     "gravity": 0.01,
     "fallSpeedModifier": 0.8,
-    "walkSpeedModifier": -0.8,
+    "landedSpeedModifier": -0.8,
     "required": false
   },
   "minecraft:phantom": {
@@ -150,7 +156,7 @@
     "swimMode": "DISABLED",
     "gravity": 0.01,
     "fallSpeedModifier": 0.7,
-    "walkSpeedModifier": -0.8,
+    "landedSpeedModifier": -0.8,
     "required": false
   },
   "biomemakeover:tadpole": {

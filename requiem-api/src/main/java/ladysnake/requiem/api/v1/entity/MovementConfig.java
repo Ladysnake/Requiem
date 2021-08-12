@@ -20,6 +20,7 @@ package ladysnake.requiem.api.v1.entity;
 import ladysnake.requiem.api.v1.entity.movement.SwimMode;
 import ladysnake.requiem.api.v1.entity.movement.WalkMode;
 import net.fabricmc.fabric.api.util.TriState;
+import net.minecraft.entity.Entity;
 
 public interface MovementConfig {
     /**
@@ -46,13 +47,22 @@ public interface MovementConfig {
     float getFallSpeedModifier();
 
     /**
-     * Returns the speed modifier that should be applied while walking by movement alterers using this config.
+     * Returns the speed modifier that should be applied while not airborne by movement alterers using this config.
      * The entity's ground speed will be multiplied by this amount.
      * The modification is applied using an {@link net.minecraft.entity.attribute.EntityAttributeModifier}.
      *
      * @return the ground speed modifier that should be applied by movement alterers using this config
      */
-    float getWalkSpeedModifier();
+    float getLandedSpeedModifier();
+
+    /**
+     * Returns the speed modifier that should be applied when an entity is {@linkplain Entity#isTouchingWater() moving through water}.
+     * The entity's speed will be multiplied by this amount.
+     * The modification is applied using an {@link net.minecraft.entity.attribute.EntityAttributeModifier}.
+     *
+     * @return the water speed modifier that should be applied by movement alterers using this config
+     */
+    float getWaterSpeedModifier();
 
     /**
      * Returns the inertia that should be applied by movement alterers using this config.

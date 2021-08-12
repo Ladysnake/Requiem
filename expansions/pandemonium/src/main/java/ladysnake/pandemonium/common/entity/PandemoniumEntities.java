@@ -34,22 +34,8 @@
  */
 package ladysnake.pandemonium.common.entity;
 
-import ladysnake.requiem.Requiem;
-import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
-import net.minecraft.entity.EntityDimensions;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.SpawnGroup;
-import net.minecraft.util.registry.Registry;
-
 public final class PandemoniumEntities {
-    public static final EntityType<MorticianEntity> MORTICIAN = FabricEntityTypeBuilder.createLiving()
-        .spawnGroup(SpawnGroup.CREATURE)
-        .entityFactory(MorticianEntity::new)
-        .defaultAttributes(MorticianEntity::createMobAttributes)
-        .dimensions(EntityDimensions.fixed(0.6f, 1.95f))
-        .build();
-
     public static void init() {
-        Registry.register(Registry.ENTITY_TYPE, Requiem.id("mortician"), MORTICIAN);
+
     }
 }

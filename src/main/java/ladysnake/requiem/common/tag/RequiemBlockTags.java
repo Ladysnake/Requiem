@@ -41,9 +41,8 @@ import net.minecraft.tag.Tag;
 
 public final class RequiemBlockTags {
     public static final Tag<Block> SOUL_IMPERMEABLE = TagRegistry.block(Requiem.id("soul_impermeable"));
+    public static final Tag<Block> SOUL_INTERACTABLE = TagRegistry.block(Requiem.id("soul_interactable"));
 
     public static final Tag<Block> OBELISK_FRAME = TagRegistry.block(Requiem.id("obelisk/frame"));
     public static final Tag<Block> OBELISK_CORE = TagRegistry.block(Requiem.id("obelisk/core"));
-    public static final Tag<Block> OBELISK_BASE_EDGES = TagRegistry.block(Requiem.id("obelisk/base_edges"));
-    public static final Tag<Block> OBELISK_CAP_EDGES = TagRegistry.block(Requiem.id("obelisk/cap_edges"));
 }

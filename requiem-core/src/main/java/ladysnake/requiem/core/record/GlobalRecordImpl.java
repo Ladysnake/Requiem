@@ -130,6 +130,11 @@ public class GlobalRecordImpl implements GlobalRecord {
     }
 
     private <U> void writeToTag(NbtCompound tag, RecordType<U> type) {
-        tag.put(RecordType.getId(type).toString(), this.get(type).flatMap(v -> type.getCodec().encodeStart(NbtOps.INSTANCE, v).result()).orElseThrow());
+        tag.put(type.getId().toString(), this.get(type).flatMap(v -> type.getCodec().encodeStart(NbtOps.INSTANCE, v).result()).orElseThrow());
+    }
+
+    @Override
+    public String toString() {
+        return this.data.toString();
     }
 }

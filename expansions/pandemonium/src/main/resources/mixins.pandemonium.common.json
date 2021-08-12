@@ -3,7 +3,6 @@
   "package": "ladysnake.pandemonium.mixin.common",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
-    "entity.FollowTargetGoalMixin"
   ],
   "injectors": {
     "defaultRequire": 1

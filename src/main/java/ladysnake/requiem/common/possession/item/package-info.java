@@ -1,6 +1,3 @@
-/**
- * Classes implementing the possession mechanic
- */
 @FieldsAreNonnullByDefault
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault

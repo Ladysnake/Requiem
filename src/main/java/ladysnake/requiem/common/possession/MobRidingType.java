@@ -32,49 +32,41 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.pandemonium.mixin.common.entity;
+package ladysnake.requiem.common.possession;
 
-import ladysnake.pandemonium.common.entity.MorticianEntity;
-import ladysnake.requiem.mixin.common.shell.ai.TargetPredicateAccessor;
+import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.TargetPredicate;
-import net.minecraft.entity.ai.goal.FollowTargetGoal;
-import net.minecraft.entity.ai.goal.TrackTargetGoal;
-import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.entity.passive.MerchantEntity;
-import org.spongepowered.asm.mixin.Final;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import net.minecraft.entity.mob.RavagerEntity;
+import net.minecraft.entity.mob.SkeletonEntity;
+import net.minecraft.entity.mob.SpiderEntity;
+import net.minecraft.entity.passive.ChickenEntity;
+import net.minecraft.entity.passive.StriderEntity;
+import net.minecraft.tag.EntityTypeTags;
 
-import java.util.function.Predicate;
+public enum MobRidingType {
+    DEFAULT, MOUNT, RIDE;
 
-@Mixin(FollowTargetGoal.class)
-public abstract class FollowTargetGoalMixin extends TrackTargetGoal {
-    @Shadow protected TargetPredicate targetPredicate;
-
-    @Shadow
-    @Final
-    protected Class<? extends LivingEntity> targetClass;
-
-    public FollowTargetGoalMixin(MobEntity mobEntity_1, boolean boolean_1) {
-        super(mobEntity_1, boolean_1);
+    public boolean canMount() {
+        return this != DEFAULT;
     }
 
-    @Inject(
-        method = "<init>(Lnet/minecraft/entity/mob/MobEntity;Ljava/lang/Class;Z)V",
-        at = @At("TAIL")
-    )
-    private void removeMorticiansAsTargets(CallbackInfo ci) {
-        if (this.targetClass.equals(MerchantEntity.class)) {
-            Predicate<LivingEntity> predicate = ((TargetPredicateAccessor) this.targetPredicate).getPredicate();
-            if (predicate != null) {
-                this.targetPredicate.setPredicate(predicate.and((e) -> !(e instanceof MorticianEntity)));
-            } else {
-                this.targetPredicate.setPredicate((e) -> !(e instanceof MorticianEntity));
-            }
+    public boolean canSteer() {
+        return this == RIDE;
+    }
+
+    public static MobRidingType get(Entity entity, LivingEntity possessed) {
+        if (entity instanceof SpiderEntity) {
+            return possessed instanceof SkeletonEntity ? MOUNT : DEFAULT;
+        } else if (entity instanceof RavagerEntity) {
+            return possessed.getType().isIn(EntityTypeTags.RAIDERS) ? RIDE : DEFAULT;
+        } else if (entity instanceof ChickenEntity) {
+            return possessed.getType().isIn(RequiemEntityTypeTags.ZOMBIES) && possessed.isBaby() ? RIDE : DEFAULT;
+        } else if (entity instanceof StriderEntity) {
+            return possessed.getType() == EntityType.ZOMBIFIED_PIGLIN || possessed.getType().isIn(RequiemEntityTypeTags.PIGLINS) ? RIDE : DEFAULT;
         }
+
+        return DEFAULT;
     }
 }

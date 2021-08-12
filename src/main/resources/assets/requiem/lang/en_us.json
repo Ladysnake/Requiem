@@ -47,6 +47,8 @@
   "requiem:commands.shell.split.fail.vagrant": "Failed to split %s as they are already Vagrant",
   "requiem:commands.shell.fail.not_shell": "%s is not a player shell",
 
+  "requiem:container.obelisk_rift": "Rift",
+
   "requiem:block.minecraft.bed.invalid_body": "This form does not sleep",
 
   "requiem:opus.mortal_sentence": "Ad Vitam Mortale",
@@ -201,5 +203,7 @@
   "origins:power.requiem.banished.name": "Banished",
   "origins:power.requiem.banished.description": "You cannot get a new human body by curing other creatures.",
   "origins:power.requiem.mortal.name": "Respawn",
-  "origins:power.requiem.mortal.description": "When you die, and if all goes well, you find yourself at your last resting point with a whole new body."
+  "origins:power.requiem.mortal.description": "When you die, and if all goes well, you find yourself at your last resting point with a whole new body.",
+
+  "stat.requiem.interact_with_rift": "[Requiem] Interactions with Obelisk Rift"
 }

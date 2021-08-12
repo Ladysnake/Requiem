@@ -40,6 +40,7 @@ import ladysnake.requiem.api.v1.entity.ability.AbilityType;
 import ladysnake.requiem.api.v1.entity.ability.MobAbilityController;
 import ladysnake.requiem.api.v1.event.requiem.InitiateFractureCallback;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
+import ladysnake.requiem.common.screen.RiftScreenHandler;
 import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
 import ladysnake.requiem.core.RequiemCoreNetworking;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
@@ -47,6 +48,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.BlockPos;
 
 import static ladysnake.requiem.common.network.RequiemNetworking.*;
 
@@ -91,5 +93,14 @@ public final class ServerMessageHandling {
                 player.openHandledScreen(Blocks.CRAFTING_TABLE.getDefaultState().createScreenHandlerFactory(player.world, player.getBlockPos()));
             }
         }));
+        ServerPlayNetworking.registerGlobalReceiver(USE_RIFT, (server, player, handler, buf, responseSender) -> {
+            BlockPos target = buf.readBlockPos();
+
+            server.execute(() -> {
+                if (player.currentScreenHandler instanceof RiftScreenHandler riftScreenHandler) {
+                    riftScreenHandler.useRift(player, target);
+                }
+            });
+        });
     }
 }

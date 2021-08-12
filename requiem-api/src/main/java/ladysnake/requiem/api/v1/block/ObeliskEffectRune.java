@@ -32,6 +32,6 @@ public interface ObeliskEffectRune extends ObeliskRune {
     @Override
     default void applyEffect(ServerPlayerEntity target, int runeLevel, int obeliskWidth) {
         int effectDuration = (9 + obeliskWidth * 2) * 20;
-        target.addStatusEffect(new StatusEffectInstance(this.getEffect(), effectDuration, runeLevel - 1, true, true));
+        target.addStatusEffect(new StatusEffectInstance(this.getEffect(), effectDuration, runeLevel - 1, true, false, true));
     }
 }

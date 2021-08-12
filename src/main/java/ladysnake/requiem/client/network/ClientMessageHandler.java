@@ -127,7 +127,7 @@ public class ClientMessageHandler {
             mc.player.world.playSound(mc.player, mc.player.getX(), mc.player.getY(), mc.player.getZ(), RequiemSoundEvents.EFFECT_DISSOCIATE, SoundCategory.PLAYERS, 2, 0.6f);
             this.rc.fxRenderer().beginEtherealAnimation();
         }));
-        ClientPlayNetworking.registerGlobalReceiver(OPUS_USE, ((client, handler, buf, responseSender) -> {
+        ClientPlayNetworking.registerGlobalReceiver(OPUS_USE, (client, handler, buf, responseSender) -> {
             int remnantId = buf.readVarInt();
             boolean showBook = buf.readBoolean();
             RemnantType remnantType = RemnantTypes.get(remnantId);
@@ -145,7 +145,7 @@ public class ClientMessageHandler {
                     this.rc.fxRenderer().playEtherealPulseAnimation(16, 1.0f, 0.25f, 0.27f);
                 }
             });
-        }));
+        });
     }
 
     private static <T> void syncSubDataManager(PacketByteBuf buffer, SubDataManager<T> subManager, ThreadExecutor<?> taskQueue) {

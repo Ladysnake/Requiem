@@ -46,14 +46,15 @@ import ladysnake.requiem.common.particle.RequiemEntityParticleEffect;
 import ladysnake.requiem.common.particle.RequiemParticleTypes;
 import ladysnake.requiem.common.remnant.WandererRemnantState;
 import ladysnake.requiem.common.sound.RequiemSoundEvents;
-import ladysnake.requiem.core.entity.EntityAiToggle;
+import ladysnake.requiem.core.entity.SoulHolderComponent;
 import ladysnake.requiem.core.record.EntityPositionClerk;
+import ladysnake.requiem.core.tag.RequiemCoreTags;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -69,7 +70,6 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.UseAction;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 
@@ -119,9 +119,14 @@ public class EmptySoulVesselItem extends Item {
         return TypedActionResult.pass(stack);
     }
 
+    /**
+     * Requires {@link ladysnake.requiem.mixin.common.vessel.MobEntityMixin} to work because ugh mojang
+     */
     @Override
     public ActionResult useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
-        if (SoulCaptureEvents.BEFORE_ATTEMPT.invoker().canAttemptCapturing(user, entity)) {
+        if (entity instanceof MobEntity
+            && !RequiemCoreTags.Entity.SOUL_CAPTURE_BLACKLIST.contains(entity.getType())
+            && SoulCaptureEvents.BEFORE_ATTEMPT.invoker().canAttemptCapturing(user, entity)) {
             int targetSoulStrength = computeSoulDefense(entity);
             int playerSoulStrength = computeSoulOffense(user);
             NbtCompound activeData = stack.getOrCreateSubNbt(ACTIVE_DATA_TAG);
@@ -164,12 +169,10 @@ public class EmptySoulVesselItem extends Item {
             remnant.incrementStat(Stats.BROKEN.getOrCreateStat(this));
             result = new ItemStack(RequiemItems.SHATTERED_SOUL_VESSEL);
         } else {
-            result = new ItemStack(RequiemItems.FILLED_SOUL_VESSEL);
+            result = FilledSoulVesselItem.forEntityType(entity.getType());
+            this.setupRecord(entity, target, result.getOrCreateSubNbt(FilledSoulVesselItem.SOUL_FRAGMENT_NBT));
+            SoulHolderComponent.get(target).removeSoul();
             remnant.getItemCooldownManager().set(RequiemItems.FILLED_SOUL_VESSEL, 100);
-            NbtCompound data = result.getOrCreateSubNbt(FilledSoulVesselItem.SOUL_FRAGMENT_NBT);
-            data.putString("type", EntityType.getId(entity.getType()).toString());
-            this.setupRecord(entity, target, data);
-            EntityAiToggle.KEY.get(target).toggleAi(Registry.ITEM.getId(RequiemItems.EMPTY_SOUL_VESSEL), true, true);
         }
         return ItemUsage.exchangeStack(stack, remnant, result, false);
     }
@@ -197,7 +200,7 @@ public class EmptySoulVesselItem extends Item {
                         serverWorld.spawnParticles(
                             new RequiemEntityParticleEffect(RequiemParticleTypes.ENTITY_DUST, target.getId(), user.getId()),
                             target.getX(), target.getBodyY(0.5), target.getZ(),
-                            world.random.nextInt(3) + 2,
+                            world.random.nextInt(6) + 4,
                             target.getWidth() * 0.2,
                             target.getHeight() * 0.2,
                             target.getWidth() * 0.2,

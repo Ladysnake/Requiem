@@ -79,7 +79,7 @@ public final class ApiInitializer {
             ReflectionHelper.<SubDataManagerHelper>setField(ApiInternals.class.getDeclaredField("clientSubDataManagerHelper"),
                 new CommonSubDataManagerHelper());
             ReflectionHelper.<InventoryLimiter>setField(ApiInternals.class.getDeclaredField("inventoryLimiter"),
-                new PlayerInventoryLimiter(Locki.registerLock(RequiemCore.id("inventory_limiter"))));
+                new PlayerInventoryLimiter(Locki.registerLock(RequiemCore.id("inventory_limiter"), false)));
             ReflectionHelper.<DialogueRegistry>setField(ApiInternals.class.getDeclaredField("dialogueRegistry"),
                 new DialogueRegistryImpl());
             ReflectionHelper.<MobAbilityRegistry>setField(ApiInternals.class.getDeclaredField("mobAbilityRegistry"),

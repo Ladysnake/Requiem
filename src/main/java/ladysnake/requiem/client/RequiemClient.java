@@ -43,19 +43,19 @@ import ladysnake.requiem.client.particle.CureParticle;
 import ladysnake.requiem.client.particle.EntityDustParticle;
 import ladysnake.requiem.client.particle.GhostParticle;
 import ladysnake.requiem.client.particle.wisp.WispTrailParticle;
-import ladysnake.requiem.client.render.entity.CuredPiglinEntityRenderer;
-import ladysnake.requiem.client.render.entity.CuredVillagerEntityRenderer;
-import ladysnake.requiem.client.render.entity.ObeliskSoulEntityRenderer;
-import ladysnake.requiem.client.render.entity.SoulEntityRenderer;
+import ladysnake.requiem.client.render.entity.*;
 import ladysnake.requiem.client.render.entity.model.MorticianEntityModel;
 import ladysnake.requiem.client.render.entity.model.WillOWispModel;
+import ladysnake.requiem.client.screen.RiftScreen;
 import ladysnake.requiem.common.entity.RequiemEntities;
 import ladysnake.requiem.common.entity.effect.RequiemStatusEffects;
 import ladysnake.requiem.common.particle.RequiemParticleTypes;
+import ladysnake.requiem.common.screen.RequiemScreenHandlers;
 import net.fabricmc.fabric.api.client.model.ModelLoadingRegistry;
 import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry;
 import net.fabricmc.fabric.api.client.rendereregistry.v1.EntityModelLayerRegistry;
 import net.fabricmc.fabric.api.client.rendereregistry.v1.EntityRendererRegistry;
+import net.fabricmc.fabric.api.client.screenhandler.v1.ScreenRegistry;
 import net.fabricmc.fabric.api.renderer.v1.material.BlendMode;
 import net.fabricmc.fabric.api.renderer.v1.model.ModelHelper;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
@@ -130,9 +130,14 @@ public final class RequiemClient {
         this.registerEntityRenderers();
         this.registerModelPredicates();
         this.registerParticleFactories();
+        this.registerScreens();
         this.registerSprites();
         this.initListeners();
         FractureKeyBinding.init();
+    }
+
+    private void registerScreens() {
+        ScreenRegistry.register(RequiemScreenHandlers.RIFT_SCREEN_HANDLER, RiftScreen::new);
     }
 
     private void registerBlockModels() {
@@ -162,6 +167,7 @@ public final class RequiemClient {
     private void registerParticleFactories() {
         ParticleFactoryRegistry registry = ParticleFactoryRegistry.getInstance();
         registry.register(RequiemParticleTypes.ATTRITION, PortalParticle.Factory::new);
+        registry.register(RequiemParticleTypes.ATTUNED, CureParticle.Factory::new);
         registry.register(RequiemParticleTypes.CURE, CureParticle.Factory::new);
         registry.register(RequiemParticleTypes.GHOST, GhostParticle.Factory::new);
         registry.register(RequiemParticleTypes.ENTITY_DUST, new EntityDustParticle.Factory());
@@ -190,6 +196,7 @@ public final class RequiemClient {
         // shh, it's fine
         @SuppressWarnings({"unchecked", "RedundantCast"}) EntityType<? extends AbstractClientPlayerEntity> playerShellType = (EntityType<? extends AbstractClientPlayerEntity>) (EntityType<?>) RequiemEntities.PLAYER_SHELL;
         EntityRendererRegistry.INSTANCE.register(playerShellType, ctx -> new PlayerEntityRenderer(ctx, false));
+        EntityRendererRegistry.INSTANCE.register(RequiemEntities.MORTICIAN, MorticianEntityRenderer::new);
     }
 
     private void initListeners() {

@@ -36,6 +36,7 @@
     "remnant.InGameHudMixin",
     "remnant.LivingEntityRendererMixin",
     "remnant.MinecraftClientMixin",
-    "remnant.PlayerRendererLayerMixin"
+    "remnant.PlayerRendererLayerMixin",
+    "rift.MouseMixin"
   ]
 }

@@ -43,6 +43,7 @@ import net.minecraft.util.registry.Registry;
 
 public final class RequiemParticleTypes {
     public static final DefaultParticleType ATTRITION = FabricParticleTypes.simple(false);
+    public static final DefaultParticleType ATTUNED = FabricParticleTypes.simple(false);
     public static final DefaultParticleType CURE = FabricParticleTypes.simple(false);
     public static final ParticleType<RequiemEntityParticleEffect> ENTITY_DUST = new ParticleType<>(false, RequiemEntityParticleEffect.PARAMETERS_FACTORY) {
         @Override
@@ -60,10 +61,11 @@ public final class RequiemParticleTypes {
     public static final DefaultParticleType OBELISK_SOUL = FabricParticleTypes.simple(false);
 
     public static void init() {
-        Registry.register(Registry.PARTICLE_TYPE, Requiem.id("ghost"), GHOST);
         Registry.register(Registry.PARTICLE_TYPE, Requiem.id("attrition"), ATTRITION);
+        Registry.register(Registry.PARTICLE_TYPE, Requiem.id("attuned"), ATTUNED);
         Registry.register(Registry.PARTICLE_TYPE, Requiem.id("cure"), CURE);
         Registry.register(Registry.PARTICLE_TYPE, Requiem.id("entity_dust"), ENTITY_DUST);
+        Registry.register(Registry.PARTICLE_TYPE, Requiem.id("ghost"), GHOST);
         Registry.register(Registry.PARTICLE_TYPE, Requiem.id("soul_trail"), SOUL_TRAIL);
         Registry.register(Registry.PARTICLE_TYPE, Requiem.id("obelisk_soul"), OBELISK_SOUL);
     }

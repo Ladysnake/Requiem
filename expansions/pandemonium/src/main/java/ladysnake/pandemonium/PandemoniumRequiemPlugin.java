@@ -58,8 +58,6 @@ public class PandemoniumRequiemPlugin implements RequiemPlugin {
             PossessionStartCallback.EVENT.unregister(new Identifier(Requiem.MOD_ID, "enderman"));
             PossessionStartCallback.EVENT.register(Pandemonium.id("allow_everything"), (target, possessor, simulate) -> PossessionStartCallback.Result.ALLOW);
         }
-        PossessionStartCallback.EVENT.register(Pandemonium.id("deny_penance_three"), ((target, possessor, simulate) ->
-            PenanceStatusEffect.getLevel(possessor) >= 2 ? PossessionStartCallback.Result.DENY : PossessionStartCallback.Result.PASS));
     }
 
     @Override

@@ -35,8 +35,10 @@
 package ladysnake.requiem.common.entity.effect;
 
 import com.mojang.authlib.GameProfile;
+import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.event.requiem.CanCurePossessedCallback;
 import ladysnake.requiem.api.v1.event.requiem.PlayerShellEvents;
+import ladysnake.requiem.api.v1.event.requiem.PossessionStartCallback;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.api.v1.remnant.StickyStatusEffect;
@@ -69,6 +71,8 @@ public class PenanceStatusEffect extends StatusEffect implements StickyStatusEff
             return TriState.DEFAULT;
         });
         PlayerShellEvents.PRE_MERGE.register(PenanceStatusEffect::canMerge);
+        PossessionStartCallback.EVENT.register(Requiem.id("deny_penance_three"), (target, possessor, simulate) ->
+            getLevel(possessor) >= 2 ? PossessionStartCallback.Result.DENY : PossessionStartCallback.Result.PASS);
     }
 
     @Override

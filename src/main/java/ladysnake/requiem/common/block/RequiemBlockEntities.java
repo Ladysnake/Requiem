@@ -45,7 +45,8 @@ public final class RequiemBlockEntities {
         RequiemBlocks.RUNIC_TACHYLITE_ATTRITION,
         RequiemBlocks.RUNIC_TACHYLITE_EMANCIPATION,
         RequiemBlocks.RUNIC_TACHYLITE_PENANCE,
-        RequiemBlocks.RUNIC_TACHYLITE_RECLAMATION
+        RequiemBlocks.RUNIC_TACHYLITE_RECLAMATION,
+        RequiemBlocks.RIFT_RUNE
     ).build(null);
 
     public static void init() {

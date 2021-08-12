@@ -1,6 +1,6 @@
 {
   "parent": "item/generated",
     "textures": {
-        "layer0": "requiem:item/soul_vessel"
+        "layer0": "requiem:item/shattered_soul_vessel"
     }
 }

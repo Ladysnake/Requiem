@@ -34,12 +34,9 @@
  */
 package ladysnake.pandemonium.client;
 
-import ladysnake.pandemonium.client.render.entity.MorticianEntityRenderer;
-import ladysnake.pandemonium.common.entity.PandemoniumEntities;
 import ladysnake.requiem.api.v1.annotation.CalledThroughReflection;
 import ladysnake.requiem.api.v1.event.minecraft.client.CrosshairRenderCallback;
 import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.fabric.api.client.rendereregistry.v1.EntityRendererRegistry;
 import net.minecraft.util.Identifier;
 
 @CalledThroughReflection
@@ -47,7 +44,6 @@ public class PandemoniumClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         ClientMessageHandling.init();
-        EntityRendererRegistry.INSTANCE.register(PandemoniumEntities.MORTICIAN, MorticianEntityRenderer::new);
         this.registerCallbacks();
         this.registerSprites();
     }

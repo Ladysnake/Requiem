@@ -32,46 +32,49 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.pandemonium.common.entity;
+package ladysnake.requiem.mixin.common.entity;
 
-import net.minecraft.entity.EntityType;
+import ladysnake.requiem.common.entity.MorticianEntity;
+import ladysnake.requiem.mixin.common.shell.ai.TargetPredicateAccessor;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.ai.TargetPredicate;
+import net.minecraft.entity.ai.goal.FollowTargetGoal;
+import net.minecraft.entity.ai.goal.TrackTargetGoal;
+import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.passive.MerchantEntity;
-import net.minecraft.entity.passive.PassiveEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.text.Text;
-import net.minecraft.village.TradeOffer;
-import net.minecraft.world.World;
-import org.jetbrains.annotations.Nullable;
+import org.spongepowered.asm.mixin.Final;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-public class MorticianEntity extends MerchantEntity {
-    public MorticianEntity(EntityType<? extends MerchantEntity> entityType, World world) {
-        super(entityType, world);
+import java.util.function.Predicate;
+
+@Mixin(FollowTargetGoal.class)
+public abstract class FollowTargetGoalMixin extends TrackTargetGoal {
+    @Shadow protected TargetPredicate targetPredicate;
+
+    @Shadow
+    @Final
+    protected Class<? extends LivingEntity> targetClass;
+
+    public FollowTargetGoalMixin(MobEntity mobEntity_1, boolean boolean_1) {
+        super(mobEntity_1, boolean_1);
     }
 
-    @Override
-    protected void afterUsing(TradeOffer offer) {
-
-    }
-
-    @Override
-    protected void fillRecipes() {
-
-    }
-
-    @Nullable
-    @Override
-    public PassiveEntity createChild(ServerWorld world, PassiveEntity entity) {
-        return null;
-    }
-
-    @Override
-    public boolean canRefreshTrades() {
-        return super.canRefreshTrades();
-    }
-
-    @Override
-    public void sendOffers(PlayerEntity playerEntity, Text text, int i) {
-        super.sendOffers(playerEntity, text, i);
+    @Inject(
+        method = "<init>(Lnet/minecraft/entity/mob/MobEntity;Ljava/lang/Class;Z)V",
+        at = @At("TAIL")
+    )
+    private void removeMorticiansAsTargets(CallbackInfo ci) {
+        if (this.targetClass.equals(MerchantEntity.class)) {
+            Predicate<LivingEntity> predicate = ((TargetPredicateAccessor) this.targetPredicate).getPredicate();
+            if (predicate != null) {
+                this.targetPredicate.setPredicate(predicate.and((e) -> !(e instanceof MorticianEntity)));
+            } else {
+                this.targetPredicate.setPredicate((e) -> !(e instanceof MorticianEntity));
+            }
+        }
     }
 }
