@@ -43,7 +43,11 @@ import ladysnake.requiem.client.particle.CureParticle;
 import ladysnake.requiem.client.particle.EntityDustParticle;
 import ladysnake.requiem.client.particle.GhostParticle;
 import ladysnake.requiem.client.particle.wisp.WispTrailParticle;
-import ladysnake.requiem.client.render.entity.*;
+import ladysnake.requiem.client.render.entity.CuredPiglinEntityRenderer;
+import ladysnake.requiem.client.render.entity.CuredVillagerEntityRenderer;
+import ladysnake.requiem.client.render.entity.MorticianEntityRenderer;
+import ladysnake.requiem.client.render.entity.ObeliskSoulEntityRenderer;
+import ladysnake.requiem.client.render.entity.SoulEntityRenderer;
 import ladysnake.requiem.client.render.entity.model.MorticianEntityModel;
 import ladysnake.requiem.client.render.entity.model.WillOWispModel;
 import ladysnake.requiem.client.screen.RiftScreen;
@@ -68,6 +72,7 @@ import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.entity.EntityType;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.Direction;
 
 import java.util.List;
 
@@ -147,14 +152,16 @@ public final class RequiemClient {
                     String effect = modelId.getPath().substring(modelId.getPath().lastIndexOf('/') + 1);
                     String runestoneSpriteId = "requiem:block/%s_runestone".formatted(effect);
                     String runeSpriteId = "requiem:block/%s_rune".formatted(effect);
+                    String topRuneSpriteId = "requiem:block/rune";
                     return new SimpleUnbakedModel(mb -> {
                         Sprite runestoneSprite = mb.getSprite(runestoneSpriteId);
                         Sprite runeSprite = mb.getSprite(runeSpriteId);
+                        Sprite topRuneSprite = mb.getSprite(topRuneSpriteId);
                         mb.box(mb.finder().find(),
-                            -1, runestoneSprite,
+                            -1, d -> runestoneSprite,
                             0, 0, 0, 1, 1, 1);
                         mb.box(mb.finder().emissive(0, true).disableAo(0, true).disableDiffuse(0, true).blendMode(0, BlendMode.CUTOUT).find(),
-                            -1, runeSprite,
+                            -1, d -> d.getAxis() == Direction.Axis.Y ? runeSprite : topRuneSprite,
                             0, 0, 0, 1, 1, 1);
                         return new SimpleBakedModel(mb.builder.build(), ModelHelper.MODEL_TRANSFORM_BLOCK, runestoneSprite, null);
                     }, List.of(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(runestoneSpriteId)), new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(runeSpriteId))));
