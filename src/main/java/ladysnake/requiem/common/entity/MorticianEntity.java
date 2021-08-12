@@ -34,11 +34,18 @@
  */
 package ladysnake.requiem.common.entity;
 
+import ladysnake.requiem.api.v1.util.RequiemTargetPredicate;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ExperienceOrbEntity;
-import net.minecraft.entity.ai.goal.*;
+import net.minecraft.entity.ai.goal.EscapeDangerGoal;
+import net.minecraft.entity.ai.goal.GoToWalkTargetGoal;
+import net.minecraft.entity.ai.goal.LookAtCustomerGoal;
+import net.minecraft.entity.ai.goal.LookAtEntityGoal;
+import net.minecraft.entity.ai.goal.StopAndLookAtEntityGoal;
+import net.minecraft.entity.ai.goal.StopFollowingCustomerGoal;
+import net.minecraft.entity.ai.goal.WanderAroundFarGoal;
 import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.mob.*;
+import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.passive.MerchantEntity;
 import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -62,25 +69,33 @@ public class MorticianEntity extends MerchantEntity {
         super(entityType, world);
     }
 
+    @Override
     protected void initGoals() {
         this.goalSelector.add(1, new StopFollowingCustomerGoal(this));
         this.goalSelector.add(1, new EscapeDangerGoal(this, 0.5D));
         this.goalSelector.add(1, new LookAtCustomerGoal(this));
         this.goalSelector.add(4, new GoToWalkTargetGoal(this, 0.35D));
         this.goalSelector.add(8, new WanderAroundFarGoal(this, 0.35D));
-        this.goalSelector.add(9, new StopAndLookAtEntityGoal(this, PlayerEntity.class, 3.0F, 1.0F));
+        this.goalSelector.add(9, new StopAndLookAtEntityGoal(this, PlayerEntity.class, 3.0F, 1.0F) {
+            {
+                RequiemTargetPredicate.includeIncorporeal(this.targetPredicate);
+            }
+        });
         this.goalSelector.add(10, new LookAtEntityGoal(this, MobEntity.class, 8.0F));
+        this.goalSelector.add(10, new LookAtEntityGoal(this, PlayerEntity.class, 8.0F));
     }
 
-    @Nullable
-    public PassiveEntity createChild(ServerWorld world, PassiveEntity entity) {
+    @Override
+    public @Nullable PassiveEntity createChild(ServerWorld world, PassiveEntity entity) {
         return null;
     }
 
+    @Override
     public boolean isLeveledMerchant() {
         return false;
     }
 
+    @Override
     public ActionResult interactMob(PlayerEntity player, Hand hand) {
         ItemStack itemStack = player.getStackInHand(hand);
         if (!itemStack.isOf(Items.VILLAGER_SPAWN_EGG) && this.isAlive() && !this.hasCustomer() && !this.isBaby()) {
@@ -103,9 +118,10 @@ public class MorticianEntity extends MerchantEntity {
         }
     }
 
+    @Override
     protected void fillRecipes() {
-        TradeOffers.Factory[] factorys = (TradeOffers.Factory[])TradeOffers.WANDERING_TRADER_TRADES.get(1);
-        TradeOffers.Factory[] factorys2 = (TradeOffers.Factory[])TradeOffers.WANDERING_TRADER_TRADES.get(2);
+        TradeOffers.Factory[] factorys = TradeOffers.WANDERING_TRADER_TRADES.get(1);
+        TradeOffers.Factory[] factorys2 = TradeOffers.WANDERING_TRADER_TRADES.get(2);
         if (factorys != null && factorys2 != null) {
             TradeOfferList tradeOfferList = this.getOffers();
             this.fillRecipesFromPool(tradeOfferList, factorys, 5);
@@ -119,15 +135,18 @@ public class MorticianEntity extends MerchantEntity {
         }
     }
 
+    @Override
     public void readCustomDataFromNbt(NbtCompound nbt) {
         super.readCustomDataFromNbt(nbt);
         this.setBreedingAge(Math.max(0, this.getBreedingAge()));
     }
 
+    @Override
     public boolean canImmediatelyDespawn(double distanceSquared) {
         return false;
     }
 
+    @Override
     protected void afterUsing(TradeOffer offer) {
         if (offer.shouldRewardPlayerExperience()) {
             int i = 3 + this.random.nextInt(4);
@@ -136,27 +155,33 @@ public class MorticianEntity extends MerchantEntity {
 
     }
 
+    @Override
     protected SoundEvent getAmbientSound() {
-        return this.hasCustomer() ? SoundEvents.ENTITY_WANDERING_TRADER_TRADE : SoundEvents.ENTITY_WANDERING_TRADER_AMBIENT;
+        return this.hasCustomer() ? SoundEvents.ENTITY_PIGLIN_ADMIRING_ITEM : SoundEvents.ENTITY_PIGLIN_AMBIENT;
     }
 
+    @Override
     protected SoundEvent getHurtSound(DamageSource source) {
-        return SoundEvents.ENTITY_WANDERING_TRADER_HURT;
+        return SoundEvents.ENTITY_ZOMBIFIED_PIGLIN_HURT;
     }
 
+    @Override
     protected SoundEvent getDeathSound() {
-        return SoundEvents.ENTITY_WANDERING_TRADER_DEATH;
+        return SoundEvents.ENTITY_ZOMBIFIED_PIGLIN_DEATH;
     }
 
+    @Override
     protected SoundEvent getDrinkSound(ItemStack stack) {
         return stack.isOf(Items.MILK_BUCKET) ? SoundEvents.ENTITY_WANDERING_TRADER_DRINK_MILK : SoundEvents.ENTITY_WANDERING_TRADER_DRINK_POTION;
     }
 
+    @Override
     protected SoundEvent getTradingSound(boolean sold) {
-        return sold ? SoundEvents.ENTITY_WANDERING_TRADER_YES : SoundEvents.ENTITY_WANDERING_TRADER_NO;
+        return sold ? SoundEvents.ENTITY_PIGLIN_CELEBRATE : SoundEvents.ENTITY_PIGLIN_RETREAT;
     }
 
+    @Override
     public SoundEvent getYesSound() {
-        return SoundEvents.ENTITY_WANDERING_TRADER_YES;
+        return SoundEvents.ENTITY_PIGLIN_ADMIRING_ITEM;
     }
 }
