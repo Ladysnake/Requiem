@@ -1,8 +1,0 @@
-{
-  "type": "minecraft:stonecutting",
-  "ingredient": {
-    "tag": "requiem:tachylite_slabs"
-  },
-  "result": "requiem:tachylite/polished_slab",
-  "count": 1
-}

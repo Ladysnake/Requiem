@@ -150,7 +150,7 @@ public final class RequiemClient {
             if (modelId.getNamespace().equals(Requiem.MOD_ID)) {
                 if (modelId.getPath().startsWith("block/tachylite/runic/activated/")) {
                     String effect = modelId.getPath().substring(modelId.getPath().lastIndexOf('/') + 1);
-                    String topRunestoneSpriteId = "requiem:block/tachylite_runestone_top";
+                    String topRunestoneSpriteId = "requiem:block/neutral_runestone";
                     String runestoneSpriteId = "requiem:block/%s_runestone".formatted(effect);
                     String runeSpriteId = "requiem:block/%s_rune".formatted(effect);
                     String topRuneSpriteId = "requiem:block/neutral_rune";

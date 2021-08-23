@@ -7,11 +7,11 @@
   ],
   "key": {
     "#": {
-      "item": "requiem:tachylite/polished"
+      "item": "requiem:tachylite/tachylite"
     }
   },
   "result": {
-    "item": "requiem:tachylite/polished_stairs",
+    "item": "requiem:tachylite/tachylite_stairs",
     "count": 4
   }
 }

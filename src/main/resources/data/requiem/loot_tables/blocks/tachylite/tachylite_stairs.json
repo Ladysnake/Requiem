@@ -7,7 +7,7 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "requiem:tachylite/polished_stairs"
+          "name": "requiem:tachylite/tachylite_stairs"
         }
       ],
       "conditions": [

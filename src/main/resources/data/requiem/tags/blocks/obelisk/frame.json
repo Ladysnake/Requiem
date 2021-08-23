@@ -1,11 +1,6 @@
 {
   "replace": false,
   "values": [
-    "requiem:tachylite/chiseled",
-    "requiem:tachylite/chiseled_pillar",
-    "requiem:tachylite/polished",
-    "requiem:tachylite/polished_pillar",
-    "requiem:tachylite/scraped",
-    "requiem:tachylite/tachylite"
+    "#requiem:tachylite"
   ]
 }
