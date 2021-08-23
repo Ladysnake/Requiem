@@ -83,7 +83,7 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity implements Re
         AdvancementProgress progress = this.getAdvancementTracker().getProgress(theChoice);
         if (progress == null) {
             Requiem.LOGGER.error("Advancement '{}' is missing", advancementId);
-        } else if (!progress.isDone()) {
+        } else if (!progress.isDone() && !world.getLevelProperties().isHardcore()) {
             RemnantType startingRemnantType = world.getGameRules().get(RequiemGamerules.STARTING_SOUL_MODE).get().getRemnantType();
             if (startingRemnantType == null) {
                 DeathSuspender.get(this).suspendDeath(killingBlow);
@@ -94,13 +94,13 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity implements Re
         }
     }
 
+    /**
+     * When you die in hardcore, you are indeed dead
+     */
     @Inject(method = "onDeath", at = @At(value = "FIELD", target = "Lnet/minecraft/world/GameRules;SHOW_DEATH_MESSAGES:Lnet/minecraft/world/GameRules$Key;"))
     private void revokeLifeRights(DamageSource source, CallbackInfo ci) {
-        if (this.world.getLevelProperties().isHardcore()) {
-            RemnantComponent remnantComponent = RemnantComponent.get(this);
-            if (remnantComponent.isVagrant()) {
-                remnantComponent.become(RemnantTypes.MORTAL);
-            }
+        if (world.getLevelProperties().isHardcore()) {
+            RemnantComponent.get(this).become(RemnantTypes.MORTAL);
         }
     }
 }
