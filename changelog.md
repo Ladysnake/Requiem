@@ -1,4 +1,13 @@
 ------------------------------------------------------
+Version 1.7.14
+------------------------------------------------------
+**Mod Compatibility**
+- Removed some Health Overlay compat that was probably not useful any more (and prevented the build)
+
+**Fixes**
+- Fixed a shader compilation error on some graphic cards
+
+------------------------------------------------------
 Version 1.7.13
 ------------------------------------------------------
 **Fixes**
