@@ -69,7 +69,6 @@
     "remnant.PlayerEntityMixin",
     "remnant.ServerPlayerEntityMixin",
     "remnant.ServerPlayNetworkHandler1Mixin",
-    "remnant.ServerPlayNetworkHandlerMixin",
     "remnant.ShapeContextMixin",
     "remnant.TargetPredicateMixin",
     "shell.ai.MemoryModuleTypeAccessor",

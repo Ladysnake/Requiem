@@ -39,7 +39,6 @@ import ladysnake.requiem.api.v1.internal.StatusEffectReapplicator;
 import ladysnake.requiem.api.v1.possession.Possessable;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.api.v1.remnant.StickyStatusEffect;
-import ladysnake.requiem.common.remnant.RemnantTypes;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.damage.DamageSource;
@@ -77,9 +76,6 @@ public class AttritionStatusEffect extends StatusEffect implements StickyStatusE
         addAttrition(target, amplifier, duration);
 
         if (expectedAmplifier > MAX_LEVEL && (!(target instanceof PlayerEntity) || target.world.getLevelProperties().isHardcore())) {
-            if (target instanceof PlayerEntity) {
-                RemnantComponent.get((PlayerEntity) target).become(RemnantTypes.MORTAL);
-            }
             target.damage(ATTRITION_HARDCORE_DEATH, Float.MAX_VALUE);
         }
     }
