@@ -232,7 +232,6 @@ dependencies {
     // Extra compatibility dependencies
 //    modRuntime curse.resolve('immersive-portals-mod', 2845123)
 //    modRuntime "curse.maven:mobz:2965825"
-    modCompileOnly("io.github.Terrails:Health-Overlay:1.16-Fabric-SNAPSHOT")
     modCompileOnly("io.github.CerulanLumina:better-graves:${better_graves_version}")
     modRuntime("io.github.CerulanLumina:better-graves:${better_graves_version}")
     modCompileOnly("io.github.Lemonszz:Biome-Makeover:${biome_makeover_version}")
