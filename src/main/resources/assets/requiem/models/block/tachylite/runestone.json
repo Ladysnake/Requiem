@@ -1,7 +1,0 @@
-{
-  "parent": "minecraft:block/cube_column",
-  "textures": {
-    "end": "requiem:block/tachylite_runestone_top",
-    "side": "requiem:block/tachylite_runestone"
-  }
-}

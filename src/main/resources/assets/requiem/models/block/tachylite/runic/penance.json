@@ -1,6 +1,7 @@
 {
-  "parent": "minecraft:block/cube_all",
+  "parent": "minecraft:block/cube_column",
   "textures": {
-    "all": "requiem:block/penance_runestone"
+    "end": "requiem:block/neutral_runestone",
+    "side": "requiem:block/penance_runestone"
   }
 }
