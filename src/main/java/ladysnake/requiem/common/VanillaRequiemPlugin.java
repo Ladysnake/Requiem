@@ -81,6 +81,7 @@ import ladysnake.requiem.common.entity.ability.EvokerFangAbility;
 import ladysnake.requiem.common.entity.ability.EvokerVexAbility;
 import ladysnake.requiem.common.entity.ability.EvokerWololoAbility;
 import ladysnake.requiem.common.entity.ability.GhastFireballAbility;
+import ladysnake.requiem.common.entity.ability.GoatRamAbility;
 import ladysnake.requiem.common.entity.ability.GuardianBeamAbility;
 import ladysnake.requiem.common.entity.ability.ShulkerPeekAbility;
 import ladysnake.requiem.common.entity.ability.ShulkerShootAbility;
@@ -128,6 +129,7 @@ import net.minecraft.entity.mob.GuardianEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.ShulkerEntity;
 import net.minecraft.entity.mob.WitchEntity;
+import net.minecraft.entity.passive.GoatEntity;
 import net.minecraft.entity.passive.LlamaEntity;
 import net.minecraft.entity.passive.SnowGolemEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -229,8 +231,11 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
         // Prevent incorporeal players from hitting anything
         AttackEntityCallback.EVENT.register((player, world, hand, target, hitResult) -> {
             // Proxy melee attacks
-            if (MobAbilityController.get(player).useDirect(AbilityType.ATTACK, target)) {
-                player.resetLastAttackedTicks();
+            ActionResult result = MobAbilityController.get(player).useDirect(AbilityType.ATTACK, target);
+            if (result.isAccepted()) {
+                if (result.shouldSwingHand()) {
+                    player.resetLastAttackedTicks();
+                }
                 return ActionResult.SUCCESS;
             }
             return isInteractionForbidden(player, true) ? ActionResult.FAIL : ActionResult.PASS;
@@ -393,6 +398,7 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
             .indirectInteract(EvokerVexAbility::new)
             .build());
         abilityRegistry.register(EntityType.GHAST, MobAbilityConfig.builder().indirectAttack(GhastFireballAbility::new).build());
+        abilityRegistry.register(EntityType.GOAT, MobAbilityConfig.<GoatEntity>builder().directAttack(GoatRamAbility::create).build());
         abilityRegistry.register(EntityType.GUARDIAN, MobAbilityConfig.<GuardianEntity>builder().directAttack(GuardianBeamAbility::new).build());
         abilityRegistry.register(EntityType.ELDER_GUARDIAN, MobAbilityConfig.<GuardianEntity>builder().directAttack(GuardianBeamAbility::new).build());
         abilityRegistry.register(EntityType.LLAMA, MobAbilityConfig.<LlamaEntity>builder().directAttack(RangedAttackAbility::new).build());

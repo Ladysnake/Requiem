@@ -43,7 +43,6 @@ import ladysnake.requiem.api.v1.dialogue.DialogueTracker;
 import ladysnake.requiem.api.v1.entity.CurableEntityComponent;
 import ladysnake.requiem.api.v1.entity.MovementAlterer;
 import ladysnake.requiem.api.v1.entity.ability.MobAbilityController;
-import ladysnake.requiem.api.v1.entity.ability.MobAbilityRegistry;
 import ladysnake.requiem.api.v1.internal.StatusEffectReapplicator;
 import ladysnake.requiem.api.v1.possession.PossessedData;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
@@ -94,8 +93,7 @@ public final class RequiemComponents implements EntityComponentInitializer, Scor
         registry.registerForPlayers(DialogueTracker.KEY, PlayerDialogueTracker::new, RespawnCopyStrategy.LOSSLESS_ONLY);
         registry.registerFor(EndermanEntity.class, WololoComponent.KEY, WololoComponent::create);
         registry.registerFor(MobEntity.class, PossessedData.KEY, LootingPossessedData::new);
-        registry.registerFor(MobEntity.class, MobAbilityController.KEY,
-            e -> new ImmutableMobAbilityController<>(MobAbilityRegistry.instance().getConfig(e), e));
+        registry.registerFor(MobEntity.class, MobAbilityController.KEY, e -> new ImmutableMobAbilityController<>());
         registry.registerForPlayers(MobAbilityController.KEY, player -> new PlayerAbilityController(player, VanillaRequiemPlugin.SOUL_ABILITY_CONFIG), RespawnCopyStrategy.LOSSLESS_ONLY);
         registry.registerFor(MobEntity.class, SkeletonBoneComponent.KEY, SkeletonBoneComponent::new);
         registry.registerFor(MobEntity.class, AttritionFocus.KEY, p -> new SimpleAttritionFocus());

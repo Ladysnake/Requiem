@@ -32,58 +32,30 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.requiem.core.entity.ability;
+package ladysnake.requiem.mixin.common.entity;
 
-import ladysnake.requiem.api.v1.entity.ability.DirectAbility;
-import net.minecraft.entity.Entity;
+import ladysnake.requiem.api.v1.entity.ability.MobAbilityController;
+import ladysnake.requiem.api.v1.entity.ability.MobAbilityRegistry;
+import ladysnake.requiem.core.ability.ImmutableMobAbilityController;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.util.ActionResult;
+import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.world.World;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-/**
- * A {@link DirectAbility} targets a specific entity
- *
- * @param <E> The type of mobs that can wield this ability
- */
-public abstract class DirectAbilityBase<E extends LivingEntity, T extends Entity> extends AbilityBase<E> implements DirectAbility<E, T> {
-
-    private final double range;
-    private final Class<T> targetType;
-
-    protected DirectAbilityBase(E owner, int cooldown, double range, Class<T> targetType) {
-        super(owner, cooldown);
-        this.range = range;
-        this.targetType = targetType;
+@Mixin(MobEntity.class)
+public abstract class MobEntityMixin extends LivingEntity {
+    protected MobEntityMixin(EntityType<? extends LivingEntity> entityType, World world) {
+        super(entityType, world);
     }
 
-    @Override
-    public Class<T> getTargetType() {
-        return targetType;
+    @Inject(method = "<init>", at = @At("RETURN"))
+    private void initAbilities(EntityType<? extends MobEntity> entityType, World world, CallbackInfo ci) {
+        @SuppressWarnings("unchecked") var controller = (ImmutableMobAbilityController<MobEntity>) MobAbilityController.get(this);
+        MobEntity self = (MobEntity) (Object) this;
+        controller.init(self, MobAbilityRegistry.instance().getConfig(self));
     }
-
-    @Override
-    public double getRange() {
-        return range;
-    }
-
-    @Override
-    public boolean canTarget(T target) {
-        // Stop hurting yourself
-        return target != this.owner;
-    }
-
-    /**
-     * Triggers the ability on a known entity.
-     *
-     * @param target the targeted entity
-     * @return <code>true</code> if the ability has been successfully used
-     */
-    @Override
-    public ActionResult trigger(T target) {
-        if (this.getCooldown() == 0 && this.canTarget(target)) {
-            return this.run(target) ? ActionResult.SUCCESS : ActionResult.FAIL;
-        }
-        return ActionResult.FAIL;
-    }
-
-    protected abstract boolean run(T target);
 }

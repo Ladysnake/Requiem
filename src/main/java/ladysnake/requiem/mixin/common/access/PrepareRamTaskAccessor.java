@@ -32,58 +32,25 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.requiem.core.entity.ability;
+package ladysnake.requiem.mixin.common.access;
 
-import ladysnake.requiem.api.v1.entity.ability.DirectAbility;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.util.ActionResult;
+import net.minecraft.entity.ai.brain.task.PrepareRamTask;
+import net.minecraft.entity.mob.PathAwareEntity;
+import net.minecraft.sound.SoundEvent;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.gen.Accessor;
 
-/**
- * A {@link DirectAbility} targets a specific entity
- *
- * @param <E> The type of mobs that can wield this ability
- */
-public abstract class DirectAbilityBase<E extends LivingEntity, T extends Entity> extends AbilityBase<E> implements DirectAbility<E, T> {
+import java.util.function.Function;
+import java.util.function.ToIntFunction;
 
-    private final double range;
-    private final Class<T> targetType;
-
-    protected DirectAbilityBase(E owner, int cooldown, double range, Class<T> targetType) {
-        super(owner, cooldown);
-        this.range = range;
-        this.targetType = targetType;
-    }
-
-    @Override
-    public Class<T> getTargetType() {
-        return targetType;
-    }
-
-    @Override
-    public double getRange() {
-        return range;
-    }
-
-    @Override
-    public boolean canTarget(T target) {
-        // Stop hurting yourself
-        return target != this.owner;
-    }
-
-    /**
-     * Triggers the ability on a known entity.
-     *
-     * @param target the targeted entity
-     * @return <code>true</code> if the ability has been successfully used
-     */
-    @Override
-    public ActionResult trigger(T target) {
-        if (this.getCooldown() == 0 && this.canTarget(target)) {
-            return this.run(target) ? ActionResult.SUCCESS : ActionResult.FAIL;
-        }
-        return ActionResult.FAIL;
-    }
-
-    protected abstract boolean run(T target);
+@Mixin(PrepareRamTask.class)
+public interface PrepareRamTaskAccessor<E extends PathAwareEntity> {
+    @Accessor
+    ToIntFunction<E> getCooldownFactory();
+    @Accessor
+    Function<E, SoundEvent> getSoundFactory();
+    @Accessor
+    float getSpeed();
+    @Accessor
+    int getMaxRamDistance();
 }

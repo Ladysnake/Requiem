@@ -41,6 +41,7 @@ import ladysnake.requiem.core.ability.PlayerAbilityController;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.network.ClientPlayerInteractionManager;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -57,8 +58,11 @@ public abstract class MinecraftClientMixin {
 
     @Inject(method = "doAttack", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/hit/HitResult;getType()Lnet/minecraft/util/hit/HitResult$Type;"), cancellable = true)
     private void tryUseDirectAttackAbility(CallbackInfo ci) {
-        if (PlayerAbilityController.get(this.player).useDirectAbility(AbilityType.ATTACK)) {
-            this.player.swingHand(Hand.MAIN_HAND);
+        ActionResult result = PlayerAbilityController.get(this.player).useDirectAbility(AbilityType.ATTACK);
+        if (result.isAccepted()) {
+            if (result.shouldSwingHand()) {
+                this.player.swingHand(Hand.MAIN_HAND);
+            }
             ci.cancel();
         }
     }
@@ -83,8 +87,11 @@ public abstract class MinecraftClientMixin {
     private void onInteractWithAir(CallbackInfo info) {
         // Check that the player is qualified to interact with something
         if (!this.interactionManager.isBreakingBlock() && !this.player.isRiding()) {
-            if (PlayerAbilityController.get(this.player).useDirectAbility(AbilityType.INTERACT)) {
-                this.player.swingHand(Hand.OFF_HAND);
+            ActionResult result = PlayerAbilityController.get(this.player).useDirectAbility(AbilityType.INTERACT);
+            if (result.isAccepted()) {
+                if (result.shouldSwingHand()) {
+                    this.player.swingHand(Hand.OFF_HAND);
+                }
             } else if (player.getMainHandStack().isEmpty() && MobAbilityController.get(player).useIndirect(AbilityType.INTERACT)) {
                 RequiemNetworking.sendIndirectAbilityUseMessage(AbilityType.INTERACT);
             }

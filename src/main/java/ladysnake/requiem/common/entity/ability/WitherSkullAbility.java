@@ -40,6 +40,7 @@ import ladysnake.requiem.core.entity.ability.AbilityBase;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.boss.WitherEntity;
 import net.minecraft.entity.projectile.WitherSkullEntity;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
@@ -152,7 +153,7 @@ public class WitherSkullAbility extends AbilityBase<WitherEntity> {
         }
 
         @Override
-        public boolean trigger(LivingEntity target) {
+        public ActionResult trigger(LivingEntity target) {
             int headIndex = RANDOM.nextInt(3);
             double g = getHeadX(headIndex);
             double h = getHeadY(headIndex);
@@ -161,7 +162,7 @@ public class WitherSkullAbility extends AbilityBase<WitherEntity> {
             double dirY = target.getY() + (double)target.getStandingEyeHeight() * 0.5D - h;
             double dirZ = target.getZ() - i;
             this.summonSkullWithTarget(g, h, i, dirX, dirY, dirZ);
-            return true;
+            return ActionResult.SUCCESS;
         }
     }
 }
