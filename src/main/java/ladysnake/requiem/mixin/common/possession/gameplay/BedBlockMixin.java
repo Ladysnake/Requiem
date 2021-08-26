@@ -32,16 +32,27 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.requiem.mixin.common.access;
+package ladysnake.requiem.mixin.common.possession.gameplay;
 
-import net.minecraft.entity.effect.StatusEffect;
-import net.minecraft.entity.effect.StatusEffectType;
+import net.minecraft.block.BedBlock;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerEntity.SleepFailureReason;
+import org.spongepowered.asm.mixin.Dynamic;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.gen.Accessor;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-// TODO 1.17 just use getType() directly
-@Mixin(StatusEffect.class)
-public interface StatusEffectAccessor {
-    @Accessor("type")
-    StatusEffectType requiem$getType();
+/**
+ * Same bugfix Somnus does, prevents the game from crashing when using {@link SleepFailureReason#OTHER_PROBLEM}
+ */
+@Mixin(BedBlock.class)
+public class BedBlockMixin {
+    @Dynamic
+    @Inject(at = @At(value = "INVOKE", target = "net/minecraft/entity/player/PlayerEntity.sendMessage(Lnet/minecraft/text/Text;Z)V"), method = "method_19283(Lnet/minecraft/entity/player/PlayerEntity;Lnet/minecraft/entity/player/PlayerEntity$SleepFailureReason;)V", cancellable = true)
+    private static void requiem$sendMessage(PlayerEntity unused, SleepFailureReason reason, CallbackInfo ci) {
+        if (reason.toText() == null) {
+            ci.cancel();
+        }
+    }
 }

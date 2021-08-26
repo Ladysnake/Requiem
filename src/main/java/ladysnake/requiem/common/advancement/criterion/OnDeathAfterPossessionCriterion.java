@@ -70,7 +70,7 @@ public class OnDeathAfterPossessionCriterion extends AbstractCriterion<OnDeathAf
     }
 
     public void handle(ServerPlayerEntity player, Entity entity, DamageSource deathCause) {
-        this.test(player, (conditions) -> conditions.test(player, entity, deathCause));
+        this.trigger(player, (conditions) -> conditions.test(player, entity, deathCause));
     }
 
     @Override

@@ -62,7 +62,7 @@ public class OnRemnantChoiceCriterion extends AbstractCriterion<OnRemnantChoiceC
     }
 
     public void handle(ServerPlayerEntity player, RemnantType chosenType) {
-        this.test(player, (conditions) -> conditions.test(chosenType));
+        this.trigger(player, (conditions) -> conditions.test(chosenType));
     }
 
     public static class Conditions extends AbstractCriterionConditions {

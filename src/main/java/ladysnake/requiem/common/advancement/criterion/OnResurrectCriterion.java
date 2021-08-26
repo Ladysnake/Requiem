@@ -59,7 +59,7 @@ public class OnResurrectCriterion extends AbstractCriterion<Conditions> {
     }
 
     public void handle(ServerPlayerEntity player, Entity body) {
-        this.test(player, conditions -> conditions.test(player, body));
+        this.trigger(player, conditions -> conditions.test(player, body));
     }
 
     @Override

@@ -68,7 +68,7 @@ public class TransformedPossessedCriterion extends AbstractCriterion<Transformed
     }
 
     public void handle(ServerPlayerEntity player, LivingEntity before, LivingEntity after, boolean cure) {
-        this.test(player, (conditions) -> conditions.test(player, before, after, cure));
+        this.trigger(player, (conditions) -> conditions.test(player, before, after, cure));
     }
 
     @Override

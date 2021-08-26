@@ -36,6 +36,7 @@
     "inventory.balance.EntityPredicatesEquipableMixin",
     "opus.LecternBlockEntityMixin",
     "possession.gameplay.AbstractPiglinEntityMixin",
+    "possession.gameplay.BedBlockMixin",
     "possession.gameplay.BlockItemMixin",
     "possession.gameplay.BowItemMixin",
     "possession.gameplay.CatEntityMixin",

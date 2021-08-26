@@ -106,7 +106,7 @@ import ladysnake.requiem.core.entity.ability.SnowmanSnowballAbility;
 import ladysnake.requiem.core.resurrection.ResurrectionDataLoader;
 import ladysnake.requiem.core.tag.RequiemCoreTags;
 import ladysnake.requiem.core.util.RayHelper;
-import ladysnake.requiem.mixin.common.access.StatusEffectAccessor;
+import net.fabricmc.fabric.api.entity.event.v1.EntitySleepEvents;
 import net.fabricmc.fabric.api.event.player.AttackBlockCallback;
 import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
@@ -120,8 +120,8 @@ import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.boss.WitherEntity;
 import net.minecraft.entity.effect.StatusEffect;
+import net.minecraft.entity.effect.StatusEffectCategory;
 import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.effect.StatusEffectType;
 import net.minecraft.entity.mob.CreeperEntity;
 import net.minecraft.entity.mob.EndermanEntity;
 import net.minecraft.entity.mob.EvokerEntity;
@@ -145,7 +145,6 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
-import top.theillusivec4.somnus.api.PlayerSleepEvents;
 
 import javax.annotation.Nonnull;
 import java.util.HashMap;
@@ -356,7 +355,7 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
                 }
             }
         );
-        PlayerSleepEvents.TRY_SLEEP.register((player, pos) -> {
+        EntitySleepEvents.ALLOW_SLEEPING.register((player, pos) -> {
             MobEntity host = PossessionComponent.getHost(player);
             if (host != null && !RequiemCoreTags.Entity.SLEEPERS.contains(host.getType())) {
                 player.sendMessage(new TranslatableText("requiem:block.minecraft.bed.invalid_body"), true);
@@ -524,7 +523,7 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
 
     private static void revertHarmfulEffects(PlayerEntity player, Map<StatusEffect, StatusEffectInstance> before, Map<StatusEffect, StatusEffectInstance> after) {
         for (StatusEffect statusEffect : after.keySet()) {
-            if (((StatusEffectAccessor) statusEffect).requiem$getType() == StatusEffectType.HARMFUL) {
+            if (statusEffect.getCategory() == StatusEffectCategory.HARMFUL) {
                 StatusEffectInstance previous = before.get(statusEffect);
                 StatusEffectInstance current = after.get(statusEffect);
                 if (!Objects.equals(previous, current)) {
