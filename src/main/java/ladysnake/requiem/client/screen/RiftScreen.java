@@ -85,6 +85,8 @@ public class RiftScreen extends HandledScreen<RiftScreenHandler> {
             int obeliskV = 0;
             int sourceObeliskV = 16;
             int selectedObeliskV = 32;
+            int textureHeight = 48;
+            int textureWidth = 16;
             int iconSize = 16;
             int iconHalfSize = iconSize / 2;
             int centerX = this.width / 2;
@@ -95,19 +97,66 @@ public class RiftScreen extends HandledScreen<RiftScreenHandler> {
 
             for (BlockPos pos : this.handler.getObeliskPositions()) {
                 Vec3f projected = worldToScreenSpace(this.projectionViewMatrix, pos);
-                // Only render the obelisks that are in front of the player
-                if (projected.getZ() > 0) {
-                    int v;
-                    if (pos.equals(this.getScreenHandler().getSource())) {
-                        v = sourceObeliskV;
-                    } else if (projected.getX() > (centerX - iconHalfSize) && projected.getX() < (centerX + iconHalfSize) && projected.getY() > (centerY - iconHalfSize) && projected.getY() < (centerY + iconHalfSize)) {
-                        v = selectedObeliskV;
-                        selected.add(pos);
-                    } else {
-                        v = obeliskV;
+                int x, y;
+
+                if (projected.getZ() > 0
+                    && projected.getX() >= 0 && projected.getX() <= width
+                    && projected.getY() >= 0 && projected.getY() <= height) {
+                    // Obelisk is in front of us, just display the icon on the screen
+                    x = Math.round(projected.getX());
+                    y = Math.round(projected.getY());
+                } else {
+                    // Obelisk is outside the screen's boundaries
+                    if (projected.getZ() < 0) {
+                        // when the point gets behind us, it becomes mirrored, so we have to un-mirror it
+                        projected.set(width - projected.getX(), height - projected.getY(), projected.getZ());
                     }
-                    drawTexture(matrices, Math.round(projected.getX()) - iconHalfSize, Math.round(projected.getY()) - iconHalfSize, this.getZOffset(), 0, v, iconSize, iconSize, 48, 16);
+
+                    // Project point to border of the screen
+                    // https://stackoverflow.com/questions/1585525/how-to-find-the-intersection-point-between-a-line-and-a-rectangle
+                    double slope = (projected.getY() - centerY) / (projected.getX() - centerX);
+                    double heightAtCenterX = slope * (width * 0.5);
+                    double lengthAtCenterY = (height * 0.5) / slope;
+
+                    if (height * -0.5 <= heightAtCenterX && heightAtCenterX <= height * 0.5) {
+                        if (projected.getX() > centerX) {
+                            // Right edge
+                            x = width;
+                        } else {
+                            // Left edge
+                            x = 0;
+                            // Left from center means negative slope, which means inverted Y shift
+                            heightAtCenterX = -heightAtCenterX;
+                        }
+                        y = (int) Math.round(centerY + heightAtCenterX);
+                    } else {
+                        if (projected.getY() > centerY) {
+                            // Bottom edge (bottom edge is bigger Y)
+                            y = height;
+                        } else {
+                            // Top edge
+                            y = 0;
+                            // Above center means negative slope, which means inverted X shift
+                            lengthAtCenterY = -lengthAtCenterY;
+                        }
+                        x = (int) Math.round(centerX + lengthAtCenterY);
+                    }
                 }
+
+                x = MathHelper.clamp(x, 0, width);
+                y = MathHelper.clamp(y, 0, height);
+
+                int v;
+                if (pos.equals(this.getScreenHandler().getSource())) {
+                    v = sourceObeliskV;
+                } else if (x > (centerX - iconHalfSize) && x < (centerX + iconHalfSize) && y > (centerY - iconHalfSize) && y < (centerY + iconHalfSize)) {
+                    v = selectedObeliskV;
+                    selected.add(pos);
+                } else {
+                    v = obeliskV;
+                }
+
+                drawTexture(matrices, x - iconHalfSize, y - iconHalfSize, this.getZOffset(), 0, v, iconSize, iconSize, textureHeight, textureWidth);
             }
 
             if (!selected.isEmpty()) {
@@ -150,27 +199,37 @@ public class RiftScreen extends HandledScreen<RiftScreenHandler> {
 
     private Vec3f worldToScreenSpace(Matrix4f projectionViewMatrix, BlockPos worldPos) {
         Vec3d cameraPos = Objects.requireNonNull(client).gameRenderer.getCamera().getPos();
-        Vector4f clipSpacePos = new Vector4f(
-            (float) (worldPos.getX() + 0.5F - cameraPos.getX()),
-            (float) (worldPos.getY() + 0.5F - cameraPos.getY()),
-            (float) (worldPos.getZ() + 0.5F - cameraPos.getZ()),
-            1.0F
-        );
-        clipSpacePos.transform(projectionViewMatrix);
+        Vector4f clipSpacePos = worldToClipSpace(projectionViewMatrix, worldPos, cameraPos, 0);
 
-        // If W is strictly negative, the obelisk is behind us and we do not want to display it
-        // If W is 0, we cannot perform the division
-        if (clipSpacePos.getW() <= 0) {
-            return Vec3f.ZERO;
+        // If W is 0, we cannot perform the division, so we retry with a little nudge
+        if (clipSpacePos.getW() == 0) {
+            clipSpacePos = worldToClipSpace(projectionViewMatrix, worldPos, cameraPos, 0.00001F);
         }
 
-        clipSpacePos.normalizeProjectiveCoordinates();
+        float sign = Math.signum(clipSpacePos.getW());
+        try {
+            clipSpacePos.normalizeProjectiveCoordinates();
+        } catch (ArithmeticException e) {
+            // Should be pretty rare, but may hypothetically happen ?
+            return Vec3f.ZERO;
+        }
 
         return new Vec3f(
             ((clipSpacePos.getX() + 1f) / 2f) * this.width,
             ((-clipSpacePos.getY() + 1f) / 2f) * this.height,   // screen coordinates origin are at top-left
-            clipSpacePos.getZ() // we only use the depth to know if a point is behind another point
+            Math.abs(clipSpacePos.getZ()) * sign // we use the depth to know if a point is behind us, or behind another point
         );
+    }
+
+    private Vector4f worldToClipSpace(Matrix4f projectionViewMatrix, BlockPos worldPos, Vec3d cameraPos, float nudge) {
+        Vector4f clipSpacePos = new Vector4f(
+            (float) (worldPos.getX() + 0.5F - cameraPos.getX() + nudge),
+            (float) (worldPos.getY() + 0.5F - cameraPos.getY() + nudge),
+            (float) (worldPos.getZ() + 0.5F - cameraPos.getZ() + nudge),
+            1.0F
+        );
+        clipSpacePos.transform(projectionViewMatrix);
+        return clipSpacePos;
     }
 
     @Override
