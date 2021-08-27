@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "#  ",
+    "## ",
+    "###"
+  ],
+  "key": {
+    "#": {
+      "item": "requiem:tachylite/tachylite"
+    }
+  },
+  "result": {
+    "item": "requiem:tachylite/tachylite_stairs",
+    "count": 4
+  }
+}

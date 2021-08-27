@@ -37,6 +37,7 @@ package ladysnake.requiem.compat;
 import ladysnake.requiem.api.v1.entity.ability.DirectAbility;
 import ladysnake.snowmercy.common.entity.SnugglesEntity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.util.ActionResult;
 
 public class SnugglesBoomAbility implements DirectAbility<SnugglesEntity, LivingEntity> {
     private final SnugglesEntity mrSnuggles;
@@ -61,11 +62,11 @@ public class SnugglesBoomAbility implements DirectAbility<SnugglesEntity, Living
     }
 
     @Override
-    public boolean trigger(LivingEntity target) {
+    public ActionResult trigger(LivingEntity target) {
         if (this.canTarget(target)) {
             this.mrSnuggles.explode();
-            return true;
+            return ActionResult.SUCCESS;
         }
-        return false;
+        return ActionResult.FAIL;
     }
 }

@@ -62,10 +62,8 @@ public final class RequiemBlocks {
     public static final PillarBlock CHISELED_TACHYLITE_PILLAR = makePillar(CHISELED_TACHYLITE);
     public static final SlabBlock CHISELED_TACHYLITE_SLAB = makeSlab(CHISELED_TACHYLITE);
     public static final StairsBlock CHISELED_TACHYLITE_STAIRS = makeStairs(CHISELED_TACHYLITE);
-    public static final Block POLISHED_TACHYLITE = makeVariant(TACHYLITE, "tachylite/polished");
-    public static final PillarBlock POLISHED_TACHYLITE_PILLAR = makePillar(POLISHED_TACHYLITE);
-    public static final SlabBlock POLISHED_TACHYLITE_SLAB = makeSlab(POLISHED_TACHYLITE);
-    public static final StairsBlock POLISHED_TACHYLITE_STAIRS = makeStairs(POLISHED_TACHYLITE);
+    public static final SlabBlock TACHYLITE_SLAB = makeSlab(TACHYLITE);
+    public static final StairsBlock TACHYLITE_STAIRS = makeStairs(TACHYLITE);
     public static final Block SCRAPED_TACHYLITE = makeVariant(TACHYLITE, "tachylite/scraped");
     public static final Block TACHYLITE_RUNESTONE = make(() -> new InertRunestoneBlock(AbstractBlock.Settings.copy(TACHYLITE)), "tachylite/runestone");
     public static final RunestoneBlock RUNIC_TACHYLITE_ATTRITION = makeRunic("attrition", 3);

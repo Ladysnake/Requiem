@@ -42,6 +42,7 @@
   "depends": {
     "minecraft": ">=1.17-",
     "fabric-api-base": "*",
+    "fabric": ">=0.39",
     "requiemapi": "${version}",
     "satin": "^1.6.0-",
     "cardinal-components-base": "^3.0.0-",
@@ -69,7 +70,8 @@
   "description": "Death revamped and ethereal powers",
   "authors": [
     "Pyrofab",
-    "doctor4t"
+    "doctor4t",
+    "sekoia"
   ],
   "contributors": [
     "UpcraftLP"

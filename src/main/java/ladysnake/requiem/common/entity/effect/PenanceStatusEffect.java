@@ -48,8 +48,8 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.AttributeContainer;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffect;
+import net.minecraft.entity.effect.StatusEffectCategory;
 import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.effect.StatusEffectType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 
@@ -59,7 +59,7 @@ public class PenanceStatusEffect extends StatusEffect implements StickyStatusEff
     public static final int PLAYER_BAN_THRESHOLD = 1;
     public static final int MOB_BAN_THRESHOLD = 2;
 
-    public PenanceStatusEffect(StatusEffectType type, int color) {
+    public PenanceStatusEffect(StatusEffectCategory type, int color) {
         super(type, color);
     }
 

@@ -44,19 +44,33 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Identifier;
 
 import java.util.Arrays;
 import java.util.List;
 
 public class ImmutableMobAbilityController<T extends LivingEntity> implements MobAbilityController {
-    private final List<MobAbility<? super T>> abilities;
-    private final IndirectAbility<? super T> indirectAttack;
-    private final IndirectAbility<? super T> indirectInteraction;
-    private final DirectAbility<? super T, ?> directAttack;
-    private final DirectAbility<? super T, ?> directInteraction;
+    private List<MobAbility<? super T>> abilities;
+    private IndirectAbility<? super T> indirectAttack;
+    private IndirectAbility<? super T> indirectInteraction;
+    private DirectAbility<? super T, ?> directAttack;
+    private DirectAbility<? super T, ?> directInteraction;
 
-    public ImmutableMobAbilityController(MobAbilityConfig<? super T> config, T owner) {
+    /**
+     * Deferred initialization constructor
+     *
+     * <p>Required because some abilities require perusing through a mob's brain, which is not yet initialized during component initialization
+     */
+    public ImmutableMobAbilityController() {
+        super();
+    }
+
+    public ImmutableMobAbilityController(T owner, MobAbilityConfig<? super T> config) {
+        this.init(owner, config);
+    }
+
+    public void init(T owner, MobAbilityConfig<? super T> config) {
         this.directAttack = config.getDirectAbility(owner, AbilityType.ATTACK);
         this.directInteraction = config.getDirectAbility(owner, AbilityType.INTERACT);
         this.indirectAttack = config.getIndirectAbility(owner, AbilityType.ATTACK);
@@ -75,7 +89,7 @@ public class ImmutableMobAbilityController<T extends LivingEntity> implements Mo
     }
 
     @Override
-    public boolean useDirect(AbilityType type, Entity target) {
+    public ActionResult useDirect(AbilityType type, Entity target) {
         return this.use(this.getDirect(type), target);
     }
 
@@ -123,12 +137,12 @@ public class ImmutableMobAbilityController<T extends LivingEntity> implements Mo
         return false;
     }
 
-    private <E extends Entity> boolean use(DirectAbility<? super T, E> ability, Entity target) {
+    private <E extends Entity> ActionResult use(DirectAbility<? super T, E> ability, Entity target) {
         Class<E> targetType = ability.getTargetType();
         if (targetType.isInstance(target)) {
             return ability.trigger(targetType.cast(target));
         }
-        return false;
+        return ActionResult.FAIL;
     }
 
     private DirectAbility<? super T, ?> getDirect(AbilityType type) {

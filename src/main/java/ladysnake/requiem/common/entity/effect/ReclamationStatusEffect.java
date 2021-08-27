@@ -42,7 +42,7 @@ import ladysnake.requiem.common.sound.RequiemSoundEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffect;
-import net.minecraft.entity.effect.StatusEffectType;
+import net.minecraft.entity.effect.StatusEffectCategory;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 
@@ -52,7 +52,7 @@ import java.util.WeakHashMap;
 public class ReclamationStatusEffect extends StatusEffect implements StickyStatusEffect {
     private static final Map<LivingEntity, Integer> playersToHeal = new WeakHashMap<>();
 
-    public ReclamationStatusEffect(StatusEffectType type, int color) {
+    public ReclamationStatusEffect(StatusEffectCategory type, int color) {
         super(type, color);
     }
 

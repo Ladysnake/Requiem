@@ -34,8 +34,10 @@
  */
 package ladysnake.requiem.mixin.common.possession.gameplay;
 
+import ladysnake.requiem.api.v1.event.minecraft.JumpingMountEvents;
 import ladysnake.requiem.api.v1.event.minecraft.MobTravelRidingCallback;
 import ladysnake.requiem.api.v1.possession.Possessable;
+import ladysnake.requiem.common.possession.ExternalJumpingMount;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemSteerable;
@@ -55,9 +57,6 @@ public abstract class MobEntityMixin extends LivingEntityMixin implements Posses
     private @Nullable Float requiem$previousStepHeight;
 
     @Shadow
-    public abstract boolean canBeControlledByRider();
-
-    @Shadow
     public abstract void setMovementSpeed(float movementSpeed);
 
     public MobEntityMixin(EntityType<?> type, World world) {
@@ -71,7 +70,12 @@ public abstract class MobEntityMixin extends LivingEntityMixin implements Posses
             this.requiem$previousStepHeight = null;
         }
 
-        // Straight up copied from HorseBaseEntity#travel, minus the jumping code
+        LivingEntity self = (LivingEntity) (Object) this;
+        if (JumpingMountEvents.MOUNT_CHECK.invoker().getJumpingMount(self) instanceof ExternalJumpingMount jumpingMount) {
+            jumpingMount.attemptJump();
+        }
+
+        // Straight up copied from HorseBaseEntity#travel
         // Also replaces canBeControlledByRider and getPrimaryPassenger with more generic alternatives
         if (this.isAlive() && this.hasPassengers()) {
             Entity primaryPassenger = this.getPrimaryPassenger();
@@ -119,6 +123,11 @@ public abstract class MobEntityMixin extends LivingEntityMixin implements Posses
 
     @Override
     protected void requiem$travelEnd(Vec3d movementInput, CallbackInfo ci) {
-        this.updateLimbs((LivingEntity) (Object) this, false);
+        LivingEntity self = (LivingEntity) (Object) this;
+        this.updateLimbs(self, false);
+
+        if (this.onGround && JumpingMountEvents.MOUNT_CHECK.invoker().getJumpingMount(self) instanceof ExternalJumpingMount jumpingMount) {
+            jumpingMount.endJump();
+        }
     }
 }

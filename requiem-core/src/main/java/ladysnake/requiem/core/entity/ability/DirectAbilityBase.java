@@ -37,6 +37,7 @@ package ladysnake.requiem.core.entity.ability;
 import ladysnake.requiem.api.v1.entity.ability.DirectAbility;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.util.ActionResult;
 
 /**
  * A {@link DirectAbility} targets a specific entity
@@ -77,11 +78,11 @@ public abstract class DirectAbilityBase<E extends LivingEntity, T extends Entity
      * @return <code>true</code> if the ability has been successfully used
      */
     @Override
-    public boolean trigger(T target) {
+    public ActionResult trigger(T target) {
         if (this.getCooldown() == 0 && this.canTarget(target)) {
-            return this.run(target);
+            return this.run(target) ? ActionResult.SUCCESS : ActionResult.FAIL;
         }
-        return false;
+        return ActionResult.FAIL;
     }
 
     protected abstract boolean run(T target);

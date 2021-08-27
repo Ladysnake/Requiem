@@ -34,6 +34,12 @@
  */
 package ladysnake.requiem.common.util;
 
+import net.minecraft.block.EntityShapeContext;
+
+/**
+ * This interface is technically redundant now that {@link EntityShapeContext#getEntity()} exists,
+ * but it's a bit more performant so why not
+ */
 public interface ExtendedShapeContext {
     boolean requiem_isNoClipping();
 }

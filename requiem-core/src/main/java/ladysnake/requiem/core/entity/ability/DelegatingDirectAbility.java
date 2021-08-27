@@ -40,6 +40,7 @@ import ladysnake.requiem.api.v1.entity.ability.MobAbilityController;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Identifier;
 
 public class DelegatingDirectAbility<E extends LivingEntity, T extends Entity> implements DirectAbility<E, T> {
@@ -73,7 +74,7 @@ public class DelegatingDirectAbility<E extends LivingEntity, T extends Entity> i
     }
 
     @Override
-    public boolean trigger(T target) {
+    public ActionResult trigger(T target) {
         return this.getDelegate().useDirect(this.delegatedType, target);
     }
 

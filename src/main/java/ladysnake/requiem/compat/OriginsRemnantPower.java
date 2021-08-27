@@ -38,7 +38,6 @@ import io.github.apace100.apoli.power.Power;
 import io.github.apace100.apoli.power.PowerType;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.api.v1.remnant.RemnantType;
-import ladysnake.requiem.common.remnant.RemnantTypes;
 import net.minecraft.entity.LivingEntity;
 
 public class OriginsRemnantPower extends Power {
@@ -52,15 +51,5 @@ public class OriginsRemnantPower extends Power {
     @Override
     public void onGained() {
         RemnantComponent.KEY.maybeGet(this.entity).ifPresent(r -> r.become(this.remnantType, true));
-    }
-
-    @Override
-    public void onAdded() {
-        RemnantComponent.KEY.maybeGet(this.entity).ifPresent(r -> r.become(this.remnantType, false));
-    }
-
-    @Override
-    public void onLost() {
-        RemnantComponent.KEY.maybeGet(this.entity).ifPresent(r -> r.become(RemnantTypes.MORTAL, false));
     }
 }

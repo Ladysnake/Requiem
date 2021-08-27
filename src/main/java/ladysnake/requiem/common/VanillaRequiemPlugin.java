@@ -81,6 +81,7 @@ import ladysnake.requiem.common.entity.ability.EvokerFangAbility;
 import ladysnake.requiem.common.entity.ability.EvokerVexAbility;
 import ladysnake.requiem.common.entity.ability.EvokerWololoAbility;
 import ladysnake.requiem.common.entity.ability.GhastFireballAbility;
+import ladysnake.requiem.common.entity.ability.GoatRamAbility;
 import ladysnake.requiem.common.entity.ability.GuardianBeamAbility;
 import ladysnake.requiem.common.entity.ability.ShulkerPeekAbility;
 import ladysnake.requiem.common.entity.ability.ShulkerShootAbility;
@@ -105,7 +106,7 @@ import ladysnake.requiem.core.entity.ability.SnowmanSnowballAbility;
 import ladysnake.requiem.core.resurrection.ResurrectionDataLoader;
 import ladysnake.requiem.core.tag.RequiemCoreTags;
 import ladysnake.requiem.core.util.RayHelper;
-import ladysnake.requiem.mixin.common.access.StatusEffectAccessor;
+import net.fabricmc.fabric.api.entity.event.v1.EntitySleepEvents;
 import net.fabricmc.fabric.api.event.player.AttackBlockCallback;
 import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
@@ -119,8 +120,8 @@ import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.boss.WitherEntity;
 import net.minecraft.entity.effect.StatusEffect;
+import net.minecraft.entity.effect.StatusEffectCategory;
 import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.effect.StatusEffectType;
 import net.minecraft.entity.mob.CreeperEntity;
 import net.minecraft.entity.mob.EndermanEntity;
 import net.minecraft.entity.mob.EvokerEntity;
@@ -128,6 +129,7 @@ import net.minecraft.entity.mob.GuardianEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.ShulkerEntity;
 import net.minecraft.entity.mob.WitchEntity;
+import net.minecraft.entity.passive.GoatEntity;
 import net.minecraft.entity.passive.LlamaEntity;
 import net.minecraft.entity.passive.SnowGolemEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -143,7 +145,6 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
-import top.theillusivec4.somnus.api.PlayerSleepEvents;
 
 import javax.annotation.Nonnull;
 import java.util.HashMap;
@@ -229,8 +230,11 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
         // Prevent incorporeal players from hitting anything
         AttackEntityCallback.EVENT.register((player, world, hand, target, hitResult) -> {
             // Proxy melee attacks
-            if (MobAbilityController.get(player).useDirect(AbilityType.ATTACK, target)) {
-                player.resetLastAttackedTicks();
+            ActionResult result = MobAbilityController.get(player).useDirect(AbilityType.ATTACK, target);
+            if (result.isAccepted()) {
+                if (result.shouldSwingHand()) {
+                    player.resetLastAttackedTicks();
+                }
                 return ActionResult.SUCCESS;
             }
             return isInteractionForbidden(player, true) ? ActionResult.FAIL : ActionResult.PASS;
@@ -351,7 +355,7 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
                 }
             }
         );
-        PlayerSleepEvents.TRY_SLEEP.register((player, pos) -> {
+        EntitySleepEvents.ALLOW_SLEEPING.register((player, pos) -> {
             MobEntity host = PossessionComponent.getHost(player);
             if (host != null && !RequiemCoreTags.Entity.SLEEPERS.contains(host.getType())) {
                 player.sendMessage(new TranslatableText("requiem:block.minecraft.bed.invalid_body"), true);
@@ -393,6 +397,7 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
             .indirectInteract(EvokerVexAbility::new)
             .build());
         abilityRegistry.register(EntityType.GHAST, MobAbilityConfig.builder().indirectAttack(GhastFireballAbility::new).build());
+        abilityRegistry.register(EntityType.GOAT, MobAbilityConfig.<GoatEntity>builder().directAttack(GoatRamAbility::create).build());
         abilityRegistry.register(EntityType.GUARDIAN, MobAbilityConfig.<GuardianEntity>builder().directAttack(GuardianBeamAbility::new).build());
         abilityRegistry.register(EntityType.ELDER_GUARDIAN, MobAbilityConfig.<GuardianEntity>builder().directAttack(GuardianBeamAbility::new).build());
         abilityRegistry.register(EntityType.LLAMA, MobAbilityConfig.<LlamaEntity>builder().directAttack(RangedAttackAbility::new).build());
@@ -518,7 +523,7 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
 
     private static void revertHarmfulEffects(PlayerEntity player, Map<StatusEffect, StatusEffectInstance> before, Map<StatusEffect, StatusEffectInstance> after) {
         for (StatusEffect statusEffect : after.keySet()) {
-            if (((StatusEffectAccessor) statusEffect).requiem$getType() == StatusEffectType.HARMFUL) {
+            if (statusEffect.getCategory() == StatusEffectCategory.HARMFUL) {
                 StatusEffectInstance previous = before.get(statusEffect);
                 StatusEffectInstance current = after.get(statusEffect);
                 if (!Objects.equals(previous, current)) {

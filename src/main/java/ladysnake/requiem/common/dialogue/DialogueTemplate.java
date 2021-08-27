@@ -50,7 +50,7 @@ public final class DialogueTemplate {
     // so with a proper equals and hashcode implementation, we end up with a stupid identity mismatch
     // and this identity mismatch snowballs into an error if a third reload happens (which always happens with datapacks on)
     // this was hell to debug and I hate mojang but here we are
-    // so what does all this mean ? It means no record lol (or having to break Record's contract)
+    // so what does all this mean ? It means no using record instead of class lol (or having to break Record's contract)
 
     public static final Codec<DialogueTemplate> CODEC = codec(MoreCodecs.DYNAMIC_JSON);
     public static final Codec<DialogueTemplate> NETWORK_CODEC = codec(MoreCodecs.STRING_JSON);

@@ -56,7 +56,7 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity {
 
     @Shadow public abstract ServerWorld getServerWorld();
 
-    @Inject(method = "onSpawn", at = @At("RETURN"))
+    @Inject(method = "onSpawn()V", at = @At("RETURN"))
     private void onSpawn(CallbackInfo ci) {
         AttritionFocus.KEY.get(this.world.getScoreboard()).applyAttrition(this);
     }

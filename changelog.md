@@ -5,6 +5,17 @@ Version 2.0.0
 
 **Really important warning: future alphas are extremely likely to break compatibility with worlds started with this alpha. Don't start using those versions on any world you care about.**
 
+### Changes in Alpha 11
+- Removed hardcore death free ticket
+- Removed polished tachylite blocks
+- Added the ability for horses and goats to do charged jumps
+- Added the ability for goats to do ram attacks
+- Tweaked tachylite textures
+- Fixed origins compatibility causing unwanted remnant state resets
+- Fixed a dedicated server crash
+- Now requires Fabric API >0.39
+    - This fixes a crash when dying or possessing a mob
+
 ### Changes in Alpha 10
 - Added (heavily WIP) obelisk rifts, a new way to travel between obelisks as a dissociated soul
 - Added some particle effects for mobs that have been converted during possession (can be possessed without emancipation)
@@ -114,7 +125,9 @@ Updated to MC 1.17
 **Changes**
 - Some datapack things have changed
     - Dialogues are now in the `requiem:requiem/dialogues` directory
+- Requiem doesn't save you anymore in Hardcore - you will need to get the new stuff first to be able to leave your puny body
 - Possessed pillagers can now ride ravagers
+- Possessed horses can now do charged jumps
 - The backgrounds for soul status effects have changed to reflect that they are no longer attrition exclusives
 - The texture for Humanity enchantment books has been slightly tweaked, because why not
 - Whether possessed entities can sleep is now controlled by the `requiem:regular_sleepers` tag
@@ -153,6 +166,15 @@ Updated to MC 1.17
 
 **Changes**
 - The "possess all mobs" config option is now off by default
+
+------------------------------------------------------
+Version 1.7.14
+------------------------------------------------------
+**Mod Compatibility**
+- Removed some Health Overlay compat that was probably not useful anymore (and prevented the build)
+
+**Fixes**
+- Fixed a shader compilation error on some graphic cards
 
 ------------------------------------------------------
 Version 1.7.13
