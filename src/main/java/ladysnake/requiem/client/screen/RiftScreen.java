@@ -34,16 +34,17 @@
  */
 package ladysnake.requiem.client.screen;
 
-import ladysnake.requiem.common.item.RequiemItems;
+import com.mojang.blaze3d.systems.RenderSystem;
+import ladysnake.requiem.Requiem;
 import ladysnake.requiem.common.network.RequiemNetworking;
 import ladysnake.requiem.common.screen.RiftScreenHandler;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.item.ItemStack;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Matrix4f;
@@ -57,6 +58,8 @@ import java.util.List;
 import java.util.Objects;
 
 public class RiftScreen extends HandledScreen<RiftScreenHandler> {
+    private static final Identifier RIFT_ICONS = Requiem.id("textures/gui/soul_rift.png");
+
     private @Nullable Matrix4f projectionViewMatrix;
     private @Nullable BlockPos currentMouseOver;
     private int selectionIndex = 0;
@@ -79,28 +82,31 @@ public class RiftScreen extends HandledScreen<RiftScreenHandler> {
     @Override
     protected void drawForeground(MatrixStack matrices, int mouseX, int mouseY) {
         if (this.projectionViewMatrix != null) {
-            ItemStack obeliskIcon = new ItemStack(RequiemItems.EMPTY_SOUL_VESSEL);
-            ItemStack selectedObeliskIcon = new ItemStack(RequiemItems.ICHOR_VESSEL_EMANCIPATION);
-            ItemStack sourceObeliskIcon = new ItemStack(RequiemItems.CREATIVE_SOUL_VESSEL);
+            int obeliskV = 0;
+            int sourceObeliskV = 16;
+            int selectedObeliskV = 32;
+            int iconSize = 16;
+            int iconHalfSize = iconSize / 2;
             int centerX = this.width / 2;
             int centerY = this.height / 2;
-            int iconHalfWidth = 8;
             this.currentMouseOver = null;
             List<BlockPos> selected = new ArrayList<>();
+            RenderSystem.setShaderTexture(0, RIFT_ICONS);
 
             for (BlockPos pos : this.handler.getObeliskPositions()) {
                 Vec3f projected = worldToScreenSpace(this.projectionViewMatrix, pos);
                 // Only render the obelisks that are in front of the player
                 if (projected.getZ() > 0) {
-                    ItemStack renderedStack = obeliskIcon;
+                    int v;
                     if (pos.equals(this.getScreenHandler().getSource())) {
-                        renderedStack = sourceObeliskIcon;
-                    } else if (projected.getX() > (centerX - iconHalfWidth) && projected.getX() < (centerX + iconHalfWidth) && projected.getY() > (centerY - iconHalfWidth) && projected.getY() < (centerY + iconHalfWidth)) {
-                        renderedStack = selectedObeliskIcon;
-                        this.currentMouseOver = pos;
+                        v = sourceObeliskV;
+                    } else if (projected.getX() > (centerX - iconHalfSize) && projected.getX() < (centerX + iconHalfSize) && projected.getY() > (centerY - iconHalfSize) && projected.getY() < (centerY + iconHalfSize)) {
+                        v = selectedObeliskV;
                         selected.add(pos);
+                    } else {
+                        v = obeliskV;
                     }
-                    this.itemRenderer.renderInGui(renderedStack, Math.round(projected.getX()) - iconHalfWidth, Math.round(projected.getY()) - iconHalfWidth);
+                    drawTexture(matrices, Math.round(projected.getX()) - iconHalfSize, Math.round(projected.getY()) - iconHalfSize, this.getZOffset(), 0, v, iconSize, iconSize, 48, 16);
                 }
             }
 
@@ -110,9 +116,17 @@ public class RiftScreen extends HandledScreen<RiftScreenHandler> {
                 List<Text> lines = new ArrayList<>(selected.size());
 
                 for (int i = 0; i < selected.size(); i++) {
-                    lines.add(new LiteralText(selected.get(i).toShortString()).formatted(
-                        i == selectedIndex ? Formatting.LIGHT_PURPLE : Formatting.GRAY
-                    ));
+                    BlockPos pos = selected.get(i);
+                    Formatting formatting;
+
+                    if (i == selectedIndex) {
+                        this.currentMouseOver = pos;
+                        formatting = Formatting.LIGHT_PURPLE;
+                    } else {
+                        formatting = Formatting.GRAY;
+                    }
+
+                    lines.add(new LiteralText(pos.toShortString()).formatted(formatting));
                 }
 
                 this.renderTooltip(matrices, lines, centerX, centerY);
