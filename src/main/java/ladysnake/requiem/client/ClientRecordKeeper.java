@@ -36,6 +36,7 @@ package ladysnake.requiem.client;
 
 import ladysnake.requiem.core.record.CommonRecordKeeper;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.registry.RegistryKey;
@@ -51,7 +52,8 @@ public class ClientRecordKeeper extends CommonRecordKeeper {
 
     @Override
     public Optional<World> getWorld(RegistryKey<World> worldKey) {
-        World world = MinecraftClient.getInstance().world;
+        // ClientRecordKeeper may be loaded serverside, and implicitly casting ClientWorld to World trips the verifier on there
+        ClientWorld world = MinecraftClient.getInstance().world;
         if (world == null) throw new IllegalStateException();
         if (world.getRegistryKey().equals(worldKey)) return Optional.of(world);
         return Optional.empty();

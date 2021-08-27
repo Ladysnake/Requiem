@@ -66,7 +66,7 @@ public class PossessedHitEntityCriterion extends AbstractCriterion<PossessedHitE
     }
 
     public void handle(ServerPlayerEntity player, Entity possessed, Entity entity, DamageSource source, float dealt, float taken, boolean blocked) {
-        this.test(player, (conditions) -> conditions.test(player, source, dealt, taken, blocked, possessed, entity));
+        this.trigger(player, (conditions) -> conditions.test(player, source, dealt, taken, blocked, possessed, entity));
     }
 
     @Override

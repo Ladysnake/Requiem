@@ -150,18 +150,20 @@ public final class RequiemClient {
             if (modelId.getNamespace().equals(Requiem.MOD_ID)) {
                 if (modelId.getPath().startsWith("block/tachylite/runic/activated/")) {
                     String effect = modelId.getPath().substring(modelId.getPath().lastIndexOf('/') + 1);
+                    String topRunestoneSpriteId = "requiem:block/neutral_runestone";
                     String runestoneSpriteId = "requiem:block/%s_runestone".formatted(effect);
                     String runeSpriteId = "requiem:block/%s_rune".formatted(effect);
-                    String topRuneSpriteId = "requiem:block/rune";
+                    String topRuneSpriteId = "requiem:block/neutral_rune";
                     return new SimpleUnbakedModel(mb -> {
+                        Sprite topRunestoneSprite = mb.getSprite(topRunestoneSpriteId);
                         Sprite runestoneSprite = mb.getSprite(runestoneSpriteId);
                         Sprite runeSprite = mb.getSprite(runeSpriteId);
                         Sprite topRuneSprite = mb.getSprite(topRuneSpriteId);
                         mb.box(mb.finder().find(),
-                            -1, d -> runestoneSprite,
+                            -1, d -> d.getAxis() == Direction.Axis.Y ? topRunestoneSprite : runestoneSprite,
                             0, 0, 0, 1, 1, 1);
                         mb.box(mb.finder().emissive(0, true).disableAo(0, true).disableDiffuse(0, true).blendMode(0, BlendMode.CUTOUT).find(),
-                            -1, d -> d.getAxis() == Direction.Axis.Y ? runeSprite : topRuneSprite,
+                            -1, d -> d.getAxis() == Direction.Axis.Y ? topRuneSprite : runeSprite,
                             0, 0, 0, 1, 1, 1);
                         return new SimpleBakedModel(mb.builder.build(), ModelHelper.MODEL_TRANSFORM_BLOCK, runestoneSprite, null);
                     }, List.of(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(runestoneSpriteId)), new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(runeSpriteId))));

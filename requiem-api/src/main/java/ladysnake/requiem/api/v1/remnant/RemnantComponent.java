@@ -91,7 +91,7 @@ public interface RemnantComponent extends AutoSyncedComponent, ServerTickingComp
      * the choice dialogue on future deaths.
      *
      * @param type the remnant type to become
-     * @param makeChoice whether
+     * @param makeChoice whether this state change should be counted as a player action
      * @see #getRemnantType()
      */
     void become(RemnantType type, boolean makeChoice);

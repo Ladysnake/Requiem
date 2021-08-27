@@ -27,6 +27,7 @@ import ladysnake.requiem.api.v1.internal.DummyMobAbilityController;
 import net.minecraft.entity.Entity;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Identifier;
 
 /**
@@ -44,7 +45,7 @@ public interface MobAbilityController extends TransientComponent, CommonTickingC
 
     boolean canTarget(AbilityType type, Entity target);
 
-    boolean useDirect(AbilityType type, Entity target);
+    ActionResult useDirect(AbilityType type, Entity target);
 
     boolean useIndirect(AbilityType type);
 

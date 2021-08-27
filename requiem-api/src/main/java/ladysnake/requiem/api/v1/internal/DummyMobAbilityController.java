@@ -24,6 +24,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Identifier;
 
 public class DummyMobAbilityController implements MobAbilityController {
@@ -40,8 +41,8 @@ public class DummyMobAbilityController implements MobAbilityController {
     }
 
     @Override
-    public boolean useDirect(AbilityType type, Entity target) {
-        return false;
+    public ActionResult useDirect(AbilityType type, Entity target) {
+        return ActionResult.FAIL;
     }
 
     @Override

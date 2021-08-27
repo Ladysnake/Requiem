@@ -56,7 +56,7 @@ public abstract class AbstractBakedModel implements BakedModel, FabricBakedModel
     }
 
     @Override
-    public Sprite getSprite() {
+    public Sprite getParticleSprite() {
         return this.sprite;
     }
 

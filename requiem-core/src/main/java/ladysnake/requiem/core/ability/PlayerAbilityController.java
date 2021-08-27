@@ -48,6 +48,7 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 
@@ -66,7 +67,7 @@ public class PlayerAbilityController implements MobAbilityController, AutoSynced
     private MobAbilityController delegate = DummyMobAbilityController.INSTANCE;
 
     public PlayerAbilityController(PlayerEntity player, MobAbilityConfig<PlayerEntity> soulConfig) {
-        this.soulAbilities = new ImmutableMobAbilityController<>(soulConfig, player);
+        this.soulAbilities = new ImmutableMobAbilityController<>(player, soulConfig);
         this.player = player;
     }
 
@@ -106,17 +107,18 @@ public class PlayerAbilityController implements MobAbilityController, AutoSynced
     }
 
     @CheckEnv(Env.CLIENT)
-    public boolean useDirectAbility(AbilityType type) {
+    public ActionResult useDirectAbility(AbilityType type) {
         Entity targetedEntity = this.getTargetedEntity(type);
 
         if (targetedEntity != null) {
-            if (this.useDirect(type, targetedEntity)) {
+            ActionResult result = this.useDirect(type, targetedEntity);
+            if (result.isAccepted()) {
                 RequiemCoreNetworking.sendAbilityUseMessage(type, targetedEntity);
-                return true;
             }
+            return result;
         }
 
-        return false;
+        return ActionResult.FAIL;
     }
 
     private void setDelegate(MobAbilityController delegate) {
@@ -150,7 +152,7 @@ public class PlayerAbilityController implements MobAbilityController, AutoSynced
     }
 
     @Override
-    public boolean useDirect(AbilityType type, Entity target) {
+    public ActionResult useDirect(AbilityType type, Entity target) {
         return delegate.useDirect(type, target);
     }
 

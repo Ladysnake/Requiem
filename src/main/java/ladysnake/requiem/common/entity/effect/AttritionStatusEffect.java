@@ -39,13 +39,12 @@ import ladysnake.requiem.api.v1.internal.StatusEffectReapplicator;
 import ladysnake.requiem.api.v1.possession.Possessable;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.api.v1.remnant.StickyStatusEffect;
-import ladysnake.requiem.common.remnant.RemnantTypes;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffect;
+import net.minecraft.entity.effect.StatusEffectCategory;
 import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.effect.StatusEffectType;
 import net.minecraft.entity.player.PlayerEntity;
 
 import javax.annotation.Nonnegative;
@@ -77,9 +76,6 @@ public class AttritionStatusEffect extends StatusEffect implements StickyStatusE
         addAttrition(target, amplifier, duration);
 
         if (expectedAmplifier > MAX_LEVEL && (!(target instanceof PlayerEntity) || target.world.getLevelProperties().isHardcore())) {
-            if (target instanceof PlayerEntity) {
-                RemnantComponent.get((PlayerEntity) target).become(RemnantTypes.MORTAL);
-            }
             target.damage(ATTRITION_HARDCORE_DEATH, Float.MAX_VALUE);
         }
     }
@@ -112,7 +108,7 @@ public class AttritionStatusEffect extends StatusEffect implements StickyStatusE
         }
     }
 
-    public AttritionStatusEffect(StatusEffectType type, int color) {
+    public AttritionStatusEffect(StatusEffectCategory type, int color) {
         super(type, color);
     }
 

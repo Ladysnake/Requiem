@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_column",
+  "textures": {
+    "end": "requiem:block/neutral_runestone",
+    "side": "requiem:block/neutral_runestone"
+  }
+}

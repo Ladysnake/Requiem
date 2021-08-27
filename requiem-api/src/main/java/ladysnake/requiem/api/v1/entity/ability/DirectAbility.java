@@ -21,6 +21,7 @@ import com.demonwav.mcdev.annotations.CheckEnv;
 import com.demonwav.mcdev.annotations.Env;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Identifier;
 
 public interface DirectAbility<E extends LivingEntity, T extends Entity> extends MobAbility<E> {
@@ -35,7 +36,7 @@ public interface DirectAbility<E extends LivingEntity, T extends Entity> extends
 
     boolean canTarget(T target);
 
-    boolean trigger(T target);
+    ActionResult trigger(T target);
 
     @CheckEnv(Env.CLIENT)
     default Identifier getIconTexture() {

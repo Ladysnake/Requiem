@@ -59,7 +59,7 @@ public class OnPossessionCriterion extends AbstractCriterion<OnPossessionCriteri
 
     public void handle(ServerPlayerEntity possessor, LivingEntity possessed) {
         LootContext lootContext = EntityPredicate.createAdvancementEntityLootContext(possessor, possessed);
-        this.test(possessor, (conditions) -> conditions.test(lootContext));
+        this.trigger(possessor, (conditions) -> conditions.test(lootContext));
     }
 
     @Override

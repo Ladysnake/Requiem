@@ -42,12 +42,12 @@ import ladysnake.requiem.common.network.RequiemNetworking;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.AttributeContainer;
 import net.minecraft.entity.effect.StatusEffect;
-import net.minecraft.entity.effect.StatusEffectType;
+import net.minecraft.entity.effect.StatusEffectCategory;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 
 public class EmancipationStatusEffect extends StatusEffect implements StickyStatusEffect {
-    public EmancipationStatusEffect(StatusEffectType type, int color) {
+    public EmancipationStatusEffect(StatusEffectCategory type, int color) {
         super(type, color);
     }
 

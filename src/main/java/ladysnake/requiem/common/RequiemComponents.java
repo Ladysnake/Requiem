@@ -43,7 +43,6 @@ import ladysnake.requiem.api.v1.dialogue.DialogueTracker;
 import ladysnake.requiem.api.v1.entity.CurableEntityComponent;
 import ladysnake.requiem.api.v1.entity.MovementAlterer;
 import ladysnake.requiem.api.v1.entity.ability.MobAbilityController;
-import ladysnake.requiem.api.v1.entity.ability.MobAbilityRegistry;
 import ladysnake.requiem.api.v1.internal.StatusEffectReapplicator;
 import ladysnake.requiem.api.v1.possession.PossessedData;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
@@ -62,6 +61,7 @@ import ladysnake.requiem.common.entity.cure.SimpleCurableEntityComponent;
 import ladysnake.requiem.common.entity.effect.PenanceComponent;
 import ladysnake.requiem.common.entity.effect.StatusEffectReapplicatorImpl;
 import ladysnake.requiem.common.gamerule.RequiemSyncedGamerules;
+import ladysnake.requiem.common.possession.DummyGoatJumpingMount;
 import ladysnake.requiem.common.possession.LootingPossessedData;
 import ladysnake.requiem.common.remnant.GlobalAttritionFocus;
 import ladysnake.requiem.common.remnant.PlayerBodyTracker;
@@ -80,6 +80,7 @@ import net.minecraft.entity.mob.EndermanEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.ZombieVillagerEntity;
 import net.minecraft.entity.mob.ZombifiedPiglinEntity;
+import net.minecraft.entity.passive.GoatEntity;
 
 public final class RequiemComponents implements EntityComponentInitializer, ScoreboardComponentInitializer {
 
@@ -94,8 +95,7 @@ public final class RequiemComponents implements EntityComponentInitializer, Scor
         registry.registerForPlayers(DialogueTracker.KEY, PlayerDialogueTracker::new, RespawnCopyStrategy.LOSSLESS_ONLY);
         registry.registerFor(EndermanEntity.class, WololoComponent.KEY, WololoComponent::create);
         registry.registerFor(MobEntity.class, PossessedData.KEY, LootingPossessedData::new);
-        registry.registerFor(MobEntity.class, MobAbilityController.KEY,
-            e -> new ImmutableMobAbilityController<>(MobAbilityRegistry.instance().getConfig(e), e));
+        registry.registerFor(MobEntity.class, MobAbilityController.KEY, e -> new ImmutableMobAbilityController<>());
         registry.registerForPlayers(MobAbilityController.KEY, player -> new PlayerAbilityController(player, VanillaRequiemPlugin.SOUL_ABILITY_CONFIG), RespawnCopyStrategy.LOSSLESS_ONLY);
         registry.registerFor(MobEntity.class, SkeletonBoneComponent.KEY, SkeletonBoneComponent::new);
         registry.registerFor(MobEntity.class, AttritionFocus.KEY, p -> new SimpleAttritionFocus());
@@ -108,6 +108,7 @@ public final class RequiemComponents implements EntityComponentInitializer, Scor
         registry.registerForPlayers(PlayerBodyTracker.KEY, PlayerBodyTracker::new, RespawnCopyStrategy.ALWAYS_COPY);
         registry.registerForPlayers(PenanceComponent.KEY, PenanceComponent::new, RespawnCopyStrategy.LOSSLESS_ONLY);
         registry.registerFor(LivingEntity.class, SoulHolderComponent.KEY, SoulHolderComponent::new);
+        registry.registerFor(GoatEntity.class, DummyGoatJumpingMount.KEY, DummyGoatJumpingMount::new);
     }
 
     @Override
