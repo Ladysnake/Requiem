@@ -61,6 +61,7 @@ import ladysnake.requiem.common.entity.cure.SimpleCurableEntityComponent;
 import ladysnake.requiem.common.entity.effect.PenanceComponent;
 import ladysnake.requiem.common.entity.effect.StatusEffectReapplicatorImpl;
 import ladysnake.requiem.common.gamerule.RequiemSyncedGamerules;
+import ladysnake.requiem.common.possession.DummyGoatJumpingMount;
 import ladysnake.requiem.common.possession.LootingPossessedData;
 import ladysnake.requiem.common.remnant.GlobalAttritionFocus;
 import ladysnake.requiem.common.remnant.PlayerBodyTracker;
@@ -79,6 +80,7 @@ import net.minecraft.entity.mob.EndermanEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.ZombieVillagerEntity;
 import net.minecraft.entity.mob.ZombifiedPiglinEntity;
+import net.minecraft.entity.passive.GoatEntity;
 
 public final class RequiemComponents implements EntityComponentInitializer, ScoreboardComponentInitializer {
 
@@ -106,6 +108,7 @@ public final class RequiemComponents implements EntityComponentInitializer, Scor
         registry.registerForPlayers(PlayerBodyTracker.KEY, PlayerBodyTracker::new, RespawnCopyStrategy.ALWAYS_COPY);
         registry.registerForPlayers(PenanceComponent.KEY, PenanceComponent::new, RespawnCopyStrategy.LOSSLESS_ONLY);
         registry.registerFor(LivingEntity.class, SoulHolderComponent.KEY, SoulHolderComponent::new);
+        registry.registerFor(GoatEntity.class, DummyGoatJumpingMount.KEY, DummyGoatJumpingMount::new);
     }
 
     @Override

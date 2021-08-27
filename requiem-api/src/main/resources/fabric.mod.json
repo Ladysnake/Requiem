@@ -53,7 +53,8 @@
       "requiem:global_record_keeper",
       "requiem:entity_clerk",
       "requiem:body_tracker",
-      "requiem:soul_holder"
+      "requiem:soul_holder",
+      "requiem:charged_jump"
     ]
   }
 }

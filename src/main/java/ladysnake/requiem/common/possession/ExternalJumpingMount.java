@@ -32,26 +32,12 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.requiem.core.mixin.access;
+package ladysnake.requiem.common.possession;
 
-import net.minecraft.entity.EntityDimensions;
-import net.minecraft.entity.EntityPose;
-import net.minecraft.entity.LivingEntity;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.gen.Accessor;
-import org.spongepowered.asm.mixin.gen.Invoker;
+import net.minecraft.entity.JumpingMount;
 
-@Mixin(LivingEntity.class)
-public interface LivingEntityAccessor {
-    @Accessor
-    void setJumpingCooldown(int cooldown);
+public interface ExternalJumpingMount extends JumpingMount {
+    void attemptJump();
 
-    @Invoker("damageShield")
-    void requiem$invokeDamageShield(float damage);
-
-    @Invoker("dropInventory")
-    void requiem$invokeDropInventory();
-
-    @Invoker("getEyeHeight")
-    float requiem$invokeGetEyeHeight(EntityPose pose, EntityDimensions size);
+    void endJump();
 }

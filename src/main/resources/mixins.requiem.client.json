@@ -30,6 +30,7 @@
     "possession.nightvision.LightmapTextureManagerMixin",
     "possession.render.GuardianEntityRendererMixin",
     "possession.render.ShulkerEntityModelMixin",
+    "possession.riding.ClientPlayerEntityMixin",
     "remnant.ClientPlayerEntityMixin",
     "remnant.ClientPlayerInteractionManagerMixin",
     "remnant.GameRendererMixin",
