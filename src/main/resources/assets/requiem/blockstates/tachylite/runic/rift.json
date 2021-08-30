@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "activated=false": {
+      "model": "requiem:block/tachylite/runic/rift"
+    },
+    "activated=true": {
+      "model": "requiem:block/tachylite/runic/activated/rift"
+    }
+  }
+}
