@@ -39,6 +39,7 @@ import ladysnake.requiem.api.v1.util.RequiemTargetPredicate;
 import ladysnake.requiem.common.enchantment.RequiemEnchantments;
 import ladysnake.requiem.common.item.FilledSoulVesselItem;
 import ladysnake.requiem.common.item.RequiemItems;
+import ladysnake.requiem.common.sound.RequiemSoundEvents;
 import net.minecraft.enchantment.EnchantmentLevelEntry;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ExperienceOrbEntity;
@@ -60,7 +61,6 @@ import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
@@ -162,31 +162,26 @@ public class MorticianEntity extends MerchantEntity {
 
     @Override
     protected SoundEvent getAmbientSound() {
-        return this.hasCustomer() ? SoundEvents.ENTITY_PIGLIN_ADMIRING_ITEM : SoundEvents.ENTITY_PIGLIN_AMBIENT;
+        return this.hasCustomer() ? RequiemSoundEvents.ENTITY_MORTICIAN_TRADE : RequiemSoundEvents.ENTITY_MORTICIAN_AMBIENT;
     }
 
     @Override
     protected SoundEvent getHurtSound(DamageSource source) {
-        return SoundEvents.ENTITY_ZOMBIFIED_PIGLIN_HURT;
+        return RequiemSoundEvents.ENTITY_MORTICIAN_HURT;
     }
 
     @Override
     protected SoundEvent getDeathSound() {
-        return SoundEvents.ENTITY_ZOMBIFIED_PIGLIN_DEATH;
-    }
-
-    @Override
-    protected SoundEvent getDrinkSound(ItemStack stack) {
-        return stack.isOf(Items.MILK_BUCKET) ? SoundEvents.ENTITY_WANDERING_TRADER_DRINK_MILK : SoundEvents.ENTITY_WANDERING_TRADER_DRINK_POTION;
+        return RequiemSoundEvents.ENTITY_MORTICIAN_DEATH;
     }
 
     @Override
     protected SoundEvent getTradingSound(boolean sold) {
-        return sold ? SoundEvents.ENTITY_PIGLIN_CELEBRATE : SoundEvents.ENTITY_PIGLIN_RETREAT;
+        return sold ? RequiemSoundEvents.ENTITY_MORTICIAN_YES: RequiemSoundEvents.ENTITY_MORTICIAN_NO;
     }
 
     @Override
     public SoundEvent getYesSound() {
-        return SoundEvents.ENTITY_PIGLIN_ADMIRING_ITEM;
+        return RequiemSoundEvents.ENTITY_MORTICIAN_YES;
     }
 }

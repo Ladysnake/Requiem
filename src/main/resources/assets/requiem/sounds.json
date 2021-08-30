@@ -126,6 +126,43 @@
       }
     ]
   },
+  "entity.mortician.ambient": {
+    "sounds": [
+      {"name": "mob/skeleton/say1", "volume": 1, "pitch": 0.8 },
+      {"name": "mob/skeleton/say2", "volume": 1, "pitch": 0.8 },
+      {"name": "mob/skeleton/say3", "volume": 1, "pitch": 0.8 }
+    ],
+    "subtitle": "requiem:subtitles.entity.mortician.ambient"
+  },
+  "entity.mortician.death": {
+    "sounds": [
+      {"name": "mob/skeleton/death", "volume": 1, "pitch": 0.8 }
+    ],
+    "subtitle": "requiem:subtitles.entity.mortician.death"
+  },
+  "entity.mortician.hurt": {
+    "sounds": [
+      {"name": "mob/skeleton/hurt1", "volume": 1, "pitch": 0.8 },
+      {"name": "mob/skeleton/hurt2", "volume": 1, "pitch": 0.8 },
+      {"name": "mob/skeleton/hurt3", "volume": 1, "pitch": 0.8 },
+      {"name": "mob/skeleton/hurt4", "volume": 1, "pitch": 0.8 }
+    ],
+    "subtitle": "requiem:subtitles.entity.mortician.hurt"
+  },
+  "entity.mortician.no": {
+    "sounds": [
+      {"name": "mob/skeleton/say1", "volume": 1, "pitch": 0.5 },
+      {"name": "mob/skeleton/say2", "volume": 1, "pitch": 0.5 },
+      {"name": "mob/skeleton/say3", "volume": 1, "pitch": 0.5 }
+    ]
+  },
+  "entity.mortician.yes": {
+    "sounds": [
+      "mob/skeleton/say1",
+      "mob/skeleton/say2",
+      "mob/skeleton/say3"
+    ]
+  },
   "entity.soul.disintegrate": {
     "subtitle": "requiem:subtitles.entity.soul.disintegrate",
     "sounds": [
