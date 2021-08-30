@@ -134,4 +134,15 @@ public abstract class LivingEntityMixin extends Entity implements Possessable {
     protected void requiem$wakeUp(CallbackInfo ci) {
         // NO-OP
     }
+
+    @Inject(method = "damage", at = @At("HEAD"))
+    public void requiem$damaged(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
+        //Overridden
+    }
+
+    @Inject(method = "pushAway", at = @At("HEAD"))
+    public void requiem$pushed(Entity entity, CallbackInfo ci) {
+        //Overridden
+    }
+
 }
