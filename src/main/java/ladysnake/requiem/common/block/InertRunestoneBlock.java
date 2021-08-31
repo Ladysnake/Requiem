@@ -89,19 +89,28 @@ public class InertRunestoneBlock extends BlockWithEntity {
         RunestoneBlockEntity.findObeliskOrigin(world, pos).flatMap(origin -> RunestoneBlockEntity.matchObelisk(world, origin).result())
             .ifPresentOrElse(
                 match -> {
-                    if (toggleRune(world, pos, true, match.origin().equals(pos))) {
+                    if (toggleRune(world, pos, match)) {
                         if (firstActivation && match.origin().equals(pos)) {
                             world.playSound(null, pos, RequiemSoundEvents.BLOCK_OBELISK_ACTIVATE, SoundCategory.BLOCKS, 1, 0.7F);
                         }
                         world.playSound(null, pos, RequiemSoundEvents.BLOCK_OBELISK_CHARGE, SoundCategory.BLOCKS, 1, 0.6f);
                     }
                 },
-                () -> toggleRune(world, pos, false, false)
+                () -> toggleRune(world, pos, null)
             );
     }
 
-    private static boolean toggleRune(ServerWorld world, BlockPos runePos, boolean activated, boolean head) {
+    private static boolean toggleRune(ServerWorld world, BlockPos runePos, @Nullable ObeliskMatch match) {
         BlockState blockState = world.getBlockState(runePos);
+        if (blockState.getBlock() instanceof InertRunestoneBlock runestone) {
+            return runestone.toggleRune(world, runePos, match, blockState);
+        }
+        return false;
+    }
+
+    protected boolean toggleRune(ServerWorld world, BlockPos runePos, @Nullable ObeliskMatch match, BlockState blockState) {
+        boolean activated = match != null;
+        boolean head = activated && match.origin().equals(runePos);
         if (blockState.get(ACTIVATED) != activated || blockState.get(HEAD) != head) {
             world.setBlockState(runePos, blockState.with(ACTIVATED, activated).with(HEAD, head), Block.NOTIFY_LISTENERS | Block.NOTIFY_NEIGHBORS);
             return true;

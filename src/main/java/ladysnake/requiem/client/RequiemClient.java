@@ -57,8 +57,8 @@ import ladysnake.requiem.common.particle.RequiemParticleTypes;
 import ladysnake.requiem.common.screen.RequiemScreenHandlers;
 import net.fabricmc.fabric.api.client.model.ModelLoadingRegistry;
 import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry;
-import net.fabricmc.fabric.api.client.rendereregistry.v1.EntityModelLayerRegistry;
-import net.fabricmc.fabric.api.client.rendereregistry.v1.EntityRendererRegistry;
+import net.fabricmc.fabric.api.client.rendering.v1.EntityModelLayerRegistry;
+import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
 import net.fabricmc.fabric.api.client.screenhandler.v1.ScreenRegistry;
 import net.fabricmc.fabric.api.renderer.v1.material.BlendMode;
 import net.fabricmc.fabric.api.renderer.v1.model.ModelHelper;
@@ -197,15 +197,15 @@ public final class RequiemClient {
     }
 
     private void registerEntityRenderers() {
-        EntityRendererRegistry.INSTANCE.register(RequiemEntities.OBELISK_SOUL, ObeliskSoulEntityRenderer::new);
-        EntityRendererRegistry.INSTANCE.register(RequiemEntities.RELEASED_SOUL, SoulEntityRenderer::new);
-        EntityRendererRegistry.INSTANCE.register(RequiemEntities.CURED_VILLAGER, CuredVillagerEntityRenderer::new);
-        EntityRendererRegistry.INSTANCE.register(RequiemEntities.CURED_PIGLIN, (ctx) -> new CuredPiglinEntityRenderer(ctx, EntityModelLayers.PIGLIN, EntityModelLayers.PIGLIN_INNER_ARMOR, EntityModelLayers.PIGLIN_OUTER_ARMOR, false));
-        EntityRendererRegistry.INSTANCE.register(RequiemEntities.CURED_PIGLIN_BRUTE, (ctx) -> new CuredPiglinEntityRenderer(ctx, EntityModelLayers.PIGLIN_BRUTE, EntityModelLayers.PIGLIN_BRUTE_INNER_ARMOR, EntityModelLayers.PIGLIN_BRUTE_OUTER_ARMOR, false));
+        EntityRendererRegistry.register(RequiemEntities.OBELISK_SOUL, ObeliskSoulEntityRenderer::new);
+        EntityRendererRegistry.register(RequiemEntities.RELEASED_SOUL, SoulEntityRenderer::new);
+        EntityRendererRegistry.register(RequiemEntities.CURED_VILLAGER, CuredVillagerEntityRenderer::new);
+        EntityRendererRegistry.register(RequiemEntities.CURED_PIGLIN, (ctx) -> new CuredPiglinEntityRenderer(ctx, EntityModelLayers.PIGLIN, EntityModelLayers.PIGLIN_INNER_ARMOR, EntityModelLayers.PIGLIN_OUTER_ARMOR, false));
+        EntityRendererRegistry.register(RequiemEntities.CURED_PIGLIN_BRUTE, (ctx) -> new CuredPiglinEntityRenderer(ctx, EntityModelLayers.PIGLIN_BRUTE, EntityModelLayers.PIGLIN_BRUTE_INNER_ARMOR, EntityModelLayers.PIGLIN_BRUTE_OUTER_ARMOR, false));
         // shh, it's fine
         @SuppressWarnings({"unchecked", "RedundantCast"}) EntityType<? extends AbstractClientPlayerEntity> playerShellType = (EntityType<? extends AbstractClientPlayerEntity>) (EntityType<?>) RequiemEntities.PLAYER_SHELL;
-        EntityRendererRegistry.INSTANCE.register(playerShellType, ctx -> new PlayerEntityRenderer(ctx, false));
-        EntityRendererRegistry.INSTANCE.register(RequiemEntities.MORTICIAN, MorticianEntityRenderer::new);
+        EntityRendererRegistry.register(playerShellType, ctx -> new PlayerEntityRenderer(ctx, false));
+        EntityRendererRegistry.register(RequiemEntities.MORTICIAN, MorticianEntityRenderer::new);
     }
 
     private void initListeners() {
