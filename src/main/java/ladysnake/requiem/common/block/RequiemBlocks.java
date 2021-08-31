@@ -43,11 +43,13 @@ import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.OreBlock;
 import net.minecraft.block.PillarBlock;
 import net.minecraft.block.SlabBlock;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
+import net.minecraft.util.math.intprovider.UniformIntProvider;
 import net.minecraft.util.registry.Registry;
 
 import java.util.LinkedHashMap;
@@ -66,6 +68,7 @@ public final class RequiemBlocks {
     public static final StairsBlock TACHYLITE_STAIRS = makeStairs(TACHYLITE);
     public static final Block SCRAPED_TACHYLITE = makeVariant(TACHYLITE, "tachylite/scraped");
     public static final Block TACHYLITE_RUNESTONE = make(() -> new InertRunestoneBlock(AbstractBlock.Settings.copy(TACHYLITE)), "tachylite/runestone");
+    public static final Block DERELICT_TACHYLITE = make(() -> new OreBlock(AbstractBlock.Settings.copy(TACHYLITE), UniformIntProvider.create(7, 14)), "tachylite/derelict");
     public static final RunestoneBlock RUNIC_TACHYLITE_ATTRITION = makeRunic("attrition", 3);
     public static final RunestoneBlock RUNIC_TACHYLITE_EMANCIPATION = makeRunic("emancipation", 1);
     public static final RunestoneBlock RUNIC_TACHYLITE_PENANCE = makeRunic("penance", 3);
