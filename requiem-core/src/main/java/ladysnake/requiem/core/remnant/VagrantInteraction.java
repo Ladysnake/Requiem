@@ -34,40 +34,13 @@
  */
 package ladysnake.requiem.core.remnant;
 
-import ladysnake.requiem.api.v1.remnant.VagrantInteractionRegistry;
-import ladysnake.requiem.core.RequiemCore;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Identifier;
-import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.BiPredicate;
 
-public final class VagrantInteractionRegistryImpl implements VagrantInteractionRegistry {
-    public static final VagrantInteractionRegistryImpl INSTANCE = new VagrantInteractionRegistryImpl();
-    public static final Identifier POSSESSION_ICON = RequiemCore.id("textures/gui/possession_icon.png");
-
-    private final List<VagrantInteraction> interactions = new ArrayList<>();
-
-    @Override
-    public <E extends LivingEntity> void registerPossessionInteraction(Class<E> targetType, BiPredicate<E, PlayerEntity> precondition, BiConsumer<E, PlayerEntity> action) {
-        registerPossessionInteraction(targetType, precondition, action, POSSESSION_ICON);
-    }
-
-    @Override
-    public <E extends LivingEntity> void registerPossessionInteraction(Class<E> targetType, BiPredicate<E, PlayerEntity> precondition, BiConsumer<E, PlayerEntity> action, Identifier icon) {
-        this.interactions.add(new VagrantInteraction((e, p) -> targetType.isInstance(e) && precondition.test(targetType.cast(e), p), (e, p) -> action.accept(targetType.cast(e), p), icon));
-    }
-
-    public @Nullable VagrantInteraction getAction(LivingEntity tested, PlayerEntity player) {
-        for (var interaction : interactions) {
-            if (interaction.predicate().test(tested, player)) {
-                return interaction;
-            }
-        }
-        return null;
-    }
-}
+public record VagrantInteraction(BiPredicate<LivingEntity, PlayerEntity> predicate,
+                                 BiConsumer<LivingEntity, PlayerEntity> action,
+                                 Identifier icon) { }

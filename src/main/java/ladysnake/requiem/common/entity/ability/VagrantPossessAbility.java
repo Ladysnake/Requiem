@@ -34,10 +34,10 @@
  */
 package ladysnake.requiem.common.entity.ability;
 
-import ladysnake.requiem.Requiem;
 import ladysnake.requiem.client.RequiemClient;
 import ladysnake.requiem.common.sound.RequiemSoundEvents;
 import ladysnake.requiem.core.entity.ability.DirectAbilityBase;
+import ladysnake.requiem.core.remnant.VagrantInteraction;
 import ladysnake.requiem.core.remnant.VagrantInteractionRegistryImpl;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.LivingEntity;
@@ -46,16 +46,13 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.function.BiConsumer;
-
 public class VagrantPossessAbility extends DirectAbilityBase<PlayerEntity, LivingEntity> {
-    public static final Identifier POSSESSION_ICON = Requiem.id("textures/gui/possession_icon.png");
 
     public static final int POSSESSION_RANGE = 5;
     public static final int POSSESSION_COOLDOWN = 8;
 
     private @Nullable LivingEntity target;
-    private @Nullable BiConsumer<LivingEntity, PlayerEntity> action;
+    private @Nullable VagrantInteraction interaction;
 
     public VagrantPossessAbility(PlayerEntity owner) {
         super(owner, POSSESSION_COOLDOWN, POSSESSION_RANGE, LivingEntity.class);
@@ -64,9 +61,9 @@ public class VagrantPossessAbility extends DirectAbilityBase<PlayerEntity, Livin
     @Override
     public boolean canTarget(LivingEntity target) {
         if (super.canTarget(target)) {
-            this.action = VagrantInteractionRegistryImpl.INSTANCE.getAction(target, this.owner);
-        } else this.action = null;
-        return this.action != null;
+            this.interaction = VagrantInteractionRegistryImpl.INSTANCE.getAction(target, this.owner);
+        } else this.interaction = null;
+        return this.interaction != null;
     }
 
     @Override
@@ -84,15 +81,15 @@ public class VagrantPossessAbility extends DirectAbilityBase<PlayerEntity, Livin
     protected void onCooldownEnd() {
         if (this.owner.world.isClient && this.owner == MinecraftClient.getInstance().player) {
             RequiemClient.instance().fxRenderer().onPossessionAck();
-        } else if (this.action != null && this.target != null && !this.target.isRemoved() && this.target.isAlive()) {
-            this.action.accept(this.target, this.owner);
+        } else if (this.interaction != null && this.target != null && !this.target.isRemoved() && this.target.isAlive()) {
+            this.interaction.action().accept(this.target, this.owner);
         }
-        this.action = null;
+        this.interaction = null;
         this.target = null;
     }
 
     @Override
     public Identifier getIconTexture() {
-        return POSSESSION_ICON;
+        return this.interaction != null ? this.interaction.icon() : VagrantInteractionRegistryImpl.POSSESSION_ICON;
     }
 }

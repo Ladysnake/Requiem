@@ -19,6 +19,7 @@ package ladysnake.requiem.api.v1.remnant;
 
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.Identifier;
 import org.apiguardian.api.API;
 
 import java.util.function.BiConsumer;
@@ -26,5 +27,25 @@ import java.util.function.BiPredicate;
 
 @API(status = API.Status.EXPERIMENTAL)
 public interface VagrantInteractionRegistry {
+    /**
+     * Registers an interaction between a {@linkplain RemnantComponent#isVagrant() vagrant} player and a set of mobs
+     *
+     * @param targetType   the upper bound for the type of mobs targeted by this interaction
+     * @param precondition a {@link BiPredicate} checking whether the interaction can occur given a target and an executor
+     * @param action       the action to perform when this interaction runs
+     * @param <E>          the type of entities that can be targeted
+     */
     <E extends LivingEntity> void registerPossessionInteraction(Class<E> targetType, BiPredicate<E, PlayerEntity> precondition, BiConsumer<E, PlayerEntity> action);
+
+    /**
+     * Registers an interaction between a {@linkplain RemnantComponent#isVagrant() vagrant} player and a set of mobs
+     *
+     * @param targetType   the upper bound for the type of mobs targeted by this interaction
+     * @param precondition a {@link BiPredicate} checking whether the interaction can occur given a target and an executor
+     * @param action       the action to perform when this interaction runs
+     * @param icon         an {@link Identifier} for the texture to display when this interaction can occur
+     * @param <E>          the type of entities that can be targeted
+     */
+    @API(status = API.Status.EXPERIMENTAL)  // the Identifier is especially experimental (may switch to a more general interaction ID)
+    <E extends LivingEntity> void registerPossessionInteraction(Class<E> targetType, BiPredicate<E, PlayerEntity> precondition, BiConsumer<E, PlayerEntity> action, Identifier icon);
 }
