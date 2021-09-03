@@ -38,7 +38,6 @@ import com.mojang.datafixers.util.Unit;
 import ladysnake.requiem.api.v1.record.EntityPointer;
 import ladysnake.requiem.api.v1.record.GlobalRecord;
 import ladysnake.requiem.api.v1.record.GlobalRecordKeeper;
-import ladysnake.requiem.api.v1.record.RecordType;
 import ladysnake.requiem.common.RequiemRecordTypes;
 import ladysnake.requiem.common.particle.WispTrailParticleEffect;
 import ladysnake.requiem.common.sound.RequiemSoundEvents;
@@ -149,8 +148,7 @@ public class ReleasedSoulEntity extends SoulEntity {
     }
 
     private Optional<EntityPointer> getTarget() {
-        return getRecord()
-            .flatMap(record -> record.get(RecordType.ENTITY_POINTER));
+        return this.getRecord().flatMap(record -> record.get(RequiemRecordTypes.SOUL_OWNER_REF));
     }
 
     private Optional<GlobalRecord> getRecord() {

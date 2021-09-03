@@ -20,9 +20,14 @@ package ladysnake.requiem.api.v1.record;
 import com.mojang.serialization.Codec;
 import net.fabricmc.fabric.api.event.registry.FabricRegistryBuilder;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.dynamic.GlobalPos;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.util.registry.SimpleRegistry;
+import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.Optional;
+import java.util.function.Function;
 
 /**
  * A data type that can be stored in a {@link GlobalRecord}.
@@ -35,19 +40,36 @@ public final class RecordType<T> {
     public static final SimpleRegistry<RecordType<?>> REGISTRY =
         FabricRegistryBuilder.createSimple((Class<RecordType<?>>) (Class<?>) RecordType.class, new Identifier("requiem", "record_types")).buildAndRegister();
 
-    public static final RecordType<EntityPointer> ENTITY_POINTER = register(new Identifier("requiem", "entity_ref"), EntityPointer.CODEC);
-    public static final RecordType<GlobalPos> BLOCK_ENTITY_POINTER = register(new Identifier("requiem", "block_entity_ref"), GlobalPos.CODEC);
+    private final Identifier id;
+    private final Codec<T> codec;
+    private final Function<T, Optional<RegistryKey<World>>> worldGetter;
+    private final boolean required;
+
+    private RecordType(Identifier id, Codec<T> codec, Function<T, Optional<RegistryKey<World>>> worldGetter, boolean required) {
+        this.id = id;
+        this.codec = codec;
+        this.worldGetter = worldGetter;
+        this.required = required;
+    }
+
+    public <U> Optional<RecordType<U>> tryCast(Codec<U> witness) {
+        if (this.codec == witness) {
+            @SuppressWarnings("unchecked") RecordType<U> ret = (RecordType<U>) this;
+            return Optional.of(ret);
+        }
+        return Optional.empty();
+    }
 
     public Codec<T> getCodec() {
         return codec;
     }
 
-    private final Identifier id;
-    private final Codec<T> codec;
+    public boolean isRequired() {
+        return required;
+    }
 
-    private RecordType(Identifier id, Codec<T> codec) {
-        this.id = id;
-        this.codec = codec;
+    public Optional<RegistryKey<World>> getReferencedWorld(T value) {
+        return this.worldGetter.apply(value);
     }
 
     public Identifier getId() {
@@ -68,6 +90,21 @@ public final class RecordType<T> {
      * @return a newly registered {@link RecordType} for encoding instances of {@code T}
      */
     public static <T> RecordType<T> register(Identifier id, Codec<T> codec) {
-        return Registry.register(REGISTRY, id, new RecordType<>(id, codec));
+        return register(id, codec, null, false);
     }
+
+    /**
+     * Creates and registers a new {@link RecordType} with the given id.
+     *
+     * @param id          the unique identifier used to register the resulting record type
+     * @param codec       the {@link Codec} to use to (de)serialize associated data
+     * @param worldGetter a getter for referenced worlds which absence could invalidate the record
+     * @param required    whether removing data of this type from a record invalidates it
+     * @param <T>         type for which the {@code RecordType} is being registered
+     * @return a newly registered {@link RecordType} for encoding instances of {@code T}
+     */
+    public static <T> RecordType<T> register(Identifier id, Codec<T> codec, @Nullable Function<T, RegistryKey<World>> worldGetter, boolean required) {
+        return Registry.register(REGISTRY, id, new RecordType<>(id, codec, worldGetter == null ? t -> Optional.empty() : t -> Optional.of(worldGetter.apply(t)), required));
+    }
+
 }

@@ -24,6 +24,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 /**
  * A {@link GlobalRecord} represents a serializable collection of data accessible from anywhere in the world.
@@ -48,6 +49,8 @@ public interface GlobalRecord {
      */
     UUID getUuid();
 
+    void remove(RecordType<?> type);
+
     <T> void put(RecordType<T> type, @Nullable T data);
 
     <T> Optional<T> get(RecordType<T> type);
@@ -62,6 +65,7 @@ public interface GlobalRecord {
 
     void invalidate();
 
-    NbtCompound toTag(NbtCompound tag);
+    Stream<RecordType<?>> types();
 
+    NbtCompound toTag(NbtCompound tag);
 }

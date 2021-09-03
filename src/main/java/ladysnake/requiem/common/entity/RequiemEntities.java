@@ -118,6 +118,8 @@ public final class RequiemEntities {
         Registry.register(Registry.ENTITY_TYPE, Requiem.id("cured_piglin"), CURED_PIGLIN);
         Registry.register(Registry.ENTITY_TYPE, Requiem.id("cured_piglin_brute"), CURED_PIGLIN_BRUTE);
         Registry.register(Registry.ENTITY_TYPE, Requiem.id("mortician"), MORTICIAN);
+
+        MorticianSpawner.init();
     }
 
 }

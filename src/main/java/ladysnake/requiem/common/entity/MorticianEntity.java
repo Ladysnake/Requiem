@@ -34,13 +34,19 @@
  */
 package ladysnake.requiem.common.entity;
 
+import com.google.common.base.Preconditions;
+import ladysnake.requiem.api.v1.record.GlobalRecord;
+import ladysnake.requiem.api.v1.record.GlobalRecordKeeper;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.api.v1.util.RequiemTargetPredicate;
+import ladysnake.requiem.common.RequiemRecordTypes;
 import ladysnake.requiem.common.enchantment.RequiemEnchantments;
 import ladysnake.requiem.common.item.FilledSoulVesselItem;
 import ladysnake.requiem.common.item.RequiemItems;
 import ladysnake.requiem.common.sound.RequiemSoundEvents;
+import ladysnake.requiem.core.record.EntityPositionClerk;
 import net.minecraft.enchantment.EnchantmentLevelEntry;
+import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ExperienceOrbEntity;
 import net.minecraft.entity.ai.goal.EscapeDangerGoal;
@@ -69,24 +75,31 @@ import net.minecraft.village.TradeOffers;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
-public class MorticianEntity extends MerchantEntity {
-    public static final TradeOffers.Factory[] TRADES = new TradeOffers.Factory[]{
-                (entity, random) -> {
-                    // TODO create reverse offer
-                    if (entity instanceof PlayerEntity player && !RemnantComponent.get(player).getRemnantType().isDemon()) {
-                        return new TradeOffer(new ItemStack(RequiemItems.EMPTY_SOUL_VESSEL), new ItemStack(Items.GOLD_INGOT, 6), new ItemStack(RequiemItems.SEALED_REMNANT_VESSEL), 1, 1, 0.05F);
-                    }
-                    return null;
-                },
-                (entity, random) -> new TradeOffer(new ItemStack(RequiemItems.SHATTERED_SOUL_VESSEL), new ItemStack(Items.GOLD_INGOT), new ItemStack(RequiemItems.EMPTY_SOUL_VESSEL), 10, 1, 0.05F),
-                (entity, random) -> new TradeOffer(EnchantedBookItem.forEnchantment(new EnchantmentLevelEntry(RequiemEnchantments.HUMANITY, 1)), new ItemStack(Items.GOLD_INGOT, 20), EnchantedBookItem.forEnchantment(new EnchantmentLevelEntry(RequiemEnchantments.HUMANITY, 2)), 5, 1, 0.05F),
-                (entity, random) -> new TradeOffer(FilledSoulVesselItem.forEntityType(entity.getEntityWorld().getDimension().isUltrawarm() ? EntityType.PIGLIN : EntityType.VILLAGER), new ItemStack(Items.GOLD_INGOT), new ItemStack(RequiemItems.ICHOR_VESSEL_EMANCIPATION), 10, 1, 0.05F),
-                (entity, random) -> new TradeOffer(FilledSoulVesselItem.forEntityType(EntityType.AXOLOTL), new ItemStack(Items.GOLD_INGOT, 5), new ItemStack(RequiemItems.ICHOR_VESSEL_RECLAMATION), 10, 1, 0.05F),
-                (entity, random) -> new TradeOffer(FilledSoulVesselItem.forEntityType(EntityType.CAVE_SPIDER), new ItemStack(Items.GOLD_INGOT, 5), new ItemStack(RequiemItems.ICHOR_VESSEL_ATTRITION), 10, 1, 0.05F),
-                (entity, random) -> new TradeOffer(FilledSoulVesselItem.forEntityType(EntityType.PILLAGER), new ItemStack(Items.GOLD_INGOT, 5), new ItemStack(RequiemItems.ICHOR_VESSEL_PENANCE), 10, 1, 0.05F)
-            };
+import java.util.Comparator;
+import java.util.UUID;
 
-    public MorticianEntity(EntityType<? extends MerchantEntity> entityType, World world) {
+public class MorticianEntity extends MerchantEntity {
+    public static final int MAX_LINK_DISTANCE = 20;
+    public static final TradeOffers.Factory[] TRADES = new TradeOffers.Factory[]{
+        (entity, random) -> {
+            // TODO create reverse offer
+            if (entity instanceof PlayerEntity player && !RemnantComponent.get(player).getRemnantType().isDemon()) {
+                return new TradeOffer(new ItemStack(RequiemItems.EMPTY_SOUL_VESSEL), new ItemStack(Items.GOLD_INGOT, 6), new ItemStack(RequiemItems.SEALED_REMNANT_VESSEL), 1, 1, 0.05F);
+            }
+            return null;
+        },
+        (entity, random) -> new TradeOffer(new ItemStack(RequiemItems.SHATTERED_SOUL_VESSEL), new ItemStack(Items.GOLD_INGOT), new ItemStack(RequiemItems.EMPTY_SOUL_VESSEL), 10, 1, 0.05F),
+        (entity, random) -> new TradeOffer(EnchantedBookItem.forEnchantment(new EnchantmentLevelEntry(RequiemEnchantments.HUMANITY, 1)), new ItemStack(Items.GOLD_INGOT, 20), EnchantedBookItem.forEnchantment(new EnchantmentLevelEntry(RequiemEnchantments.HUMANITY, 2)), 5, 1, 0.05F),
+        (entity, random) -> new TradeOffer(FilledSoulVesselItem.forEntityType(entity.getEntityWorld().getDimension().isUltrawarm() ? EntityType.PIGLIN : EntityType.VILLAGER), new ItemStack(Items.GOLD_INGOT), new ItemStack(RequiemItems.ICHOR_VESSEL_EMANCIPATION), 10, 1, 0.05F),
+        (entity, random) -> new TradeOffer(FilledSoulVesselItem.forEntityType(EntityType.AXOLOTL), new ItemStack(Items.GOLD_INGOT, 5), new ItemStack(RequiemItems.ICHOR_VESSEL_RECLAMATION), 10, 1, 0.05F),
+        (entity, random) -> new TradeOffer(FilledSoulVesselItem.forEntityType(EntityType.CAVE_SPIDER), new ItemStack(Items.GOLD_INGOT, 5), new ItemStack(RequiemItems.ICHOR_VESSEL_ATTRITION), 10, 1, 0.05F),
+        (entity, random) -> new TradeOffer(FilledSoulVesselItem.forEntityType(EntityType.PILLAGER), new ItemStack(Items.GOLD_INGOT, 5), new ItemStack(RequiemItems.ICHOR_VESSEL_PENANCE), 10, 1, 0.05F)
+    };
+
+    private @Nullable UUID linkedObelisk;
+    private int despawnDelay = 20 * 30;
+
+    public MorticianEntity(EntityType<? extends MorticianEntity> entityType, World world) {
         super(entityType, world);
     }
 
@@ -117,6 +130,37 @@ public class MorticianEntity extends MerchantEntity {
     }
 
     @Override
+    public void tickMovement() {
+        super.tickMovement();
+        if (this.world instanceof ServerWorld sw && this.hasInvalidLinkedObelisk()) {
+            // Attempt to link to a new obelisk, otherwise despawn
+            MorticianSpawner.streamSpawnableObelisks(sw.getServer())
+                .filter(r -> r.get(RequiemRecordTypes.OBELISK_REF)
+                    .filter(gpos -> gpos.getDimension() == this.world.getRegistryKey())
+                    .filter(gpos -> gpos.getPos().isWithinDistance(this.getBlockPos(), MAX_LINK_DISTANCE))
+                    .isPresent())
+                .min(Comparator.comparing(r -> r.get(RequiemRecordTypes.OBELISK_REF).orElseThrow().getPos().getSquaredDistance(this.getBlockPos())))
+                .ifPresentOrElse(
+                    r -> {
+                        this.despawnDelay = 0;
+                        this.linkWith(r);
+                    },
+                    () -> {
+                        this.despawnDelay--;
+                        if (this.despawnDelay <= 0) {
+                            world.sendEntityStatus(this, EntityStatuses.ADD_PORTAL_PARTICLES);
+                            this.discard();
+                        }
+                    }
+                );
+        }
+    }
+
+    private boolean hasInvalidLinkedObelisk() {
+        return this.linkedObelisk != null && GlobalRecordKeeper.get(this.world).getRecord(this.linkedObelisk).flatMap(r -> r.get(RequiemRecordTypes.RIFT_OBELISK)).isEmpty();
+    }
+
+    @Override
     public ActionResult interactMob(PlayerEntity player, Hand hand) {
         ItemStack itemStack = player.getStackInHand(hand);
         if (!itemStack.isOf(Items.VILLAGER_SPAWN_EGG) && this.isAlive() && !this.hasCustomer() && !this.isBaby()) {
@@ -133,6 +177,12 @@ public class MorticianEntity extends MerchantEntity {
         } else {
             return super.interactMob(player, hand);
         }
+    }
+
+    public void linkWith(GlobalRecord r) {
+        Preconditions.checkArgument(r.get(RequiemRecordTypes.OBELISK_REF).isPresent());
+        EntityPositionClerk.get(this).linkWith(r, RequiemRecordTypes.MORTICIAN_REF);
+        this.linkedObelisk = r.getUuid();
     }
 
     @Override
@@ -177,7 +227,7 @@ public class MorticianEntity extends MerchantEntity {
 
     @Override
     protected SoundEvent getTradingSound(boolean sold) {
-        return sold ? RequiemSoundEvents.ENTITY_MORTICIAN_YES: RequiemSoundEvents.ENTITY_MORTICIAN_NO;
+        return sold ? RequiemSoundEvents.ENTITY_MORTICIAN_YES : RequiemSoundEvents.ENTITY_MORTICIAN_NO;
     }
 
     @Override

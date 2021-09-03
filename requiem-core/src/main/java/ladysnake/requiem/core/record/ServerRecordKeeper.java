@@ -34,13 +34,11 @@
  */
 package ladysnake.requiem.core.record;
 
-import ladysnake.requiem.api.v1.record.EntityPointer;
 import ladysnake.requiem.api.v1.record.GlobalRecord;
 import ladysnake.requiem.api.v1.record.RecordType;
 import ladysnake.requiem.core.RequiemCore;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.dynamic.GlobalPos;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
@@ -66,13 +64,19 @@ public class ServerRecordKeeper extends CommonRecordKeeper {
     }
 
     @Override
-    protected boolean checkWorld(GlobalRecord anchor) {
-        Optional<RegistryKey<World>> worldRef = anchor.get(RecordType.ENTITY_POINTER).map(EntityPointer::world)
-            .or(() -> anchor.get(RecordType.BLOCK_ENTITY_POINTER).map(GlobalPos::getDimension));
-        if (worldRef.map(this::getWorld).map(Optional::isPresent).orElse(true)) {
+    protected boolean checkWorld(GlobalRecord record) {
+        return record.types().map(t -> checkWorld(record, t)).reduce(false, Boolean::logicalOr);
+    }
+
+    private <T> boolean checkWorld(GlobalRecord record, RecordType<T> type) {
+        Optional<RegistryKey<World>> worldRef = record.get(type).flatMap(type::getReferencedWorld);
+
+        if (worldRef.map(this::getWorld).map(Optional::isPresent).orElse(Boolean.TRUE)) {
             return true;
         }
-        worldRef.ifPresent(w -> RequiemCore.LOGGER.error("{} references unknown world {}", anchor, w));
+
+        worldRef.ifPresent(w -> RequiemCore.LOGGER.error("{}'s field {} references unknown world {}", record, type, w));
+        record.remove(type);
         return false;
     }
 }

@@ -20,6 +20,7 @@ package ladysnake.requiem.api.v1.record;
 import dev.onyxstudios.cca.api.v3.component.ComponentKey;
 import dev.onyxstudios.cca.api.v3.component.ComponentRegistry;
 import dev.onyxstudios.cca.api.v3.component.tick.CommonTickingComponent;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
@@ -44,6 +45,10 @@ public interface GlobalRecordKeeper extends CommonTickingComponent {
 
     static GlobalRecordKeeper get(World world) {
         return KEY.get(world.getScoreboard());
+    }
+
+    static GlobalRecordKeeper get(MinecraftServer server) {
+        return KEY.get(server.getScoreboard());
     }
 
     GlobalRecord createRecord();

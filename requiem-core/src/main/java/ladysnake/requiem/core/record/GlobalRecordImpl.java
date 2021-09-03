@@ -47,6 +47,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 public class GlobalRecordImpl implements GlobalRecord {
     public static final String ANCHOR_UUID_NBT = "uuid";
@@ -82,8 +83,14 @@ public class GlobalRecordImpl implements GlobalRecord {
     }
 
     @Override
+    public void remove(RecordType<?> type) {
+        if (type.isRequired()) this.invalidate();
+        this.data.remove(type);
+    }
+
+    @Override
     public <T> void put(RecordType<T> type, @Nullable T data) {
-        if (data == null) this.data.remove(type);
+        if (data == null) this.remove(type);
         else this.data.put(type, data);
     }
 
@@ -118,6 +125,11 @@ public class GlobalRecordImpl implements GlobalRecord {
     @Override
     public boolean isInvalid() {
         return this.invalid;
+    }
+
+    @Override
+    public Stream<RecordType<?>> types() {
+        return this.data.keySet().stream();
     }
 
     @Override

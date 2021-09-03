@@ -35,8 +35,7 @@
 package ladysnake.requiem.common.screen;
 
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
-import net.minecraft.block.RespawnAnchorBlock;
-import net.minecraft.entity.EntityType;
+import ladysnake.requiem.common.block.RiftRunestoneBlock;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerType;
@@ -81,7 +80,7 @@ public class RiftScreenHandler extends ScreenHandler {
 
     public void useRift(ServerPlayerEntity player, BlockPos target) {
         if (this.obeliskPositions.contains(target) && !this.source.equals(target)) {
-            RespawnAnchorBlock.findRespawnPosition(EntityType.PLAYER, player.world, target).ifPresent(respawnPosition -> {
+            RiftRunestoneBlock.findRespawnPosition(player.getType(), player.world, target).ifPresent(respawnPosition -> {
                 Vec3d towardsObelisk = Vec3d.ofBottomCenter(target).subtract(respawnPosition).normalize();
                 float yaw = (float) MathHelper.wrapDegrees(MathHelper.atan2(towardsObelisk.z, towardsObelisk.x) * 180.0F / (float)Math.PI - 90.0);
                 player.teleport(respawnPosition.x, respawnPosition.y, respawnPosition.z, true);

@@ -50,9 +50,9 @@ import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.util.Identifier;
 
-import java.util.HashSet;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 
 public final class EntityPositionClerk implements Component {
     public static final ComponentKey<EntityPositionClerk> KEY = ComponentRegistry.getOrCreate(RequiemCore.id("entity_clerk"), EntityPositionClerk.class);
@@ -63,48 +63,48 @@ public final class EntityPositionClerk implements Component {
     }
 
     private final LivingEntity entity;
-    private final Set<GlobalRecord> refs;
+    private final Map<GlobalRecord, RecordType<EntityPointer>> refs;
     private boolean ticking;
 
     public EntityPositionClerk(LivingEntity entity) {
         this.entity = entity;
-        this.refs = new HashSet<>();
+        this.refs = new HashMap<>();
     }
 
-    public void linkWith(GlobalRecord record) {
-        this.refs.add(record);
-        this.updateRecord(record);
+    public void linkWith(GlobalRecord record, RecordType<EntityPointer> pointerType) {
+        this.refs.put(record, pointerType);
+        this.updateRecord(record, pointerType);
 
         if (this.ticking) {
-            record.addTickingAction(UPDATE_ACTION_ID, this::updateRecord);
+            record.addTickingAction(UPDATE_ACTION_ID, r -> updateRecord(r, pointerType));
         }
     }
 
     public void startTicking() {
         this.ticking = true;
-        for (GlobalRecord anchor : this.refs) {
-            anchor.addTickingAction(UPDATE_ACTION_ID, this::updateRecord);
+        for (var anchor : this.refs.entrySet()) {
+            anchor.getKey().addTickingAction(UPDATE_ACTION_ID, record -> updateRecord(record, anchor.getValue()));
         }
     }
 
     public void stopTicking() {
-        for (GlobalRecord anchor : this.refs) {
+        for (GlobalRecord anchor : this.refs.keySet()) {
             anchor.removeTickingAction(UPDATE_ACTION_ID);
         }
         this.ticking = false;
     }
 
     public void destroy() {
-        this.refs.forEach(GlobalRecord::invalidate);
+        this.refs.forEach(GlobalRecord::remove);
     }
 
-    private void updateRecord(GlobalRecord record) {
+    private void updateRecord(GlobalRecord record, RecordType<EntityPointer> pointerType) {
         if (this.entity.getHealth() <= 0.0F) {
-            record.invalidate();
+            record.remove(pointerType);
         } else {
-            Optional<EntityPointer> ptr = record.get(RecordType.ENTITY_POINTER);
+            Optional<EntityPointer> ptr = record.get(pointerType);
             if (ptr.isEmpty() || !entity.getPos().equals(ptr.get().pos())) {
-                record.put(RecordType.ENTITY_POINTER, new EntityPointer(entity));
+                record.put(pointerType, new EntityPointer(entity));
             }
             EntityRecordUpdateCallback.EVENT.invoker().update(entity, record);
         }
@@ -116,16 +116,24 @@ public final class EntityPositionClerk implements Component {
 
     @Override
     public void readFromNbt(NbtCompound tag) {
-        for (NbtElement ref : tag.getList("refs", NbtElement.INT_ARRAY_TYPE)) {
-            this.getTracker().getRecord(NbtHelper.toUuid(ref)).ifPresent(this::linkWith);
+        NbtList refs = tag.getList("refs", NbtElement.COMPOUND_TYPE);
+        for (int i = 0; i < refs.size(); i++) {
+            NbtCompound refNbt = refs.getCompound(i);
+            this.getTracker().getRecord(refNbt.getUuid("uuid"))
+                .ifPresent(r -> RecordType.REGISTRY.getOrEmpty(Identifier.tryParse(refNbt.getString("type")))
+                    .flatMap(refType -> refType.tryCast(EntityPointer.CODEC))
+                    .ifPresent(refType -> this.linkWith(r, refType)));
         }
     }
 
     @Override
     public void writeToNbt(NbtCompound tag) {
         NbtList list = new NbtList();
-        for (GlobalRecord ref : this.refs) {
-            list.add(NbtHelper.fromUuid(ref.getUuid()));
+        for (var ref : this.refs.entrySet()) {
+            NbtCompound refNbt = new NbtCompound();
+            refNbt.put("uuid", NbtHelper.fromUuid(ref.getKey().getUuid()));
+            refNbt.putString("type", ref.getValue().getId().toString());
+            list.add(refNbt);
         }
         tag.put("refs", list);
     }

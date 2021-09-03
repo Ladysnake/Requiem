@@ -43,7 +43,6 @@ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import ladysnake.requiem.api.v1.block.ObeliskRune;
 import ladysnake.requiem.api.v1.record.GlobalRecord;
 import ladysnake.requiem.api.v1.record.GlobalRecordKeeper;
-import ladysnake.requiem.api.v1.record.RecordType;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.common.RequiemRecordTypes;
 import ladysnake.requiem.common.entity.ObeliskSoulEntity;
@@ -222,7 +221,7 @@ public class RunestoneBlockEntity extends BlockEntity {
 
                     if (this.recordUuid == null && runes.containsKey(RequiemBlocks.RIFT_RUNE)) {
                         GlobalRecord record = GlobalRecordKeeper.get(this.world).createRecord();
-                        record.put(RecordType.BLOCK_ENTITY_POINTER, GlobalPos.create(this.world.getRegistryKey(), this.getPos()));
+                        record.put(RequiemRecordTypes.OBELISK_REF, GlobalPos.create(this.world.getRegistryKey(), this.getPos()));
                         record.put(RequiemRecordTypes.RIFT_OBELISK, Unit.INSTANCE);
                         this.recordUuid = record.getUuid();
                     }

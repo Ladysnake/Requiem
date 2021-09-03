@@ -36,13 +36,14 @@ package ladysnake.requiem.common.block;
 
 import ladysnake.requiem.api.v1.block.ObeliskRune;
 import ladysnake.requiem.api.v1.record.GlobalRecordKeeper;
-import ladysnake.requiem.api.v1.record.RecordType;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.common.RequiemRecordTypes;
 import ladysnake.requiem.common.advancement.RequiemStats;
 import ladysnake.requiem.common.screen.RiftScreenHandlerFactory;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.RespawnAnchorBlock;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -57,10 +58,12 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.dynamic.GlobalPos;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.world.explosion.Explosion;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class RiftRunestoneBlock extends InertRunestoneBlock implements ObeliskRune {
@@ -69,6 +72,10 @@ public class RiftRunestoneBlock extends InertRunestoneBlock implements ObeliskRu
     public RiftRunestoneBlock(Settings settings) {
         super(settings);
         this.setDefaultState(this.getDefaultState().with(FRIED, false));
+    }
+
+    public static Optional<Vec3d> findRespawnPosition(EntityType<?> type, World world, BlockPos targetObelisk) {
+        return RespawnAnchorBlock.findRespawnPosition(type, world, targetObelisk);
     }
 
     @Override
@@ -103,7 +110,7 @@ public class RiftRunestoneBlock extends InertRunestoneBlock implements ObeliskRu
                 pos,
                 GlobalRecordKeeper.get(world).getRecords().stream()
                     .filter(r -> r.get(RequiemRecordTypes.RIFT_OBELISK).isPresent())
-                    .flatMap(r -> r.get(RecordType.BLOCK_ENTITY_POINTER).stream())
+                    .flatMap(r -> r.get(RequiemRecordTypes.OBELISK_REF).stream())
                     .filter(p -> p.getDimension() == world.getRegistryKey())
                     .map(GlobalPos::getPos)
                     .collect(Collectors.toSet()),

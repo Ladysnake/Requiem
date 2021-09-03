@@ -40,7 +40,7 @@ import dev.onyxstudios.cca.api.v3.component.tick.ServerTickingComponent;
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.record.GlobalRecord;
 import ladysnake.requiem.api.v1.record.GlobalRecordKeeper;
-import ladysnake.requiem.api.v1.record.RecordType;
+import ladysnake.requiem.common.RequiemRecordTypes;
 import ladysnake.requiem.common.network.RequiemNetworking;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -102,7 +102,7 @@ public final class PlayerBodyTracker implements ServerTickingComponent {
 
     private void updateBodyHealth(GlobalRecord anchor) {
         ServerPlayerEntity player = (ServerPlayerEntity) this.player;
-        if (anchor.get(RecordType.ENTITY_POINTER).flatMap(ptr -> ptr.resolve(player.server)).orElse(null) instanceof LivingEntity anchorEntity) {
+        if (anchor.get(RequiemRecordTypes.BODY_REF).flatMap(ptr -> ptr.resolve(player.server)).orElse(null) instanceof LivingEntity anchorEntity) {
             float health = anchorEntity.getHealth();
             if (health < this.previousAnchorHealth) {
                 RequiemNetworking.sendAnchorDamageMessage(player, false);

@@ -37,6 +37,7 @@ package ladysnake.requiem.common.item;
 import ladysnake.requiem.api.v1.event.requiem.SoulCaptureEvents;
 import ladysnake.requiem.api.v1.record.GlobalRecord;
 import ladysnake.requiem.api.v1.record.GlobalRecordKeeper;
+import ladysnake.requiem.common.RequiemRecordTypes;
 import ladysnake.requiem.common.block.InertRunestoneBlock;
 import ladysnake.requiem.common.block.RequiemBlocks;
 import ladysnake.requiem.common.block.RunestoneBlock;
@@ -179,7 +180,7 @@ public class EmptySoulVesselItem extends Item {
 
     private void setupRecord(Entity entity, LivingEntity target, NbtCompound data) {
         GlobalRecord record = GlobalRecordKeeper.get(entity.getEntityWorld()).createRecord();
-        EntityPositionClerk.get(target).linkWith(record);
+        EntityPositionClerk.get(target).linkWith(record, RequiemRecordTypes.SOUL_OWNER_REF);
         data.putUuid("uuid", record.getUuid());
     }
 
