@@ -1,6 +1,8 @@
 {
   "replace": false,
   "values": [
-    "#requiem:undead"
+    "#requiem:undead",
+    "minecraft:glow_squid",
+    "minecraft:bat"
   ]
 }
