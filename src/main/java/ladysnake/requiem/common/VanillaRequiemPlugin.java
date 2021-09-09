@@ -432,7 +432,8 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
         registry.registerPossessionInteraction(
             EndermanEntity.class,
             (mob, player) -> !SoulHolderComponent.isSoulless(mob) && !PossessionComponent.get(player).startPossessing(mob, true),
-            BasePossessionHandlers::performEndermanSoulAction
+            BasePossessionHandlers::performEndermanSoulAction,
+            Requiem.id("textures/gui/enderjacking_icon.png")
         );
         registry.registerPossessionInteraction(PlayerEntity.class,
             (target, possessor) -> target instanceof AutomatoneFakePlayer shell && PlayerShellEvents.PRE_MERGE.invoker().canMerge(possessor, target, shell.getDisplayProfile()),
