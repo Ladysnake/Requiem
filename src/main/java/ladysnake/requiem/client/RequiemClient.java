@@ -71,6 +71,7 @@ import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.entity.EntityType;
+import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
 
@@ -150,10 +151,10 @@ public final class RequiemClient {
             if (modelId.getNamespace().equals(Requiem.MOD_ID)) {
                 if (modelId.getPath().startsWith("block/tachylite/runic/activated/")) {
                     String effect = modelId.getPath().substring(modelId.getPath().lastIndexOf('/') + 1);
-                    String topRunestoneSpriteId = "requiem:block/neutral_runestone";
-                    String runestoneSpriteId = "requiem:block/%s_runestone".formatted(effect);
-                    String runeSpriteId = "requiem:block/%s_rune".formatted(effect);
-                    String topRuneSpriteId = "requiem:block/neutral_rune";
+                    String topRunestoneSpriteId = ifExistsOrElse(resourceManager, "block/%s_runestone_top".formatted(effect), "requiem:block/neutral_runestone");
+                    String runestoneSpriteId = ifExistsOrElse(resourceManager, "requiem:block/%s_runestone_side".formatted(effect), "requiem:block/%s_runestone".formatted(effect));
+                    String runeSpriteId = ifExistsOrElse(resourceManager, "requiem:block/%s_rune_side".formatted(effect), "requiem:block/%s_rune".formatted(effect));
+                    String topRuneSpriteId = ifExistsOrElse(resourceManager, "requiem:block/%s_rune_top", "requiem:block/neutral_rune");
                     return new SimpleUnbakedModel(mb -> {
                         Sprite topRunestoneSprite = mb.getSprite(topRunestoneSpriteId);
                         Sprite runestoneSprite = mb.getSprite(runestoneSpriteId);
@@ -171,6 +172,10 @@ public final class RequiemClient {
             }
             return null;
         });
+    }
+
+    private String ifExistsOrElse(ResourceManager resources, String attempt, String fallback) {
+        return resources.containsResource(new Identifier(attempt)) ? attempt : fallback;
     }
 
     private void registerParticleFactories() {
