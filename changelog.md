@@ -5,6 +5,21 @@ Version 2.0.0
 
 **Really important warning: future alphas are extremely likely to break compatibility with worlds started with this alpha. Don't start using those versions on any world you care about.**
 
+### Changes in Alpha 12
+- **Mobs can now become hostile if you act too promiscuous !** (big thanks to SciRave for giving us this feature)
+    - this is an experiment, so please give us your feedback
+- Added recipes for tachylite and rift runestones
+- Recipes using a filled soul vessel now give an empty soul vessel back
+- Made morticians spawn near obelisks with active rifts
+    - The above three changes mean that you can technically play this update in "survival" now, you just need to give yourself a soul vessel
+        - We're not done yet though, so previous warnings still apply
+- Added derelict tachylite, a block that drops a bunch of XP, and has a chance to drop a shattered soul vessel
+- Revamped all Rift textures
+- Made obelisks that are behind you appear on the border of the screen
+    - please appreciate this, I had to do maths and stuff
+- Morticians now do skeleton sounds (because they are hella dead)
+- Reduced Tachylite's strength to be halfway between obsidian and basalt
+
 ### Changes in Alpha 11
 - Removed hardcore death free ticket
 - Removed polished tachylite blocks
