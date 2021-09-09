@@ -59,7 +59,10 @@ import java.util.function.Supplier;
 public final class RequiemBlocks {
     private static final Map<Block, BlockRegistration> allBlocks = new LinkedHashMap<>();
 
-    public static final Block TACHYLITE = makeVariant(Blocks.OBSIDIAN, "tachylite/tachylite");
+    public static final Block TACHYLITE = make(() -> new Block(AbstractBlock.Settings.copy(Blocks.OBSIDIAN)
+        .hardness((Blocks.OBSIDIAN.getHardness() + Blocks.BASALT.getHardness()) / 2)
+        .resistance((Blocks.OBSIDIAN.getBlastResistance() + Blocks.BASALT.getBlastResistance()) / 2)
+    ), "tachylite/tachylite");
     public static final Block CHISELED_TACHYLITE = makeVariant(TACHYLITE, "tachylite/chiseled");
     public static final PillarBlock CHISELED_TACHYLITE_PILLAR = makePillar(CHISELED_TACHYLITE);
     public static final SlabBlock CHISELED_TACHYLITE_SLAB = makeSlab(CHISELED_TACHYLITE);
