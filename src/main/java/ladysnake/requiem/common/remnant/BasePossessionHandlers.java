@@ -45,7 +45,6 @@ import ladysnake.requiem.api.v1.possession.PossessedData;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.common.advancement.criterion.RequiemCriteria;
 import ladysnake.requiem.common.entity.effect.AttritionStatusEffect;
-import ladysnake.requiem.common.entity.effect.RequiemStatusEffects;
 import ladysnake.requiem.common.gamerule.RequiemGamerules;
 import ladysnake.requiem.common.possession.DummyGoatJumpingMount;
 import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
@@ -105,8 +104,7 @@ public final class BasePossessionHandlers {
             return PossessionStartCallback.Result.PASS;
         });
         PossessionStartCallback.EVENT.register(Requiem.id("emancipation"), (target, possessor, simulate) -> {
-            if (possessor.hasStatusEffect(RequiemStatusEffects.EMANCIPATION)
-                && SoulHolderComponent.isSoulless(target)) {
+            if (SoulHolderComponent.isSoulless(target)) {
                 return PossessionStartCallback.Result.ALLOW;
             }
             return PossessionStartCallback.Result.PASS;
