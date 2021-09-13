@@ -2,5 +2,9 @@
   "type": "requiem:soul_type",
   "value": "requiem:remnant",
   "name": "origins:power.requiem.remnant.name",
-  "description": "origins:power.requiem.remnant.description"
+  "description": "origins:power.requiem.remnant.description",
+  "key": {
+    "key": "key.origins.primary_active",
+    "continuous": false
+  }
 }

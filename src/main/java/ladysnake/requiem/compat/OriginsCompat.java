@@ -37,6 +37,8 @@ package ladysnake.requiem.compat;
 import dev.onyxstudios.cca.api.v3.component.ComponentKey;
 import dev.onyxstudios.cca.api.v3.component.ComponentRegistry;
 import io.github.apace100.apoli.component.PowerHolderComponent;
+import io.github.apace100.apoli.data.ApoliDataTypes;
+import io.github.apace100.apoli.power.Active;
 import io.github.apace100.apoli.power.factory.PowerFactory;
 import io.github.apace100.apoli.power.factory.condition.ConditionFactory;
 import io.github.apace100.apoli.registry.ApoliRegistries;
@@ -74,10 +76,16 @@ public final class OriginsCompat {
     public static final Identifier FACTORY_ID = Requiem.id("soul_type");
     public static final PowerFactory<OriginsRemnantPower> REMNANT_POWER_FACTORY = new PowerFactory<>(
         FACTORY_ID,
-        new SerializableData().add("value", REMNANT_TYPE),
+        new SerializableData()
+            .add("value", REMNANT_TYPE)
+            .add("key", ApoliDataTypes.KEY, new Active.Key()),
         instance -> {
             RemnantType remnantType = ((RemnantType) instance.get("value"));
-            return (type, entity) -> new OriginsRemnantPower(type, entity, remnantType);
+            return (type, entity) -> {
+                OriginsRemnantPower power = new OriginsRemnantPower(type, entity, remnantType);
+                power.setKey((Active.Key) instance.get("key"));
+                return power;
+            };
         }
     );
 
