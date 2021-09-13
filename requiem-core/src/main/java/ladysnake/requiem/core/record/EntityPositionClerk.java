@@ -87,6 +87,11 @@ public final class EntityPositionClerk implements Component {
         }
     }
 
+    public void transferFrom(EntityPositionClerk original) {
+        original.refs.forEach(this::linkWith);
+        original.refs.clear();
+    }
+
     public void stopTicking() {
         for (GlobalRecord anchor : this.refs.keySet()) {
             anchor.removeTickingAction(UPDATE_ACTION_ID);

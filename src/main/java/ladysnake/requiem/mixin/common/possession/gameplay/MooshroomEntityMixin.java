@@ -32,23 +32,26 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.requiem.core.util;
+package ladysnake.requiem.mixin.common.possession.gameplay;
 
-import ladysnake.requiem.core.tag.RequiemCoreTags;
-import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.item.ItemStack;
+import ladysnake.requiem.api.v1.event.minecraft.MobConversionCallback;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.passive.CowEntity;
+import net.minecraft.entity.passive.MooshroomEntity;
+import net.minecraft.world.World;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.ModifyArg;
 
-public final class PossessionHooks {
-    public static void dropArmorIfBanned(MobEntity converted) {
-        if (converted.getType().isIn(RequiemCoreTags.Entity.ARMOR_BANNED)) {
-            for (EquipmentSlot slot : EquipmentSlot.values()) {
-                if (slot.getType() == EquipmentSlot.Type.ARMOR) {
-                    ItemStack equippedStack = converted.getEquippedStack(slot);
-                    converted.dropStack(equippedStack.copy());
-                    equippedStack.setCount(0);
-                }
-            }
-        }
+@Mixin(MooshroomEntity.class)
+public abstract class MooshroomEntityMixin extends CowEntity {
+    public MooshroomEntityMixin(EntityType<? extends CowEntity> entityType, World world) {
+        super(entityType, world);
+    }
+
+    @ModifyArg(method = "sheared", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/World;spawnEntity(Lnet/minecraft/entity/Entity;)Z"))
+    private CowEntity copyData(CowEntity cow) {
+        MobConversionCallback.EVENT.invoker().onMobConverted(this, cow);
+        return cow;
     }
 }

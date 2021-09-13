@@ -38,6 +38,7 @@ import dev.onyxstudios.cca.api.v3.component.ComponentProvider;
 import dev.onyxstudios.cca.api.v3.entity.TrackingStartCallback;
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.event.minecraft.JumpingMountEvents;
+import ladysnake.requiem.api.v1.event.minecraft.MobConversionCallback;
 import ladysnake.requiem.api.v1.event.requiem.PossessionEvents;
 import ladysnake.requiem.api.v1.event.requiem.PossessionStartCallback;
 import ladysnake.requiem.api.v1.possession.Possessable;
@@ -49,13 +50,17 @@ import ladysnake.requiem.common.gamerule.RequiemGamerules;
 import ladysnake.requiem.common.possession.DummyGoatJumpingMount;
 import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
 import ladysnake.requiem.core.entity.SoulHolderComponent;
+import ladysnake.requiem.core.possession.PossessedDataBase;
 import ladysnake.requiem.core.tag.RequiemCoreTags;
 import ladysnake.requiem.mixin.common.access.EndermanEntityAccessor;
 import net.fabricmc.fabric.api.util.TriState;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.JumpingMount;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.network.packet.s2c.play.GameStateChangeS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -111,6 +116,9 @@ public final class BasePossessionHandlers {
         });
         JumpingMountEvents.MOUNT_CHECK.register(e -> e instanceof JumpingMount mount ? mount : null);
         JumpingMountEvents.MOUNT_CHECK.register(DummyGoatJumpingMount.KEY::getNullable);
+        MobConversionCallback.EVENT.register(PossessedDataBase::onMobConverted);
+        MobConversionCallback.EVENT.register((original, converted) -> dropArmorIfBanned(converted));
+        MobConversionCallback.EVENT.register(SoulHolderComponent::onMobConverted);
     }
 
     public static void performEndermanSoulAction(MobEntity target, PlayerEntity possessor) {
@@ -136,6 +144,18 @@ public final class BasePossessionHandlers {
         }
         if (tpDest != null) {
             possessor.teleport(tpDest.getX(), tpDest.getY(), tpDest.getZ(), true);
+        }
+    }
+
+    public static void dropArmorIfBanned(LivingEntity converted) {
+        if (converted.getType().isIn(RequiemCoreTags.Entity.ARMOR_BANNED)) {
+            for (EquipmentSlot slot : EquipmentSlot.values()) {
+                if (slot.getType() == EquipmentSlot.Type.ARMOR) {
+                    ItemStack equippedStack = converted.getEquippedStack(slot);
+                    converted.dropStack(equippedStack.copy());
+                    equippedStack.setCount(0);
+                }
+            }
         }
     }
 }

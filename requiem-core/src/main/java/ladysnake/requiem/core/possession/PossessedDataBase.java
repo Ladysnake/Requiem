@@ -42,7 +42,7 @@ import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.core.util.OrderedInventory;
 import net.fabricmc.fabric.api.util.NbtType;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.nbt.NbtCompound;
@@ -53,7 +53,7 @@ import net.minecraft.util.Util;
 import org.jetbrains.annotations.Nullable;
 
 public abstract class PossessedDataBase implements PossessedData, AutoSyncedComponent {
-    public static void onMobConverted(MobEntity original, MobEntity converted) {
+    public static void onMobConverted(LivingEntity original, LivingEntity converted) {
         PlayerEntity possessor = ((Possessable) original).getPossessor();
         PossessedData possessedData = KEY.get(converted);
         if (possessor != null) {
@@ -63,7 +63,7 @@ public abstract class PossessedDataBase implements PossessedData, AutoSyncedComp
             ((Possessable) converted).setPossessor(possessor);
         }
         // copy possessed data to avoid losing the inventory
-        possessedData.readFromNbt(Util.make(new NbtCompound(), KEY.get(original)::writeToNbt));
+        possessedData.copyFrom(KEY.get(original));
     }
 
     protected final Entity holder;
@@ -126,6 +126,11 @@ public abstract class PossessedDataBase implements PossessedData, AutoSyncedComp
             this.hungerData.putInt("foodLevel", 20);
         }
         return this.hungerData;
+    }
+
+    @Override
+    public void copyFrom(PossessedData original) {
+        this.readFromNbt(Util.make(new NbtCompound(), original::writeToNbt));
     }
 
     @Override

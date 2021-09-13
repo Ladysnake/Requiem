@@ -42,9 +42,11 @@ import net.minecraft.nbt.NbtOps;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.LinkedHashMap;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
@@ -57,14 +59,16 @@ public class GlobalRecordImpl implements GlobalRecord {
     private final UUID uuid;
     private final Map<RecordType<?>, Object> data;
     private final Map<Identifier, Consumer<GlobalRecord>> tickingActions;
+    private final Set<RecordType<?>> missingData;
     private boolean invalid;
 
     public GlobalRecordImpl(GlobalRecordKeeper manager, UUID uuid, int id) {
         this.manager = manager;
         this.id = id;
         this.uuid = uuid;
-        this.data = new LinkedHashMap<>();
-        this.tickingActions = new LinkedHashMap<>();
+        this.data = new HashMap<>();
+        this.tickingActions = new HashMap<>();
+        this.missingData = new HashSet<>();
     }
 
     GlobalRecordImpl(GlobalRecordKeeper manager, UUID uuid, int id, Map<RecordType<?>, Object> data) {
@@ -84,14 +88,18 @@ public class GlobalRecordImpl implements GlobalRecord {
 
     @Override
     public void remove(RecordType<?> type) {
-        if (type.isRequired()) this.invalidate();
+        if (type.isRequired()) this.missingData.add(type);
         this.data.remove(type);
     }
 
     @Override
     public <T> void put(RecordType<T> type, @Nullable T data) {
-        if (data == null) this.remove(type);
-        else this.data.put(type, data);
+        if (data == null) {
+            this.remove(type);
+        } else {
+            this.missingData.remove(type);
+            this.data.put(type, data);
+        }
     }
 
     @Override
@@ -124,7 +132,7 @@ public class GlobalRecordImpl implements GlobalRecord {
 
     @Override
     public boolean isInvalid() {
-        return this.invalid;
+        return this.invalid || !this.missingData.isEmpty();
     }
 
     @Override

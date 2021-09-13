@@ -50,6 +50,7 @@
     "possession.gameplay.LivingEntityMixin",
     "possession.gameplay.MilkBucketItemMixin",
     "possession.gameplay.MobEntityMixin",
+    "possession.gameplay.MooshroomEntityMixin",
     "possession.gameplay.PandaEntityMixin",
     "possession.gameplay.PigEntityMixin",
     "possession.gameplay.PlayerEntityMixin",

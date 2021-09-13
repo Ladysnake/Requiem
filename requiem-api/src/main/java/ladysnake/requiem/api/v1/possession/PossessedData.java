@@ -39,4 +39,6 @@ public interface PossessedData extends ClientTickingComponent {
     void giftFirstPossessionLoot(PlayerEntity player);
 
     void dropItems();
+
+    void copyFrom(PossessedData original);
 }
