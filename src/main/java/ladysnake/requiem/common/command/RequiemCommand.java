@@ -57,6 +57,7 @@ public final class RequiemCommand {
             .then(RequiemRemnantCommand.remnantSubcommand())
             .then(RequiemEtherealCommand.etherealSubcommand())
             .then(RequiemShellCommand.shellSubcommand())
+            .then(RequiemSoulCommand.soulSubcommand())
         );
     }
 
