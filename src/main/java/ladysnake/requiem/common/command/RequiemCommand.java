@@ -47,7 +47,6 @@ import static net.minecraft.server.command.CommandManager.literal;
 public final class RequiemCommand {
 
     public static final String REQUIEM_ROOT_COMMAND = "requiem";
-    public static final String REMNANT_SUBCOMMAND = "remnant";
 
     private static final Set<String> permissions = new HashSet<>();
 

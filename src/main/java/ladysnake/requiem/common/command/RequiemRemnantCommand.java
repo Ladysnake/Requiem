@@ -51,8 +51,10 @@ import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
 
 public final class RequiemRemnantCommand {
+    public static final String REMNANT_SUBCOMMAND = "remnant";
+
     public static LiteralArgumentBuilder<ServerCommandSource> remnantSubcommand() {
-        return literal(RequiemCommand.REMNANT_SUBCOMMAND)
+        return literal(REMNANT_SUBCOMMAND)
             .requires(RequiemCommand.permission("remnant.query.self").or(RequiemCommand.permission("remnant.set.self")))
             // requiem remnant query [player]
             .then(literal("query")
