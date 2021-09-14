@@ -136,25 +136,24 @@ public abstract class MobEntityMixin extends LivingEntityMixin implements Posses
     }
 
     @Override
-    public void requiem$pushed(Entity entity, CallbackInfo ci) {
-        if (this.isBeingPossessed()) {
-            if (DetectionHelper.isValidEnemy(entity)) {
-                DetectionHelper.inciteMobAndAllies((MobEntity) (Object) this, (HostileEntity) entity);
-            }
+    public void requiem$pushed(Entity pushed, CallbackInfo ci) {
+        MobEntity self = (MobEntity) (Object) this;
+        if (DetectionHelper.canBeDetected(self) && DetectionHelper.isValidEnemy(pushed)) {
+            DetectionHelper.inciteMobAndAllies(self, (HostileEntity) pushed);
         }
     }
 
     @Override
     public void requiem$damaged(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
         if (source.getAttacker() instanceof MobEntity attacker) {
-            if (this.isBeingPossessed() && attacker instanceof HostileEntity hostile) {
-                DetectionHelper.inciteMobAndAllies((MobEntity) (Object) this, hostile);
-            } else if ((Object) this instanceof HostileEntity hostile) {
-                if (attacker instanceof Possessable possessable && possessable.isBeingPossessed()) {
+            MobEntity self = (MobEntity) (Object) this;
+            if (DetectionHelper.canBeDetected(self) && attacker instanceof HostileEntity hostile) {
+                DetectionHelper.inciteMobAndAllies(self, hostile);
+            } else if (self instanceof HostileEntity hostile) {
+                if (DetectionHelper.canBeDetected(attacker)) {
                     DetectionHelper.inciteMobAndAllies(attacker, hostile);
                 }
             }
         }
     }
-
 }
