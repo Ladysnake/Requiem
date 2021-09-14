@@ -35,23 +35,21 @@
 package ladysnake.requiem.mixin.common.possession.gameplay;
 
 import ladysnake.requiem.api.v1.event.minecraft.MobConversionCallback;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.passive.CowEntity;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.passive.MooshroomEntity;
-import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
 
 @Mixin(MooshroomEntity.class)
-public abstract class MooshroomEntityMixin extends CowEntity {
-    public MooshroomEntityMixin(EntityType<? extends CowEntity> entityType, World world) {
-        super(entityType, world);
-    }
-
+public abstract class MooshroomEntityMixin {    // cannot extend CowEntity because ??? crash
     @ModifyArg(method = "sheared", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/World;spawnEntity(Lnet/minecraft/entity/Entity;)Z"))
-    private CowEntity copyData(CowEntity cow) {
-        MobConversionCallback.EVENT.invoker().onMobConverted(this, cow);
+    private Entity copyData(Entity cow) {
+        if (cow instanceof LivingEntity actualCow) {    // never know, some mod may do some shit here
+            @SuppressWarnings("ConstantConditions") LivingEntity self = (LivingEntity) (Object) this;
+            MobConversionCallback.EVENT.invoker().onMobConverted(self, actualCow);
+        }
         return cow;
     }
 }
