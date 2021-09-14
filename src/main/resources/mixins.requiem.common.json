@@ -48,6 +48,7 @@
     "possession.gameplay.HorseBaseEntityMixin",
     "possession.gameplay.ItemStackMixin",
     "possession.gameplay.LivingEntityMixin",
+    "possession.gameplay.MerchantEntityMixin",
     "possession.gameplay.MilkBucketItemMixin",
     "possession.gameplay.MobEntityMixin",
     "possession.gameplay.MooshroomEntityMixin",
