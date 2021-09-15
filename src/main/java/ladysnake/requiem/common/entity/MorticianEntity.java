@@ -47,6 +47,9 @@ import ladysnake.requiem.common.network.RequiemNetworking;
 import ladysnake.requiem.common.remnant.RemnantTypes;
 import ladysnake.requiem.common.sound.RequiemSoundEvents;
 import ladysnake.requiem.core.record.EntityPositionClerk;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.enchantment.EnchantmentLevelEntry;
 import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
@@ -74,25 +77,22 @@ import net.minecraft.stat.Stats;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.village.TradeOffer;
+import net.minecraft.village.TradeOfferList;
 import net.minecraft.village.TradeOffers;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Comparator;
+import java.util.Objects;
 import java.util.UUID;
 
 public class MorticianEntity extends MerchantEntity {
     public static final int MAX_LINK_DISTANCE = 20;
     public static final TradeOffers.Factory[] TRADES = new TradeOffers.Factory[]{
-        (entity, random) -> {
-            if (entity instanceof PlayerEntity player) {
-                if (RemnantComponent.get(player).getRemnantType().isDemon()) {
-                    return new DemonTradeOffer(new ItemStack(RequiemItems.EMPTY_SOUL_VESSEL), new ItemStack(Items.NETHERITE_INGOT, 1), new ItemStack(RequiemItems.SEALED_REMNANT_VESSEL), 1, 1, 0.05F);
-                }
-                return new TradeOffer(new ItemStack(Items.GOLD_INGOT, 32), new ItemStack(Items.NETHERITE_INGOT), new ItemStack(RequiemItems.SEALED_REMNANT_VESSEL), 1, 1, 0.05F);
-            }
-            return null;
-        },
+        (entity, random) -> new RemnantTradeOffer(
+            new TradeOffer(new ItemStack(Items.GOLD_INGOT, 32), new ItemStack(Items.NETHERITE_INGOT), new ItemStack(RequiemItems.SEALED_REMNANT_VESSEL), 1, 1, 0.05F),
+            new TradeOffer(new ItemStack(RequiemItems.EMPTY_SOUL_VESSEL), new ItemStack(Items.NETHERITE_INGOT, 1), new ItemStack(RequiemItems.SEALED_REMNANT_VESSEL), 1, 1, 0.05F)
+        ),
         (entity, random) -> new TradeOffer(new ItemStack(RequiemItems.SHATTERED_SOUL_VESSEL), new ItemStack(Items.GOLD_INGOT), new ItemStack(RequiemItems.EMPTY_SOUL_VESSEL), 10, 1, 0.05F),
         (entity, random) -> new TradeOffer(EnchantedBookItem.forEnchantment(new EnchantmentLevelEntry(RequiemEnchantments.HUMANITY, 1)), new ItemStack(Items.GOLD_INGOT, 20), EnchantedBookItem.forEnchantment(new EnchantmentLevelEntry(RequiemEnchantments.HUMANITY, 2)), 5, 1, 0.05F),
         (entity, random) -> new TradeOffer(FilledSoulVesselItem.forEntityType(entity.getEntityWorld().getDimension().isUltrawarm() ? EntityType.PIGLIN : EntityType.VILLAGER), new ItemStack(Items.GOLD_INGOT, 5), new ItemStack(RequiemItems.ICHOR_VESSEL_EMANCIPATION), 10, 1, 0.05F),
@@ -166,21 +166,39 @@ public class MorticianEntity extends MerchantEntity {
     }
 
     @Override
-    public ActionResult interactMob(PlayerEntity player, Hand hand) {
-        ItemStack itemStack = player.getStackInHand(hand);
+    public ActionResult interactMob(PlayerEntity customer, Hand hand) {
+        ItemStack itemStack = customer.getStackInHand(hand);
         if (!itemStack.isOf(Items.VILLAGER_SPAWN_EGG) && this.isAlive() && !this.hasCustomer() && !this.isBaby()) {
             if (hand == Hand.MAIN_HAND) {
-                player.incrementStat(Stats.TALKED_TO_VILLAGER);
+                customer.incrementStat(Stats.TALKED_TO_VILLAGER);
             }
 
             if (!this.world.isClient && !this.getOffers().isEmpty()) {
-                this.setCurrentCustomer(player);
-                this.sendOffers(player, this.getDisplayName(), 1);
+                this.prepareOffersFor(customer);
+                this.setCurrentCustomer(customer);
+                this.sendOffers(customer, this.getDisplayName(), 1);
             }
 
             return ActionResult.success(this.world.isClient);
         } else {
-            return super.interactMob(player, hand);
+            return super.interactMob(customer, hand);
+        }
+    }
+
+    @Environment(EnvType.CLIENT)
+    @Override
+    public void setOffersFromServer(@Nullable TradeOfferList offers) {
+        super.setOffersFromServer(offers);
+        // Note: in multiplayer, we have nothing but regular trade offers here because of how toPacket works
+        // So we only have to update remnant offers in singleplayer
+        this.prepareOffersFor(Objects.requireNonNull(MinecraftClient.getInstance().player));
+    }
+
+    private void prepareOffersFor(PlayerEntity customer) {
+        for (TradeOffer offer : this.getOffers()) {
+            if (offer instanceof RemnantTradeOffer demonTradeOffer) {
+                demonTradeOffer.setRemnant(RemnantComponent.get(customer).getRemnantType().isDemon());
+            }
         }
     }
 
@@ -208,7 +226,7 @@ public class MorticianEntity extends MerchantEntity {
 
     @Override
     protected void afterUsing(TradeOffer offer) {
-        if (offer instanceof DemonTradeOffer && this.getCurrentCustomer() instanceof ServerPlayerEntity player) {
+        if (offer instanceof RemnantTradeOffer demonTradeOffer && demonTradeOffer.demonCustomer && this.getCurrentCustomer() instanceof ServerPlayerEntity player) {
             RemnantComponent.get(player).become(RemnantTypes.MORTAL, true);
             player.world.playSound(null, player.getX(), player.getY(), player.getZ(), RequiemSoundEvents.ITEM_OPUS_USE, player.getSoundCategory(), 1.4F, 0.1F);
             RequiemNetworking.sendTo(player, RequiemNetworking.createOpusUsePacket(RemnantTypes.MORTAL, false));
@@ -244,9 +262,4 @@ public class MorticianEntity extends MerchantEntity {
         return RequiemSoundEvents.ENTITY_MORTICIAN_YES;
     }
 
-    public static class DemonTradeOffer extends TradeOffer {
-        public DemonTradeOffer(ItemStack firstBuyItem, ItemStack secondBuyItem, ItemStack sellItem, int maxUses, int merchantExperience, float priceMultiplier) {
-            super(firstBuyItem, secondBuyItem, sellItem, maxUses, merchantExperience, priceMultiplier);
-        }
-    }
 }
