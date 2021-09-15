@@ -46,6 +46,7 @@ import net.minecraft.client.model.ModelPartBuilder;
 import net.minecraft.client.model.ModelPartData;
 import net.minecraft.client.model.ModelTransform;
 import net.minecraft.client.model.TexturedModelData;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.entity.model.EntityModelLayer;
 import net.minecraft.client.render.entity.model.EntityModelPartNames;
 import net.minecraft.client.render.entity.model.ModelWithHead;
@@ -63,6 +64,7 @@ public class MorticianEntityModel<T extends Entity> extends SinglePartEntityMode
     private final ModelPart rightLeg;
 
     public MorticianEntityModel(ModelPart root) {
+        super(RenderLayer::getItemEntityTranslucentCull);
         this.root = root;
         this.head = root.getChild(EntityModelPartNames.HEAD);
         this.rightLeg = root.getChild(EntityModelPartNames.RIGHT_LEG);

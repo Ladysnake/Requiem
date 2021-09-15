@@ -62,6 +62,9 @@ import net.minecraft.entity.ai.goal.StopAndLookAtEntityGoal;
 import net.minecraft.entity.ai.goal.StopFollowingCustomerGoal;
 import net.minecraft.entity.ai.goal.WanderAroundFarGoal;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.data.DataTracker;
+import net.minecraft.entity.data.TrackedData;
+import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.passive.MerchantEntity;
 import net.minecraft.entity.passive.PassiveEntity;
@@ -100,12 +103,21 @@ public class MorticianEntity extends MerchantEntity {
         (entity, random) -> new TradeOffer(FilledSoulVesselItem.forEntityType(EntityType.GHAST), new ItemStack(Items.GOLD_INGOT, 5), new ItemStack(RequiemItems.ICHOR_VESSEL_ATTRITION), 10, 1, 0.05F),
         (entity, random) -> new TradeOffer(FilledSoulVesselItem.forEntityType(EntityType.PILLAGER), new ItemStack(Items.GOLD_INGOT, 5), new ItemStack(RequiemItems.ICHOR_VESSEL_PENANCE), 10, 1, 0.05F)
     };
+    public static final TrackedData<Boolean> OBELISK_PROJECTION = DataTracker.registerData(MorticianEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+    public static final TrackedData<Integer> FADING_TICKS = DataTracker.registerData(MorticianEntity.class, TrackedDataHandlerRegistry.INTEGER);
+    public static final int DESPAWN_DELAY = 20 * 30;
 
     private @Nullable UUID linkedObelisk;
-    private int despawnDelay = 20 * 30;
 
     public MorticianEntity(EntityType<? extends MorticianEntity> entityType, World world) {
         super(entityType, world);
+    }
+
+    @Override
+    protected void initDataTracker() {
+        super.initDataTracker();
+        this.dataTracker.startTracking(OBELISK_PROJECTION, false);
+        this.dataTracker.startTracking(FADING_TICKS, 0);
     }
 
     @Override
@@ -122,6 +134,26 @@ public class MorticianEntity extends MerchantEntity {
         });
         this.goalSelector.add(10, new LookAtEntityGoal(this, MobEntity.class, 8.0F));
         this.goalSelector.add(10, new LookAtEntityGoal(this, PlayerEntity.class, 8.0F));
+    }
+
+    private void setFadingTicks(int fadingTicks) {
+        this.getDataTracker().set(FADING_TICKS, fadingTicks);
+    }
+
+    private int getFadingTicks() {
+        return this.getDataTracker().get(FADING_TICKS);
+    }
+
+    public float getFadingAmount() {
+        return (float) this.getFadingTicks() / DESPAWN_DELAY;
+    }
+
+    private void setObeliskProjection(boolean projection) {
+        this.getDataTracker().set(OBELISK_PROJECTION, projection);
+    }
+
+    public boolean isObeliskProjection() {
+        return this.getDataTracker().get(OBELISK_PROJECTION);
     }
 
     @Override
@@ -147,12 +179,12 @@ public class MorticianEntity extends MerchantEntity {
                 .min(Comparator.comparing(r -> r.get(RequiemRecordTypes.OBELISK_REF).orElseThrow().getPos().getSquaredDistance(this.getBlockPos())))
                 .ifPresentOrElse(
                     r -> {
-                        this.despawnDelay = 0;
+                        this.setFadingTicks(0);
                         this.linkWith(r);
                     },
                     () -> {
-                        this.despawnDelay--;
-                        if (this.despawnDelay <= 0) {
+                        this.setFadingTicks(this.getFadingTicks() + 1);
+                        if (this.getFadingTicks() <= 0) {
                             world.sendEntityStatus(this, EntityStatuses.ADD_PORTAL_PARTICLES);
                             this.discard();
                         }
@@ -206,6 +238,7 @@ public class MorticianEntity extends MerchantEntity {
         Preconditions.checkArgument(r.get(RequiemRecordTypes.OBELISK_REF).isPresent());
         EntityPositionClerk.get(this).linkWith(r, RequiemRecordTypes.MORTICIAN_REF);
         this.linkedObelisk = r.getUuid();
+        this.setObeliskProjection(true);
     }
 
     @Override
@@ -216,7 +249,29 @@ public class MorticianEntity extends MerchantEntity {
     @Override
     public void readCustomDataFromNbt(NbtCompound nbt) {
         super.readCustomDataFromNbt(nbt);
+
+        if (nbt.containsUuid("linked_obelisk")) {
+            GlobalRecordKeeper.get(this.world).getRecord(nbt.getUuid("linked_obelisk")).ifPresent(this::linkWith);
+            this.setObeliskProjection(true);
+        } else {
+            this.setObeliskProjection(false);
+        }
+
+        if (nbt.contains("fading_ticks")) {
+            this.setFadingTicks(nbt.getInt("fading_ticks"));
+        }
+
         this.setBreedingAge(Math.max(0, this.getBreedingAge()));
+    }
+
+    @Override
+    public void writeCustomDataToNbt(NbtCompound nbt) {
+        super.writeCustomDataToNbt(nbt);
+        if (this.linkedObelisk != null) {
+            nbt.putUuid("linked_obelisk", this.linkedObelisk);
+        }
+
+        nbt.putInt("fading_ticks", this.getFadingTicks());
     }
 
     @Override
