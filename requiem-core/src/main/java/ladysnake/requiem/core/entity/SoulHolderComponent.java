@@ -81,7 +81,7 @@ public class SoulHolderComponent implements AutoSyncedComponent {
     private void setSoulRemoved(boolean removed) {
         if (this.removedSoul != removed) {
             this.removedSoul = removed;
-            EntityAiToggle.get(this.owner).toggleAi(SoulHolderComponent.SOUL_CAPTURE_MECHANISM_ID, removed, false);
+            EntityAiToggle.get(this.owner).toggleAi(SoulHolderComponent.SOUL_CAPTURE_MECHANISM_ID, !RequiemCoreTags.Entity.SOULLESS.contains(this.owner.getType()) && removed, false);
             KEY.sync(this.owner);
         }
     }
