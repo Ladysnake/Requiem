@@ -55,6 +55,8 @@ public final class RequiemStatusEffects {
         registerEffect(EMANCIPATION, "emancipation");
         registerEffect(PENANCE, "penance");
         registerEffect(RECLAMATION, "reclamation");
+
+        PenanceStatusEffect.registerCallbacks();
     }
 
     public static void registerEffect(StatusEffect effect, String name) {
