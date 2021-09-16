@@ -6,7 +6,7 @@ Version 2.0.0
 **Really important warning: future alphas are extremely likely to break compatibility with worlds started with this alpha. Don't start using those versions on any world you care about.**
 
 ### Changes in Alpha 12
-- **Mobs can now become hostile if you act too promiscuous !** (big thanks to SciRave for giving us this feature)
+- **Mobs can now become hostile if you come too close !** (big thanks to SciRave for giving us this feature)
     - this is an experiment, so please give us your feedback
 - **Renamed the `/requiem soul` subcommand to `/requiem vagrant`**
 - Added the `/requiem soul <remove|restore>` subcommand
