@@ -52,6 +52,7 @@ import net.minecraft.entity.effect.StatusEffectCategory;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
+import org.jetbrains.annotations.Nullable;
 
 public class PenanceStatusEffect extends StatusEffect implements StickyStatusEffect {
 
@@ -72,7 +73,7 @@ public class PenanceStatusEffect extends StatusEffect implements StickyStatusEff
         });
         PlayerShellEvents.PRE_MERGE.register(PenanceStatusEffect::canMerge);
         PossessionStartCallback.EVENT.register(Requiem.id("deny_penance_three"), (target, possessor, simulate) ->
-            getLevel(possessor) >= 2 ? PossessionStartCallback.Result.DENY : PossessionStartCallback.Result.PASS);
+            getLevel(possessor) >= MOB_BAN_THRESHOLD ? PossessionStartCallback.Result.DENY : PossessionStartCallback.Result.PASS);
     }
 
     @Override
@@ -93,20 +94,33 @@ public class PenanceStatusEffect extends StatusEffect implements StickyStatusEff
         return false;
     }
 
-    public static void applyPenance(LivingEntity entity, int amplifier) {
+    /**
+     *
+     * @param entity the entity getting affected with penance
+     * @param amplifier {@link StatusEffectInstance#getAmplifier()}
+     * @return the respawned player if the target got split, otherwise {@code null}
+     */
+    public static Result applyPenance(LivingEntity entity, int amplifier) {
         if (amplifier >= PLAYER_BAN_THRESHOLD && entity instanceof ServerPlayerEntity player) { // level 2+
             if (amplifier >= MOB_BAN_THRESHOLD) { // level 3+
-	            PossessionComponent.get(player).stopPossessing();
-	        }
+                PossessionComponent possessionComponent = PossessionComponent.get(player);
+                if (possessionComponent.isPossessionOngoing()) {
+                    possessionComponent.stopPossessing();
+                    return new Result(true, null);
+                }
+            }
             RemnantComponent remnant = RemnantComponent.get(player);
             if (!remnant.isVagrant()) {
                 if (remnant.getRemnantType().isDemon()) {
-                    PlayerSplitter.split(player, true);
+                    return new Result(true, PlayerSplitter.split(player, true));
                 } else {
-                    player.damage(DamageSource.MAGIC, amplifier * 4);
+                    player.damage(DamageSource.MAGIC, (amplifier + 1) * 4);
+                    PenanceComponent.KEY.get(player).resetPenanceTime();
                 }
             }
         }
+
+        return new Result(false, null);
     }
 
     public static int getLevel(PlayerEntity player) {
@@ -116,6 +130,10 @@ public class PenanceStatusEffect extends StatusEffect implements StickyStatusEff
 
     public static boolean canMerge(PlayerEntity possessor, PlayerEntity target, GameProfile shellProfile) {
         StatusEffectInstance penance = possessor.getStatusEffect(RequiemStatusEffects.PENANCE);
-        return penance == null || penance.getAmplifier() < 1;
+        return penance == null || penance.getAmplifier() < PLAYER_BAN_THRESHOLD;
+    }
+
+    public record Result(boolean split, @Nullable ServerPlayerEntity soul) {
+
     }
 }

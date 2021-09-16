@@ -39,6 +39,7 @@
 package ladysnake.requiem.client.render.entity.model;
 
 import ladysnake.requiem.Requiem;
+import ladysnake.requiem.common.entity.MorticianEntity;
 import net.minecraft.client.model.Dilation;
 import net.minecraft.client.model.ModelData;
 import net.minecraft.client.model.ModelPart;
@@ -57,18 +58,25 @@ import net.minecraft.util.math.MathHelper;
 
 public class MorticianEntityModel<T extends Entity> extends SinglePartEntityModel<T> implements ModelWithHead {
     public static final EntityModelLayer MODEL_LAYER = new EntityModelLayer(Requiem.id("mortician"), "main");
+    public static final String SLEEVES_PART_NAME = "sleeves";
 
     private final ModelPart root;
     private final ModelPart head;
+    private final ModelPart arms;
+    private final ModelPart leftArm;
+    private final ModelPart rightArm;
     private final ModelPart leftLeg;
     private final ModelPart rightLeg;
 
     public MorticianEntityModel(ModelPart root) {
-        super(RenderLayer::getItemEntityTranslucentCull);
+        super(RenderLayer::getEntityTranslucent);
         this.root = root;
         this.head = root.getChild(EntityModelPartNames.HEAD);
+        this.arms = root.getChild(EntityModelPartNames.ARMS);
         this.rightLeg = root.getChild(EntityModelPartNames.RIGHT_LEG);
         this.leftLeg = root.getChild(EntityModelPartNames.LEFT_LEG);
+        this.rightArm = root.getChild(EntityModelPartNames.RIGHT_ARM);
+        this.leftArm = root.getChild(EntityModelPartNames.LEFT_ARM);
     }
 
     public static TexturedModelData getTexturedModelData() {
@@ -76,7 +84,7 @@ public class MorticianEntityModel<T extends Entity> extends SinglePartEntityMode
         ModelPartData root = modelData.getRoot();
         root.addChild(EntityModelPartNames.HEAD, ModelPartBuilder.create()
                 .mirrored()
-                .uv(0, 0).cuboid(-5.0F, -8.0F, -4.0F, 10.0F, 8.0F, 8.0F)
+                .uv(0, 0).cuboid(-5.0F, -8.0F, -4.0F, 10.0F, 8.0F, 8.0F, true)
                 .uv(31, 1).cuboid(-2.0F, -4.0F, -5.0F, 4.0F, 4.0F, 1.0F)
                 .uv(2, 0).cuboid(-3.0F, -2.0F, -5.0F, 1.0F, 2.0F, 1.0F)
                 .uv(2, 4).cuboid(2.0F, -2.0F, -5.0F, 1.0F, 2.0F, 1.0F),
@@ -90,18 +98,28 @@ public class MorticianEntityModel<T extends Entity> extends SinglePartEntityMode
                 .uv(0, 18).cuboid(-2.0F, 0.0F, -2.0F, 4.0F, 12.0F, 4.0F, true),
             ModelTransform.pivot(-2.0F, 12.0F, 0.0F));
         root.addChild(EntityModelPartNames.LEFT_LEG, ModelPartBuilder.create()
-                .uv(0, 18).cuboid(-2.0F, 0.0F, -2.0F, 4.0F, 12.0F, 4.0F),
+                .uv(0, 18).cuboid(-2.0F, 0.0F, -2.0F, 4.0F, 12.0F, 4.0F, false),
             ModelTransform.pivot(2.0F, 12.0F, 0.0F));
-        ModelPartData arms = root.addChild("arms", ModelPartBuilder.create()
-                .uv(40, 34).cuboid(-4.0F, 2.0F, -2.0F, 8.0F, 4.0F, 4.0F, true)
-                .uv(34, 42).cuboid(-6.0F, 2.5F, -1.5F, 12.0F, 3.0F, 3.0F, true)
-                .uv(44, 18).cuboid(4.0F, -2.0F, -2.0F, 3.0F, 8.0F, 4.0F)
-                .uv(44, 18).cuboid(-7.0F, -2.0F, -2.0F, 3.0F, 8.0F, 4.0F, true),
+        ModelPartData arms = root.addChild(EntityModelPartNames.ARMS, ModelPartBuilder.create()
+                .uv(40, 30).cuboid(-4.0F, 2.0F, -2.0F, 8.0F, 4.0F, 4.0F, true)
+                .uv(34, 38).cuboid(-6.0F, 2.5F, -1.5F, 12.0F, 3.0F, 3.0F, false)
+                .uv(44, 18).cuboid(4.0F, -2.0F, -2.0F, 3.0F, 8.0F, 4.0F, true)
+                .uv(44, 18).cuboid(-7.0F, -2.0F, -2.0F, 3.0F, 8.0F, 4.0F, false),
             ModelTransform.of(0.0F, 2.0F, 0.0F, -0.9163F, 0.0F, 0.0F));
-        arms.addChild("sleeves", ModelPartBuilder.create()
-                .uv(42, 48).cuboid(-6.999F, -0.2F, -0.4F, 5.0F, 3.0F, 6.0F)
-                .uv(42, 48).cuboid(1.999F, -0.2F, -0.4F, 5.0F, 3.0F, 6.0F, true),
+        arms.addChild(SLEEVES_PART_NAME, ModelPartBuilder.create()
+                .uv(42, 0).cuboid(-6.999F, -0.2F, -0.4F, 5.0F, 3.0F, 6.0F, true)
+                .uv(42, 0).cuboid(1.999F, -0.2F, -0.4F, 5.0F, 3.0F, 6.0F, false),
             ModelTransform.of(0.0F, 4.0F, 0.0F, -0.6545F, 0.0F, 0.0F));
+        root.addChild(EntityModelPartNames.RIGHT_ARM, ModelPartBuilder.create()
+                .uv(28, 43).cuboid(-1.0F, -2.0F, -2.0F, 3.0F, 9.0F, 4.0F, true)
+                .uv(42, 43).cuboid(-0.5F, -1.0F, -1.5F, 2.0F, 11.0F, 3.0F, true),
+            ModelTransform.pivot(5.0F, 2.0F, 0.0F)
+        );
+        root.addChild(EntityModelPartNames.LEFT_ARM, ModelPartBuilder.create()
+                .uv(28, 43).cuboid(-2.0F, -2.0F, -2.0F, 3.0F, 9.0F, 4.0F, false)
+                .uv(42, 43).cuboid(-1.5F, -1.0F, -1.5F, 2.0F, 11.0F, 3.0F, false),
+            ModelTransform.pivot(-5.0F, 2.0F, 0.0F)
+        );
         return TexturedModelData.of(modelData, 64, 64);
     }
 
@@ -123,6 +141,26 @@ public class MorticianEntityModel<T extends Entity> extends SinglePartEntityMode
         this.leftLeg.pitch = MathHelper.cos(limbAngle * 0.6662F + (float) Math.PI) * 1.4F * limbDistance * 0.5F;
         this.rightLeg.yaw = 0.0F;
         this.leftLeg.yaw = 0.0F;
+
+        if (entity instanceof MorticianEntity mortician && mortician.isSpellcasting()) {
+            this.rightArm.pivotZ = 0.0F;
+            this.rightArm.pivotX = -5.0F;
+            this.leftArm.pivotZ = 0.0F;
+            this.leftArm.pivotX = 5.0F;
+            this.rightArm.pitch = MathHelper.cos(animationProgress * 0.6662F) * 0.25F;
+            this.leftArm.pitch = MathHelper.cos(animationProgress * 0.6662F) * 0.25F;
+            this.rightArm.roll = (float) (Math.PI * 3.0 / 4.0);
+            this.leftArm.roll = (float) (-Math.PI * 3.0 / 4.0);
+            this.rightArm.yaw = 0.0F;
+            this.leftArm.yaw = 0.0F;
+            this.arms.visible = false;
+            this.rightArm.visible = true;
+            this.leftArm.visible = true;
+        } else {
+            this.arms.visible = true;
+            this.rightArm.visible = false;
+            this.leftArm.visible = false;
+        }
     }
 
     @Override

@@ -32,28 +32,36 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.requiem.common;
+package ladysnake.requiem.common.entity.ai;
 
-import com.mojang.datafixers.util.Unit;
-import com.mojang.serialization.Codec;
-import ladysnake.requiem.Requiem;
-import ladysnake.requiem.api.v1.record.EntityPointer;
-import ladysnake.requiem.api.v1.record.RecordType;
-import net.minecraft.util.dynamic.GlobalPos;
+import ladysnake.requiem.common.entity.MorticianEntity;
+import net.minecraft.entity.ai.goal.Goal;
 
-public final class RequiemRecordTypes {
-    public static final RecordType<Unit> RELEASED_SOUL = register("released_soul", Codec.unit(Unit.INSTANCE));
-    public static final RecordType<Unit> RIFT_OBELISK = register("rift_obelisk", Codec.unit(Unit.INSTANCE));
-    public static final RecordType<EntityPointer> BODY_REF = RecordType.register(Requiem.id("body_ref"), EntityPointer.CODEC, EntityPointer::world, true);
-    public static final RecordType<EntityPointer> SOUL_OWNER_REF = RecordType.register(Requiem.id("soul_owner_ref"), EntityPointer.CODEC, EntityPointer::world, false);
-    public static final RecordType<EntityPointer> MORTICIAN_REF = RecordType.register(Requiem.id("mortician_ref"), EntityPointer.CODEC, EntityPointer::world, false);
-    public static final RecordType<GlobalPos> OBELISK_REF = RecordType.register(Requiem.id("obelisk_ref"), GlobalPos.CODEC, GlobalPos::getDimension, false);
+import java.util.EnumSet;
 
-    public static void init() {
-        // NO-OP
+public class MorticianLookAtTargetGoal extends Goal {
+    private final MorticianEntity mortician;
+
+    public MorticianLookAtTargetGoal(MorticianEntity mortician) {
+        this.mortician = mortician;
+        this.setControls(EnumSet.of(Goal.Control.MOVE, Goal.Control.LOOK));
     }
 
-    private static <T> RecordType<T> register(String id, Codec<T> codec) {
-        return RecordType.register(Requiem.id(id), codec);
+    @Override
+    public boolean canStart() {
+        return this.mortician.isSpellcasting();
+    }
+
+    @Override
+    public void start() {
+        super.start();
+        this.mortician.getNavigation().stop();
+    }
+
+    @Override
+    public void tick() {
+        if (this.mortician.getTarget() != null) {
+            this.mortician.getLookControl().lookAt(this.mortician.getTarget(), (float)this.mortician.getBodyYawSpeed(), (float)this.mortician.getLookPitchSpeed());
+        }
     }
 }

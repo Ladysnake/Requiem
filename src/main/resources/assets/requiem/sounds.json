@@ -134,6 +134,13 @@
     ],
     "subtitle": "requiem:subtitles.entity.mortician.ambient"
   },
+  "entity.mortician.cast_spell": {
+    "sounds": [
+      "mob/evocation_illager/cast1",
+      "mob/evocation_illager/cast2"
+    ],
+    "subtitle": "requiem:subtitles.entity.mortician.cast_spell"
+  },
   "entity.mortician.death": {
     "sounds": [
       {"name": "mob/skeleton/death", "volume": 1, "pitch": 0.8 }
@@ -155,6 +162,13 @@
       {"name": "mob/skeleton/say2", "volume": 1, "pitch": 0.5 },
       {"name": "mob/skeleton/say3", "volume": 1, "pitch": 0.5 }
     ]
+  },
+  "entity.mortician.prepare_attack": {
+    "sounds": [
+      "mob/evocation_illager/prepare_attack1",
+      "mob/evocation_illager/prepare_attack2"
+    ],
+    "subtitle": "requiem:subtitles.entity.mortician.prepare_attack"
   },
   "entity.mortician.yes": {
     "sounds": [
