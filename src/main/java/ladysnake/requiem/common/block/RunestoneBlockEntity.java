@@ -77,6 +77,7 @@ public class RunestoneBlockEntity extends BlockEntity {
     public static final Direction[] OBELISK_SIDES = {Direction.SOUTH, Direction.EAST, Direction.NORTH, Direction.WEST};
     public static final int POWER_ATTEMPTS = 6;
     public static final int MAX_OBELISK_CORE_WIDTH = 5;
+    public static final int MAX_OBELISK_CORE_HEIGHT = 20;
     public static final DataResult<ObeliskMatch> INVALID_BASE = DataResult.error("Structure does not have a matching base");
     public static final DataResult<ObeliskMatch> INVALID_CORE = DataResult.error("Structure does not have a matching runic core");
     public static final DataResult<ObeliskMatch> INVALID_CAP = DataResult.error("Structure does not have a matching cap");
@@ -342,7 +343,8 @@ public class RunestoneBlockEntity extends BlockEntity {
         List<RuneSearchResult> layers = new ArrayList<>();
         int height;
 
-        for (height = 0; testCoreLayerFrame(world, start, pos, coreWidth, height); height++) {
+        for (height = 0; height < MAX_OBELISK_CORE_HEIGHT; height++) {
+            if (!testCoreLayerFrame(world, start, pos, coreWidth, height)) break;
             RuneSearchResult result = findRune(world, origin, coreWidth, height);
             if (!result.valid()) break;
             layers.add(result);
