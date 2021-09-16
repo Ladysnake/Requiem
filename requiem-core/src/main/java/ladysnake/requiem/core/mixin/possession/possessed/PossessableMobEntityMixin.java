@@ -34,10 +34,9 @@
  */
 package ladysnake.requiem.core.mixin.possession.possessed;
 
+import ladysnake.requiem.api.v1.event.minecraft.MobConversionCallback;
 import ladysnake.requiem.api.v1.possession.Possessable;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
-import ladysnake.requiem.core.possession.PossessedDataBase;
-import ladysnake.requiem.core.util.PossessionHooks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
@@ -143,8 +142,7 @@ public abstract class PossessableMobEntityMixin extends PossessableLivingEntityM
 
     @Inject(method = "convertTo", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/World;spawnEntity(Lnet/minecraft/entity/Entity;)Z"), locals = LocalCapture.CAPTURE_FAILSOFT)
     private <T extends MobEntity> void possessConvertedZombie(EntityType<T> type, boolean bl, CallbackInfoReturnable<T> ci, T converted) {
-        PossessionHooks.dropArmorIfBanned(converted);
-        PossessedDataBase.onMobConverted((MobEntity) (Object) this, converted);
+        MobConversionCallback.EVENT.invoker().onMobConverted((MobEntity) (Object) this, converted);
     }
 
     @Inject(method = "interact", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/mob/MobEntity;getHoldingEntity()Lnet/minecraft/entity/Entity;"), cancellable = true)

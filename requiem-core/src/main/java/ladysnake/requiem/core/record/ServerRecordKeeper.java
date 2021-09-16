@@ -65,7 +65,7 @@ public class ServerRecordKeeper extends CommonRecordKeeper {
 
     @Override
     protected boolean checkWorld(GlobalRecord record) {
-        return record.types().map(t -> checkWorld(record, t)).reduce(false, Boolean::logicalOr);
+        return record.types().map(t -> checkWorld(record, t)).reduce(true, Boolean::logicalAnd);
     }
 
     private <T> boolean checkWorld(GlobalRecord record, RecordType<T> type) {

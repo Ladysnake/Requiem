@@ -74,6 +74,7 @@ import ladysnake.requiem.common.dialogue.PlayerDialogueTracker;
 import ladysnake.requiem.common.enchantment.RequiemEnchantments;
 import ladysnake.requiem.common.entity.PlayerShellEntity;
 import ladysnake.requiem.common.entity.SkeletonBoneComponent;
+import ladysnake.requiem.common.entity.ability.AxolotlPlayingDeadAbility;
 import ladysnake.requiem.common.entity.ability.BlazeFireballAbility;
 import ladysnake.requiem.common.entity.ability.BlinkAbility;
 import ladysnake.requiem.common.entity.ability.CreeperPrimingAbility;
@@ -129,6 +130,7 @@ import net.minecraft.entity.mob.GuardianEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.ShulkerEntity;
 import net.minecraft.entity.mob.WitchEntity;
+import net.minecraft.entity.passive.AxolotlEntity;
 import net.minecraft.entity.passive.GoatEntity;
 import net.minecraft.entity.passive.LlamaEntity;
 import net.minecraft.entity.passive.SnowGolemEntity;
@@ -388,6 +390,7 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
 
     @Override
     public void registerMobAbilities(MobAbilityRegistry abilityRegistry) {
+        abilityRegistry.register(EntityType.AXOLOTL, MobAbilityConfig.<AxolotlEntity>builder().indirectInteract(AxolotlPlayingDeadAbility::new).build());
         abilityRegistry.register(EntityType.BLAZE, MobAbilityConfig.builder().indirectAttack(BlazeFireballAbility::new).build());
         abilityRegistry.register(EntityType.CREEPER, MobAbilityConfig.<CreeperEntity>builder().indirectAttack(CreeperPrimingAbility::new).build());
         abilityRegistry.register(EntityType.ENDERMAN, MobAbilityConfig.builder().indirectInteract(BlinkAbility::new).build());

@@ -34,7 +34,7 @@
  */
 package ladysnake.requiem.mixin.common.possession.gameplay;
 
-import ladysnake.requiem.core.possession.PossessedDataBase;
+import ladysnake.requiem.api.v1.event.minecraft.MobConversionCallback;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LightningEntity;
 import net.minecraft.entity.mob.ZombifiedPiglinEntity;
@@ -56,6 +56,6 @@ public abstract class PigEntityMixin extends AnimalEntity {
 
     @Inject(method = "onStruckByLightning", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/world/ServerWorld;spawnEntity(Lnet/minecraft/entity/Entity;)Z"), locals = LocalCapture.CAPTURE_FAILSOFT)
     private void possessConvertedWitch(ServerWorld world, LightningEntity lightning, CallbackInfo ci, ZombifiedPiglinEntity converted) {
-        PossessedDataBase.onMobConverted(this, converted);
+        MobConversionCallback.EVENT.invoker().onMobConverted(this, converted);
     }
 }

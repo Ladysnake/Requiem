@@ -152,9 +152,6 @@ public final class PossessionComponentImpl implements PossessionComponent {
         this.player.calculateDimensions(); // update size
         MovementAlterer.get(this.player).setConfig(MovementRegistry.get(this.player.world).getEntityMovementConfig(host.getType()));
 
-        // Ensure health matches max health (attrition)
-        host.setHealth(host.getHealth());
-
         // Make the mob react a bit
         host.playAmbientSound();
 

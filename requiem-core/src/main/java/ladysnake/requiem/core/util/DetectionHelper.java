@@ -34,11 +34,13 @@
  */
 package ladysnake.requiem.core.util;
 
+import ladysnake.requiem.api.v1.possession.Possessable;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.mob.Angerable;
 import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.Box;
 
 import java.util.List;
@@ -48,7 +50,8 @@ import java.util.List;
  *
  * @author SciRave
  */
-public class DetectionHelper {
+public final class DetectionHelper {
+    public static final int ALERT_RANGE = 50;
 
     /**
      * Controls what is defined as a valid enemy for the system to anger.
@@ -75,15 +78,21 @@ public class DetectionHelper {
      * Incites an individual mob and their buddies in a range.
      *
      * @param host the host you want to be attacked.
-     * @param mob the mob you want to anger and find allies around.
+     * @param hostile the mob you want to anger and find allies around.
      */
-    public static void inciteMobAndAllies(MobEntity host, HostileEntity mob) {
-        inciteMob(host, mob);
+    public static void inciteMobAndAllies(MobEntity host, HostileEntity hostile) {
+        inciteMob(host, hostile);
 
-        List<HostileEntity> sawExchange = mob.world.getEntitiesByClass(HostileEntity.class, Box.from(mob.getPos()).expand(50, 50, 50), hostileEntity -> isValidEnemy(hostileEntity) && hostileEntity.isInWalkTargetRange(host.getBlockPos()) && hostileEntity.canSee(host));
+        List<HostileEntity> sawExchange = hostile.world.getEntitiesByClass(HostileEntity.class, Box.from(hostile.getPos()).expand(ALERT_RANGE), witness -> isValidEnemy(witness) && witness.isInWalkTargetRange(host.getBlockPos()) && witness.canSee(host));
 
-        sawExchange.forEach(hostileEntity -> inciteMob(host, hostileEntity));
+        for (HostileEntity witness : sawExchange) {
+            inciteMob(host, witness);
+        }
 
     }
 
+    public static boolean canBeDetected(MobEntity candidate) {
+        PlayerEntity spy = ((Possessable) candidate).getPossessor(); // it could be you, it could be me!
+        return spy != null && !spy.getAbilities().creativeMode;
+    }
 }

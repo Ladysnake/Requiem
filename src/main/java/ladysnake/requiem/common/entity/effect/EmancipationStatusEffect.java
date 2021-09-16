@@ -34,34 +34,15 @@
  */
 package ladysnake.requiem.common.entity.effect;
 
-import ladysnake.requiem.api.v1.event.requiem.PossessionStartCallback;
-import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.api.v1.remnant.StickyStatusEffect;
-import ladysnake.requiem.common.network.RequiemNetworking;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.attribute.AttributeContainer;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectCategory;
-import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.server.network.ServerPlayerEntity;
 
 public class EmancipationStatusEffect extends StatusEffect implements StickyStatusEffect {
     public EmancipationStatusEffect(StatusEffectCategory type, int color) {
         super(type, color);
-    }
-
-    @Override
-    public void onRemoved(LivingEntity entity, AttributeContainer attributes, int amplifier) {
-        super.onRemoved(entity, attributes, amplifier);
-        if (entity instanceof ServerPlayerEntity player) {
-            PossessionComponent possessionComponent = PossessionComponent.get(player);
-            MobEntity host = possessionComponent.getHost();
-            if (host != null && PossessionStartCallback.EVENT.invoker().onPossessionAttempted(host, player, true) != PossessionStartCallback.Result.ALLOW) {
-                possessionComponent.stopPossessing();
-                RequiemNetworking.sendEtherealAnimationMessage(player);
-            }
-        }
     }
 
     @Override

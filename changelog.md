@@ -8,6 +8,8 @@ Version 2.0.0
 ### Changes in Alpha 12
 - **Mobs can now become hostile if you act too promiscuous !** (big thanks to SciRave for giving us this feature)
     - this is an experiment, so please give us your feedback
+- **Renamed the `/requiem soul` subcommand to `/requiem vagrant`**
+- Added the `/requiem soul <remove|restore>` subcommand
 - Added recipes for tachylite and rift runestones
 - Recipes using a filled soul vessel now give an empty soul vessel back
 - Made morticians spawn near obelisks with active rifts
@@ -15,10 +17,18 @@ Version 2.0.0
         - We're not done yet though, so previous warnings still apply
 - Added derelict tachylite, a block that drops a bunch of XP, and has a chance to drop a shattered soul vessel
 - Revamped all Rift textures
-- Made obelisks that are behind you appear on the border of the screen
+- Revamped the possession icon
+- Added a dedicated icon for when you are messing with endermen
+- Made obelisks that are behind you appear on the border of the rift screen
     - please appreciate this, I had to do maths and stuff
 - Morticians now do skeleton sounds (because they are hella dead)
 - Reduced Tachylite's strength to be halfway between obsidian and basalt
+- Updated mob vision for 1.17 mobs, and gave night vision to bats
+- Removed Emancipation requirement for possessing soulless mobs
+- Fixed mobs regaining a soul when they converted
+- Updated Mortician trades
+- Made Origins' power key trigger dissociation
+- Morticians' soul can no longer be stolen
 
 ### Changes in Alpha 11
 - Removed hardcore death free ticket
@@ -136,8 +146,10 @@ Updated to MC 1.17
 - Added player shells, static bodies of soulless players (previously available in Pandemonium)
     - Contrary to previous pandemonium versions, they are now tracked across dimensions
 - Undead mobs now have improved night vision - although not as good as dissociated souls
+- Added the `/requiem soul <remove|restore>` command to 
 
 **Changes**
+- Renamed the `/requiem soul` subcommand to `/requiem vagrant`
 - Some datapack things have changed
     - Dialogues are now in the `requiem:requiem/dialogues` directory
 - Requiem doesn't save you anymore in Hardcore - you will need to get the new stuff first to be able to leave your puny body
@@ -153,6 +165,7 @@ Updated to MC 1.17
 
 **Mod Interaction**
 - Updated Origins compatibility
+    - Origins' power key now triggers dissociation
 - Updated Golems Galore compatibility
 - Updated Mod Menu metadata
 - Updated The Bumblezone compatibility
@@ -173,6 +186,7 @@ Updated to MC 1.17
 - Fixed possessed phantoms looking the wrong way
 - Fixed possessed ravagers breaking leaves clientside when mobGriefing was disabled
 - Fixed dolphins not going flop flop outside water
+- Fixed possession not transferring upon mooshroom shearing
 
 #### Pandemonium
 **Additions**

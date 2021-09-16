@@ -32,49 +32,30 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.requiem.common.command;
+package ladysnake.requiem.mixin.common.possession.gameplay;
 
-import com.mojang.brigadier.CommandDispatcher;
-import me.lucko.fabric.api.permissions.v0.Permissions;
-import net.minecraft.server.command.ServerCommandSource;
+import ladysnake.requiem.api.v1.possession.Possessable;
+import ladysnake.requiem.core.entity.SoulHolderComponent;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.passive.MerchantEntity;
+import net.minecraft.entity.passive.PassiveEntity;
+import net.minecraft.world.World;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.function.Predicate;
-
-import static net.minecraft.server.command.CommandManager.literal;
-
-public final class RequiemCommand {
-
-    public static final String REQUIEM_ROOT_COMMAND = "requiem";
-
-    private static final Set<String> permissions = new HashSet<>();
-
-    public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        dispatcher.register(literal(REQUIEM_ROOT_COMMAND)
-            .requires(RequiemCommand::checkPermissions)
-            .then(RequiemPossessionCommand.possessionSubcommand())
-            .then(RequiemRemnantCommand.remnantSubcommand())
-            .then(RequiemEtherealCommand.etherealSubcommand())
-            .then(RequiemShellCommand.shellSubcommand())
-            .then(RequiemSoulCommand.soulSubcommand())
-        );
+@Mixin(MerchantEntity.class)
+public abstract class MerchantEntityMixin extends PassiveEntity implements Possessable {
+    protected MerchantEntityMixin(EntityType<? extends PassiveEntity> entityType, World world) {
+        super(entityType, world);
     }
 
-    public static Predicate<ServerCommandSource> permission(String name) {
-        String perm = "requiem.command" + name;
-        permissions.add(perm);
-        return Permissions.require(perm, 2);
-    }
-
-    private static boolean checkPermissions(ServerCommandSource source) {
-        if (source.hasPermissionLevel(2)) return true;
-
-        for (String perm : permissions) {
-            if (Permissions.check(source, perm)) {
-                return true;
-            }
+    @Inject(method = "hasCustomer", at = @At("RETURN"), cancellable = true)
+    private void pretendHasCustomer(CallbackInfoReturnable<Boolean> cir) {
+        // Allow trading specifically if the villager cannot move
+        if (!cir.getReturnValueZ() && SoulHolderComponent.isSoulless(this) && !this.isBeingPossessed()) {
+            cir.setReturnValue(true);
         }
-        return false;
     }
 }

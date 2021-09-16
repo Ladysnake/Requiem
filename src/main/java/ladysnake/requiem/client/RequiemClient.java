@@ -151,10 +151,10 @@ public final class RequiemClient {
             if (modelId.getNamespace().equals(Requiem.MOD_ID)) {
                 if (modelId.getPath().startsWith("block/tachylite/runic/activated/")) {
                     String effect = modelId.getPath().substring(modelId.getPath().lastIndexOf('/') + 1);
-                    String topRunestoneSpriteId = ifExistsOrElse(resourceManager, "block/%s_runestone_top".formatted(effect), "requiem:block/neutral_runestone");
-                    String runestoneSpriteId = ifExistsOrElse(resourceManager, "requiem:block/%s_runestone_side".formatted(effect), "requiem:block/%s_runestone".formatted(effect));
-                    String runeSpriteId = ifExistsOrElse(resourceManager, "requiem:block/%s_rune_side".formatted(effect), "requiem:block/%s_rune".formatted(effect));
-                    String topRuneSpriteId = ifExistsOrElse(resourceManager, "requiem:block/%s_rune_top", "requiem:block/neutral_rune");
+                    String topRunestoneSpriteId = ifExistsOrElse(resourceManager, "block/%s_runestone_top".formatted(effect), "block/neutral_runestone");
+                    String runestoneSpriteId = ifExistsOrElse(resourceManager, "block/%s_runestone_side".formatted(effect), "block/%s_runestone".formatted(effect));
+                    String runeSpriteId = ifExistsOrElse(resourceManager, "block/%s_rune_side".formatted(effect), "block/%s_rune".formatted(effect));
+                    String topRuneSpriteId = ifExistsOrElse(resourceManager, "block/%s_rune_top".formatted(effect), "block/neutral_rune");
                     return new SimpleUnbakedModel(mb -> {
                         Sprite topRunestoneSprite = mb.getSprite(topRunestoneSpriteId);
                         Sprite runestoneSprite = mb.getSprite(runestoneSpriteId);
@@ -175,7 +175,7 @@ public final class RequiemClient {
     }
 
     private String ifExistsOrElse(ResourceManager resources, String attempt, String fallback) {
-        return resources.containsResource(new Identifier(attempt)) ? attempt : fallback;
+        return "requiem:" + (resources.containsResource(Requiem.id("textures/" + attempt + ".png")) ? attempt : fallback);
     }
 
     private void registerParticleFactories() {

@@ -53,27 +53,27 @@ import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
 
 public final class RequiemEtherealCommand {
-    public static final String ETHEREAL_SUBCOMMAND = "soul";
+    public static final String ETHEREAL_SUBCOMMAND = "vagrant";
 
     static LiteralArgumentBuilder<ServerCommandSource> etherealSubcommand() {
         return literal(ETHEREAL_SUBCOMMAND)
-            .requires(RequiemCommand.permission("soul.query.self").or(RequiemCommand.permission("soul.set.self")))
-            // requiem soul query [player]
+            .requires(RequiemCommand.permission("vagrant.query.self").or(RequiemCommand.permission("vagrant.set.self")))
+            // requiem vagrant query [player]
             .then(literal("query")
-                .requires(RequiemCommand.permission("soul.query.self"))
+                .requires(RequiemCommand.permission("vagrant.query.self"))
                 .executes(context -> queryEthereal(context.getSource(), context.getSource().getPlayer()))
                 .then(argument("target", EntityArgumentType.player())
-                    .requires(RequiemCommand.permission("soul.query"))
+                    .requires(RequiemCommand.permission("vagrant.query"))
                     .executes(context -> queryEthereal(context.getSource(), EntityArgumentType.getPlayer(context, "target")))
                 )
             )
-            // requiem soul set <true|false> [player]
+            // requiem vagrant set <true|false> [player]
             .then(literal("set")
-                .requires(RequiemCommand.permission("soul.set.self"))
+                .requires(RequiemCommand.permission("vagrant.set.self"))
                 .then(argument("ethereal", BoolArgumentType.bool())
                     .executes(context -> setEthereal(context.getSource(), Collections.singleton(context.getSource().getPlayer()), BoolArgumentType.getBool(context, "ethereal")))
                     .then(argument("target", EntityArgumentType.players())
-                        .requires(RequiemCommand.permission("soul.set"))
+                        .requires(RequiemCommand.permission("vagrant.set"))
                         .executes(context -> setEthereal(context.getSource(), EntityArgumentType.getPlayers(context, "target"), BoolArgumentType.getBool(context, "ethereal")))
                     )
                 )

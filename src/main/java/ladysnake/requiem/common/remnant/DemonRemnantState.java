@@ -48,6 +48,7 @@ import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.world.WorldEvents;
 
 public class DemonRemnantState extends MutableRemnantState {
     public DemonRemnantState(PlayerEntity player) {
@@ -64,7 +65,7 @@ public class DemonRemnantState extends MutableRemnantState {
         player.removeStatusEffect(RequiemStatusEffects.ATTRITION);
         player.setHealth(body.getHealth());
         player.addStatusEffect(new StatusEffectInstance(StatusEffects.NAUSEA, 200, 0));
-        player.world.syncWorldEvent(null, 1027, player.getBlockPos(), 0);
+        player.world.syncWorldEvent(null, WorldEvents.ZOMBIE_VILLAGER_CURED, player.getBlockPos(), 0);
     }
 
     @Override

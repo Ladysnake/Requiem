@@ -45,8 +45,6 @@ import ladysnake.requiem.api.v1.record.GlobalRecord;
 import ladysnake.requiem.api.v1.record.GlobalRecordKeeper;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.common.RequiemRecordTypes;
-import ladysnake.requiem.common.entity.ObeliskSoulEntity;
-import ladysnake.requiem.common.entity.RequiemEntities;
 import ladysnake.requiem.common.particle.RequiemParticleTypes;
 import ladysnake.requiem.common.sound.RequiemSoundEvents;
 import ladysnake.requiem.common.tag.RequiemBlockTags;
@@ -72,18 +70,16 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Random;
 import java.util.UUID;
 import java.util.function.Consumer;
 
 public class RunestoneBlockEntity extends BlockEntity {
     public static final Direction[] OBELISK_SIDES = {Direction.SOUTH, Direction.EAST, Direction.NORTH, Direction.WEST};
-    public static final int POWER_ATTEMPTS = 1;
+    public static final int POWER_ATTEMPTS = 6;
     public static final int MAX_OBELISK_CORE_WIDTH = 5;
     public static final DataResult<ObeliskMatch> INVALID_BASE = DataResult.error("Structure does not have a matching base");
     public static final DataResult<ObeliskMatch> INVALID_CORE = DataResult.error("Structure does not have a matching runic core");
     public static final DataResult<ObeliskMatch> INVALID_CAP = DataResult.error("Structure does not have a matching cap");
-    private static final Random random = new Random();
     public static final int NO_MATCH = 0;
 
     private @Nullable Text customName;
@@ -156,6 +152,7 @@ public class RunestoneBlockEntity extends BlockEntity {
 
     private boolean findPowerSource(ServerWorld world, Vec3d center, double range) {
         BlockPos.Mutable checked = new BlockPos.Mutable();
+        int successes = 0;
 
         for (int attempt = 0; attempt < RunestoneBlockEntity.POWER_ATTEMPTS; attempt++) {
             // https://stackoverflow.com/questions/5837572/generate-a-random-point-within-a-circle-uniformly/50746409#50746409
@@ -173,28 +170,17 @@ public class RunestoneBlockEntity extends BlockEntity {
 
             if (state.isIn(BlockTags.SOUL_SPEED_BLOCKS)) {
                 this.spawnSoul(world, center, Vec3d.ofCenter(checked, 0.9));
-                return true;
+                successes++;
             }
         }
 
-        return false;
+        // Require more than half of the attempts to be successful
+        return successes > POWER_ATTEMPTS / 2;
     }
 
     private void spawnSoul(ServerWorld world, Vec3d center, Vec3d particleSrc) {
-        if (world.random.nextFloat() < 0.1f) {
-            ObeliskSoulEntity soul = new ObeliskSoulEntity(RequiemEntities.OBELISK_SOUL, world, getRandomCorePos());
-            soul.setPosition(particleSrc);
-            soul.setVelocity(0, 0.1, 0);
-            soul.setYaw(random.nextFloat());
-            world.spawnEntity(soul);
-        } else {
-            Vec3d toObelisk = center.subtract(particleSrc).normalize();
-            world.spawnParticles(RequiemParticleTypes.OBELISK_SOUL, particleSrc.x, particleSrc.y, particleSrc.z, 0, toObelisk.x, 1, toObelisk.z, 0.1);
-        }
-    }
-
-    private BlockPos getRandomCorePos() {
-        return this.pos.add(random.nextInt(this.obeliskCoreWidth), random.nextInt(this.obeliskCoreHeight), random.nextInt(this.obeliskCoreWidth));
+        Vec3d toObelisk = center.subtract(particleSrc).normalize();
+        world.spawnParticles(RequiemParticleTypes.OBELISK_SOUL, particleSrc.x, particleSrc.y, particleSrc.z, 0, toObelisk.x, 1, toObelisk.z, 0.1);
     }
 
     public int getRangeLevel() {

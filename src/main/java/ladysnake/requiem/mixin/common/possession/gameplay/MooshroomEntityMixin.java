@@ -32,49 +32,24 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.requiem.common.command;
+package ladysnake.requiem.mixin.common.possession.gameplay;
 
-import com.mojang.brigadier.CommandDispatcher;
-import me.lucko.fabric.api.permissions.v0.Permissions;
-import net.minecraft.server.command.ServerCommandSource;
+import ladysnake.requiem.api.v1.event.minecraft.MobConversionCallback;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.passive.MooshroomEntity;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.ModifyArg;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.function.Predicate;
-
-import static net.minecraft.server.command.CommandManager.literal;
-
-public final class RequiemCommand {
-
-    public static final String REQUIEM_ROOT_COMMAND = "requiem";
-
-    private static final Set<String> permissions = new HashSet<>();
-
-    public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        dispatcher.register(literal(REQUIEM_ROOT_COMMAND)
-            .requires(RequiemCommand::checkPermissions)
-            .then(RequiemPossessionCommand.possessionSubcommand())
-            .then(RequiemRemnantCommand.remnantSubcommand())
-            .then(RequiemEtherealCommand.etherealSubcommand())
-            .then(RequiemShellCommand.shellSubcommand())
-            .then(RequiemSoulCommand.soulSubcommand())
-        );
-    }
-
-    public static Predicate<ServerCommandSource> permission(String name) {
-        String perm = "requiem.command" + name;
-        permissions.add(perm);
-        return Permissions.require(perm, 2);
-    }
-
-    private static boolean checkPermissions(ServerCommandSource source) {
-        if (source.hasPermissionLevel(2)) return true;
-
-        for (String perm : permissions) {
-            if (Permissions.check(source, perm)) {
-                return true;
-            }
+@Mixin(MooshroomEntity.class)
+public abstract class MooshroomEntityMixin {    // cannot extend CowEntity because ??? crash
+    @ModifyArg(method = "sheared", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/World;spawnEntity(Lnet/minecraft/entity/Entity;)Z"))
+    private Entity copyData(Entity cow) {
+        if (cow instanceof LivingEntity actualCow) {    // never know, some mod may do some shit here
+            @SuppressWarnings("ConstantConditions") LivingEntity self = (LivingEntity) (Object) this;
+            MobConversionCallback.EVENT.invoker().onMobConverted(self, actualCow);
         }
-        return false;
+        return cow;
     }
 }

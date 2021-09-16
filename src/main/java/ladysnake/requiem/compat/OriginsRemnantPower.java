@@ -34,14 +34,18 @@
  */
 package ladysnake.requiem.compat;
 
+import io.github.apace100.apoli.power.Active;
 import io.github.apace100.apoli.power.Power;
 import io.github.apace100.apoli.power.PowerType;
+import ladysnake.requiem.api.v1.event.requiem.InitiateFractureCallback;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.api.v1.remnant.RemnantType;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.server.network.ServerPlayerEntity;
 
-public class OriginsRemnantPower extends Power {
+public class OriginsRemnantPower extends Power implements Active {
     private final RemnantType remnantType;
+    private Key key;
 
     public OriginsRemnantPower(PowerType<?> type, LivingEntity player, RemnantType remnantType) {
         super(type, player);
@@ -51,5 +55,22 @@ public class OriginsRemnantPower extends Power {
     @Override
     public void onGained() {
         RemnantComponent.KEY.maybeGet(this.entity).ifPresent(r -> r.become(this.remnantType, true));
+    }
+
+    @Override
+    public void onUse() {
+        if(entity instanceof ServerPlayerEntity player) {
+            InitiateFractureCallback.EVENT.invoker().performFracture(player);
+        }
+    }
+
+    @Override
+    public Key getKey() {
+        return this.key;
+    }
+
+    @Override
+    public void setKey(Key key) {
+        this.key = key;
     }
 }
