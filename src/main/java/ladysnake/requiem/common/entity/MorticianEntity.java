@@ -44,6 +44,7 @@ import ladysnake.requiem.common.RequiemRecordTypes;
 import ladysnake.requiem.common.enchantment.RequiemEnchantments;
 import ladysnake.requiem.common.entity.ai.FreeFromMortailCoilGoal;
 import ladysnake.requiem.common.entity.ai.MorticianLookAtTargetGoal;
+import ladysnake.requiem.common.entity.ai.MoveBackToObeliskGoal;
 import ladysnake.requiem.common.entity.effect.RequiemStatusEffects;
 import ladysnake.requiem.common.item.FilledSoulVesselItem;
 import ladysnake.requiem.common.item.RequiemItems;
@@ -90,6 +91,7 @@ import net.minecraft.tag.BlockTags;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TimeHelper;
+import net.minecraft.util.dynamic.GlobalPos;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.intprovider.UniformIntProvider;
@@ -103,6 +105,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Comparator;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 
 public class MorticianEntity extends MerchantEntity implements Angerable {
@@ -149,6 +152,7 @@ public class MorticianEntity extends MerchantEntity implements Angerable {
         this.goalSelector.add(2, new LookAtCustomerGoal(this));
         this.goalSelector.add(3, new FreeFromMortailCoilGoal(this));
         this.goalSelector.add(4, new GoToWalkTargetGoal(this, 0.35D));
+        this.goalSelector.add(5, new MoveBackToObeliskGoal(this, 0.35D, false));
         this.goalSelector.add(8, new WanderAroundFarGoal(this, 0.35D));
         this.goalSelector.add(9, new StopAndLookAtEntityGoal(this, PlayerEntity.class, 3.0F, 1.0F) {
             {
@@ -370,7 +374,8 @@ public class MorticianEntity extends MerchantEntity implements Angerable {
     }
 
     public void linkWith(GlobalRecord r) {
-        Preconditions.checkArgument(r.get(RequiemRecordTypes.OBELISK_REF).isPresent());
+        Optional<GlobalPos> obeliskPos = r.get(RequiemRecordTypes.OBELISK_REF);
+        Preconditions.checkArgument(obeliskPos.isPresent());
         EntityPositionClerk.get(this).linkWith(r, RequiemRecordTypes.MORTICIAN_REF);
         this.linkedObelisk = r.getUuid();
         this.setObeliskProjection(true);
@@ -379,6 +384,11 @@ public class MorticianEntity extends MerchantEntity implements Angerable {
     @Override
     protected void fillRecipes() {
         this.fillRecipesFromPool(this.getOffers(), TRADES, 7);
+    }
+
+    public @Nullable GlobalPos getHome() {
+        if (this.linkedObelisk == null) return null;
+        return GlobalRecordKeeper.get(this.world).getRecord(this.linkedObelisk).flatMap(r -> r.get(RequiemRecordTypes.OBELISK_REF)).orElse(null);
     }
 
     @Override
