@@ -35,8 +35,11 @@
 package ladysnake.requiem.common.entity.ability;
 
 import ladysnake.requiem.core.entity.ability.IndirectAbilityBase;
+import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.passive.AxolotlEntity;
 
 import java.util.Objects;
@@ -58,8 +61,11 @@ public class AxolotlPlayingDeadAbility extends IndirectAbilityBase<AxolotlEntity
     protected boolean run() {
         int missingHealth = (int) (this.owner.getMaxHealth() - this.owner.getHealth());
         if (missingHealth > 0) {
-            this.ticksLeft = ABILITY_TIME / Math.min(1, missingHealth / MAX_HP_HEALED);
-            Objects.requireNonNull(this.owner.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED)).addTemporaryModifier(new EntityAttributeModifier(SPEED_MODIFIER_UUID, "playing dead slowdow", -0.9, EntityAttributeModifier.Operation.MULTIPLY_TOTAL));
+            this.ticksLeft = Math.round(ABILITY_TIME / Math.min(1F, (float) missingHealth / MAX_HP_HEALED));
+            EntityAttributeInstance speedAttr = Objects.requireNonNull(this.owner.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED));
+            speedAttr.removeModifier(SPEED_MODIFIER_UUID);
+            speedAttr.addTemporaryModifier(new EntityAttributeModifier(SPEED_MODIFIER_UUID, "playing dead slowdow", -0.9, EntityAttributeModifier.Operation.MULTIPLY_TOTAL));
+            this.owner.addStatusEffect(new StatusEffectInstance(StatusEffects.REGENERATION, ticksLeft));
             return true;
         }
         return false;
