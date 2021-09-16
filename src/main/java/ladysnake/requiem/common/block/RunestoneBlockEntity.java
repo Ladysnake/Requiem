@@ -244,6 +244,10 @@ public class RunestoneBlockEntity extends BlockEntity {
     public void readNbt(NbtCompound nbt) {
         super.readNbt(nbt);
 
+        if (nbt.contains("linked_record")) {
+            this.recordUuid = nbt.getUuid("linked_record");
+        }
+
         if (nbt.contains("CustomName", 8)) {
             this.customName = Text.Serializer.fromJson(nbt.getString("CustomName"));
         }
@@ -255,6 +259,10 @@ public class RunestoneBlockEntity extends BlockEntity {
 
         if (this.customName != null) {
             nbt.putString("CustomName", Text.Serializer.toJson(this.customName));
+        }
+
+        if (this.recordUuid != null) {
+            nbt.putUuid("linked_record", this.recordUuid);
         }
 
         return nbt;
