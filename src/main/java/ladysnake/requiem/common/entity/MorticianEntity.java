@@ -35,30 +35,45 @@
 package ladysnake.requiem.common.entity;
 
 import com.google.common.base.Preconditions;
+import ladysnake.requiem.api.v1.possession.Possessable;
 import ladysnake.requiem.api.v1.record.GlobalRecord;
 import ladysnake.requiem.api.v1.record.GlobalRecordKeeper;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.api.v1.util.RequiemTargetPredicate;
 import ladysnake.requiem.common.RequiemRecordTypes;
 import ladysnake.requiem.common.enchantment.RequiemEnchantments;
+import ladysnake.requiem.common.entity.ai.FreeFromMortailCoilGoal;
+import ladysnake.requiem.common.entity.ai.MorticianLookAtTargetGoal;
+import ladysnake.requiem.common.entity.ai.MoveBackToObeliskGoal;
+import ladysnake.requiem.common.entity.effect.RequiemStatusEffects;
 import ladysnake.requiem.common.item.FilledSoulVesselItem;
 import ladysnake.requiem.common.item.RequiemItems;
 import ladysnake.requiem.common.network.RequiemNetworking;
 import ladysnake.requiem.common.remnant.RemnantTypes;
 import ladysnake.requiem.common.sound.RequiemSoundEvents;
 import ladysnake.requiem.core.record.EntityPositionClerk;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.enchantment.EnchantmentLevelEntry;
+import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ExperienceOrbEntity;
-import net.minecraft.entity.ai.goal.EscapeDangerGoal;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.ai.goal.FollowTargetGoal;
 import net.minecraft.entity.ai.goal.GoToWalkTargetGoal;
 import net.minecraft.entity.ai.goal.LookAtCustomerGoal;
 import net.minecraft.entity.ai.goal.LookAtEntityGoal;
+import net.minecraft.entity.ai.goal.RevengeGoal;
 import net.minecraft.entity.ai.goal.StopAndLookAtEntityGoal;
 import net.minecraft.entity.ai.goal.StopFollowingCustomerGoal;
 import net.minecraft.entity.ai.goal.WanderAroundFarGoal;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.data.DataTracker;
+import net.minecraft.entity.data.TrackedData;
+import net.minecraft.entity.data.TrackedDataHandlerRegistry;
+import net.minecraft.entity.mob.Angerable;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.passive.MerchantEntity;
 import net.minecraft.entity.passive.PassiveEntity;
@@ -67,32 +82,39 @@ import net.minecraft.item.EnchantedBookItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.stat.Stats;
+import net.minecraft.tag.BlockTags;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
+import net.minecraft.util.TimeHelper;
+import net.minecraft.util.dynamic.GlobalPos;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.intprovider.UniformIntProvider;
 import net.minecraft.village.TradeOffer;
+import net.minecraft.village.TradeOfferList;
 import net.minecraft.village.TradeOffers;
+import net.minecraft.world.Difficulty;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldView;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Comparator;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 
-public class MorticianEntity extends MerchantEntity {
+public class MorticianEntity extends MerchantEntity implements Angerable {
     public static final int MAX_LINK_DISTANCE = 20;
     public static final TradeOffers.Factory[] TRADES = new TradeOffers.Factory[]{
-        (entity, random) -> {
-            if (entity instanceof PlayerEntity player) {
-                if (RemnantComponent.get(player).getRemnantType().isDemon()) {
-                    return new DemonTradeOffer(new ItemStack(RequiemItems.EMPTY_SOUL_VESSEL), new ItemStack(Items.NETHERITE_INGOT, 1), new ItemStack(RequiemItems.SEALED_REMNANT_VESSEL), 1, 1, 0.05F);
-                }
-                return new TradeOffer(new ItemStack(Items.GOLD_INGOT, 32), new ItemStack(Items.NETHERITE_INGOT), new ItemStack(RequiemItems.SEALED_REMNANT_VESSEL), 1, 1, 0.05F);
-            }
-            return null;
-        },
+        (entity, random) -> new RemnantTradeOffer(
+            new TradeOffer(new ItemStack(Items.GOLD_INGOT, 32), new ItemStack(Items.NETHERITE_INGOT), new ItemStack(RequiemItems.SEALED_REMNANT_VESSEL), 1, 1, 0.05F),
+            new TradeOffer(new ItemStack(RequiemItems.EMPTY_SOUL_VESSEL), new ItemStack(Items.NETHERITE_INGOT, 1), new ItemStack(RequiemItems.SEALED_REMNANT_VESSEL), 1, 1, 0.05F)
+        ),
         (entity, random) -> new TradeOffer(new ItemStack(RequiemItems.SHATTERED_SOUL_VESSEL), new ItemStack(Items.GOLD_INGOT), new ItemStack(RequiemItems.EMPTY_SOUL_VESSEL), 10, 1, 0.05F),
         (entity, random) -> new TradeOffer(EnchantedBookItem.forEnchantment(new EnchantmentLevelEntry(RequiemEnchantments.HUMANITY, 1)), new ItemStack(Items.GOLD_INGOT, 20), EnchantedBookItem.forEnchantment(new EnchantmentLevelEntry(RequiemEnchantments.HUMANITY, 2)), 5, 1, 0.05F),
         (entity, random) -> new TradeOffer(FilledSoulVesselItem.forEntityType(entity.getEntityWorld().getDimension().isUltrawarm() ? EntityType.PIGLIN : EntityType.VILLAGER), new ItemStack(Items.GOLD_INGOT, 5), new ItemStack(RequiemItems.ICHOR_VESSEL_EMANCIPATION), 10, 1, 0.05F),
@@ -100,20 +122,37 @@ public class MorticianEntity extends MerchantEntity {
         (entity, random) -> new TradeOffer(FilledSoulVesselItem.forEntityType(EntityType.GHAST), new ItemStack(Items.GOLD_INGOT, 5), new ItemStack(RequiemItems.ICHOR_VESSEL_ATTRITION), 10, 1, 0.05F),
         (entity, random) -> new TradeOffer(FilledSoulVesselItem.forEntityType(EntityType.PILLAGER), new ItemStack(Items.GOLD_INGOT, 5), new ItemStack(RequiemItems.ICHOR_VESSEL_PENANCE), 10, 1, 0.05F)
     };
+    private static final UniformIntProvider ANGER_TIME_RANGE = TimeHelper.betweenSeconds(20, 39);
+    public static final TrackedData<Boolean> OBELISK_PROJECTION = DataTracker.registerData(MorticianEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+    public static final TrackedData<Integer> FADING_TICKS = DataTracker.registerData(MorticianEntity.class, TrackedDataHandlerRegistry.INTEGER);
+    public static final TrackedData<Byte> SPELL = DataTracker.registerData(MorticianEntity.class, TrackedDataHandlerRegistry.BYTE);
+    public static final int DESPAWN_DELAY = 20 * 30;
 
     private @Nullable UUID linkedObelisk;
-    private int despawnDelay = 20 * 30;
+    private int angerTime;
+    private @Nullable UUID angryAt;
+    private RevengeGoal revengeGoal;
 
     public MorticianEntity(EntityType<? extends MorticianEntity> entityType, World world) {
         super(entityType, world);
     }
 
     @Override
+    protected void initDataTracker() {
+        super.initDataTracker();
+        this.getDataTracker().startTracking(OBELISK_PROJECTION, false);
+        this.getDataTracker().startTracking(FADING_TICKS, 0);
+        this.getDataTracker().startTracking(SPELL, (byte) 0);
+    }
+
+    @Override
     protected void initGoals() {
         this.goalSelector.add(1, new StopFollowingCustomerGoal(this));
-        this.goalSelector.add(1, new EscapeDangerGoal(this, 0.5D));
-        this.goalSelector.add(1, new LookAtCustomerGoal(this));
+        this.goalSelector.add(1, new MorticianLookAtTargetGoal(this));
+        this.goalSelector.add(2, new LookAtCustomerGoal(this));
+        this.goalSelector.add(3, new FreeFromMortailCoilGoal(this));
         this.goalSelector.add(4, new GoToWalkTargetGoal(this, 0.35D));
+        this.goalSelector.add(5, new MoveBackToObeliskGoal(this, 0.35D, false));
         this.goalSelector.add(8, new WanderAroundFarGoal(this, 0.35D));
         this.goalSelector.add(9, new StopAndLookAtEntityGoal(this, PlayerEntity.class, 3.0F, 1.0F) {
             {
@@ -121,7 +160,124 @@ public class MorticianEntity extends MerchantEntity {
             }
         });
         this.goalSelector.add(10, new LookAtEntityGoal(this, MobEntity.class, 8.0F));
-        this.goalSelector.add(10, new LookAtEntityGoal(this, PlayerEntity.class, 8.0F));
+        this.goalSelector.add(10, new LookAtEntityGoal(this, PlayerEntity.class, 8.0F) {
+            {
+                RequiemTargetPredicate.includeIncorporeal(this.targetPredicate);
+            }
+        });
+        this.revengeGoal = new RevengeGoal(this);
+        this.targetSelector.add(1, revengeGoal);
+        this.targetSelector.add(3, new FollowTargetGoal<>(this, PlayerEntity.class, 10, true, false, this::shouldAngerAt));
+    }
+
+    @Override
+    public void tick() {
+        super.tick();
+        if (this.world.isClient && this.isSpellcasting()) {
+            int color = RequiemStatusEffects.PENANCE.getColor();
+            double r = (float) (color >> 16 & 0xFF) / 255.0F;
+            double g = (float) (color >> 8 & 0xFF) / 255.0F;
+            double b = (float) (color & 0xFF) / 255.0F;
+            float x = this.bodyYaw * (float) (Math.PI / 180.0) + MathHelper.cos((float) this.age * 0.6662F) * 0.25F;
+            float y = MathHelper.cos(x);
+            float z = MathHelper.sin(x);
+            this.world.addParticle(ParticleTypes.ENTITY_EFFECT, this.getX() + (double) y * 0.6, this.getY() + 1.8, this.getZ() + (double) z * 0.6, r, g, b);
+            this.world.addParticle(ParticleTypes.ENTITY_EFFECT, this.getX() - (double) y * 0.6, this.getY() + 1.8, this.getZ() - (double) z * 0.6, r, g, b);
+        }
+    }
+
+    @Override
+    public void setTarget(@Nullable LivingEntity target) {
+        if (target instanceof Possessable possessable && possessable.isBeingPossessed()) {
+            super.setTarget(possessable.getPossessor());
+        } else {
+            super.setTarget(target);
+        }
+    }
+
+    @Override
+    public boolean canTarget(LivingEntity target) {
+        if (this.world.getDifficulty() != Difficulty.PEACEFUL
+            && target instanceof ServerPlayerEntity player
+            && player.isPartOfGame()
+            && player.interactionManager.isSurvivalLike()) {
+            return true;
+        }
+        return super.canTarget(target);
+    }
+
+    @Override
+    public boolean shouldDisplaySoulSpeedEffects() {
+        return super.shouldDisplaySoulSpeedEffects()
+            || this.age % 5 == 0 && this.getVelocity().x != 0.0D && this.getVelocity().z != 0.0D && this.isOnSoulSpeedBlock();
+    }
+
+    @Override
+    protected float getVelocityMultiplier() {
+        return this.isOnSoulSpeedBlock() ? 1.2F : super.getVelocityMultiplier();
+    }
+
+    @Override
+    public EntityGroup getGroup() {
+        return EntityGroup.UNDEAD;
+    }
+
+    @Override
+    public float getPathfindingFavor(BlockPos pos, WorldView world) {
+        return world.getBlockState(pos.down()).isIn(BlockTags.SOUL_SPEED_BLOCKS) ? 4 : super.getPathfindingFavor(pos, world);
+    }
+
+    @Override
+    public int getAngerTime() {
+        return angerTime;
+    }
+
+    @Override
+    public void setAngerTime(int angerTime) {
+        this.angerTime = angerTime;
+    }
+
+    @Override
+    public @Nullable UUID getAngryAt() {
+        return angryAt;
+    }
+
+    @Override
+    public void setAngryAt(@Nullable UUID angryAt) {
+        this.angryAt = angryAt;
+    }
+
+    @Override
+    public void chooseRandomAngerTime() {
+        this.setAngerTime(ANGER_TIME_RANGE.get(this.random));
+    }
+
+    public void setSpellcasting(boolean spellcasting) {
+        this.getDataTracker().set(SPELL, (byte) (spellcasting ? 1 : 0));
+    }
+
+    public boolean isSpellcasting() {
+        return this.getDataTracker().get(SPELL) != 0;
+    }
+
+    private void setFadingTicks(int fadingTicks) {
+        this.getDataTracker().set(FADING_TICKS, fadingTicks);
+    }
+
+    private int getFadingTicks() {
+        return this.getDataTracker().get(FADING_TICKS);
+    }
+
+    public float getFadingAmount() {
+        return (float) this.getFadingTicks() / DESPAWN_DELAY;
+    }
+
+    private void setObeliskProjection(boolean projection) {
+        this.getDataTracker().set(OBELISK_PROJECTION, projection);
+    }
+
+    public boolean isObeliskProjection() {
+        return this.getDataTracker().get(OBELISK_PROJECTION);
     }
 
     @Override
@@ -147,18 +303,33 @@ public class MorticianEntity extends MerchantEntity {
                 .min(Comparator.comparing(r -> r.get(RequiemRecordTypes.OBELISK_REF).orElseThrow().getPos().getSquaredDistance(this.getBlockPos())))
                 .ifPresentOrElse(
                     r -> {
-                        this.despawnDelay = 0;
+                        this.setFadingTicks(0);
                         this.linkWith(r);
                     },
                     () -> {
-                        this.despawnDelay--;
-                        if (this.despawnDelay <= 0) {
+                        this.setFadingTicks(this.getFadingTicks() + 1);
+                        if (this.getFadingTicks() <= 0) {
                             world.sendEntityStatus(this, EntityStatuses.ADD_PORTAL_PARTICLES);
                             this.discard();
                         }
                     }
                 );
+
+            if (!this.isRemoved()) {
+                this.tickAngerLogic((ServerWorld) this.world, true);
+            }
         }
+    }
+
+    @Override
+    public void stopAnger() {
+        Angerable.super.stopAnger();
+        this.revengeGoal.stop();
+    }
+
+    @Override
+    public void forgive(PlayerEntity player) {
+        // No, I don't think so
     }
 
     private boolean hasInvalidLinkedObelisk() {
@@ -166,28 +337,48 @@ public class MorticianEntity extends MerchantEntity {
     }
 
     @Override
-    public ActionResult interactMob(PlayerEntity player, Hand hand) {
-        ItemStack itemStack = player.getStackInHand(hand);
+    public ActionResult interactMob(PlayerEntity customer, Hand hand) {
+        ItemStack itemStack = customer.getStackInHand(hand);
         if (!itemStack.isOf(Items.VILLAGER_SPAWN_EGG) && this.isAlive() && !this.hasCustomer() && !this.isBaby()) {
             if (hand == Hand.MAIN_HAND) {
-                player.incrementStat(Stats.TALKED_TO_VILLAGER);
+                customer.incrementStat(Stats.TALKED_TO_VILLAGER);
             }
 
             if (!this.world.isClient && !this.getOffers().isEmpty()) {
-                this.setCurrentCustomer(player);
-                this.sendOffers(player, this.getDisplayName(), 1);
+                this.prepareOffersFor(customer);
+                this.setCurrentCustomer(customer);
+                this.sendOffers(customer, this.getDisplayName(), 1);
             }
 
             return ActionResult.success(this.world.isClient);
         } else {
-            return super.interactMob(player, hand);
+            return super.interactMob(customer, hand);
+        }
+    }
+
+    @Environment(EnvType.CLIENT)
+    @Override
+    public void setOffersFromServer(@Nullable TradeOfferList offers) {
+        super.setOffersFromServer(offers);
+        // Note: in multiplayer, we have nothing but regular trade offers here because of how toPacket works
+        // So we only have to update remnant offers in singleplayer
+        this.prepareOffersFor(Objects.requireNonNull(MinecraftClient.getInstance().player));
+    }
+
+    private void prepareOffersFor(PlayerEntity customer) {
+        for (TradeOffer offer : this.getOffers()) {
+            if (offer instanceof RemnantTradeOffer demonTradeOffer) {
+                demonTradeOffer.setRemnant(RemnantComponent.get(customer).getRemnantType().isDemon());
+            }
         }
     }
 
     public void linkWith(GlobalRecord r) {
-        Preconditions.checkArgument(r.get(RequiemRecordTypes.OBELISK_REF).isPresent());
+        Optional<GlobalPos> obeliskPos = r.get(RequiemRecordTypes.OBELISK_REF);
+        Preconditions.checkArgument(obeliskPos.isPresent());
         EntityPositionClerk.get(this).linkWith(r, RequiemRecordTypes.MORTICIAN_REF);
         this.linkedObelisk = r.getUuid();
+        this.setObeliskProjection(true);
     }
 
     @Override
@@ -195,10 +386,41 @@ public class MorticianEntity extends MerchantEntity {
         this.fillRecipesFromPool(this.getOffers(), TRADES, 7);
     }
 
+    public @Nullable GlobalPos getHome() {
+        if (this.linkedObelisk == null) return null;
+        return GlobalRecordKeeper.get(this.world).getRecord(this.linkedObelisk).flatMap(r -> r.get(RequiemRecordTypes.OBELISK_REF)).orElse(null);
+    }
+
     @Override
     public void readCustomDataFromNbt(NbtCompound nbt) {
         super.readCustomDataFromNbt(nbt);
+
+        if (nbt.containsUuid("linked_obelisk")) {
+            GlobalRecordKeeper.get(this.world).getRecord(nbt.getUuid("linked_obelisk")).ifPresent(this::linkWith);
+            this.setObeliskProjection(true);
+        } else {
+            this.setObeliskProjection(false);
+        }
+
+        if (nbt.contains("fading_ticks")) {
+            this.setFadingTicks(nbt.getInt("fading_ticks"));
+        }
+
+        this.readAngerFromNbt(this.world, nbt);
+
         this.setBreedingAge(Math.max(0, this.getBreedingAge()));
+    }
+
+    @Override
+    public void writeCustomDataToNbt(NbtCompound nbt) {
+        super.writeCustomDataToNbt(nbt);
+        if (this.linkedObelisk != null) {
+            nbt.putUuid("linked_obelisk", this.linkedObelisk);
+        }
+
+        nbt.putInt("fading_ticks", this.getFadingTicks());
+
+        this.writeAngerToNbt(nbt);
     }
 
     @Override
@@ -208,7 +430,7 @@ public class MorticianEntity extends MerchantEntity {
 
     @Override
     protected void afterUsing(TradeOffer offer) {
-        if (offer instanceof DemonTradeOffer && this.getCurrentCustomer() instanceof ServerPlayerEntity player) {
+        if (offer instanceof RemnantTradeOffer demonTradeOffer && demonTradeOffer.demonCustomer && this.getCurrentCustomer() instanceof ServerPlayerEntity player) {
             RemnantComponent.get(player).become(RemnantTypes.MORTAL, true);
             player.world.playSound(null, player.getX(), player.getY(), player.getZ(), RequiemSoundEvents.ITEM_OPUS_USE, player.getSoundCategory(), 1.4F, 0.1F);
             RequiemNetworking.sendTo(player, RequiemNetworking.createOpusUsePacket(RemnantTypes.MORTAL, false));
@@ -244,9 +466,7 @@ public class MorticianEntity extends MerchantEntity {
         return RequiemSoundEvents.ENTITY_MORTICIAN_YES;
     }
 
-    public static class DemonTradeOffer extends TradeOffer {
-        public DemonTradeOffer(ItemStack firstBuyItem, ItemStack secondBuyItem, ItemStack sellItem, int maxUses, int merchantExperience, float priceMultiplier) {
-            super(firstBuyItem, secondBuyItem, sellItem, maxUses, merchantExperience, priceMultiplier);
-        }
+    public SoundEvent getCastSpellSound() {
+        return RequiemSoundEvents.ENTITY_MORTICIAN_CAST_SPELL;
     }
 }

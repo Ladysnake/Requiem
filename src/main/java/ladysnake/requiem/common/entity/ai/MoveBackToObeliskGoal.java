@@ -32,34 +32,32 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.requiem.common.entity.effect;
+package ladysnake.requiem.common.entity.ai;
 
-import ladysnake.requiem.Requiem;
-import ladysnake.requiem.common.entity.RequiemEntityAttributes;
-import net.minecraft.entity.attribute.EntityAttributeModifier;
-import net.minecraft.entity.attribute.EntityAttributes;
-import net.minecraft.entity.effect.StatusEffect;
-import net.minecraft.entity.effect.StatusEffectCategory;
-import net.minecraft.util.registry.Registry;
+import ladysnake.requiem.common.entity.MorticianEntity;
+import net.minecraft.entity.ai.NoPenaltyTargeting;
+import net.minecraft.entity.ai.goal.WanderAroundGoal;
+import net.minecraft.util.dynamic.GlobalPos;
+import net.minecraft.util.math.Vec3d;
+import org.jetbrains.annotations.Nullable;
 
-public final class RequiemStatusEffects {
-    public static final StatusEffect ATTRITION = new AttritionStatusEffect(StatusEffectCategory.HARMFUL, 0xAA3322)
-        .addAttributeModifier(EntityAttributes.GENERIC_MAX_HEALTH, "069ae0b1-4014-41dd-932f-a5da4417d711", -0.2, EntityAttributeModifier.Operation.MULTIPLY_TOTAL)
-        .addAttributeModifier(RequiemEntityAttributes.SOUL_OFFENSE, "eb72767d-93d1-4fc2-861b-f3c9406497a9", -0.2, EntityAttributeModifier.Operation.MULTIPLY_BASE);
-    public static final StatusEffect EMANCIPATION = new EmancipationStatusEffect(StatusEffectCategory.BENEFICIAL, 0x7799FF);
-    public static final StatusEffect RECLAMATION = new ReclamationStatusEffect(StatusEffectCategory.BENEFICIAL, 0xFFDF00);
-    public static final StatusEffect PENANCE = new PenanceStatusEffect(StatusEffectCategory.HARMFUL, 0xB6FF00);
+public class MoveBackToObeliskGoal extends WanderAroundGoal {
+	private static final int HORIZONTAL_RANGE = 10;
+	private static final int VERTICAL_RANGE = 7;
 
-    public static void init() {
-        registerEffect(ATTRITION, "attrition");
-        registerEffect(EMANCIPATION, "emancipation");
-        registerEffect(PENANCE, "penance");
-        registerEffect(RECLAMATION, "reclamation");
+	public MoveBackToObeliskGoal(MorticianEntity entity, double speed, boolean canDespawn) {
+		super(entity, speed, 10, canDespawn);
+	}
 
-        PenanceStatusEffect.registerCallbacks();
-    }
+	@Override
+	public boolean canStart() {
+        GlobalPos home = ((MorticianEntity) this.mob).getHome();
+        return home != null && home.getDimension() == this.mob.getEntityWorld().getRegistryKey() && !this.mob.getBlockPos().isWithinDistance(home.getPos(), 16) && super.canStart();
+	}
 
-    public static void registerEffect(StatusEffect effect, String name) {
-        Registry.register(Registry.STATUS_EFFECT, Requiem.id(name), effect);
-    }
+	@Override
+	protected @Nullable Vec3d getWanderTarget() {
+        @Nullable GlobalPos home = ((MorticianEntity) this.mob).getHome();
+		return home == null ? null : NoPenaltyTargeting.find(this.mob, HORIZONTAL_RANGE, VERTICAL_RANGE, Vec3d.ofCenter(home.getPos()), (float) (Math.PI / 2));
+	}
 }

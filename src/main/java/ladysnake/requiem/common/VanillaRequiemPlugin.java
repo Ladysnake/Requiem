@@ -194,7 +194,7 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
 
             boolean success;
 
-            if (PlayerSplitter.split(player)) {
+            if (PlayerSplitter.split(player) != null) {
                 success = true;
             } else if (host != null) {
                 Entity targetedEntity = RayHelper.getTargetedEntity(player);

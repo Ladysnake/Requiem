@@ -34,6 +34,7 @@
  */
 package ladysnake.requiem.client;
 
+import com.google.common.collect.ImmutableSet;
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.annotation.CalledThroughReflection;
 import ladysnake.requiem.client.model.lib.SimpleBakedModel;
@@ -74,8 +75,6 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
-
-import java.util.List;
 
 public final class RequiemClient {
 
@@ -152,22 +151,27 @@ public final class RequiemClient {
                 if (modelId.getPath().startsWith("block/tachylite/runic/activated/")) {
                     String effect = modelId.getPath().substring(modelId.getPath().lastIndexOf('/') + 1);
                     String topRunestoneSpriteId = ifExistsOrElse(resourceManager, "block/%s_runestone_top".formatted(effect), "block/neutral_runestone");
-                    String runestoneSpriteId = ifExistsOrElse(resourceManager, "block/%s_runestone_side".formatted(effect), "block/%s_runestone".formatted(effect));
-                    String runeSpriteId = ifExistsOrElse(resourceManager, "block/%s_rune_side".formatted(effect), "block/%s_rune".formatted(effect));
+                    String sideRunestoneSpriteId = ifExistsOrElse(resourceManager, "block/%s_runestone_side".formatted(effect), "block/%s_runestone".formatted(effect));
+                    String sideRuneSpriteId = ifExistsOrElse(resourceManager, "block/%s_rune_side".formatted(effect), "block/%s_rune".formatted(effect));
                     String topRuneSpriteId = ifExistsOrElse(resourceManager, "block/%s_rune_top".formatted(effect), "block/neutral_rune");
                     return new SimpleUnbakedModel(mb -> {
                         Sprite topRunestoneSprite = mb.getSprite(topRunestoneSpriteId);
-                        Sprite runestoneSprite = mb.getSprite(runestoneSpriteId);
-                        Sprite runeSprite = mb.getSprite(runeSpriteId);
+                        Sprite sideRunestoneSprite = mb.getSprite(sideRunestoneSpriteId);
+                        Sprite sideRuneSprite = mb.getSprite(sideRuneSpriteId);
                         Sprite topRuneSprite = mb.getSprite(topRuneSpriteId);
                         mb.box(mb.finder().find(),
-                            -1, d -> d.getAxis() == Direction.Axis.Y ? topRunestoneSprite : runestoneSprite,
+                            -1, d -> d.getAxis() == Direction.Axis.Y ? topRunestoneSprite : sideRunestoneSprite,
                             0, 0, 0, 1, 1, 1);
                         mb.box(mb.finder().emissive(0, true).disableAo(0, true).disableDiffuse(0, true).blendMode(0, BlendMode.CUTOUT).find(),
-                            -1, d -> d.getAxis() == Direction.Axis.Y ? topRuneSprite : runeSprite,
+                            -1, d -> d.getAxis() == Direction.Axis.Y ? topRuneSprite : sideRuneSprite,
                             0, 0, 0, 1, 1, 1);
-                        return new SimpleBakedModel(mb.builder.build(), ModelHelper.MODEL_TRANSFORM_BLOCK, runestoneSprite, null);
-                    }, List.of(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(runestoneSpriteId)), new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(runeSpriteId))));
+                        return new SimpleBakedModel(mb.builder.build(), ModelHelper.MODEL_TRANSFORM_BLOCK, sideRunestoneSprite, null);
+                    }, ImmutableSet.of( // Set.of throws on duplicate elements! (ImmutableSet.of does not)
+                        new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(topRunestoneSpriteId)),
+                        new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(topRuneSpriteId)),
+                        new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(sideRunestoneSpriteId)),
+                        new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(sideRuneSpriteId))
+                    ));
                 }
             }
             return null;

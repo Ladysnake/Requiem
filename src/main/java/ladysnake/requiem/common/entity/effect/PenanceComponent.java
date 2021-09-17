@@ -51,6 +51,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.MathHelper;
+import org.jetbrains.annotations.Nullable;
 
 public final class PenanceComponent implements ServerTickingComponent, ClientTickingComponent, AutoSyncedComponent {
     public static final ComponentKey<PenanceComponent> KEY = ComponentRegistry.getOrCreate(Requiem.id("penance"), PenanceComponent.class);
@@ -95,23 +96,46 @@ public final class PenanceComponent implements ServerTickingComponent, ClientTic
         StatusEffectInstance penance = this.owner.getStatusEffect(RequiemStatusEffects.PENANCE);
         if (penance != null && this.shouldSplitFromCurrentBody(penance)) {
             this.timeWithPenance++;
-            if (this.shouldApplyPenance()) {
-                PenanceStatusEffect.applyPenance(this.owner, penance.getAmplifier());
-                // Probably not sending to the right player object, but they share the same connection anyway
-                RequiemNetworking.sendEtherealAnimationMessage((ServerPlayerEntity) this.owner);
-                // Again doesn't matter which player object carries the message
-                KEY.sync(this.owner, this::writeFxPacket);
-            }
-            // if we sync here right after the player has respawned,
-            // we will sync the old value to the new player, causing a desync
-            // (connections are still functional after the player got removed)
-            if (!this.owner.isRemoved()) {
-                KEY.sync(this.owner);
-            }
+            updatePenance(penance.getAmplifier());
         } else if (this.timeWithPenance >= 0) {
             this.timeWithPenance = -1;
             KEY.sync(this.owner);
         }
+    }
+
+    public @Nullable ServerPlayerEntity maxOutPenance(int amplifier) {
+        this.timeWithPenance = PENANCE_WARNING_TIME;
+        return this.updatePenance(amplifier);
+    }
+
+    public void resetPenanceTime() {
+        this.timeWithPenance = 0;
+    }
+
+    private @Nullable ServerPlayerEntity updatePenance(int amplifier) {
+        ServerPlayerEntity soul;
+
+        if (this.shouldApplyPenance()) {
+            var result = PenanceStatusEffect.applyPenance(this.owner, amplifier);
+            if (result.split()) {
+                // Probably not sending to the right player object, but they share the same connection anyway
+                RequiemNetworking.sendEtherealAnimationMessage((ServerPlayerEntity) this.owner);
+            }
+            // Again doesn't matter which player object carries the message
+            KEY.sync(this.owner, this::writeFxPacket);
+            soul = result.soul();
+        } else {
+            soul = null;
+        }
+
+        // if we sync here right after the player has respawned,
+        // we will sync the old value to the new player, causing a desync
+        // (connections are still functional after the player got removed)
+        if (!this.owner.isRemoved()) {
+            KEY.sync(this.owner);
+        }
+
+        return soul;
     }
 
     private boolean shouldSplitFromCurrentBody(StatusEffectInstance penance) {

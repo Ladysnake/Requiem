@@ -65,6 +65,7 @@ import net.minecraft.world.GameMode;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.EnumSet;
 import java.util.List;
@@ -74,24 +75,23 @@ import java.util.Set;
 public final class PlayerSplitter {
     public static final Identifier BODY_IMPERSONATION = RequiemCore.id("body_impersonation");
 
-    public static boolean split(ServerPlayerEntity whole) {
+    public static @Nullable ServerPlayerEntity split(ServerPlayerEntity whole) {
         return split(whole, false);
     }
 
-    public static boolean split(ServerPlayerEntity whole, boolean forced) {
+    public static @Nullable ServerPlayerEntity split(ServerPlayerEntity whole, boolean forced) {
         if (isReadyForSplit(whole, forced)) {
-            doSplit(whole);
-            return true;
+            return doSplit(whole);
         }
 
-        return false;
+        return null;
     }
 
     private static boolean isReadyForSplit(ServerPlayerEntity whole, boolean forced) {
         return RemnantComponent.get(whole).canPerformSplit(forced);
     }
 
-    private static void doSplit(ServerPlayerEntity whole) {
+    private static ServerPlayerEntity doSplit(ServerPlayerEntity whole) {
         PlayerShellEntity shell = createShell(whole);
         Entity mount = whole.getVehicle();
         ServerPlayerEntity soul = performRespawn(whole);
@@ -99,6 +99,7 @@ public final class PlayerSplitter {
         if (mount != null) shell.startRiding(mount);
         setupRecord(whole, shell, soul);
         PlayerShellEvents.PLAYER_SPLIT.invoker().onPlayerSplit(whole, soul, shell);
+        return soul;
     }
 
     private static void setupRecord(ServerPlayerEntity whole, PlayerShellEntity shell, ServerPlayerEntity soul) {

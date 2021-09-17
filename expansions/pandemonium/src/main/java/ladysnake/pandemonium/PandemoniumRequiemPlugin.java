@@ -43,7 +43,6 @@ import ladysnake.requiem.api.v1.event.requiem.PossessionStartCallback;
 import ladysnake.requiem.api.v1.remnant.RemnantType;
 import ladysnake.requiem.common.VanillaRequiemPlugin;
 import ladysnake.requiem.common.dialogue.PlayerDialogueTracker;
-import ladysnake.requiem.common.entity.effect.PenanceStatusEffect;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
@@ -51,8 +50,6 @@ public class PandemoniumRequiemPlugin implements RequiemPlugin {
 
     @Override
     public void onRequiemInitialize() {
-        PenanceStatusEffect.registerCallbacks();
-
         if (PandemoniumConfig.possession.allowPossessingAllMobs) {
             // Enderman specific behaviour is unneeded now that players can possess them
             PossessionStartCallback.EVENT.unregister(new Identifier(Requiem.MOD_ID, "enderman"));

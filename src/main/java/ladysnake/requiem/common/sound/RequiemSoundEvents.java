@@ -54,6 +54,8 @@ public final class RequiemSoundEvents {
     public static final SoundEvent EFFECT_RECLAMATION_CLEAR = register("effect.reclamation.clear");
     public static final SoundEvent EFFECT_TIME_STOP = register("effect.time.stop");
     public static final SoundEvent ENTITY_MORTICIAN_AMBIENT = register("entity.mortician.ambient");
+    public static final SoundEvent ENTITY_MORTICIAN_CAST_SPELL = register("entity.mortician.cast_spell");
+    public static final SoundEvent ENTITY_MORTICIAN_PREPARE_ATTACK = register("entity.mortician.prepare_attack");
     public static final SoundEvent ENTITY_MORTICIAN_DEATH = register("entity.mortician.death");
     public static final SoundEvent ENTITY_MORTICIAN_NO = register("entity.mortician.no");
     public static final SoundEvent ENTITY_MORTICIAN_TRADE = register("entity.mortician.trade");

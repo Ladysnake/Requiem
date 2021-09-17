@@ -32,9 +32,9 @@ import java.util.function.Function;
 
 public class SimpleUnbakedModel implements UnbakedModel {
     Function<ModelBuilder, BakedModel> baker;
-    private final List<SpriteIdentifier> textureDependencies;
+    private final Set<SpriteIdentifier> textureDependencies;
 
-    public SimpleUnbakedModel(Function<ModelBuilder, BakedModel> baker, List<SpriteIdentifier> textureDependencies) {
+    public SimpleUnbakedModel(Function<ModelBuilder, BakedModel> baker, Set<SpriteIdentifier> textureDependencies) {
         this.baker = baker;
         this.textureDependencies = textureDependencies;
     }
