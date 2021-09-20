@@ -48,6 +48,7 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.packet.s2c.play.UpdateSelectedSlotS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Util;
 import org.jetbrains.annotations.Nullable;
@@ -70,6 +71,7 @@ public abstract class PossessedDataBase implements PossessedData, AutoSyncedComp
     private @Nullable NbtCompound hungerData;
     private @Nullable OrderedInventory inventory;
     private boolean convertedUnderPossession;
+    private int selectedSlot;
 
     public PossessedDataBase(Entity holder) {
         this.holder = holder;
@@ -98,6 +100,7 @@ public abstract class PossessedDataBase implements PossessedData, AutoSyncedComp
                     this.inventory.setStack(i, inventory.removeStack(i));
                 }
             }
+            this.selectedSlot = inventory.selectedSlot;
             this.onPossessed();
         } else {
             if (this.inventory != null) {
@@ -106,6 +109,8 @@ public abstract class PossessedDataBase implements PossessedData, AutoSyncedComp
                     inventory.setStack(i, this.inventory.removeStack(i));
                 }
                 this.inventory = null;
+                inventory.selectedSlot = this.selectedSlot;
+                ((ServerPlayerEntity) inventory.player).networkHandler.sendPacket(new UpdateSelectedSlotS2CPacket(inventory.selectedSlot));
             }
         }
     }
@@ -155,6 +160,8 @@ public abstract class PossessedDataBase implements PossessedData, AutoSyncedComp
             this.inventory.readNbtList(items);
         }
 
+        this.selectedSlot = tag.getInt("selected_slot");
+
         if (tag.contains("converted_under_possession")) {
             this.convertedUnderPossession = tag.getBoolean("converted_under_possession");
         }
@@ -171,6 +178,8 @@ public abstract class PossessedDataBase implements PossessedData, AutoSyncedComp
             tag.putInt("inventory_size", this.inventory.size());
             tag.put("inventory", this.inventory.toNbtList());
         }
+
+        tag.putInt("selected_slot", this.selectedSlot);
 
         if (this.convertedUnderPossession) {
             tag.putBoolean("converted_under_possession", true);
