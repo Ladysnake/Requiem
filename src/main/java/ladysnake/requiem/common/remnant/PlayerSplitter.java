@@ -114,7 +114,10 @@ public final class PlayerSplitter {
         shell.storePlayerData(whole, computeCopyNbt(whole));
         shell.headYaw = whole.headYaw;
         shell.bodyYaw = whole.bodyYaw;
-        shell.changeGameMode(whole.interactionManager.isSurvivalLike() ? whole.interactionManager.getGameMode() : GameMode.SURVIVAL);
+        GameMode shellGm = whole.interactionManager.isSurvivalLike() ? whole.interactionManager.getGameMode() : GameMode.SURVIVAL;
+        shell.changeGameMode(shellGm);
+        // changeGameMode has no effect when the gamemode stays the same, so we make sure abilities work as intended
+        shellGm.setAbilities(shell.getAbilities());
         RemnantComponent.get(shell).become(RemnantTypes.MORTAL, true);
         InventoryLimiter.instance().disable(shell);
         for (StatusEffectInstance effect : List.copyOf(shell.getStatusEffects())) {
