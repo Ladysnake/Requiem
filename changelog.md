@@ -10,22 +10,31 @@ Version 2.0.0
     - this is an experiment, so please give us your feedback
 - **Renamed the `/requiem soul` subcommand to `/requiem vagrant`**
 - Added the `/requiem soul <remove|restore>` subcommand
+- Added a special mortician trade that turns remnant players into vanilla ones
 - Added recipes for tachylite and rift runestones
 - Recipes using a filled soul vessel now give an empty soul vessel back
 - Made morticians spawn near obelisks with active rifts
     - The above three changes mean that you can technically play this update in "survival" now, you just need to give yourself a soul vessel
         - We're not done yet though, so previous warnings still apply
 - Added derelict tachylite, a block that drops a bunch of XP, and has a chance to drop a shattered soul vessel
+- Added the ability to play dead when possessing a hurt axolotl
+- Attacked morticians will now retaliate by cursing you with Penance
+- Morticians will now try to stay close to their obelisks
 - Revamped all Rift textures
 - Revamped the possession icon
 - Added a dedicated icon for when you are messing with endermen
 - Made obelisks that are behind you appear on the border of the rift screen
     - please appreciate this, I had to do maths and stuff
 - Morticians now do skeleton sounds (because they are hella dead)
+- Limited obelisks' height - obelisks' cores now have to be 20 blocks tall or less (22 counting the edges)
+    - Since it was not said earlier - obelisks' cores also have to be 5 blocks wide or less (7 counting the edges)
 - Reduced Tachylite's strength to be halfway between obsidian and basalt
 - Updated mob vision for 1.17 mobs, and gave night vision to bats
 - Removed Emancipation requirement for possessing soulless mobs
 - Fixed mobs regaining a soul when they converted
+- Fixed penance not working properly without Pandemonium
+- Held items should no longer randomly drop when repossessing a mob
+- Shells spawned with  `/requiem shell create` should no longer allow flight
 - Updated Mortician trades
 - Made Origins' power key trigger dissociation
 - Morticians' soul can no longer be stolen
@@ -146,7 +155,10 @@ Updated to MC 1.17
 - Added player shells, static bodies of soulless players (previously available in Pandemonium)
     - Contrary to previous pandemonium versions, they are now tracked across dimensions
 - Undead mobs now have improved night vision - although not as good as dissociated souls
-- Added the `/requiem soul <remove|restore>` command to 
+- Added the `/requiem soul <remove|restore>` command to (you guessed it) remove or restore a mob's soul
+- Added a few mob abilities
+    - Added the ability to jump around and ram other mobs when possessing a goat
+    - Added the ability to play dead when possessing a hurt axolotl
 
 **Changes**
 - Renamed the `/requiem soul` subcommand to `/requiem vagrant`
@@ -187,6 +199,7 @@ Updated to MC 1.17
 - Fixed possessed ravagers breaking leaves clientside when mobGriefing was disabled
 - Fixed dolphins not going flop flop outside water
 - Fixed possession not transferring upon mooshroom shearing
+- Held items should no longer randomly drop when repossessing a mob
 
 #### Pandemonium
 **Additions**
