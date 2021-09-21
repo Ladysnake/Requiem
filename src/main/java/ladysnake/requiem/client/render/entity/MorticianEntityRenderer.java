@@ -34,24 +34,22 @@
  */
 package ladysnake.requiem.client.render.entity;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.client.render.entity.model.MorticianEntityModel;
 import ladysnake.requiem.common.entity.MorticianEntity;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.MobEntityRenderer;
 import net.minecraft.client.render.entity.feature.HeadFeatureRenderer;
 import net.minecraft.client.render.entity.feature.VillagerHeldItemFeatureRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class MorticianEntityRenderer extends MobEntityRenderer<MorticianEntity, MorticianEntityModel<MorticianEntity>> {
     private static final Identifier TEXTURE = Requiem.id("textures/entity/mortician.png");
+    private static final Identifier PROJECTION_TEXTURE = Requiem.id("textures/entity/mortician_projection.png");
 
     public MorticianEntityRenderer(EntityRendererFactory.Context ctx) {
         super(ctx, new MorticianEntityModel<>(ctx.getModelLoader().getModelPart(MorticianEntityModel.MODEL_LAYER)), 0.5F);
@@ -61,17 +59,7 @@ public class MorticianEntityRenderer extends MobEntityRenderer<MorticianEntity, 
 
     @Override
     public Identifier getTexture(MorticianEntity entity) {
-        return TEXTURE;
-    }
-
-    @Override
-    public void render(MorticianEntity mortician, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
-        if (mortician.isObeliskProjection()) {
-            float alpha = MathHelper.lerp(mortician.getFadingAmount(), 0.75f, 0f);
-            RenderSystem.setShaderColor(1, 1, 1, alpha);
-        }
-        super.render(mortician, f, g, matrixStack, vertexConsumerProvider, i);
-        RenderSystem.setShaderColor(1, 1, 1, 1);
+        return entity.isObeliskProjection() ? PROJECTION_TEXTURE : TEXTURE;
     }
 
     @Override
