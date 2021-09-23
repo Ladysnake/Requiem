@@ -31,4 +31,12 @@ public interface MobAbilityRegistry {
     <E extends MobEntity> MobAbilityConfig<? super E> getConfig(EntityType<E> entityType);
 
     <E extends MobEntity> void register(EntityType<E> entityType, MobAbilityConfig<? super E> config);
+
+    /**
+     * Begins the registration of a {@link MobAbilityConfig} for the given {@code entityType}.
+     *
+     * <p>{@code registry.beginRegistration(entityType)...build()} behaves as if:
+     * {@code registry.register(entityType, MobAbilityConfig.<>builder()...build())}
+     */
+    <E extends MobEntity> MobAbilityConfig.Builder<E> beginRegistration(EntityType<E> entityType);
 }

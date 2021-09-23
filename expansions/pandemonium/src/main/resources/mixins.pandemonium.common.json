@@ -1,7 +1,7 @@
 {
   "required": true,
   "package": "ladysnake.pandemonium.mixin.common",
-  "compatibilityLevel": "JAVA_8",
+  "compatibilityLevel": "JAVA_16",
   "mixins": [
   ],
   "injectors": {

@@ -74,20 +74,7 @@ import ladysnake.requiem.common.dialogue.PlayerDialogueTracker;
 import ladysnake.requiem.common.enchantment.RequiemEnchantments;
 import ladysnake.requiem.common.entity.PlayerShellEntity;
 import ladysnake.requiem.common.entity.SkeletonBoneComponent;
-import ladysnake.requiem.common.entity.ability.AxolotlPlayingDeadAbility;
-import ladysnake.requiem.common.entity.ability.BlazeFireballAbility;
-import ladysnake.requiem.common.entity.ability.BlinkAbility;
-import ladysnake.requiem.common.entity.ability.CreeperPrimingAbility;
-import ladysnake.requiem.common.entity.ability.EvokerFangAbility;
-import ladysnake.requiem.common.entity.ability.EvokerVexAbility;
-import ladysnake.requiem.common.entity.ability.EvokerWololoAbility;
-import ladysnake.requiem.common.entity.ability.GhastFireballAbility;
-import ladysnake.requiem.common.entity.ability.GoatRamAbility;
-import ladysnake.requiem.common.entity.ability.GuardianBeamAbility;
-import ladysnake.requiem.common.entity.ability.ShulkerPeekAbility;
-import ladysnake.requiem.common.entity.ability.ShulkerShootAbility;
-import ladysnake.requiem.common.entity.ability.VagrantPossessAbility;
-import ladysnake.requiem.common.entity.ability.WitherSkullAbility;
+import ladysnake.requiem.common.entity.ability.*;
 import ladysnake.requiem.common.entity.effect.ReclamationStatusEffect;
 import ladysnake.requiem.common.entity.effect.RequiemStatusEffects;
 import ladysnake.requiem.common.network.RequiemNetworking;
@@ -119,21 +106,11 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.boss.WitherEntity;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectCategory;
 import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.mob.CreeperEntity;
 import net.minecraft.entity.mob.EndermanEntity;
-import net.minecraft.entity.mob.EvokerEntity;
-import net.minecraft.entity.mob.GuardianEntity;
 import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.entity.mob.ShulkerEntity;
-import net.minecraft.entity.mob.WitchEntity;
-import net.minecraft.entity.passive.AxolotlEntity;
-import net.minecraft.entity.passive.GoatEntity;
-import net.minecraft.entity.passive.LlamaEntity;
-import net.minecraft.entity.passive.SnowGolemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.FoodComponent;
 import net.minecraft.item.ItemStack;
@@ -389,32 +366,35 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
     }
 
     @Override
-    public void registerMobAbilities(MobAbilityRegistry abilityRegistry) {
-        abilityRegistry.register(EntityType.AXOLOTL, MobAbilityConfig.<AxolotlEntity>builder().indirectInteract(AxolotlPlayingDeadAbility::new).build());
-        abilityRegistry.register(EntityType.BLAZE, MobAbilityConfig.builder().indirectAttack(BlazeFireballAbility::new).build());
-        abilityRegistry.register(EntityType.CREEPER, MobAbilityConfig.<CreeperEntity>builder().indirectAttack(CreeperPrimingAbility::new).build());
-        abilityRegistry.register(EntityType.ENDERMAN, MobAbilityConfig.builder().indirectInteract(BlinkAbility::new).build());
-        abilityRegistry.register(EntityType.EVOKER, MobAbilityConfig.<EvokerEntity>builder()
+    public void registerMobAbilities(MobAbilityRegistry reg) {
+        reg.beginRegistration(EntityType.AXOLOTL).indirectInteract(AxolotlPlayingDeadAbility::new).build();
+        reg.beginRegistration(EntityType.BLAZE).indirectAttack(BlazeFireballAbility::new).build();
+        reg.beginRegistration(EntityType.CREEPER).indirectAttack(CreeperPrimingAbility::new).build();
+        reg.beginRegistration(EntityType.ENDERMAN).indirectInteract(BlinkAbility::new).build();
+        reg.beginRegistration(EntityType.EVOKER)
             .directAttack(EvokerFangAbility::new)
             .directInteract(EvokerWololoAbility::new)
             .indirectInteract(EvokerVexAbility::new)
-            .build());
-        abilityRegistry.register(EntityType.GHAST, MobAbilityConfig.builder().indirectAttack(GhastFireballAbility::new).build());
-        abilityRegistry.register(EntityType.GOAT, MobAbilityConfig.<GoatEntity>builder().directAttack(GoatRamAbility::create).build());
-        abilityRegistry.register(EntityType.GUARDIAN, MobAbilityConfig.<GuardianEntity>builder().directAttack(GuardianBeamAbility::new).build());
-        abilityRegistry.register(EntityType.ELDER_GUARDIAN, MobAbilityConfig.<GuardianEntity>builder().directAttack(GuardianBeamAbility::new).build());
-        abilityRegistry.register(EntityType.LLAMA, MobAbilityConfig.<LlamaEntity>builder().directAttack(RangedAttackAbility::new).build());
-        abilityRegistry.register(EntityType.SHULKER, MobAbilityConfig.<ShulkerEntity>builder()
+            .build();
+        reg.beginRegistration(EntityType.GHAST).indirectAttack(GhastFireballAbility::new).build();
+        reg.beginRegistration(EntityType.GOAT).directAttack(GoatRamAbility::create).build();
+        reg.beginRegistration(EntityType.GUARDIAN).directAttack(GuardianBeamAbility::new).build();
+        reg.beginRegistration(EntityType.ELDER_GUARDIAN).directAttack(GuardianBeamAbility::new).build();
+        reg.beginRegistration(EntityType.LLAMA).directAttack(RangedAttackAbility::new).build();
+        reg.beginRegistration(EntityType.PUFFERFISH).indirectAttack(PufferfishInflationAbility::new).build();
+        reg.beginRegistration(EntityType.SHULKER)
             .directAttack(ShulkerShootAbility::new)
             .indirectAttack(shulker -> new AutoAimAbility<>(shulker, AbilityType.ATTACK, 16.0, 4.0))
-            .indirectInteract(ShulkerPeekAbility::new).build());
-        abilityRegistry.register(EntityType.SNOW_GOLEM, MobAbilityConfig.<SnowGolemEntity>builder()
+            .indirectInteract(ShulkerPeekAbility::new).build();
+        reg.beginRegistration(EntityType.SNOW_GOLEM)
             .directAttack(e -> new RangedAttackAbility<>(e, 20, 10))
-            .indirectInteract(SnowmanSnowballAbility::new).build());
-        abilityRegistry.register(EntityType.TRADER_LLAMA, MobAbilityConfig.<LlamaEntity>builder().directAttack(RangedAttackAbility::new).build());
-        abilityRegistry.register(EntityType.WITCH, MobAbilityConfig.<WitchEntity>builder()
-            .directAttack(owner -> new RangedAttackAbility<>(owner, 50, 10.)).build());
-        abilityRegistry.register(EntityType.WITHER, MobAbilityConfig.<WitherEntity>builder().indirectAttack(WitherSkullAbility.BlueWitherSkullAbility::new).directAttack(WitherSkullAbility.BlackWitherSkullAbility::new).build());
+            .indirectInteract(SnowmanSnowballAbility::new).build();
+        reg.beginRegistration(EntityType.TRADER_LLAMA).directAttack(RangedAttackAbility::new).build();
+        reg.beginRegistration(EntityType.WITCH)
+            .directAttack(owner -> new RangedAttackAbility<>(owner, 50, 10.)).build();
+        reg.beginRegistration(EntityType.WITHER)
+            .indirectAttack(WitherSkullAbility.BlueWitherSkullAbility::new)
+            .directAttack(WitherSkullAbility.BlackWitherSkullAbility::new).build();
     }
 
     @Override
