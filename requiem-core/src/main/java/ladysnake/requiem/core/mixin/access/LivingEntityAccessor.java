@@ -46,6 +46,9 @@ public interface LivingEntityAccessor {
     @Accessor
     void setJumpingCooldown(int cooldown);
 
+    @Invoker("jump")
+    void requiem$invokeJump();
+
     @Invoker("damageShield")
     void requiem$invokeDamageShield(float damage);
 
