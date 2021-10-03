@@ -49,7 +49,7 @@ import net.minecraft.util.Identifier;
 @Environment(EnvType.CLIENT)
 public class MorticianEntityRenderer extends MobEntityRenderer<MorticianEntity, MorticianEntityModel<MorticianEntity>> {
     private static final Identifier TEXTURE = Requiem.id("textures/entity/mortician.png");
-    private static final Identifier PROJECTION_TEXTURE = Requiem.id("textures/entity/mortician_projection.png");
+    private static final Identifier PROJECTION_TEXTURE = Requiem.id("textures/entity/ethereal_mortician.png");
 
     public MorticianEntityRenderer(EntityRendererFactory.Context ctx) {
         super(ctx, new MorticianEntityModel<>(ctx.getModelLoader().getModelPart(MorticianEntityModel.MODEL_LAYER)), 0.5F);
