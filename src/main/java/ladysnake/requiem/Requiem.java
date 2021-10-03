@@ -62,6 +62,7 @@ import ladysnake.requiem.common.network.RequiemNetworking;
 import ladysnake.requiem.common.network.ServerMessageHandling;
 import ladysnake.requiem.common.particle.RequiemParticleTypes;
 import ladysnake.requiem.common.sound.RequiemSoundEvents;
+import ladysnake.requiem.common.structure.RequiemStructures;
 import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
 import ladysnake.requiem.compat.RequiemCompatibilityManager;
 import ladysnake.requiem.core.remnant.VagrantInteractionRegistryImpl;
@@ -105,6 +106,7 @@ public final class Requiem implements ModInitializer {
         RequiemSoundEvents.init();
         RequiemStats.init();
         RequiemStatusEffects.init();
+        RequiemStructures.init();
         ServerMessageHandling.init();
         ApiInitializer.discoverEntryPoints();
         CommandRegistrationCallback.EVENT.register((dispatcher, dedicated) -> RequiemCommand.register(dispatcher));
