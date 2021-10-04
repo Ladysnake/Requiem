@@ -52,9 +52,6 @@ import ladysnake.requiem.common.network.RequiemNetworking;
 import ladysnake.requiem.common.remnant.RemnantTypes;
 import ladysnake.requiem.common.sound.RequiemSoundEvents;
 import ladysnake.requiem.core.record.EntityPositionClerk;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.enchantment.EnchantmentLevelEntry;
 import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EntityStatuses;
@@ -96,7 +93,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.intprovider.UniformIntProvider;
 import net.minecraft.village.TradeOffer;
-import net.minecraft.village.TradeOfferList;
 import net.minecraft.village.TradeOffers;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.World;
@@ -104,7 +100,6 @@ import net.minecraft.world.WorldView;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Comparator;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -354,15 +349,6 @@ public class MorticianEntity extends MerchantEntity implements Angerable {
         } else {
             return super.interactMob(customer, hand);
         }
-    }
-
-    @Environment(EnvType.CLIENT)
-    @Override
-    public void setOffersFromServer(@Nullable TradeOfferList offers) {
-        super.setOffersFromServer(offers);
-        // Note: in multiplayer, we have nothing but regular trade offers here because of how toPacket works
-        // So we only have to update remnant offers in singleplayer
-        this.prepareOffersFor(Objects.requireNonNull(MinecraftClient.getInstance().player));
     }
 
     private void prepareOffersFor(PlayerEntity customer) {

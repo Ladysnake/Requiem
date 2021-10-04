@@ -45,7 +45,10 @@ public class RemnantTradeOffer extends TradeOffer {
     public static RemnantTradeOffer fromNbt(NbtCompound compound) {
         TradeOffer vanillaOffer = new TradeOffer(compound.getCompound("vanilla_offer"));
         TradeOffer demonOffer = new TradeOffer(compound.getCompound("demon_offer"));
-        return new RemnantTradeOffer(vanillaOffer, demonOffer);
+        RemnantTradeOffer offer = new RemnantTradeOffer(vanillaOffer, demonOffer);
+        // Need this specifically to sync trades in singleplayer
+        if (compound.getBoolean("demon_customer")) offer.demonCustomer = true;
+        return offer;
     }
 
     public RemnantTradeOffer(TradeOffer vanillaOffer, TradeOffer demonOffer) {
@@ -169,6 +172,7 @@ public class RemnantTradeOffer extends TradeOffer {
         whole.putBoolean("requiem:demon_trade", true);
         whole.put("demon_offer", this.demonOffer.toNbt());
         whole.put("vanilla_offer", this.vanillaOffer.toNbt());
+        if (this.demonCustomer) whole.putBoolean("demon_customer", true);
         return whole;
     }
 
