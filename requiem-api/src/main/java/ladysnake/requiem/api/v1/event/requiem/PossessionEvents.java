@@ -22,6 +22,7 @@ import net.fabricmc.fabric.api.event.EventFactory;
 import net.fabricmc.fabric.api.util.TriState;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 
 public final class PossessionEvents {
@@ -34,6 +35,17 @@ public final class PossessionEvents {
                     case FALSE -> {
                         return TriState.FALSE;
                     }
+                }
+            }
+            return ret;
+        });
+    public static final Event<DetectionAttempt> DETECTION_ATTEMPT = EventFactory.createArrayBacked(DetectionAttempt.class,
+        callbacks -> (sensed, sensor, reason) -> {
+            DetectionAttempt.DetectionResult ret = DetectionAttempt.DetectionResult.DEFAULT;
+            for (DetectionAttempt callback : callbacks) {
+                DetectionAttempt.DetectionResult result = callback.shouldDetect(sensed, sensor, reason);
+                if (result.priority > ret.priority) {
+                    ret = result;
                 }
             }
             return ret;
@@ -59,6 +71,23 @@ public final class PossessionEvents {
 
     public interface InventoryTransferCheck {
         TriState shouldTransfer(ServerPlayerEntity possessor, LivingEntity host);
+    }
+
+    public interface DetectionAttempt {
+        DetectionResult shouldDetect(MobEntity sensed, MobEntity sensor, DetectionReason reason);
+
+        enum DetectionReason {
+            BUMP, ATTACKING, ATTACKED
+        }
+
+        enum DetectionResult {
+            UNDETECTED(3), DEFAULT(0), DETECTED(1), CROWD_DETECTED(2);
+            private final int priority;
+
+            DetectionResult(int priority) {
+                this.priority = priority;
+            }
+        }
     }
 
     public interface DissociationCleanup {

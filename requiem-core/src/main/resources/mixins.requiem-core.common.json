@@ -13,6 +13,7 @@
     "noai.WitchEntityMixin",
     "noai.WitherEntityMixin",
     "possession.EntityAttributeInstanceMixin",
+    "possession.FollowTargetGoalAccessor",
     "possession.ServerWorldMixin",
     "possession.WorldMixin",
     "possession.command.EntitySelectorOptionsMixin",

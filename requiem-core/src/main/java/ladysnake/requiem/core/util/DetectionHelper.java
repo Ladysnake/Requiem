@@ -34,13 +34,18 @@
  */
 package ladysnake.requiem.core.util;
 
+import ladysnake.requiem.api.v1.event.requiem.PossessionEvents;
 import ladysnake.requiem.api.v1.possession.Possessable;
+import ladysnake.requiem.core.mixin.access.MobEntityAccessor;
+import ladysnake.requiem.core.mixin.possession.FollowTargetGoalAccessor;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
+import net.minecraft.entity.ai.goal.PrioritizedGoal;
 import net.minecraft.entity.mob.Angerable;
 import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.Box;
 
 import java.util.List;
@@ -59,7 +64,7 @@ public final class DetectionHelper {
      * @param mob the mob you to check.
      * @return returns a boolean based on whether or not the mob is a valid enemy.
      */
-    public static boolean isValidEnemy(Entity mob) {
+    public static boolean isValidEnemy(MobEntity mob) {
         return mob instanceof HostileEntity && !(mob instanceof Angerable);
     }
 
@@ -67,11 +72,16 @@ public final class DetectionHelper {
      * Incites an individual mob to attack the host of a demon.
      *
      * @param host the host you want to attack.
-     * @param mob the mob you want to anger.
+     * @param hostile the mob you want to anger.
      */
-    public static void inciteMob(MobEntity host, HostileEntity mob) {
-        mob.setTarget(host);
-        mob.getBrain().remember(MemoryModuleType.ANGRY_AT, host.getUuid(), 600L);
+    public static void inciteMob(MobEntity host, MobEntity hostile) {
+        for (PrioritizedGoal goal : ((MobEntityAccessor) hostile).getTargetSelector().getGoals()) {
+            if (goal.getGoal() instanceof FollowTargetGoalAccessor g && g.getTargetClass().isAssignableFrom(ServerPlayerEntity.class)) {
+                g.setTargetEntity(host);
+                goal.start();
+            }
+        }
+        hostile.getBrain().remember(MemoryModuleType.ANGRY_AT, host.getUuid(), 600L);
     }
 
     /**
@@ -80,7 +90,7 @@ public final class DetectionHelper {
      * @param host the host you want to be attacked.
      * @param hostile the mob you want to anger and find allies around.
      */
-    public static void inciteMobAndAllies(MobEntity host, HostileEntity hostile) {
+    public static void inciteMobAndAllies(MobEntity host, MobEntity hostile) {
         inciteMob(host, hostile);
 
         List<HostileEntity> sawExchange = hostile.world.getEntitiesByClass(HostileEntity.class, Box.from(hostile.getPos()).expand(ALERT_RANGE), witness -> isValidEnemy(witness) && witness.isInWalkTargetRange(host.getBlockPos()) && witness.canSee(host));
@@ -88,7 +98,15 @@ public final class DetectionHelper {
         for (HostileEntity witness : sawExchange) {
             inciteMob(host, witness);
         }
+    }
 
+    public static void attemptDetection(MobEntity sensed, Entity sensor, PossessionEvents.DetectionAttempt.DetectionReason reason) {
+        if (canBeDetected(sensed) && sensor instanceof MobEntity mob && isValidEnemy(mob)) {
+            switch (PossessionEvents.DETECTION_ATTEMPT.invoker().shouldDetect(sensed, mob, reason)) {
+                case DETECTED -> inciteMob(sensed, mob);
+                case CROWD_DETECTED -> inciteMobAndAllies(sensed, mob);
+            }
+        }
     }
 
     public static boolean canBeDetected(MobEntity candidate) {

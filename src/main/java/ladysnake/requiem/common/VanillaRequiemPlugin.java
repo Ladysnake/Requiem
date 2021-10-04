@@ -57,6 +57,7 @@ import ladysnake.requiem.api.v1.event.requiem.ConsumableItemEvents;
 import ladysnake.requiem.api.v1.event.requiem.HumanityCheckCallback;
 import ladysnake.requiem.api.v1.event.requiem.InitiateFractureCallback;
 import ladysnake.requiem.api.v1.event.requiem.PlayerShellEvents;
+import ladysnake.requiem.api.v1.event.requiem.PossessionEvents;
 import ladysnake.requiem.api.v1.event.requiem.PossessionStateChangeCallback;
 import ladysnake.requiem.api.v1.event.requiem.RemnantStateChangeCallback;
 import ladysnake.requiem.api.v1.event.requiem.SoulCaptureEvents;
@@ -77,6 +78,8 @@ import ladysnake.requiem.common.entity.SkeletonBoneComponent;
 import ladysnake.requiem.common.entity.ability.*;
 import ladysnake.requiem.common.entity.effect.ReclamationStatusEffect;
 import ladysnake.requiem.common.entity.effect.RequiemStatusEffects;
+import ladysnake.requiem.common.gamerule.PossessionDetection;
+import ladysnake.requiem.common.gamerule.RequiemGamerules;
 import ladysnake.requiem.common.network.RequiemNetworking;
 import ladysnake.requiem.common.possession.MobRidingType;
 import ladysnake.requiem.common.remnant.BasePossessionHandlers;
@@ -341,6 +344,20 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
                 return PlayerEntity.SleepFailureReason.OTHER_PROBLEM;
             }
             return null;
+        });
+        PossessionEvents.DETECTION_ATTEMPT.register((sensed, sensor, reason) -> {
+            PossessionDetection cfg = sensed.world.getGameRules().get(RequiemGamerules.POSSESSION_DETECTION).get();
+            return switch (reason) {
+                case BUMP, ATTACKING -> switch (cfg) {
+                    case DISABLED -> PossessionEvents.DetectionAttempt.DetectionResult.UNDETECTED;
+                    case NORMAL -> PossessionEvents.DetectionAttempt.DetectionResult.DETECTED;
+                    case HARD -> PossessionEvents.DetectionAttempt.DetectionResult.CROWD_DETECTED;
+                };
+                case ATTACKED -> switch (cfg) {
+                    case DISABLED -> PossessionEvents.DetectionAttempt.DetectionResult.UNDETECTED;
+                    case NORMAL, HARD -> PossessionEvents.DetectionAttempt.DetectionResult.CROWD_DETECTED;
+                };
+            };
         });
     }
 

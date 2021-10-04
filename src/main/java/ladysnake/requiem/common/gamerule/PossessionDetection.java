@@ -34,29 +34,6 @@
  */
 package ladysnake.requiem.common.gamerule;
 
-import ladysnake.requiem.Requiem;
-import net.fabricmc.fabric.api.gamerule.v1.GameRuleFactory;
-import net.fabricmc.fabric.api.gamerule.v1.GameRuleRegistry;
-import net.fabricmc.fabric.api.gamerule.v1.rule.EnumRule;
-import net.minecraft.world.GameRules;
-
-public class RequiemGamerules {
-    public static final GameRules.Key<GameRules.BooleanRule> SHOW_POSSESSOR_NAMETAG =
-        register("showPossessorNameTag", GameRuleFactory.createBooleanRule(false, (server, rule) -> RequiemSyncedGamerules.KEY.sync(server.getScoreboard())), GameRules.Category.PLAYER);
-    public static final GameRules.Key<GameRules.BooleanRule> NO_CURE =
-        register("disableCure", GameRuleFactory.createBooleanRule(false), GameRules.Category.PLAYER);
-    public static final GameRules.Key<EnumRule<StartingRemnantType>> STARTING_SOUL_MODE =
-        register("startingRemnantType", GameRuleFactory.createEnumRule(StartingRemnantType.CHOOSE, (server, rule) -> RequiemSyncedGamerules.KEY.sync(server.getScoreboard())), GameRules.Category.PLAYER);
-    public static final GameRules.Key<EnumRule<PossessionKeepInventory>> POSSESSION_KEEP_INVENTORY =
-        register("possessionKeepInventory", GameRuleFactory.createEnumRule(PossessionKeepInventory.NEVER), GameRules.Category.PLAYER);
-    public static final GameRules.Key<EnumRule<PossessionDetection>> POSSESSION_DETECTION =
-        register("possessionDetection", GameRuleFactory.createEnumRule(PossessionDetection.NORMAL), GameRules.Category.MOBS);
-
-    public static void init() {
-        // static init
-    }
-
-    private static <T extends GameRules.Rule<T>> GameRules.Key<T> register(String name, GameRules.Type<T> type, GameRules.Category category) {
-        return GameRuleRegistry.register(Requiem.MOD_ID + ":" + name, category, type);
-    }
+public enum PossessionDetection {
+    DISABLED, NORMAL, HARD
 }

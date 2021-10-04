@@ -158,6 +158,8 @@
   "gamerule.requiem:startingRemnantType": "(Requiem) Remnant Type",
   "gamerule.requiem:startingRemnantType.description": "Replaces the choice at first death between demon and mortal",
   "gamerule.requiem:possessionKeepInventory": "(Requiem) Keep inventory         after possession ends",
+  "gamerule.requiem:possessionDetection": "(Requiem) Detect possessed mobs",
+  "gamerule.requiem:possessionDetection.description": "Mobs detect possessed comrades under some circumstances",
 
   "effect.requiem.attrition": "Attrition",
   "effect.requiem.emancipation": "Emancipation",
