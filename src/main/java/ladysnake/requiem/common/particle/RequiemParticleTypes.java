@@ -59,6 +59,7 @@ public final class RequiemParticleTypes {
         }
     };
     public static final DefaultParticleType OBELISK_SOUL = FabricParticleTypes.simple(false);
+    public static final DefaultParticleType PENANCE = FabricParticleTypes.simple(false);
 
     public static void init() {
         Registry.register(Registry.PARTICLE_TYPE, Requiem.id("attrition"), ATTRITION);
@@ -68,5 +69,6 @@ public final class RequiemParticleTypes {
         Registry.register(Registry.PARTICLE_TYPE, Requiem.id("ghost"), GHOST);
         Registry.register(Registry.PARTICLE_TYPE, Requiem.id("soul_trail"), SOUL_TRAIL);
         Registry.register(Registry.PARTICLE_TYPE, Requiem.id("obelisk_soul"), OBELISK_SOUL);
+        Registry.register(Registry.PARTICLE_TYPE, Requiem.id("penance"), PENANCE);
     }
 }

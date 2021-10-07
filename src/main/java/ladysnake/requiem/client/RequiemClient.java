@@ -66,6 +66,7 @@ import net.fabricmc.fabric.api.renderer.v1.model.ModelHelper;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.particle.PortalParticle;
 import net.minecraft.client.particle.SoulParticle;
+import net.minecraft.client.particle.SpellParticle;
 import net.minecraft.client.render.entity.PlayerEntityRenderer;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.texture.Sprite;
@@ -191,6 +192,7 @@ public final class RequiemClient {
         registry.register(RequiemParticleTypes.ENTITY_DUST, new EntityDustParticle.Factory());
         registry.register(RequiemParticleTypes.OBELISK_SOUL, SoulParticle.Factory::new);
         registry.register(RequiemParticleTypes.SOUL_TRAIL, WispTrailParticle.Factory::new);
+        registry.register(RequiemParticleTypes.PENANCE, SpellParticle.EntityFactory::new);
     }
 
     private void registerModelPredicates() {

@@ -49,6 +49,7 @@ import ladysnake.requiem.common.entity.effect.RequiemStatusEffects;
 import ladysnake.requiem.common.item.FilledSoulVesselItem;
 import ladysnake.requiem.common.item.RequiemItems;
 import ladysnake.requiem.common.network.RequiemNetworking;
+import ladysnake.requiem.common.particle.RequiemParticleTypes;
 import ladysnake.requiem.common.remnant.RemnantTypes;
 import ladysnake.requiem.common.sound.RequiemSoundEvents;
 import ladysnake.requiem.core.record.EntityPositionClerk;
@@ -79,7 +80,6 @@ import net.minecraft.item.EnchantedBookItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
@@ -173,11 +173,11 @@ public class MorticianEntity extends MerchantEntity implements Angerable {
             double r = (float) (color >> 16 & 0xFF) / 255.0F;
             double g = (float) (color >> 8 & 0xFF) / 255.0F;
             double b = (float) (color & 0xFF) / 255.0F;
-            float x = this.bodyYaw * (float) (Math.PI / 180.0) + MathHelper.cos((float) this.age * 0.6662F) * 0.25F;
-            float y = MathHelper.cos(x);
-            float z = MathHelper.sin(x);
-            this.world.addParticle(ParticleTypes.ENTITY_EFFECT, this.getX() + (double) y * 0.6, this.getY() + 1.8, this.getZ() + (double) z * 0.6, r, g, b);
-            this.world.addParticle(ParticleTypes.ENTITY_EFFECT, this.getX() - (double) y * 0.6, this.getY() + 1.8, this.getZ() - (double) z * 0.6, r, g, b);
+            float theta = this.bodyYaw * (float) (Math.PI / 180.0) + MathHelper.cos((float) this.age * 0.6662F) * 0.25F;
+            float x = MathHelper.cos(theta);
+            float z = MathHelper.sin(theta);
+            this.world.addParticle(RequiemParticleTypes.PENANCE, this.getX() + (double) x * 0.6, this.getY() + this.getHeight() * 0.92, this.getZ() + (double) z * 0.6, 1, 1, 1);
+            this.world.addParticle(RequiemParticleTypes.PENANCE, this.getX() - (double) x * 0.6, this.getY() + this.getHeight() * 0.92, this.getZ() - (double) z * 0.6, 1, 1, 1);
         }
     }
 
