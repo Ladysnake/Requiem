@@ -135,7 +135,7 @@ Updated to MC 1.17
 **Additions**
 - Added more Soul Status Effects:
     - Added the Emancipation status effect, letting you freely leave your current body
-    - Added the Penance status effect, preventing you from leaving your current body
+    - Added the Penance status effect, getting you progressively further from the physical plane
     - Added the Reclamation status effect, letting you cure attrition over time
 - Added Tachylite blocks:
     - Added Tachylite, Chiseled Tachylite (+slabs, stairs and pillars), Polished Tachylite (+slabs, stairs and pillars), and Scraped Tachylite
