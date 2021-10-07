@@ -5,6 +5,24 @@ Version 2.0.0
 
 **Really important warning: future alphas are extremely likely to break compatibility with worlds started with this alpha. Don't start using those versions on any world you care about.**
 
+### Changes in Alpha 13
+- Added the Derelict Obelisk structure, which now generate naturally in soul sand valleys
+  - Morticians naturally spawn near them
+- Added the `/requiem shell merge` command, letting you merge vagrant players with an existing shell (surprising)
+- Rift-spawned morticians now have a different look
+- Added the inflation ability for pufferfish
+- Mobs that witness other mobs attacking you during possession will no longer join the party
+- Added the `requiem:possessionDetection` gamerule to configure how sus you are during possession
+- Made it more obvious that you can interact with rift runestones while incorporeal
+- The area in which the obelisk searches for soul sand and soil is now square and not round
+- Rifts now require a powered obelisk to teleport you
+- Updated the penance spell particle texture
+- Vagrant players no longer gain attrition when their body dies
+- Fixed obelisks allowing effects to be one level higher than intended
+- Fixed a visual bug with rabbits not jumping properly
+- Fixed some missing localization entries
+- Fixed a desync with the "remnant -> vanilla player" mortician trade
+
 ### Changes in Alpha 12
 - **Mobs can now become hostile if you come too close !** (big thanks to SciRave for giving us this feature)
     - this is an experiment, so please give us your feedback
@@ -142,6 +160,8 @@ Updated to MC 1.17
     - Added Tachylite Runestone for all soulbound status effects
 - Added obelisk rifts, a new way to travel between obelisks as a dissociated soul
 - Added Tachylite Obelisks, a new player-made structure
+- Added Derelict Obelisks, a natural structure that spawns in soul sand valleys
+  - Derelict Obelisks often have a mortician hanging out near them
 - Added Soul Vessel items:
     - Added the Empty Soul Vessel, a rare item that is used to obtain most of the new content
         - Added the Creative Soul Vessel, a creative-only soul vessel that succeeds every time
