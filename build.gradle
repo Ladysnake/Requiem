@@ -290,7 +290,7 @@ dependencies {
     modRuntime("com.github.apace100:calio:${calio_version}") { transitive = false }
     modCompileOnly("com.github.apace100:origins-fabric:${origins_version}") { transitive = false }
     modRuntime("com.github.apace100:origins-fabric:${origins_version}") { transitive = false }
-    modRuntime "com.github.Globox1997:BackSlot:${backslot_version}"
+    modRuntime "curse.maven:BackSlot-402739:${backslot_version}"
     modCompileOnly("io.github.HyperPigeon:Eldritch-Mobs:${eldritch_mobs_version}") { transitive = false }
 //    modRuntime "io.github.cottonmc:LibGui:${libgui_version}"
     modCompileOnly("curse.maven:haema-391257:${haema_version}")
