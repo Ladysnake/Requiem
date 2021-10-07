@@ -156,11 +156,8 @@ public class RunestoneBlockEntity extends BlockEntity {
         int successes = 0;
 
         for (int attempt = 0; attempt < RunestoneBlockEntity.POWER_ATTEMPTS; attempt++) {
-            // https://stackoverflow.com/questions/5837572/generate-a-random-point-within-a-circle-uniformly/50746409#50746409
-            double r = range * Math.sqrt(world.random.nextDouble());
-            double theta = world.random.nextDouble() * 2 * Math.PI;
-            double x = center.x + r * Math.cos(theta);
-            double z = center.z + r * Math.sin(theta);
+            double x = center.x + world.random.nextDouble() * range * 2 - range;
+            double z = center.z + world.random.nextDouble() * range * 2 - range;
             checked.set(Math.round(x), center.y, Math.round(z));
             BlockState state = world.getBlockState(checked);
 
