@@ -37,6 +37,7 @@ package ladysnake.requiem.common.structure;
 import com.google.common.collect.ImmutableList;
 import com.mojang.serialization.Codec;
 import ladysnake.requiem.Requiem;
+import ladysnake.requiem.common.entity.RequiemEntities;
 import net.minecraft.block.BlockState;
 import net.minecraft.structure.PoolStructurePiece;
 import net.minecraft.structure.StructureManager;
@@ -71,6 +72,8 @@ import java.util.Random;
 import java.util.stream.Collectors;
 
 public class DerelictObeliskFeature extends StructureFeature<DefaultFeatureConfig> {
+    private static final Pool<SpawnSettings.SpawnEntry> CREATURE_SPAWNS = Pool.of(new SpawnSettings.SpawnEntry(RequiemEntities.MORTICIAN, 1, 1, 1));
+
     public DerelictObeliskFeature(Codec<DefaultFeatureConfig> codec) {
         super(codec);
     }
@@ -82,7 +85,7 @@ public class DerelictObeliskFeature extends StructureFeature<DefaultFeatureConfi
 
     @Override
     public Pool<SpawnSettings.SpawnEntry> getCreatureSpawns() {
-        return super.getCreatureSpawns();
+        return CREATURE_SPAWNS;
     }
 
     /**
