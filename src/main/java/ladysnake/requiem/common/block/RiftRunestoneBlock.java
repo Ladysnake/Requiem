@@ -48,8 +48,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.text.TranslatableText;
@@ -60,7 +58,6 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
-import net.minecraft.world.explosion.Explosion;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
@@ -88,11 +85,12 @@ public class RiftRunestoneBlock extends InertRunestoneBlock implements ObeliskRu
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         if (!state.get(ACTIVATED) || !RemnantComponent.isIncorporeal(player)) {
             return ActionResult.PASS;
-        } else if (world.isClient) {
+        } else if (!(world instanceof ServerWorld sw)) {
             return ActionResult.SUCCESS;
         } else {
-            RunestoneBlockEntity.findObeliskOrigin(world, pos).ifPresent(
-                origin -> {
+            RunestoneBlockEntity.findObeliskOrigin(world, pos)
+                .filter(origin -> RunestoneBlockEntity.checkForPower(sw, pos))
+                .ifPresent(origin -> {
                     player.openHandledScreen(state.createScreenHandlerFactory(world, origin));
                     player.incrementStat(RequiemStats.INTERACT_WITH_RIFT);
                 }
@@ -117,16 +115,6 @@ public class RiftRunestoneBlock extends InertRunestoneBlock implements ObeliskRu
                 controller::canBeUsedBy);
         }
         return null;
-    }
-
-    @Override
-    protected boolean toggleRune(ServerWorld world, BlockPos runePos, @Nullable ObeliskMatch match, BlockState blockState) {
-        if (match != null && match.coreWidth() > 1) {
-            world.createExplosion(null, runePos.getX() + 0.5, runePos.getY() + 0.5, runePos.getZ() + 0.5, 1, true, Explosion.DestructionType.BREAK);
-            world.playSound(null, runePos, SoundEvents.BLOCK_PORTAL_TRAVEL, SoundCategory.BLOCKS, 1, 1);
-            blockState = blockState.with(FRIED, true);
-        }
-        return super.toggleRune(world, runePos, match, blockState);
     }
 
     @Override
