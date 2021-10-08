@@ -34,16 +34,28 @@
  */
 package ladysnake.requiem.common.item;
 
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
+import com.google.common.collect.ImmutableMultimap;
+import com.google.common.collect.Multimap;
+import ladysnake.requiem.common.entity.RequiemEntityAttributes;
+import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.entity.attribute.EntityAttribute;
+import net.minecraft.entity.attribute.EntityAttributeModifier;
+
+import java.util.UUID;
 
 public class CreativeSoulVesselItem extends EmptySoulVesselItem {
+    private static final UUID SOUL_OFFENSE_MODIFIER_ID = UUID.fromString("51ace24e-23b8-4571-901a-cc73f822b329");
+
+    private final Multimap<EntityAttribute, EntityAttributeModifier> attributeModifiers = ImmutableMultimap.of(
+        RequiemEntityAttributes.SOUL_OFFENSE, new EntityAttributeModifier(SOUL_OFFENSE_MODIFIER_ID, "Creative vessel modifier", Double.POSITIVE_INFINITY, EntityAttributeModifier.Operation.ADDITION)
+    );
+
     public CreativeSoulVesselItem(Settings settings) {
         super(settings);
     }
 
     @Override
-    protected boolean wins(PlayerEntity user, int playerSoulStrength, LivingEntity entity, int targetSoulStrength) {
-        return true;
+    public Multimap<EntityAttribute, EntityAttributeModifier> getAttributeModifiers(EquipmentSlot slot) {
+        return slot.getType() == EquipmentSlot.Type.HAND ? this.attributeModifiers : super.getAttributeModifiers(slot);
     }
 }
