@@ -226,6 +226,9 @@ dependencies {
         include project(":requiem-core")
     }
 
+    testImplementation 'junit:junit:4.13'
+    testImplementation 'org.mockito:mockito-core:3.+'
+
     // Required dependencies
     modApi "io.github.ladysnake:satin:${satin_version}"
     include "io.github.ladysnake:satin:${satin_version}"

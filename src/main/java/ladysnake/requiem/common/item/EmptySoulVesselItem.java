@@ -238,11 +238,11 @@ public class EmptySoulVesselItem extends Item {
         return user.getRandom().nextFloat() < (strengthRatio * strengthRatio);
     }
 
-    private static int computeSoulOffense(LivingEntity user) {
+    static int computeSoulOffense(LivingEntity user) {
         return (int) Math.round(user.getAttributeValue(RequiemEntityAttributes.SOUL_OFFENSE));
     }
 
-    private static int computeSoulDefense(LivingEntity entity) {
+    static int computeSoulDefense(LivingEntity entity) {
         double base = entity.getAttributeValue(RequiemEntityAttributes.SOUL_DEFENSE);
         double maxHealth = entity.getMaxHealth();
         double intrinsicArmor = getAttributeBaseValue(entity, EntityAttributes.GENERIC_ARMOR);
@@ -250,15 +250,15 @@ public class EmptySoulVesselItem extends Item {
         double intrinsicStrength = getAttributeBaseValue(entity, EntityAttributes.GENERIC_ATTACK_DAMAGE);
         double invertedHealthRatio = 1 - entity.getHealth() / entity.getMaxHealth();
         double woundedModifier = 1 - (invertedHealthRatio * invertedHealthRatio * invertedHealthRatio);
-        double healthModifier = woundedModifier * 0.75 + 0.25;
+        double healthModifier = woundedModifier * 0.8 + 0.2;
         double strengthModifier = computeStrengthModifier(intrinsicStrength);
         double physicalModifier = strengthModifier * healthModifier;
         return (int) Math.round(base + physicalModifier * (maxHealth + intrinsicArmor * 2 + intrinsicArmorToughness * 3));
     }
 
     private static double computeStrengthModifier(double intrinsicStrength) {
-        if (intrinsicStrength == 0) return 0.75;
-        else if (intrinsicStrength < 2) return 0.9;
+        if (intrinsicStrength == 0) return 0.5;
+        else if (intrinsicStrength < 2) return 0.75;
         else return Math.sqrt(intrinsicStrength * 0.5);
     }
 
