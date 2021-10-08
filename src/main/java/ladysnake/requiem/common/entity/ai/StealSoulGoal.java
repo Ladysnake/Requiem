@@ -34,24 +34,27 @@
  */
 package ladysnake.requiem.common.entity.ai;
 
-import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.common.entity.MorticianEntity;
-import ladysnake.requiem.common.entity.effect.PenanceComponent;
-import ladysnake.requiem.common.entity.effect.PenanceStatusEffect;
-import ladysnake.requiem.common.entity.effect.RequiemStatusEffects;
+import ladysnake.requiem.common.item.EmptySoulVesselItem;
 import ladysnake.requiem.common.sound.RequiemSoundEvents;
+import ladysnake.requiem.core.entity.SoulHolderComponent;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.network.packet.s2c.play.EntityVelocityUpdateS2CPacket;
-import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundEvent;
-import net.minecraft.util.math.MathHelper;
 
-public class FreeFromMortailCoilGoal extends MorticianSpellGoal {
-    public static final int PENANCE_TIME = 10 * 20 * 60;
+import java.util.Objects;
 
-    public FreeFromMortailCoilGoal(MorticianEntity mortician) {
+public class StealSoulGoal extends MorticianSpellGoal {
+    public StealSoulGoal(MorticianEntity mortician) {
         super(mortician);
+    }
+
+    @Override
+    public boolean canStart() {
+        if (super.canStart()) {
+            return this.mortician.getTarget() != null && EmptySoulVesselItem.canAttemptCapture(this.mortician, this.mortician.getTarget());
+        }
+        return false;
     }
 
     @Override
@@ -61,29 +64,43 @@ public class FreeFromMortailCoilGoal extends MorticianSpellGoal {
 
     @Override
     protected int getCooldown() {
-        return 100;
+        return 200;
     }
 
     @Override
     protected int getWarmupTime() {
-        return 20;
+        return 100;
+    }
+
+    @Override
+    public void tick() {
+        EmptySoulVesselItem.playSoulCaptureEffects(this.mortician, Objects.requireNonNull(this.mortician.getTarget()));
+        super.tick();
     }
 
     @Override
     protected void castSpell() {
         LivingEntity target = this.mortician.getTarget();
-        if (target instanceof ServerPlayerEntity player) {
-            int penanceAmplifier = getRequiredPenance(player);
-            player.addStatusEffect(new StatusEffectInstance(RequiemStatusEffects.PENANCE, PENANCE_TIME, penanceAmplifier, false, false, true));
-            ServerPlayerEntity soul = PenanceComponent.KEY.get(player).maxOutPenance(penanceAmplifier);
-            ServerPlayerEntity affected = soul != null ? soul : player;
-            affected.takeKnockback(1, MathHelper.sin(this.mortician.getYaw() * (float) Math.PI / 180), -MathHelper.cos(this.mortician.getYaw() * (float) Math.PI / 180));
-            affected.networkHandler.sendPacket(new EntityVelocityUpdateS2CPacket(affected));
+        if (target != null && EmptySoulVesselItem.canAttemptCapture(this.mortician, target)) {
+            if (EmptySoulVesselItem.wins(this.mortician, target)) {
+                this.mortician.addCapturedSoul(EmptySoulVesselItem.setupRecord(target));
+                SoulHolderComponent.get(target).removeSoul();
+            } else {
+                for(int i = 0; i < 7; i++) {
+                    double vx = this.mortician.getRandom().nextGaussian() * 0.02;
+                    double vy = this.mortician.getRandom().nextGaussian() * 0.02;
+                    double vz = this.mortician.getRandom().nextGaussian() * 0.02;
+                    this.mortician.world.addParticle(
+                        ParticleTypes.SMOKE,
+                        this.mortician.getParticleX(1.0),
+                        this.mortician.getRandomBodyY() + 0.5,
+                        this.mortician.getParticleZ(1.0),
+                        vx,
+                        vy,
+                        vz
+                    );
+                }
+            }
         }
-    }
-
-    private int getRequiredPenance(LivingEntity player) {
-        if (PossessionComponent.getHost(player) != null) return PenanceStatusEffect.MOB_BAN_THRESHOLD;
-        return PenanceStatusEffect.PLAYER_BAN_THRESHOLD;
     }
 }

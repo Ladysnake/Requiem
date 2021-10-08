@@ -34,56 +34,68 @@
  */
 package ladysnake.requiem.common.entity.ai;
 
-import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.common.entity.MorticianEntity;
-import ladysnake.requiem.common.entity.effect.PenanceComponent;
-import ladysnake.requiem.common.entity.effect.PenanceStatusEffect;
-import ladysnake.requiem.common.entity.effect.RequiemStatusEffects;
-import ladysnake.requiem.common.sound.RequiemSoundEvents;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.network.packet.s2c.play.EntityVelocityUpdateS2CPacket;
-import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.sound.SoundEvent;
-import net.minecraft.util.math.MathHelper;
 
-public class FreeFromMortailCoilGoal extends MorticianSpellGoal {
-    public static final int PENANCE_TIME = 10 * 20 * 60;
+public abstract class MorticianSpellGoal extends Goal {
+    protected final MorticianEntity mortician;
+    protected int spellCooldown;
+    protected int nextCastTime;
 
-    public FreeFromMortailCoilGoal(MorticianEntity mortician) {
-        super(mortician);
+    public MorticianSpellGoal(MorticianEntity mortician) {
+        this.mortician = mortician;
     }
 
     @Override
-    protected SoundEvent getSoundPrepare() {
-        return RequiemSoundEvents.ENTITY_MORTICIAN_PREPARE_ATTACK;
+    public void start() {
+        this.spellCooldown = this.getWarmupTime();
+        this.nextCastTime = this.mortician.age + this.getCooldown();
+        this.mortician.playSound(this.getSoundPrepare(), 1.0F, 1.0F);
+        this.mortician.setSpellcasting(true);
     }
 
     @Override
-    protected int getCooldown() {
-        return 100;
-    }
-
-    @Override
-    protected int getWarmupTime() {
-        return 20;
-    }
-
-    @Override
-    protected void castSpell() {
+    public boolean canStart() {
         LivingEntity target = this.mortician.getTarget();
-        if (target instanceof ServerPlayerEntity player) {
-            int penanceAmplifier = getRequiredPenance(player);
-            player.addStatusEffect(new StatusEffectInstance(RequiemStatusEffects.PENANCE, PENANCE_TIME, penanceAmplifier, false, false, true));
-            ServerPlayerEntity soul = PenanceComponent.KEY.get(player).maxOutPenance(penanceAmplifier);
-            ServerPlayerEntity affected = soul != null ? soul : player;
-            affected.takeKnockback(1, MathHelper.sin(this.mortician.getYaw() * (float) Math.PI / 180), -MathHelper.cos(this.mortician.getYaw() * (float) Math.PI / 180));
-            affected.networkHandler.sendPacket(new EntityVelocityUpdateS2CPacket(affected));
+        if (target != null && target.isAlive()) {
+            if (this.mortician.isSpellcasting()) {
+                return false;
+            } else {
+                return this.mortician.age >= this.nextCastTime;
+            }
+        } else {
+            return false;
         }
     }
 
-    private int getRequiredPenance(LivingEntity player) {
-        if (PossessionComponent.getHost(player) != null) return PenanceStatusEffect.MOB_BAN_THRESHOLD;
-        return PenanceStatusEffect.PLAYER_BAN_THRESHOLD;
+    @Override
+    public boolean shouldContinue() {
+        LivingEntity target = this.mortician.getTarget();
+        return target != null && target.isAlive() && this.spellCooldown > 0;
     }
+
+    protected abstract SoundEvent getSoundPrepare();
+
+    @Override
+    public void stop() {
+        this.mortician.setSpellcasting(false);
+    }
+
+    @Override
+    public void tick() {
+        --this.spellCooldown;
+        if (this.spellCooldown == 0) {
+            this.castSpell();
+            this.mortician.playSound(this.mortician.getCastSpellSound(), 1.0F, 1.0F);
+            this.mortician.stopAnger();
+        }
+    }
+
+    protected abstract int getCooldown();
+
+    protected abstract int getWarmupTime();
+
+    protected abstract void castSpell();
 }

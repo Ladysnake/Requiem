@@ -74,6 +74,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 
+import java.util.UUID;
+
 public class EmptySoulVesselItem extends Item {
 
     public static final String ACTIVE_DATA_TAG = "requiem:soul_capture";
@@ -125,13 +127,9 @@ public class EmptySoulVesselItem extends Item {
      */
     @Override
     public ActionResult useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
-        if (entity instanceof MobEntity
-            && !RequiemCoreTags.Entity.SOUL_CAPTURE_BLACKLIST.contains(entity.getType())
-            && SoulCaptureEvents.BEFORE_ATTEMPT.invoker().canAttemptCapturing(user, entity)) {
-            int targetSoulStrength = computeSoulDefense(entity);
-            int playerSoulStrength = computeSoulOffense(user);
+        if (canAttemptCapture(user, entity)) {
             NbtCompound activeData = stack.getOrCreateSubNbt(ACTIVE_DATA_TAG);
-            activeData.putInt("use_time", computeCaptureTime(targetSoulStrength, playerSoulStrength));
+            activeData.putInt("use_time", computeCaptureTime(entity, user));
             activeData.putUuid("target", entity.getUuid());
             // will be a copy in creative mode, so need to copy changes too
             user.getStackInHand(hand).getOrCreateSubNbt(ACTIVE_DATA_TAG).copyFrom(activeData);
@@ -141,7 +139,15 @@ public class EmptySoulVesselItem extends Item {
         return super.useOnEntity(stack, user, entity, hand);
     }
 
-    private int computeCaptureTime(int targetSoulStrength, int playerSoulStrength) {
+    public static boolean canAttemptCapture(LivingEntity user, LivingEntity entity) {
+        return entity instanceof MobEntity
+            && !RequiemCoreTags.Entity.SOUL_CAPTURE_BLACKLIST.contains(entity.getType())
+            && SoulCaptureEvents.BEFORE_ATTEMPT.invoker().canAttemptCapturing(user, entity);
+    }
+
+    private int computeCaptureTime(LivingEntity entity, LivingEntity user) {
+        int targetSoulStrength = computeSoulDefense(entity);
+        int playerSoulStrength = computeSoulOffense(user);
         return Math.round(96.0f * Math.min(3.0f, Math.max(1.0f, (float) targetSoulStrength / playerSoulStrength)));
     }
 
@@ -160,28 +166,29 @@ public class EmptySoulVesselItem extends Item {
             return stack;
         }
 
-        int targetSoulStrength = computeSoulDefense(target);
-        int playerSoulStrength = computeSoulOffense(remnant);
         ItemStack result;
         remnant.incrementStat(Stats.USED.getOrCreateStat(this));
-        if (!wins(remnant, playerSoulStrength, target, targetSoulStrength)) {
+
+        if (wins(remnant, target)) {
+            result = FilledSoulVesselItem.forEntityType(entity.getType());
+            result.getOrCreateSubNbt(FilledSoulVesselItem.SOUL_FRAGMENT_NBT).putUuid("uuid", setupRecord(target));
+            SoulHolderComponent.get(target).removeSoul();
+            remnant.getItemCooldownManager().set(RequiemItems.FILLED_SOUL_VESSEL, 100);
+        } else {
             AttritionStatusEffect.apply(remnant, 1, 20 * 60 * 5);
             WandererRemnantState.spawnAttritionParticles(remnant, remnant);
             remnant.incrementStat(Stats.BROKEN.getOrCreateStat(this));
+            remnant.sendToolBreakStatus(user.getActiveHand());
             result = new ItemStack(RequiemItems.SHATTERED_SOUL_VESSEL);
-        } else {
-            result = FilledSoulVesselItem.forEntityType(entity.getType());
-            this.setupRecord(entity, target, result.getOrCreateSubNbt(FilledSoulVesselItem.SOUL_FRAGMENT_NBT));
-            SoulHolderComponent.get(target).removeSoul();
-            remnant.getItemCooldownManager().set(RequiemItems.FILLED_SOUL_VESSEL, 100);
         }
+
         return ItemUsage.exchangeStack(stack, remnant, result, false);
     }
 
-    private void setupRecord(Entity entity, LivingEntity target, NbtCompound data) {
-        GlobalRecord record = GlobalRecordKeeper.get(entity.getEntityWorld()).createRecord();
+    public static UUID setupRecord(LivingEntity target) {
+        GlobalRecord record = GlobalRecordKeeper.get(target.getEntityWorld()).createRecord();
         EntityPositionClerk.get(target).linkWith(record, RequiemRecordTypes.SOUL_OWNER_REF);
-        data.putUuid("uuid", record.getUuid());
+        return record.getUuid();
     }
 
     @Override
@@ -197,36 +204,45 @@ public class EmptySoulVesselItem extends Item {
             if (useData != null) {
                 Entity target = serverWorld.getEntity(useData.getUuid("target"));
                 if (target instanceof LivingEntity) {
-                    if (world.getRandom().nextFloat() < 0.75f) {
-                        serverWorld.spawnParticles(
-                            new RequiemEntityParticleEffect(RequiemParticleTypes.ENTITY_DUST, target.getId(), user.getId()),
-                            target.getX(), target.getBodyY(0.5), target.getZ(),
-                            world.random.nextInt(6) + 4,
-                            target.getWidth() * 0.2,
-                            target.getHeight() * 0.2,
-                            target.getWidth() * 0.2,
-                            1.0
-                        );
-                    }
-                    target.playSound(RequiemSoundEvents.ITEM_EMPTY_VESSEL_USE, 1, 1);
+                    playSoulCaptureEffects(user, target);
                 }
             }
         }
     }
 
-    protected boolean wins(PlayerEntity user, int playerSoulStrength, LivingEntity entity, int targetSoulStrength) {
-        if (playerSoulStrength > targetSoulStrength) {
+    public static void playSoulCaptureEffects(LivingEntity user, Entity target) {
+        if (!(user.world instanceof ServerWorld world)) throw new IllegalStateException("Must be called serverside");
+        if (world.getRandom().nextFloat() < 0.75f) {
+            world.spawnParticles(
+                new RequiemEntityParticleEffect(RequiemParticleTypes.ENTITY_DUST, target.getId(), user.getId()),
+                target.getX(), target.getBodyY(0.5), target.getZ(),
+                world.random.nextInt(6) + 4,
+                target.getWidth() * 0.2,
+                target.getHeight() * 0.2,
+                target.getWidth() * 0.2,
+                1.0
+            );
+        }
+        user.playSound(RequiemSoundEvents.ITEM_EMPTY_VESSEL_USE, 1, 1);
+    }
+
+    public static boolean wins(LivingEntity user, LivingEntity target) {
+        int soulOffense = computeSoulOffense(user);
+        int soulDefense = computeSoulDefense(target);
+
+        if (soulOffense > soulDefense) {
             return true;
         }
-        float strengthRatio = (float) playerSoulStrength / targetSoulStrength;
+
+        float strengthRatio = (float) soulOffense / soulDefense;
         return user.getRandom().nextFloat() < (strengthRatio * strengthRatio);
     }
 
-    private static int computeSoulOffense(PlayerEntity user) {
+    private static int computeSoulOffense(LivingEntity user) {
         return (int) Math.round(user.getAttributeValue(RequiemEntityAttributes.SOUL_OFFENSE));
     }
 
-    public static int computeSoulDefense(LivingEntity entity) {
+    private static int computeSoulDefense(LivingEntity entity) {
         double base = entity.getAttributeValue(RequiemEntityAttributes.SOUL_DEFENSE);
         double maxHealth = entity.getMaxHealth();
         double intrinsicArmor = getAttributeBaseValue(entity, EntityAttributes.GENERIC_ARMOR);

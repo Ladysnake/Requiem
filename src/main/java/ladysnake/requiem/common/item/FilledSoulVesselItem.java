@@ -42,6 +42,7 @@ import ladysnake.requiem.common.sound.RequiemSoundEvents;
 import ladysnake.requiem.core.entity.SoulHolderComponent;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -56,6 +57,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 public class FilledSoulVesselItem extends Item {
     public static final String SOUL_FRAGMENT_NBT = "requiem:soul_fragment";
@@ -92,19 +94,23 @@ public class FilledSoulVesselItem extends Item {
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
         ItemStack stack = user.getStackInHand(hand);
         if (!world.isClient()) {
-            ReleasedSoulEntity releasedSoul = new ReleasedSoulEntity(RequiemEntities.RELEASED_SOUL, world, Optional.ofNullable(stack.getSubNbt(FilledSoulVesselItem.SOUL_FRAGMENT_NBT))
+            releaseSoul(user, Optional.ofNullable(stack.getSubNbt(FilledSoulVesselItem.SOUL_FRAGMENT_NBT))
                 .filter(data -> data.containsUuid("uuid"))
                 .map(data -> data.getUuid("uuid"))
                 .orElse(null));
-            releasedSoul.setPosition(user.getX(), user.getBodyY(0.8D), user.getZ());
-            releasedSoul.setVelocity(user.getRotationVector().normalize().multiply(0.15));
-            releasedSoul.setYaw(user.getYaw());
-            releasedSoul.setPitch(user.getPitch());
-            world.spawnEntity(releasedSoul);
             ItemStack result = new ItemStack(this.emptySoulVessel);
             return TypedActionResult.success(ItemUsage.exchangeStack(stack, user, result));
         }
         user.playSound(RequiemSoundEvents.ITEM_FILLED_VESSEL_USE, 3f, 0.6F + user.getRandom().nextFloat() * 0.4F);
         return TypedActionResult.success(stack);
+    }
+
+    public static void releaseSoul(LivingEntity user, @Nullable UUID ownerRecord) {
+        ReleasedSoulEntity releasedSoul = new ReleasedSoulEntity(RequiemEntities.RELEASED_SOUL, user.world, ownerRecord);
+        releasedSoul.setPosition(user.getX(), user.getBodyY(0.8D), user.getZ());
+        releasedSoul.setVelocity(user.getRotationVector().normalize().multiply(0.15));
+        releasedSoul.setYaw(user.getYaw());
+        releasedSoul.setPitch(user.getPitch());
+        user.world.spawnEntity(releasedSoul);
     }
 }

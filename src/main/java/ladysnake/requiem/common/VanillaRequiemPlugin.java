@@ -201,9 +201,9 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
         });
         HumanityCheckCallback.EVENT.register(possessedEntity -> EnchantmentHelper.getEquipmentLevel(RequiemEnchantments.HUMANITY, possessedEntity));
         ConsumableItemEvents.POST_CONSUMED.register(RequiemCriteria.USED_TOTEM::trigger);
-        SoulCaptureEvents.BEFORE_ATTEMPT.register((player, target) -> Optional.ofNullable(player.getStatusEffect(RequiemStatusEffects.ATTRITION)).map(StatusEffectInstance::getAmplifier).orElse(-1) < 3);
-        SoulCaptureEvents.BEFORE_ATTEMPT.register((player, target) -> !target.getType().isIn(RequiemCoreTags.Entity.SOULLESS));
-        SoulCaptureEvents.BEFORE_ATTEMPT.register((player, target) -> !SoulHolderComponent.isSoulless(target));
+        SoulCaptureEvents.BEFORE_ATTEMPT.register((stealer, target) -> Optional.ofNullable(stealer.getStatusEffect(RequiemStatusEffects.ATTRITION)).map(StatusEffectInstance::getAmplifier).orElse(-1) < 3);
+        SoulCaptureEvents.BEFORE_ATTEMPT.register((stealer, target) -> !target.getType().isIn(RequiemCoreTags.Entity.SOULLESS));
+        SoulCaptureEvents.BEFORE_ATTEMPT.register((stealer, target) -> !SoulHolderComponent.isSoulless(target));
     }
 
     private void registerEtherealEventHandlers() {

@@ -45,6 +45,7 @@ import ladysnake.requiem.common.enchantment.RequiemEnchantments;
 import ladysnake.requiem.common.entity.ai.FreeFromMortailCoilGoal;
 import ladysnake.requiem.common.entity.ai.MorticianLookAtTargetGoal;
 import ladysnake.requiem.common.entity.ai.MoveBackToObeliskGoal;
+import ladysnake.requiem.common.entity.ai.StealSoulGoal;
 import ladysnake.requiem.common.entity.effect.RequiemStatusEffects;
 import ladysnake.requiem.common.item.FilledSoulVesselItem;
 import ladysnake.requiem.common.item.RequiemItems;
@@ -67,6 +68,7 @@ import net.minecraft.entity.ai.goal.RevengeGoal;
 import net.minecraft.entity.ai.goal.StopAndLookAtEntityGoal;
 import net.minecraft.entity.ai.goal.StopFollowingCustomerGoal;
 import net.minecraft.entity.ai.goal.WanderAroundFarGoal;
+import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
@@ -80,6 +82,9 @@ import net.minecraft.item.EnchantedBookItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtHelper;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
@@ -99,7 +104,9 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -123,10 +130,15 @@ public class MorticianEntity extends MerchantEntity implements Angerable {
     public static final TrackedData<Byte> SPELL = DataTracker.registerData(MorticianEntity.class, TrackedDataHandlerRegistry.BYTE);
     public static final int DESPAWN_DELAY = 20 * 30;
 
+    public static DefaultAttributeContainer.Builder createMorticianAttributes() {
+        return MobEntity.createMobAttributes().add(RequiemEntityAttributes.SOUL_OFFENSE, 30);
+    }
+
     private @Nullable UUID linkedObelisk;
     private int angerTime;
     private @Nullable UUID angryAt;
     private RevengeGoal revengeGoal;
+    private final List<UUID> capturedSouls = new ArrayList<>();
 
     public MorticianEntity(EntityType<? extends MorticianEntity> entityType, World world) {
         super(entityType, world);
@@ -145,9 +157,10 @@ public class MorticianEntity extends MerchantEntity implements Angerable {
         this.goalSelector.add(1, new StopFollowingCustomerGoal(this));
         this.goalSelector.add(1, new MorticianLookAtTargetGoal(this));
         this.goalSelector.add(2, new LookAtCustomerGoal(this));
-        this.goalSelector.add(3, new FreeFromMortailCoilGoal(this));
-        this.goalSelector.add(4, new GoToWalkTargetGoal(this, 0.35D));
-        this.goalSelector.add(5, new MoveBackToObeliskGoal(this, 0.35D, false));
+        this.goalSelector.add(3, new StealSoulGoal(this));
+        this.goalSelector.add(4, new FreeFromMortailCoilGoal(this));
+        this.goalSelector.add(5, new GoToWalkTargetGoal(this, 0.35D));
+        this.goalSelector.add(6, new MoveBackToObeliskGoal(this, 0.35D, false));
         this.goalSelector.add(8, new WanderAroundFarGoal(this, 0.35D));
         this.goalSelector.add(9, new StopAndLookAtEntityGoal(this, PlayerEntity.class, 3.0F, 1.0F) {
             {
@@ -163,6 +176,10 @@ public class MorticianEntity extends MerchantEntity implements Angerable {
         this.revengeGoal = new RevengeGoal(this);
         this.targetSelector.add(1, revengeGoal);
         this.targetSelector.add(3, new FollowTargetGoal<>(this, PlayerEntity.class, 10, true, false, this::shouldAngerAt));
+    }
+
+    public void addCapturedSoul(UUID recordId) {
+        this.capturedSouls.add(recordId);
     }
 
     @Override
@@ -392,6 +409,13 @@ public class MorticianEntity extends MerchantEntity implements Angerable {
             this.setFadingTicks(nbt.getInt("fading_ticks"));
         }
 
+        if (nbt.contains("captured_souls", NbtElement.LIST_TYPE)) {
+            this.capturedSouls.clear();
+            for (NbtElement capturedSoul : nbt.getList("captured_souls", NbtElement.INT_ARRAY_TYPE)) {
+                this.capturedSouls.add(NbtHelper.toUuid(capturedSoul));
+            }
+        }
+
         this.readAngerFromNbt(this.world, nbt);
 
         this.setBreedingAge(Math.max(0, this.getBreedingAge()));
@@ -405,6 +429,12 @@ public class MorticianEntity extends MerchantEntity implements Angerable {
         }
 
         nbt.putInt("fading_ticks", this.getFadingTicks());
+
+        NbtList capturedSoulsNbt = new NbtList();
+        for (UUID capturedSoul : this.capturedSouls) {
+            capturedSoulsNbt.add(NbtHelper.fromUuid(capturedSoul));
+        }
+        nbt.put("captured_souls", capturedSoulsNbt);
 
         this.writeAngerToNbt(nbt);
     }
@@ -425,6 +455,16 @@ public class MorticianEntity extends MerchantEntity implements Angerable {
             int i = 3 + this.random.nextInt(4);
             this.world.spawnEntity(new ExperienceOrbEntity(this.world, this.getX(), this.getY() + 0.5D, this.getZ(), i));
         }
+    }
+
+    @Override
+    public void remove(RemovalReason reason) {
+        if (!this.world.isClient && this.isDead()) {
+            for (UUID capturedSoul : this.capturedSouls) {
+                FilledSoulVesselItem.releaseSoul(this, capturedSoul);
+            }
+        }
+        super.remove(reason);
     }
 
     @Override
