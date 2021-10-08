@@ -8,6 +8,7 @@ Version 2.0.0
 ### Changes in Alpha 13
 - Added the Derelict Obelisk structure, which now generate naturally in soul sand valleys
   - Morticians naturally spawn near them
+- Added a soul stealing attack that morticians can use on non-player entities
 - Added the `/requiem shell merge` command, letting you merge vagrant players with an existing shell (surprising)
 - Rift-spawned morticians now have a different look
 - Added the inflation ability for pufferfish
@@ -159,9 +160,10 @@ Updated to MC 1.17
     - Added Tachylite, Chiseled Tachylite (+slabs, stairs and pillars), Polished Tachylite (+slabs, stairs and pillars), and Scraped Tachylite
     - Added Tachylite Runestone for all soulbound status effects
 - Added obelisk rifts, a new way to travel between obelisks as a dissociated soul
+    - Obelisks with rifts can spawn ethereal morticians, mortician projections visiting through the rift
 - Added Tachylite Obelisks, a new player-made structure
 - Added Derelict Obelisks, a natural structure that spawns in soul sand valleys
-  - Derelict Obelisks often have a mortician hanging out near them
+    - Derelict Obelisks often have a mortician hanging out near them
 - Added Soul Vessel items:
     - Added the Empty Soul Vessel, a rare item that is used to obtain most of the new content
         - Added the Creative Soul Vessel, a creative-only soul vessel that succeeds every time
@@ -176,12 +178,18 @@ Updated to MC 1.17
     - Contrary to previous pandemonium versions, they are now tracked across dimensions
 - Undead mobs now have improved night vision - although not as good as dissociated souls
 - Added the `/requiem soul <remove|restore>` command to (you guessed it) remove or restore a mob's soul
+- Added the `/requiem shell <create|split|merge|identity>` to interact with player shells
+    - `create [player]` makes a new shell that copies a player's current state
+    - `split [player]` splits a physical player into a shell and a soul
+    - `merge <shell> [player]` merges a vagrant player with a shell
+    - `identity set <shell> <profile>` sets a shell's name and skin
 - Added a few mob abilities
     - Added the ability to jump around and ram other mobs when possessing a goat
     - Added the ability to play dead when possessing a hurt axolotl
+    - Added the ability to inflate and deflate when possessing a pufferfish
 
 **Changes**
-- Renamed the `/requiem soul` subcommand to `/requiem vagrant`
+- Renamed the old `/requiem soul` subcommand to `/requiem vagrant`
 - Some datapack things have changed
     - Dialogues are now in the `requiem:requiem/dialogues` directory
 - Requiem doesn't save you anymore in Hardcore - you will need to get the new stuff first to be able to leave your puny body
