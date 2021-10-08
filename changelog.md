@@ -19,6 +19,7 @@ Version 2.0.0
 - Rifts now require a powered obelisk to teleport you
 - Updated the penance spell particle texture
 - Vagrant players no longer gain attrition when their body dies
+- Buffed soul capture chances on wounded mobs and mobs that have no attack damage
 - Fixed obelisks allowing effects to be one level higher than intended
 - Fixed a visual bug with rabbits not jumping properly
 - Fixed some missing localization entries

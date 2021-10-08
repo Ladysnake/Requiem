@@ -39,7 +39,11 @@ import net.minecraft.Bootstrap;
 import net.minecraft.SharedConstants;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.AttributeContainer;
+import net.minecraft.entity.attribute.DefaultAttributeContainer;
+import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.entity.mob.PiglinBruteEntity;
+import net.minecraft.entity.mob.PillagerEntity;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -54,16 +58,24 @@ public class EmptySoulVesselItemTest {
 
     @Test
     public void computeSoulDefense() {
-        LivingEntity piglinBrute = Mockito.mock(LivingEntity.class);
-        AttributeContainer attributes = Mockito.mock(AttributeContainer.class);
-        Mockito.when(attributes.hasAttribute(EntityAttributes.GENERIC_ATTACK_DAMAGE)).thenReturn(true);
-        Mockito.when(piglinBrute.getAttributeValue(RequiemEntityAttributes.SOUL_DEFENSE)).thenReturn(0.0);
-        Mockito.when(piglinBrute.getAttributeBaseValue(EntityAttributes.GENERIC_ATTACK_DAMAGE)).thenReturn(7.0);
-        Mockito.when((double) piglinBrute.getMaxHealth()).thenReturn(50.0);
-        Mockito.when(piglinBrute.getHealth()).thenReturn(50.0F);
-        Mockito.when(piglinBrute.getAttributes()).thenReturn(attributes);
-        System.out.println(EmptySoulVesselItem.computeSoulDefense(piglinBrute));    // "integration testing"
-        Mockito.when(piglinBrute.getHealth()).thenReturn(1.0F);
-        System.out.println(EmptySoulVesselItem.computeSoulDefense(piglinBrute));    // "integration testing"
+        LivingEntity mob = Mockito.mock(LivingEntity.class);
+        setupMob(mob, PiglinBruteEntity.createPiglinBruteAttributes());
+        // "integration testing"
+        System.out.println(EmptySoulVesselItem.computeSoulDefense(mob));
+        Mockito.when(mob.getHealth()).thenReturn(1.0F);
+        System.out.println(EmptySoulVesselItem.computeSoulDefense(mob));
+        setupMob(mob, PillagerEntity.createPillagerAttributes());
+        System.out.println(EmptySoulVesselItem.computeSoulDefense(mob));
+        Mockito.when(mob.getHealth()).thenReturn(3.0F);
+        System.out.println(EmptySoulVesselItem.computeSoulDefense(mob));
+    }
+
+    private void setupMob(LivingEntity mob, DefaultAttributeContainer.Builder attributeBuilder) {
+        AttributeContainer attributes = new AttributeContainer(attributeBuilder.build());
+        Mockito.when(mob.getAttributeValue(RequiemEntityAttributes.SOUL_DEFENSE)).thenReturn(0.0);
+        Mockito.when(mob.getAttributeBaseValue(Mockito.any(EntityAttribute.class))).thenCallRealMethod();
+        Mockito.when((double) mob.getMaxHealth()).thenCallRealMethod();
+        Mockito.when(mob.getHealth()).thenReturn((float) attributes.getValue(EntityAttributes.GENERIC_MAX_HEALTH));
+        Mockito.when(mob.getAttributes()).thenReturn(attributes);
     }
 }

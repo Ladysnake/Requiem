@@ -249,7 +249,7 @@ public class EmptySoulVesselItem extends Item {
         double intrinsicArmorToughness = getAttributeBaseValue(entity, EntityAttributes.GENERIC_ARMOR_TOUGHNESS);
         double intrinsicStrength = getAttributeBaseValue(entity, EntityAttributes.GENERIC_ATTACK_DAMAGE);
         double invertedHealthRatio = 1 - entity.getHealth() / entity.getMaxHealth();
-        double woundedModifier = 1 - (invertedHealthRatio * invertedHealthRatio * invertedHealthRatio);
+        double woundedModifier = 1 - (invertedHealthRatio * invertedHealthRatio);
         double healthModifier = woundedModifier * 0.8 + 0.2;
         double strengthModifier = computeStrengthModifier(intrinsicStrength);
         double physicalModifier = strengthModifier * healthModifier;
