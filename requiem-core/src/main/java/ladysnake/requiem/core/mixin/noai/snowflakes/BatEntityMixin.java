@@ -32,55 +32,29 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.requiem.core.mixin.noai;
+package ladysnake.requiem.core.mixin.noai.snowflakes;
 
-import ladysnake.requiem.core.entity.EntityAiToggle;
-import ladysnake.requiem.core.util.ItemUtil;
+import ladysnake.requiem.core.entity.SoulHolderComponent;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.mob.HostileEntity;
-import net.minecraft.entity.mob.WitchEntity;
-import net.minecraft.item.Items;
-import net.minecraft.potion.Potion;
+import net.minecraft.entity.mob.AmbientEntity;
+import net.minecraft.entity.passive.BatEntity;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.ModifyVariable;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import org.spongepowered.asm.mixin.injection.ModifyArg;
 
-import javax.annotation.Nullable;
-
-@Mixin(WitchEntity.class)
-public abstract class WitchEntityMixin extends HostileEntity {
-    protected WitchEntityMixin(EntityType<? extends HostileEntity> entityType, World world) {
+@Mixin(BatEntity.class)
+public abstract class BatEntityMixin extends AmbientEntity {
+    protected BatEntityMixin(EntityType<? extends AmbientEntity> entityType, World world) {
         super(entityType, world);
     }
 
-    /**
-     * Prevents witches from drinking potion while NoAI'd.
-     *
-     * Also prevents witches from drinking your netherite sword
-     */
-    @Inject(method = "isDrinking", at = @At("HEAD"), cancellable = true)
-    private void isDrinking(CallbackInfoReturnable<Boolean> cir) {
-        if (EntityAiToggle.isAiDisabled(this) && this.getMainHandStack().getItem() != Items.POTION) {
-            // some mods like Biome Makeover will artificially make witches drink their own potions
-            // this brings back the vanishing item issue, so we do a 4D chess move to tell other injectors
-            // that this witch is actually already drinking something
-            if (new Exception().getStackTrace()[2].toString().contains("handler$")) {
-                cir.setReturnValue(true);
-                return;
-            }
-            cir.setReturnValue(false);
+    @ModifyArg(method = "mobTick", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/passive/BatEntity;setVelocity(Lnet/minecraft/util/math/Vec3d;)V"))
+    private Vec3d preventAutonomousMovement(Vec3d intendedVelocity) {
+        if (SoulHolderComponent.isSoulless(this)) {
+            return this.getVelocity();
         }
-    }
-
-    @Nullable
-    @ModifyVariable(method = "tickMovement", ordinal = 0, at = @At("STORE"))
-    private Potion preventPotionOverride(final Potion selectedPotion) {
-        if (EntityAiToggle.isAiDisabled(this) && !ItemUtil.isWaterBottle(this.getMainHandStack())) {
-            return null;
-        }
-        return selectedPotion;
+        return intendedVelocity;
     }
 }
