@@ -43,7 +43,7 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.registry.Registry;
 
 public final class PandemoniumItems {
-    public static final DemonSoulVesselItem BALEFUL_SOUL_VESSEL = new DemonSoulVesselItem(PandemoniumRemnantTypes.WANDERING_SPIRIT, Formatting.GRAY, new Item.Settings().group(ItemGroup.MISC).maxCount(1), "requiem:opus_daemonium.banishment");
+    public static final DemonSoulVesselItem BALEFUL_SOUL_VESSEL = new DemonSoulVesselItem(PandemoniumRemnantTypes.WANDERING_SPIRIT, Formatting.GRAY, new Item.Settings().group(ItemGroup.MISC).maxCount(1), "requiem:remnant_vessel.banishment");
 
     public static void init() {
         registerItem(PandemoniumItems.BALEFUL_SOUL_VESSEL, "baleful_soul_vessel");
