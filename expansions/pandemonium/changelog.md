@@ -3,7 +3,6 @@ Version 2.0.0
 ------------------------------------------------------
 **Additions**
 - Added the Wandering Spirit alternative remnant type previously available in Requiem
-- Added the Mortician (currently not functional)
 
 **Changes**
 - The "possess all mobs" config option is now off by default

@@ -106,7 +106,7 @@ public final class RequiemEntities {
     public static final EntityType<MorticianEntity> MORTICIAN = FabricEntityTypeBuilder.createLiving()
         .spawnGroup(SpawnGroup.CREATURE)
         .entityFactory(MorticianEntity::new)
-        .defaultAttributes(MorticianEntity::createMobAttributes)
+        .defaultAttributes(MorticianEntity::createMorticianAttributes)
         .dimensions(EntityDimensions.fixed(0.6f, 1.95f))
         .build();
 

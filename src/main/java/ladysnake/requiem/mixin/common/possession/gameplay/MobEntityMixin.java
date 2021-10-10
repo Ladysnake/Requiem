@@ -36,6 +36,7 @@ package ladysnake.requiem.mixin.common.possession.gameplay;
 
 import ladysnake.requiem.api.v1.event.minecraft.JumpingMountEvents;
 import ladysnake.requiem.api.v1.event.minecraft.MobTravelRidingCallback;
+import ladysnake.requiem.api.v1.event.requiem.PossessionEvents;
 import ladysnake.requiem.api.v1.possession.Possessable;
 import ladysnake.requiem.common.possession.ExternalJumpingMount;
 import ladysnake.requiem.core.util.DetectionHelper;
@@ -45,7 +46,6 @@ import net.minecraft.entity.ItemSteerable;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.Vec3d;
@@ -138,22 +138,15 @@ public abstract class MobEntityMixin extends LivingEntityMixin implements Posses
     @Override
     public void requiem$pushed(Entity pushed, CallbackInfo ci) {
         MobEntity self = (MobEntity) (Object) this;
-        if (DetectionHelper.canBeDetected(self) && DetectionHelper.isValidEnemy(pushed)) {
-            DetectionHelper.inciteMobAndAllies(self, (HostileEntity) pushed);
-        }
+        DetectionHelper.attemptDetection(self, pushed, PossessionEvents.DetectionAttempt.DetectionReason.BUMP);
     }
 
     @Override
     public void requiem$damaged(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
         if (source.getAttacker() instanceof MobEntity attacker) {
             MobEntity self = (MobEntity) (Object) this;
-            if (DetectionHelper.canBeDetected(self) && attacker instanceof HostileEntity hostile) {
-                DetectionHelper.inciteMobAndAllies(self, hostile);
-            } else if (self instanceof HostileEntity hostile) {
-                if (DetectionHelper.canBeDetected(attacker)) {
-                    DetectionHelper.inciteMobAndAllies(attacker, hostile);
-                }
-            }
+            DetectionHelper.attemptDetection(self, attacker, PossessionEvents.DetectionAttempt.DetectionReason.ATTACKING);
+            DetectionHelper.attemptDetection(attacker, self, PossessionEvents.DetectionAttempt.DetectionReason.ATTACKED);
         }
     }
 }

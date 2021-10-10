@@ -1,7 +1,7 @@
 {
   "required": true,
   "package": "ladysnake.requiem.core.mixin",
-  "compatibilityLevel": "JAVA_8",
+  "compatibilityLevel": "JAVA_16",
   "minVersion": "0.7.11-SNAPSHOT",
   "mixins": [
     "access.EntityAccessor",
@@ -13,6 +13,7 @@
     "noai.WitchEntityMixin",
     "noai.WitherEntityMixin",
     "possession.EntityAttributeInstanceMixin",
+    "possession.FollowTargetGoalAccessor",
     "possession.ServerWorldMixin",
     "possession.WorldMixin",
     "possession.command.EntitySelectorOptionsMixin",

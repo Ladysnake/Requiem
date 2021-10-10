@@ -41,6 +41,7 @@ import ladysnake.requiem.api.v1.internal.ProtoPossessable;
 import ladysnake.requiem.api.v1.remnant.DeathSuspender;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.client.GameRendererAccessor;
+import ladysnake.requiem.common.tag.RequiemBlockTags;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.hud.InGameOverlayRenderer;
 import net.minecraft.client.render.Camera;
@@ -48,6 +49,7 @@ import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.hit.BlockHitResult;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -60,9 +62,13 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(GameRenderer.class)
 public abstract class GameRendererMixin implements GameRendererAccessor {
 
-    @Shadow @Final private Camera camera;
+    @Shadow
+    @Final
+    private Camera camera;
 
-    @Shadow @Final private MinecraftClient client;
+    @Shadow
+    @Final
+    private MinecraftClient client;
 
     // synthetic method corresponding to the ProjectileUtil#raycast lambda predicate in updateTargetedEntity
     @SuppressWarnings("ShadowTarget")
@@ -83,16 +89,16 @@ public abstract class GameRendererMixin implements GameRendererAccessor {
 
     @SuppressWarnings("UnresolvedMixinReference") // Synthetic method
     @Inject(
-            // Inject into the synthetic method corresponding to the lambda in updateTargetedEntity
-            method = "method_18144",
-            at = @At(
-                    value = "RETURN"
-            ),
-            cancellable = true,
-            remap = false
+        // Inject into the synthetic method corresponding to the lambda in updateTargetedEntity
+        method = "method_18144",
+        at = @At(
+            value = "RETURN"
+        ),
+        cancellable = true,
+        remap = false
     )
     private static void unselectPossessedEntity(Entity tested, CallbackInfoReturnable<Boolean> info) {
-        if (((ProtoPossessable)tested).getPossessor() == MinecraftClient.getInstance().getCameraEntity()) {
+        if (((ProtoPossessable) tested).getPossessor() == MinecraftClient.getInstance().getCameraEntity()) {
             info.setReturnValue(false);
         }
     }
@@ -105,7 +111,15 @@ public abstract class GameRendererMixin implements GameRendererAccessor {
     @Inject(method = "shouldRenderBlockOutline", at = @At("HEAD"), cancellable = true)
     private void cancelBlockOutlineRender(CallbackInfoReturnable<Boolean> cir) {
         Entity camera = this.client.getCameraEntity();
-        if (camera instanceof PlayerEntity && (DeathSuspender.get((PlayerEntity) camera).isLifeTransient() || RemnantComponent.get((PlayerEntity) camera).isIncorporeal())) {
+        assert this.client.world != null;
+        if (camera instanceof PlayerEntity && (
+            DeathSuspender.get((PlayerEntity) camera).isLifeTransient() || (
+                RemnantComponent.get((PlayerEntity) camera).isIncorporeal() && !(
+                    this.client.crosshairTarget instanceof BlockHitResult bhr &&
+                        this.client.world.getBlockState(bhr.getBlockPos()).isIn(RequiemBlockTags.SOUL_INTERACTABLE)
+                )
+            )
+        )) {
             cir.setReturnValue(false);
         }
     }

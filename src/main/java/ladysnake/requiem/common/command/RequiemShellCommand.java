@@ -76,6 +76,15 @@ public final class RequiemShellCommand {
                     .executes(context -> runMany(getPlayers(context, "players"), RequiemShellCommand::split))
                 )
             )
+            .then(literal("merge").then(argument("shell", entity())
+                .executes(context -> {
+                    Entity shell = getEntity(context, "shell");
+                    return runOne(context.getSource().getPlayer(), player -> merge(player, shell));
+                }).then(argument("player", player()).executes(context -> {
+                    Entity shell = getEntity(context, "shell");
+                    return runOne(getPlayer(context, "player"), player -> merge(player, shell));
+                })))
+            )
             .then(literal("identity").then(literal("set")
                     .then(argument("shells", entities()).then(argument("profile", gameProfile())
                         .executes(context -> {
@@ -87,6 +96,13 @@ public final class RequiemShellCommand {
                     ))
                 )
             );
+    }
+
+    private static void merge(ServerPlayerEntity player, Entity entity) {
+        if (!(entity instanceof PlayerShellEntity shell)) {
+            throw new CommandException(new TranslatableText("pandemonium.commands.shell.fail.not_shell"));
+        }
+        PlayerSplitter.merge(shell, player);
     }
 
     private static void setIdentity(Entity shell, GameProfile profile) {

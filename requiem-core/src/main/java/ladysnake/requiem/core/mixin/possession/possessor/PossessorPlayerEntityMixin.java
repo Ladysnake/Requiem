@@ -97,6 +97,14 @@ public abstract class PossessorPlayerEntityMixin extends PossessorLivingEntityMi
         }
     }
 
+    @Inject(method = "jump", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;jump()V"))
+    private void makeHostJump(CallbackInfo ci) {
+        @SuppressWarnings("ConstantConditions") LivingEntity possessed = PossessionComponent.getHost((Entity) (Object) this);
+        if (possessed != null) {
+            ((LivingEntityAccessor) possessed).requiem$invokeJump();
+        }
+    }
+
     @Inject(method = "updateSwimming", at = @At("RETURN"))
     private void cancelSwimming(CallbackInfo ci) {
         MovementAlterer.KEY.get(this).updateSwimming();

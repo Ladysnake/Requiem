@@ -135,12 +135,12 @@ public abstract class LivingEntityMixin extends Entity implements Possessable {
         // NO-OP
     }
 
-    @Inject(method = "damage", at = @At("HEAD"))
+    @Inject(method = "damage", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/damage/DamageSource;getAttacker()Lnet/minecraft/entity/Entity;"))
     public void requiem$damaged(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
         //Overridden
     }
 
-    @Inject(method = "pushAway", at = @At("HEAD"))
+    @Inject(method = "pushAway", at = @At("RETURN"))
     public void requiem$pushed(Entity entity, CallbackInfo ci) {
         //Overridden
     }

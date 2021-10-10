@@ -36,6 +36,7 @@ package ladysnake.requiem.client;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import ladysnake.requiem.Requiem;
+import ladysnake.requiem.api.v1.block.VagrantTargetableBlock;
 import ladysnake.requiem.api.v1.entity.ability.AbilityType;
 import ladysnake.requiem.api.v1.event.minecraft.client.CrosshairRenderCallback;
 import ladysnake.requiem.api.v1.event.minecraft.client.UpdateTargetedEntityCallback;
@@ -46,6 +47,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.projectile.ProjectileUtil;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.Box;
@@ -117,6 +119,15 @@ public final class RequiemTargetHandler implements UpdateTargetedEntityCallback,
             AbilityType renderedType = AbilityType.ATTACK;
 
             float f = abilityController.getCooldownProgress(renderedType);
+
+            if (abilityController.getTargetedEntity(renderedType) == null
+                && this.client.crosshairTarget instanceof BlockHitResult bhr) {
+                VagrantTargetableBlock targetable = VagrantTargetableBlock.LOOKUP.find(this.client.world, bhr.getBlockPos(), null);
+                if (targetable != null) {
+                    drawCrosshairIcon(matrices, scaledWidth, scaledHeight, targetable.getTargetedIcon(), 1);
+                    return;
+                }
+            }
 
             if (f < 1 || abilityController.getTargetedEntity(renderedType) != null) {
                 drawCrosshairIcon(matrices, scaledWidth, scaledHeight, abilityController.getIconTexture(renderedType), f);

@@ -226,6 +226,9 @@ dependencies {
         include project(":requiem-core")
     }
 
+    testImplementation 'junit:junit:4.13'
+    testImplementation 'org.mockito:mockito-core:3.+'
+
     // Required dependencies
     modApi "io.github.ladysnake:satin:${satin_version}"
     include "io.github.ladysnake:satin:${satin_version}"
@@ -290,7 +293,12 @@ dependencies {
     modRuntime("com.github.apace100:calio:${calio_version}") { transitive = false }
     modCompileOnly("com.github.apace100:origins-fabric:${origins_version}") { transitive = false }
     modRuntime("com.github.apace100:origins-fabric:${origins_version}") { transitive = false }
-    modRuntime "com.github.Globox1997:BackSlot:${backslot_version}"
+    modRuntime "curse.maven:BackSlot-402739:${backslot_version}"
+    // required by backslot
+    modRuntime ("de.siphalor:amecsapi-1.17:${project.amecs_version}") {
+        exclude group: "net.fabricmc.fabric-api"
+        exclude module: "nmuk-1.17"
+    }
     modCompileOnly("io.github.HyperPigeon:Eldritch-Mobs:${eldritch_mobs_version}") { transitive = false }
 //    modRuntime "io.github.cottonmc:LibGui:${libgui_version}"
     modCompileOnly("curse.maven:haema-391257:${haema_version}")

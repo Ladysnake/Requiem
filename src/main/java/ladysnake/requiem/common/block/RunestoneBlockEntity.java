@@ -109,11 +109,15 @@ public class RunestoneBlockEntity extends BlockEntity {
             int obeliskWidth = be.obeliskCoreWidth;
             Vec3d obeliskCenter = getObeliskCenter(pos, obeliskWidth);
 
-            if (!be.levels.isEmpty() && be.findPowerSource((ServerWorld) world, obeliskCenter, obeliskWidth * 5)) {
+            if (!be.levels.isEmpty() && be.findPowerSource((ServerWorld) world, obeliskCenter, getRange(obeliskWidth))) {
                 be.applyPlayerEffects(world, pos);
                 world.playSound(null, pos, RequiemSoundEvents.BLOCK_OBELISK_AMBIENT, SoundCategory.BLOCKS, 1.0F, 1.4F);
             }
         }
+    }
+
+    private static int getRange(int obeliskWidth) {
+        return obeliskWidth * 5;
     }
 
     private static Vec3d getObeliskCenter(BlockPos origin, int coreWidth) {
@@ -151,16 +155,21 @@ public class RunestoneBlockEntity extends BlockEntity {
         }
     }
 
-    private boolean findPowerSource(ServerWorld world, Vec3d center, double range) {
+    public static boolean checkForPower(ServerWorld world, BlockPos origin) {
+        return matchObelisk(world, origin).result().map(match -> findPowerSource(
+            world,
+            getObeliskCenter(match.origin(), match.coreWidth()),
+            getRange(match.coreWidth()))
+        ).orElse(Boolean.FALSE);
+    }
+
+    private static boolean findPowerSource(ServerWorld world, Vec3d center, double range) {
         BlockPos.Mutable checked = new BlockPos.Mutable();
         int successes = 0;
 
         for (int attempt = 0; attempt < RunestoneBlockEntity.POWER_ATTEMPTS; attempt++) {
-            // https://stackoverflow.com/questions/5837572/generate-a-random-point-within-a-circle-uniformly/50746409#50746409
-            double r = range * Math.sqrt(world.random.nextDouble());
-            double theta = world.random.nextDouble() * 2 * Math.PI;
-            double x = center.x + r * Math.cos(theta);
-            double z = center.z + r * Math.sin(theta);
+            double x = center.x + world.random.nextDouble() * range * 2 - range;
+            double z = center.z + world.random.nextDouble() * range * 2 - range;
             checked.set(Math.round(x), center.y, Math.round(z));
             BlockState state = world.getBlockState(checked);
 
@@ -170,7 +179,7 @@ public class RunestoneBlockEntity extends BlockEntity {
             }
 
             if (state.isIn(BlockTags.SOUL_SPEED_BLOCKS)) {
-                this.spawnSoul(world, center, Vec3d.ofCenter(checked, 0.9));
+                spawnSoul(world, center, Vec3d.ofCenter(checked, 0.9));
                 successes++;
             }
         }
@@ -179,7 +188,7 @@ public class RunestoneBlockEntity extends BlockEntity {
         return successes > POWER_ATTEMPTS / 2;
     }
 
-    private void spawnSoul(ServerWorld world, Vec3d center, Vec3d particleSrc) {
+    private static void spawnSoul(ServerWorld world, Vec3d center, Vec3d particleSrc) {
         Vec3d toObelisk = center.subtract(particleSrc).normalize();
         world.spawnParticles(RequiemParticleTypes.OBELISK_SOUL, particleSrc.x, particleSrc.y, particleSrc.z, 0, toObelisk.x, 1, toObelisk.z, 0.1);
     }

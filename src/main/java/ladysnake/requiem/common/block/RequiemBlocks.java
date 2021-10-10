@@ -37,6 +37,7 @@ package ladysnake.requiem.common.block;
 import com.google.common.base.Suppliers;
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.block.ObeliskRune;
+import ladysnake.requiem.api.v1.block.VagrantTargetableBlock;
 import ladysnake.requiem.common.entity.effect.RequiemStatusEffects;
 import ladysnake.requiem.common.item.RequiemItems;
 import net.minecraft.block.AbstractBlock;
@@ -129,6 +130,10 @@ public final class RequiemBlocks {
 
         if (block instanceof ObeliskRune rune) {
             ObeliskRune.LOOKUP.registerForBlocks((world, pos, state, blockEntity, context) -> rune, block);
+        }
+
+        if (block instanceof VagrantTargetableBlock targetable) {
+            VagrantTargetableBlock.LOOKUP.registerForBlocks((world, pos, state, blockEntity, context) -> targetable, block);
         }
     }
 

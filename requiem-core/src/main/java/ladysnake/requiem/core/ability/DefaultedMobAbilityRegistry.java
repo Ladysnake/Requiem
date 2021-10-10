@@ -82,4 +82,15 @@ public class DefaultedMobAbilityRegistry implements MobAbilityRegistry {
         this.configs.put(entityType, config);
     }
 
+    @Override
+    public <E extends MobEntity> MobAbilityConfig.Builder<E> beginRegistration(EntityType<E> entityType) {
+        return new ImmutableMobAbilityConfig.Builder<>() {
+            @Override
+            public MobAbilityConfig<E> build() {
+                MobAbilityConfig<E> config = super.build();
+                register(entityType, config);
+                return config;
+            }
+        };
+    }
 }

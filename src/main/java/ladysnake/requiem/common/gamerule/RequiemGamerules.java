@@ -49,6 +49,8 @@ public class RequiemGamerules {
         register("startingRemnantType", GameRuleFactory.createEnumRule(StartingRemnantType.CHOOSE, (server, rule) -> RequiemSyncedGamerules.KEY.sync(server.getScoreboard())), GameRules.Category.PLAYER);
     public static final GameRules.Key<EnumRule<PossessionKeepInventory>> POSSESSION_KEEP_INVENTORY =
         register("possessionKeepInventory", GameRuleFactory.createEnumRule(PossessionKeepInventory.NEVER), GameRules.Category.PLAYER);
+    public static final GameRules.Key<EnumRule<PossessionDetection>> POSSESSION_DETECTION =
+        register("possessionDetection", GameRuleFactory.createEnumRule(PossessionDetection.NORMAL), GameRules.Category.MOBS);
 
     public static void init() {
         // static init

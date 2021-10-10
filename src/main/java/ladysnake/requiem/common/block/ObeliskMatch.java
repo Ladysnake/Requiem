@@ -81,7 +81,7 @@ public final class ObeliskMatch {
     public Object2IntMap<ObeliskRune> collectRunes() {
         Object2IntMap<ObeliskRune> levels = new Object2IntOpenHashMap<>();
         for (RunestoneBlockEntity.RuneSearchResult result : this.layers) {
-            if (result.rune() != null && levels.getInt(result.rune()) <= result.rune().getMaxLevel()) {
+            if (result.rune() != null && levels.getInt(result.rune()) < result.rune().getMaxLevel()) {
                 levels.mergeInt(result.rune(), 1, Integer::sum);
             }
         }

@@ -41,79 +41,36 @@ import ladysnake.requiem.common.entity.effect.PenanceStatusEffect;
 import ladysnake.requiem.common.entity.effect.RequiemStatusEffects;
 import ladysnake.requiem.common.sound.RequiemSoundEvents;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.network.packet.s2c.play.EntityVelocityUpdateS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.math.MathHelper;
 
-public class FreeFromMortailCoilGoal extends Goal {
+public class FreeFromMortailCoilGoal extends MorticianSpellGoal {
     public static final int PENANCE_TIME = 10 * 20 * 60;
-    private final MorticianEntity mortician;
-    protected int spellCooldown;
-    protected int startTime;
 
     public FreeFromMortailCoilGoal(MorticianEntity mortician) {
-        this.mortician = mortician;
+        super(mortician);
     }
 
     @Override
-    public boolean canStart() {
-        LivingEntity target = this.mortician.getTarget();
-        if (target != null && target.isAlive()) {
-            if (this.mortician.isSpellcasting()) {
-                return false;
-            } else {
-                return this.mortician.age >= this.startTime;
-            }
-        } else {
-            return false;
-        }
-    }
-
-    @Override
-    public boolean shouldContinue() {
-        LivingEntity target = this.mortician.getTarget();
-        return target != null && target.isAlive() && this.spellCooldown > 0;
-    }
-
-    @Override
-    public void start() {
-        this.spellCooldown = this.getInitialCooldown();
-        this.startTime = this.mortician.age + this.startTimeDelay();
-        this.mortician.playSound(this.getSoundPrepare(), 1.0F, 1.0F);
-        this.mortician.setSpellcasting(true);
-    }
-
-    private SoundEvent getSoundPrepare() {
+    protected SoundEvent getSoundPrepare() {
         return RequiemSoundEvents.ENTITY_MORTICIAN_PREPARE_ATTACK;
     }
 
-    private int startTimeDelay() {
+    @Override
+    protected int getCooldown() {
         return 100;
     }
 
-    private int getInitialCooldown() {
+    @Override
+    protected int getWarmupTime() {
         return 20;
     }
 
     @Override
-    public void tick() {
-        --this.spellCooldown;
-        if (this.spellCooldown == 0) {
-            this.castSpell();
-            this.mortician.playSound(this.mortician.getCastSpellSound(), 1.0F, 1.0F);
-            this.mortician.stopAnger();
-        }
-    }
-
-    @Override
-    public void stop() {
-        this.mortician.setSpellcasting(false);
-    }
-
-    private void castSpell() {
+    protected void castSpell() {
         LivingEntity target = this.mortician.getTarget();
         if (target instanceof ServerPlayerEntity player) {
             int penanceAmplifier = getRequiredPenance(player);

@@ -1,0 +1,78 @@
+{
+  "name": "requiem:derelict_obelisk",
+  "fallback": "minecraft:empty",
+  "elements": [
+    {
+      "weight": 1,
+      "element": {
+        "location": "requiem:derelict_obelisk_1",
+        "processors": "requiem:derelict_obelisk",
+        "projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+    },
+    {
+      "weight": 1,
+      "element": {
+        "location": "requiem:derelict_obelisk_2",
+        "processors": "requiem:derelict_obelisk",
+        "projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+    },
+    {
+      "weight": 1,
+      "element": {
+        "location": "requiem:derelict_obelisk_3",
+        "processors": "requiem:derelict_obelisk",
+        "projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+    },
+    {
+      "weight": 1,
+      "element": {
+        "location": "requiem:derelict_obelisk_4",
+        "processors": "requiem:derelict_obelisk",
+        "projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+    },
+    {
+      "weight": 1,
+      "element": {
+        "location": "requiem:derelict_obelisk_5",
+        "processors": "requiem:derelict_obelisk",
+        "projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+    },
+    {
+      "weight": 1,
+      "element": {
+        "location": "requiem:derelict_obelisk_6",
+        "processors": "requiem:derelict_obelisk",
+        "projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+    },
+    {
+      "weight": 1,
+      "element": {
+        "location": "requiem:derelict_obelisk_7",
+        "processors": "requiem:derelict_obelisk",
+        "projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+    },
+    {
+      "weight": 1,
+      "element": {
+        "location": "requiem:derelict_obelisk_8",
+        "processors": "requiem:derelict_obelisk",
+        "projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+    }
+  ]
+}

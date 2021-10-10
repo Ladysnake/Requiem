@@ -44,7 +44,6 @@ import com.demonwav.mcdev.annotations.Env;
 import com.google.common.collect.ImmutableList;
 import com.mojang.serialization.Dynamic;
 import io.github.ladysnake.impersonate.Impersonator;
-import ladysnake.requiem.api.v1.remnant.AttritionFocus;
 import ladysnake.requiem.common.entity.ai.ShellPathfindingProcess;
 import ladysnake.requiem.common.entity.ai.brain.PandemoniumMemoryModules;
 import ladysnake.requiem.common.entity.ai.brain.PandemoniumSensorTypes;
@@ -58,7 +57,6 @@ import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.sensor.Sensor;
 import net.minecraft.entity.ai.brain.sensor.SensorType;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
-import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -78,7 +76,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 import static org.apiguardian.api.API.Status.MAINTAINED;
 
@@ -270,16 +267,6 @@ public class PlayerShellEntity extends FakeServerPlayerEntity {
         } else {
             this.equipStack(targetedSlot, playerItemStack);
             player.setStackInHand(hand, equippedStack);
-        }
-    }
-
-    @Override
-    public void onDeath(DamageSource source) {
-        super.onDeath(source);
-        UUID playerUuid = this.getOwnerUuid();
-
-        if (playerUuid != null) {
-            AttritionFocus.KEY.get(this.world.getScoreboard()).addAttrition(playerUuid, 1);
         }
     }
 
