@@ -44,6 +44,7 @@
     "possession.gameplay.CatEntityMixin",
     "possession.gameplay.CatLikeEntityMixin",
     "possession.gameplay.CraftingScreenHandlerMixin",
+    "possession.gameplay.CreeperEntityMixin",
     "possession.gameplay.CrossbowItemMixin",
     "possession.gameplay.EndermanEntityMixin",
     "possession.gameplay.FoxEntityMixin",
