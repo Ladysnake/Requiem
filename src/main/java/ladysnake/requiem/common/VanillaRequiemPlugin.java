@@ -74,6 +74,7 @@ import ladysnake.requiem.common.advancement.criterion.RequiemCriteria;
 import ladysnake.requiem.common.dialogue.PlayerDialogueTracker;
 import ladysnake.requiem.common.enchantment.RequiemEnchantments;
 import ladysnake.requiem.common.entity.PlayerShellEntity;
+import ladysnake.requiem.common.entity.RequiemEntities;
 import ladysnake.requiem.common.entity.SkeletonBoneComponent;
 import ladysnake.requiem.common.entity.ability.*;
 import ladysnake.requiem.common.entity.effect.ReclamationStatusEffect;
@@ -436,7 +437,7 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
             Requiem.id("textures/gui/enderjacking_icon.png")
         );
         registry.registerPossessionInteraction(PlayerEntity.class,
-            (target, possessor) -> target instanceof AutomatoneFakePlayer shell && PlayerShellEvents.PRE_MERGE.invoker().canMerge(possessor, target, shell.getDisplayProfile()),
+            (target, possessor) -> target.getType() == RequiemEntities.PLAYER_SHELL && target instanceof AutomatoneFakePlayer shell && PlayerShellEvents.PRE_MERGE.invoker().canMerge(possessor, target, shell.getDisplayProfile()),
             (target, possessor) -> {
                 if (target instanceof PlayerShellEntity && !PlayerSplitter.merge((PlayerShellEntity) target, (ServerPlayerEntity) possessor)) {
                     possessor.sendMessage(new TranslatableText("requiem:possess.incompatible_body"), true);

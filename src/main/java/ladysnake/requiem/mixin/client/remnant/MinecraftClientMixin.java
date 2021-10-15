@@ -37,6 +37,7 @@ package ladysnake.requiem.mixin.client.remnant;
 import ladysnake.requiem.api.v1.entity.MovementAlterer;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
+import ladysnake.requiem.common.entity.RequiemEntities;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.DeathScreen;
 import net.minecraft.client.gui.screen.Screen;
@@ -72,7 +73,12 @@ public abstract class MinecraftClientMixin {
 
     @Inject(method = "hasOutline", at = @At("RETURN"), cancellable = true)
     private void addOutline(Entity entity, CallbackInfoReturnable<Boolean> cir) {
-        if (!cir.getReturnValueZ() && entity instanceof MobEntity && MovementAlterer.get(this.player).isNoClipping() && this.player != null && PossessionComponent.get(this.player).startPossessing((MobEntity) entity, true) && this.player.squaredDistanceTo(entity) < 48*48) {
+        if (!cir.getReturnValueZ()
+            && MovementAlterer.get(this.player).isNoClipping()
+            && this.player != null
+            && (entity.getType() == RequiemEntities.PLAYER_SHELL || entity instanceof MobEntity mob && PossessionComponent.get(this.player).startPossessing(mob, true))
+            && this.player.squaredDistanceTo(entity) < 48*48
+        ) {
             cir.setReturnValue(true);
         }
     }
