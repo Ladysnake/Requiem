@@ -113,7 +113,8 @@ public class DerelictObeliskFeature extends StructureFeature<DefaultFeatureConfi
 
             if (validCorners >= 3) {
                 validCorners = 0;
-                pos.move(Direction.UP, box.getBlockCountY());
+                pos.move(Direction.UP, box.getBlockCountY() - 1);
+
                 for(VerticalBlockSample cornerColumn : cornerColumns) {
                     BlockState blockState = cornerColumn.getState(pos);
                     if (blockState.isAir()) {
