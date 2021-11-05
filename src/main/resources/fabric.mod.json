@@ -40,7 +40,8 @@
   ],
 
   "depends": {
-    "minecraft": ">=1.16",
+    "minecraft": "~1.16",
+    "fabricloader": ">=0.12.4",
     "fabric-api-base": "*",
     "requiemapi": "${version}",
     "satin": ">=1.5.0- <1.6.0-",
