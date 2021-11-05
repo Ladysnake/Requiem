@@ -14,16 +14,25 @@ Version 2.0.0
 - Added the inflation ability for pufferfish
 - Mobs that witness other mobs attacking you during possession will no longer join the party
 - Added the `requiem:possessionDetection` gamerule to configure how sus you are during possession
+- Added a spawn egg for the mortician
 - Made it more obvious that you can interact with rift runestones while incorporeal
 - The area in which the obelisk searches for soul sand and soil is now square and not round
 - Rifts now require a powered obelisk to teleport you
 - Updated the penance spell particle texture
 - Vagrant players no longer gain attrition when their body dies
+- Remnant vessels now give back an empty container upon use
 - Buffed soul capture chances on wounded mobs and mobs that have no attack damage
+- Renamed the demon -> mortal conversion vessel to "pure soul vessel" (will keep being creative only though)
 - Fixed obelisks allowing effects to be one level higher than intended
 - Fixed a visual bug with rabbits not jumping properly
 - Fixed some missing localization entries
 - Fixed a desync with the "remnant -> vanilla player" mortician trade
+- Fixed bats, squids, turtles, and most pets behaving unexpectedly while soulless
+- Fixed creepers spreading soul effects when blowing up
+- Fixed the possession icon not appearing for player shells
+- Fixed `/requiem shell split` previously requiring emancipation to work
+- Reverted Origins' power key triggering dissociation
+- 
 
 ### Changes in Alpha 12
 - **Mobs can now become hostile if you come too close !** (big thanks to SciRave for giving us this feature)
