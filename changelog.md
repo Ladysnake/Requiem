@@ -1,9 +1,13 @@
 ------------------------------------------------------
 Version 2.0.0
 ------------------------------------------------------
-**Warning: this update is still in early alpha. Most new features are still unavailable in survival mode, some are still completely missing, and things may randomly break.**
+**Warning: future betas may still break compatibility with worlds started with this version. Don't start using those versions on any world you care about.**
 
-**Really important warning: future alphas are extremely likely to break compatibility with worlds started with this alpha. Don't start using those versions on any world you care about.**
+### Changes in Beta 1
+- Rifts now give attrition upon teleporting you
+- Rifts now refuse to work if you have maxxed out attrition
+- Naturally spawned morticians now drop empty soul vessels on death
+- Fixed an incompatibility with BackSlot
 
 ### Changes in Alpha 13
 - Added the Derelict Obelisk structure, which now generate naturally in soul sand valleys
@@ -32,7 +36,6 @@ Version 2.0.0
 - Fixed the possession icon not appearing for player shells
 - Fixed `/requiem shell split` previously requiring emancipation to work
 - Reverted Origins' power key triggering dissociation
-- 
 
 ### Changes in Alpha 12
 - **Mobs can now become hostile if you come too close !** (big thanks to SciRave for giving us this feature)
