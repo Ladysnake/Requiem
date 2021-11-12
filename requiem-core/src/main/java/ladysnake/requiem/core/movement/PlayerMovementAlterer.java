@@ -79,7 +79,7 @@ import java.util.function.ToDoubleFunction;
 import static ladysnake.requiem.api.v1.entity.MovementConfig.MovementMode.*;
 
 public abstract class PlayerMovementAlterer implements MovementAlterer {
-    public static final AbilitySource MOVEMENT_ALTERER_ABILITIES = Pal.getAbilitySource(RequiemCore.id("movement_alterer"));
+    public static final AbilitySource MOVEMENT_ALTERER_ABILITIES = Pal.getAbilitySource(RequiemCore.id("movement_alterer"), AbilitySource.FREE);
     public static final byte DEFAULT_SYNC = 0;
     public static final byte SYNC_NO_CLIP = 1;
     public static final byte SYNC_PHASING_PARTICLES = 2;

@@ -57,7 +57,7 @@ import org.jetbrains.annotations.Nullable;
 
 public abstract class MutableRemnantState implements RemnantState {
 
-    public static final AbilitySource SOUL_STATE = Pal.getAbilitySource(RequiemCore.id("soul_state"));
+    public static final AbilitySource SOUL_STATE = Pal.getAbilitySource(RequiemCore.id("soul_state"), AbilitySource.FREE);
     protected final PlayerEntity player;
     private boolean ethereal;
 
