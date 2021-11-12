@@ -124,7 +124,7 @@ public final class RequiemTargetHandler implements UpdateTargetedEntityCallback,
                 && this.client.crosshairTarget instanceof BlockHitResult bhr) {
                 VagrantTargetableBlock targetable = VagrantTargetableBlock.LOOKUP.find(this.client.world, bhr.getBlockPos(), null);
                 if (targetable != null) {
-                    drawCrosshairIcon(matrices, scaledWidth, scaledHeight, targetable.getTargetedIcon(), 1);
+                    drawCrosshairIcon(matrices, scaledWidth, scaledHeight, targetable.getTargetedIcon(), targetable.canBeUsedByVagrant(client.player) ? 1 : 0);
                     return;
                 }
             }

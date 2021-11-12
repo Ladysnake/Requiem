@@ -35,7 +35,9 @@
 package ladysnake.requiem.common.screen;
 
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
+import ladysnake.requiem.common.block.RequiemBlocks;
 import ladysnake.requiem.common.block.RiftRunestoneBlock;
+import ladysnake.requiem.common.entity.effect.AttritionStatusEffect;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerType;
@@ -75,7 +77,7 @@ public class RiftScreenHandler extends ScreenHandler {
 
     @Override
     public boolean canUse(PlayerEntity player) {
-        return RemnantComponent.isIncorporeal(player) && canBeUsedBy.test(player);
+        return RemnantComponent.isIncorporeal(player) && canBeUsedBy.test(player) && RequiemBlocks.RIFT_RUNE.canBeUsedByVagrant(player);
     }
 
     public void useRift(ServerPlayerEntity player, BlockPos target) {
@@ -85,8 +87,19 @@ public class RiftScreenHandler extends ScreenHandler {
                 float yaw = (float) MathHelper.wrapDegrees(MathHelper.atan2(towardsObelisk.z, towardsObelisk.x) * 180.0F / (float)Math.PI - 90.0);
                 player.teleport(respawnPosition.x, respawnPosition.y, respawnPosition.z, true);
                 player.setYaw(yaw);
+                AttritionStatusEffect.apply(player, 1, getAttritionLength(target));
                 player.closeHandledScreen();
             });
         }
+    }
+
+    private int getAttritionLength(BlockPos target) {
+        double distanceTraveled = Math.sqrt(this.source.getSquaredDistance(target));
+        // Base penalty is 15mn of attrition
+        int minLength = 20*60*15;
+        double logBase = Math.log(Math.pow(10, 0.003));
+        // 1000 blocks <=> 5 minutes of attrition
+        int distancePenalty = (int) (Math.log(distanceTraveled) / logBase * 6);
+        return minLength + distancePenalty;
     }
 }
