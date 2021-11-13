@@ -21,6 +21,7 @@ import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import net.fabricmc.fabric.api.lookup.v1.block.BlockApiLookup;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.BlockPos;
 import org.apiguardian.api.API;
 
 /**
@@ -34,5 +35,5 @@ public interface VagrantTargetableBlock {
 
     Identifier getTargetedIcon();
 
-    boolean canBeUsedByVagrant(PlayerEntity player);
+    boolean canBeUsedByVagrant(BlockPos blockPos, PlayerEntity player);
 }

@@ -132,7 +132,7 @@ public abstract class GameRendererMixin implements GameRendererAccessor {
             BlockState targetedBlock = world.getBlockState(bhr.getBlockPos());
             if (targetedBlock.isIn(RequiemBlockTags.SOUL_INTERACTABLE)) {
                 VagrantTargetableBlock itf = VagrantTargetableBlock.LOOKUP.find(world, bhr.getBlockPos(), targetedBlock, null, null);
-                return itf == null || itf.canBeUsedByVagrant(this.client.player);
+                return itf == null || itf.canBeUsedByVagrant(bhr.getBlockPos(), this.client.player);
             }
         }
 

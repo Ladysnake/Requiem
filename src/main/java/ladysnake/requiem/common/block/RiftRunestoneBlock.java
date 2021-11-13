@@ -129,7 +129,10 @@ public class RiftRunestoneBlock extends InertRunestoneBlock implements ObeliskRu
     }
 
     @Override
-    public boolean canBeUsedByVagrant(PlayerEntity player) {
+    public boolean canBeUsedByVagrant(BlockPos blockPos, PlayerEntity player) {
+        boolean powered = RunestoneBlockEntity.findObeliskOrigin(player.world, blockPos)
+            .map(origin -> player.world.getBlockEntity(origin)).map(be -> be instanceof RunestoneBlockEntity runestone && runestone.isPowered()).orElse(false);
+        if (!powered) return false;
         StatusEffectInstance statusEffect = player.getStatusEffect(RequiemStatusEffects.ATTRITION);
         return statusEffect == null || statusEffect.getAmplifier() < AttritionStatusEffect.MAX_LEVEL;
     }
