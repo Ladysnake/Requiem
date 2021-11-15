@@ -37,7 +37,6 @@ package ladysnake.requiem.common.structure;
 import com.google.common.collect.ImmutableList;
 import com.mojang.serialization.Codec;
 import ladysnake.requiem.Requiem;
-import ladysnake.requiem.common.entity.RequiemEntities;
 import net.minecraft.block.BlockState;
 import net.minecraft.structure.PoolStructurePiece;
 import net.minecraft.structure.StructureManager;
@@ -47,7 +46,6 @@ import net.minecraft.structure.pool.EmptyPoolElement;
 import net.minecraft.structure.pool.StructurePoolElement;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Util;
-import net.minecraft.util.collection.Pool;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
@@ -59,7 +57,6 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.biome.SpawnSettings;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.VerticalBlockSample;
 import net.minecraft.world.gen.feature.DefaultFeatureConfig;
@@ -72,7 +69,6 @@ import java.util.Random;
 import java.util.stream.Collectors;
 
 public class DerelictObeliskFeature extends StructureFeature<DefaultFeatureConfig> {
-    private static final Pool<SpawnSettings.SpawnEntry> CREATURE_SPAWNS = Pool.of(new SpawnSettings.SpawnEntry(RequiemEntities.MORTICIAN, 1, 1, 1));
 
     public DerelictObeliskFeature(Codec<DefaultFeatureConfig> codec) {
         super(codec);
@@ -81,11 +77,6 @@ public class DerelictObeliskFeature extends StructureFeature<DefaultFeatureConfi
     @Override
     public StructureStartFactory<DefaultFeatureConfig> getStructureStartFactory() {
         return Start::new;
-    }
-
-    @Override
-    public Pool<SpawnSettings.SpawnEntry> getCreatureSpawns() {
-        return CREATURE_SPAWNS;
     }
 
     /**
@@ -113,7 +104,8 @@ public class DerelictObeliskFeature extends StructureFeature<DefaultFeatureConfi
 
             if (validCorners >= 3) {
                 validCorners = 0;
-                pos.move(Direction.UP, box.getBlockCountY());
+                pos.move(Direction.UP, box.getBlockCountY() - 1);
+
                 for(VerticalBlockSample cornerColumn : cornerColumns) {
                     BlockState blockState = cornerColumn.getState(pos);
                     if (blockState.isAir()) {

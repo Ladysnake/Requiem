@@ -34,6 +34,7 @@
  */
 package ladysnake.requiem.mixin.client.remnant;
 
+import ladysnake.requiem.api.v1.block.VagrantTargetableBlock;
 import ladysnake.requiem.api.v1.entity.MovementAlterer;
 import ladysnake.requiem.api.v1.event.minecraft.client.ApplyCameraTransformsCallback;
 import ladysnake.requiem.api.v1.event.minecraft.client.UpdateTargetedEntityCallback;
@@ -42,11 +43,13 @@ import ladysnake.requiem.api.v1.remnant.DeathSuspender;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.client.GameRendererAccessor;
 import ladysnake.requiem.common.tag.RequiemBlockTags;
+import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.hud.InGameOverlayRenderer;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.hit.BlockHitResult;
@@ -111,17 +114,29 @@ public abstract class GameRendererMixin implements GameRendererAccessor {
     @Inject(method = "shouldRenderBlockOutline", at = @At("HEAD"), cancellable = true)
     private void cancelBlockOutlineRender(CallbackInfoReturnable<Boolean> cir) {
         Entity camera = this.client.getCameraEntity();
-        assert this.client.world != null;
         if (camera instanceof PlayerEntity && (
             DeathSuspender.get((PlayerEntity) camera).isLifeTransient() || (
-                RemnantComponent.get((PlayerEntity) camera).isIncorporeal() && !(
-                    this.client.crosshairTarget instanceof BlockHitResult bhr &&
-                        this.client.world.getBlockState(bhr.getBlockPos()).isIn(RequiemBlockTags.SOUL_INTERACTABLE)
-                )
+                RemnantComponent.get((PlayerEntity) camera).isIncorporeal() &&
+                    !requiem$isVagrantInteractable()
             )
         )) {
             cir.setReturnValue(false);
         }
+    }
+
+    private boolean requiem$isVagrantInteractable() {
+        ClientWorld world = this.client.world;
+        assert world != null;
+
+        if (this.client.crosshairTarget instanceof BlockHitResult bhr) {
+            BlockState targetedBlock = world.getBlockState(bhr.getBlockPos());
+            if (targetedBlock.isIn(RequiemBlockTags.SOUL_INTERACTABLE)) {
+                VagrantTargetableBlock itf = VagrantTargetableBlock.LOOKUP.find(world, bhr.getBlockPos(), targetedBlock, null, null);
+                return itf == null || itf.canBeUsedByVagrant(bhr.getBlockPos(), this.client.player);
+            }
+        }
+
+        return false;
     }
 
     @Inject(

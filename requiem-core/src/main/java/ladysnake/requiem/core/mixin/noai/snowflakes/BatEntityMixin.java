@@ -32,29 +32,29 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.requiem.mixin.common.mortician;
+package ladysnake.requiem.core.mixin.noai.snowflakes;
 
-import ladysnake.requiem.common.structure.RequiemStructures;
-import net.minecraft.entity.SpawnGroup;
-import net.minecraft.util.collection.Pool;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.biome.Biome;
-import net.minecraft.world.biome.SpawnSettings;
-import net.minecraft.world.gen.StructureAccessor;
-import net.minecraft.world.gen.chunk.NoiseChunkGenerator;
+import ladysnake.requiem.core.entity.SoulHolderComponent;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.mob.AmbientEntity;
+import net.minecraft.entity.passive.BatEntity;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import org.spongepowered.asm.mixin.injection.ModifyArg;
 
-@Mixin(NoiseChunkGenerator.class)
-public abstract class NoiseChunkGeneratorMixin {
-    @Inject(method = "getEntitySpawnList", at = @At("RETURN"), cancellable = true)
-    private void spawnMorticians(Biome biome, StructureAccessor accessor, SpawnGroup group, BlockPos pos, CallbackInfoReturnable<Pool<SpawnSettings.SpawnEntry>> cir) {
-        if (accessor.getStructureAt(pos, true, RequiemStructures.DERELICT_OBELISK).hasChildren()) {
-            if (group == SpawnGroup.CREATURE) {
-                cir.setReturnValue(RequiemStructures.DERELICT_OBELISK.getCreatureSpawns());
-            }
+@Mixin(BatEntity.class)
+public abstract class BatEntityMixin extends AmbientEntity {
+    protected BatEntityMixin(EntityType<? extends AmbientEntity> entityType, World world) {
+        super(entityType, world);
+    }
+
+    @ModifyArg(method = "mobTick", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/passive/BatEntity;setVelocity(Lnet/minecraft/util/math/Vec3d;)V"))
+    private Vec3d preventAutonomousMovement(Vec3d intendedVelocity) {
+        if (SoulHolderComponent.isSoulless(this)) {
+            return this.getVelocity();
         }
+        return intendedVelocity;
     }
 }

@@ -69,7 +69,7 @@ public class OpusDemoniumItem extends WritableBookItem {
     @Override
     public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> lines, TooltipContext ctx) {
         addTooltipLine(lines, RequiemItems.SEALED_REMNANT_VESSEL);
-        addTooltipLine(lines, RequiemItems.SOUL_VESSEL);
+        addTooltipLine(lines, RequiemItems.PURE_SOUL_VESSEL);
     }
 
     private void addTooltipLine(List<Text> lines, DemonSoulVesselItem version) {

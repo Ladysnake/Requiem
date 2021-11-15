@@ -34,6 +34,7 @@
  */
 package ladysnake.requiem.common.loot;
 
+import ladysnake.requiem.Requiem;
 import ladysnake.requiem.common.enchantment.RequiemEnchantments;
 import ladysnake.requiem.mixin.common.access.LootContextTypesAccessor;
 import net.fabricmc.fabric.api.loot.v1.FabricLootPoolBuilder;
@@ -42,6 +43,7 @@ import net.minecraft.enchantment.EnchantmentLevelEntry;
 import net.minecraft.item.EnchantedBookItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.loot.condition.LootConditionType;
 import net.minecraft.loot.condition.RandomChanceLootCondition;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameters;
@@ -50,6 +52,7 @@ import net.minecraft.loot.entry.ItemEntry;
 import net.minecraft.loot.function.LootFunction;
 import net.minecraft.loot.function.LootFunctionType;
 import net.minecraft.loot.provider.number.ConstantLootNumberProvider;
+import net.minecraft.util.registry.Registry;
 
 import java.util.regex.Pattern;
 
@@ -58,6 +61,7 @@ public final class RequiemLootTables {
         "requiem:possession",
         builder -> builder.require(LootContextParameters.THIS_ENTITY).require(LootContextParameters.ORIGIN)
     );
+    public static final LootConditionType RIFT_MORTICIAN_CONDITION = new LootConditionType(new RiftMorticianLootCondition.Serializer());
 
     private static final Pattern NETHER_CHEST = Pattern.compile("chests/.*nether.*");
     /** The chance that a nether chest gets a Humanity enchanted book */
@@ -66,6 +70,8 @@ public final class RequiemLootTables {
     public static final double BASIC_HUMANITY_CHANCE = 0.9;
 
     public static void init() {
+        Registry.register(Registry.LOOT_CONDITION_TYPE, Requiem.id("rift_mortician"), RIFT_MORTICIAN_CONDITION);
+
         LootTableLoadingCallback.EVENT.register((resourceManager, lootManager, identifier, fabricLootSupplierBuilder, lootTableSetter) -> {
             if (NETHER_CHEST.matcher(identifier.getPath()).matches()) {
                 fabricLootSupplierBuilder.withPool(FabricLootPoolBuilder.builder()

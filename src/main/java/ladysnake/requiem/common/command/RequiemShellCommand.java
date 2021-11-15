@@ -125,7 +125,7 @@ public final class RequiemShellCommand {
         if (RemnantComponent.get(player).isVagrant()) {
             throw new CommandException(new TranslatableText("pandemonium:commands.shell.split.fail.vagrant", player.getDisplayName()));
         }
-        PlayerSplitter.split(player);
+        PlayerSplitter.split(player, true);
     }
 
     private static <T> int runOne(T element, Consumer<T> action) {

@@ -32,28 +32,36 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.requiem.core.mixin.noai;
+package ladysnake.requiem.core.mixin.possession.possessed.snowflakes;
 
-import ladysnake.requiem.core.entity.EntityAiToggle;
+import ladysnake.requiem.core.mixin.possession.possessed.PossessableMobEntityMixin;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.boss.WitherEntity;
-import net.minecraft.entity.mob.HostileEntity;
+import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.entity.passive.TameableEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.Shadow;
 
-@Mixin(WitherEntity.class)
-public abstract class WitherEntityMixin extends HostileEntity {
-    protected WitherEntityMixin(EntityType<? extends HostileEntity> entityType, World world) {
-        super(entityType, world);
+@Mixin(TameableEntity.class)
+public abstract class TameableEntityMixin extends PossessableMobEntityMixin {
+    @Shadow
+    public abstract void setSitting(boolean sitting);
+
+    @Shadow
+    public abstract void setInSittingPose(boolean inSittingPose);
+
+    public TameableEntityMixin(EntityType<? extends MobEntity> type, World world) {
+        super(type, world);
     }
 
-    @Inject(method = "shootSkullAt(IDDDZ)V", at = @At("HEAD"), cancellable = true)
-    private void cancelAttack(int headIndex, double d, double e, double f, boolean bl, CallbackInfo ci) {
-        if (EntityAiToggle.isAiDisabled(this)) {
-            ci.cancel();
+    @Override
+    public void setPossessor(@Nullable PlayerEntity possessor) {
+        super.setPossessor(possessor);
+        if (!this.world.isClient && possessor != null) {
+            this.setSitting(false);
+            this.setInSittingPose(false);
         }
     }
 }

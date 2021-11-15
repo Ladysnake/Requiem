@@ -50,7 +50,7 @@ import net.minecraft.server.world.ServerWorld;
 import javax.annotation.Nullable;
 
 public final class RevivingDeathSuspender implements DeathSuspender {
-    public static final AbilitySource DEATH_SUSPENSION_ABILITIES = Pal.getAbilitySource(RequiemCore.id("death_suspension"));
+    public static final AbilitySource DEATH_SUSPENSION_ABILITIES = Pal.getAbilitySource(RequiemCore.id("death_suspension"), AbilitySource.FREE);
     private final PlayerEntity player;
     private boolean lifeTransient;
     @Nullable

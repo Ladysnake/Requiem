@@ -32,7 +32,7 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.requiem.core.mixin.noai;
+package ladysnake.requiem.core.mixin.noai.snowflakes;
 
 import ladysnake.requiem.core.entity.EntityAiToggle;
 import ladysnake.requiem.core.util.ItemUtil;

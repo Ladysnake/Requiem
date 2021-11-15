@@ -55,6 +55,7 @@ public class PufferfishInflationAbility extends IndirectAbilityBase<PufferfishEn
                 pufferfish.setDeflateTicks(0);
             } else {
                 pufferfish.setInflateTicks(0);
+                pufferfish.setDeflateTicks(60);
             }
         }
         return true;

@@ -34,7 +34,7 @@
  */
 package ladysnake.requiem.client;
 
-import baritone.api.fakeplayer.AutomatoneFakePlayer;
+import baritone.api.fakeplayer.FakeClientPlayerEntity;
 import com.mojang.blaze3d.systems.RenderSystem;
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.dialogue.DialogueTracker;
@@ -48,6 +48,7 @@ import ladysnake.requiem.api.v1.remnant.DeathSuspender;
 import ladysnake.requiem.client.gui.CutsceneDialogueScreen;
 import ladysnake.requiem.client.particle.GhostParticle;
 import ladysnake.requiem.client.screen.RiftScreen;
+import ladysnake.requiem.common.entity.RequiemEntities;
 import ladysnake.requiem.common.possession.item.PossessionItemOverrideWrapper;
 import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
 import ladysnake.requiem.core.tag.RequiemCoreTags;
@@ -132,8 +133,8 @@ public final class RequiemClientListener implements
         ShaderEffectRenderCallback.EVENT.register(GhostParticle::draw);
         MutableBoolean wasLookingAtShell = new MutableBoolean();
         ClientTickEvents.START_CLIENT_TICK.register(client -> {
-            if (client.targetedEntity instanceof AutomatoneFakePlayer && client.player != null) {
-                if (PossessionComponent.getHost(client.player) != null && client.player.getUuid().equals(((AutomatoneFakePlayer) client.targetedEntity).getOwnerUuid())) {
+            if (client.player != null && client.targetedEntity instanceof FakeClientPlayerEntity fp && fp.getType() == RequiemEntities.PLAYER_SHELL) {
+                if (PossessionComponent.getHost(client.player) != null && client.player.getUuid().equals(fp.getOwnerUuid())) {
                     client.inGameHud.setOverlayMessage(new TranslatableText("requiem:merge_hint", FractureKeyBinding.etherealFractureKey.getBoundKeyLocalizedText()), false);
                     wasLookingAtShell.setTrue();
                 }

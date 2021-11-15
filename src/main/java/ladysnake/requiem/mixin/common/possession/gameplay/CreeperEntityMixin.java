@@ -32,24 +32,34 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.pandemonium.common.item;
+package ladysnake.requiem.mixin.common.possession.gameplay;
 
-import ladysnake.pandemonium.Pandemonium;
-import ladysnake.pandemonium.common.remnant.PandemoniumRemnantTypes;
-import ladysnake.requiem.common.item.DemonSoulVesselItem;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.util.Formatting;
-import net.minecraft.util.registry.Registry;
+import ladysnake.requiem.api.v1.remnant.SoulbindingRegistry;
+import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.mob.CreeperEntity;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
-public final class PandemoniumItems {
-    public static final DemonSoulVesselItem BALEFUL_SOUL_VESSEL = new DemonSoulVesselItem(PandemoniumRemnantTypes.WANDERING_SPIRIT, Formatting.GRAY, new Item.Settings().group(ItemGroup.MISC).maxCount(1), "requiem:remnant_vessel.banishment");
+import java.util.ArrayList;
+import java.util.Collection;
 
-    public static void init() {
-        registerItem(PandemoniumItems.BALEFUL_SOUL_VESSEL, "baleful_soul_vessel");
-    }
-
-    public static <T extends Item> void registerItem(T item, String name) {
-        Registry.register(Registry.ITEM, Pandemonium.id(name), item);
+@Mixin(CreeperEntity.class)
+public abstract class CreeperEntityMixin {
+    @ModifyVariable(method = "spawnEffectsCloud", at = @At(value = "INVOKE", target = "Ljava/util/Collection;isEmpty()Z"))
+    private Collection<StatusEffectInstance> removeSoulboundEffects(Collection<StatusEffectInstance> allEffects) {
+        if (!allEffects.isEmpty()) {
+            Collection<StatusEffectInstance> copy = new ArrayList<>();
+            boolean edited = false;
+            for (StatusEffectInstance effect : allEffects) {
+                if (SoulbindingRegistry.instance().isSoulbound(effect.getEffectType())) {
+                    edited = true;
+                } else {
+                    copy.add(effect);
+                }
+            }
+            if (edited) return copy;
+        }
+        return allEffects;
     }
 }

@@ -2,7 +2,7 @@
   "powers": [
     "requiem:mortal"
   ],
-  "icon": "requiem:soul_vessel",
+  "icon": "requiem:empty_soul_vessel",
   "name": "origins:origin.requiem.mortal.name",
   "description": "origins:origin.requiem.mortal.description",
   "order": 0,

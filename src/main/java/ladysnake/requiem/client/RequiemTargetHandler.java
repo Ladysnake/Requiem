@@ -40,6 +40,7 @@ import ladysnake.requiem.api.v1.block.VagrantTargetableBlock;
 import ladysnake.requiem.api.v1.entity.ability.AbilityType;
 import ladysnake.requiem.api.v1.event.minecraft.client.CrosshairRenderCallback;
 import ladysnake.requiem.api.v1.event.minecraft.client.UpdateTargetedEntityCallback;
+import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.core.ability.PlayerAbilityController;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
@@ -121,10 +122,11 @@ public final class RequiemTargetHandler implements UpdateTargetedEntityCallback,
             float f = abilityController.getCooldownProgress(renderedType);
 
             if (abilityController.getTargetedEntity(renderedType) == null
+                && RemnantComponent.isIncorporeal(this.client.player)
                 && this.client.crosshairTarget instanceof BlockHitResult bhr) {
                 VagrantTargetableBlock targetable = VagrantTargetableBlock.LOOKUP.find(this.client.world, bhr.getBlockPos(), null);
                 if (targetable != null) {
-                    drawCrosshairIcon(matrices, scaledWidth, scaledHeight, targetable.getTargetedIcon(), 1);
+                    drawCrosshairIcon(matrices, scaledWidth, scaledHeight, targetable.getTargetedIcon(), targetable.canBeUsedByVagrant(bhr.getBlockPos(), client.player) ? 1 : 0);
                     return;
                 }
             }

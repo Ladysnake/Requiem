@@ -41,10 +41,13 @@ import ladysnake.requiem.api.v1.record.GlobalRecordKeeper;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.common.RequiemRecordTypes;
 import ladysnake.requiem.common.advancement.RequiemStats;
+import ladysnake.requiem.common.entity.effect.AttritionStatusEffect;
+import ladysnake.requiem.common.entity.effect.RequiemStatusEffects;
 import ladysnake.requiem.common.screen.RiftScreenHandlerFactory;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.RespawnAnchorBlock;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -123,5 +126,14 @@ public class RiftRunestoneBlock extends InertRunestoneBlock implements ObeliskRu
     @Override
     public Identifier getTargetedIcon() {
         return RIFT_ICON_ID;
+    }
+
+    @Override
+    public boolean canBeUsedByVagrant(BlockPos blockPos, PlayerEntity player) {
+        boolean powered = RunestoneBlockEntity.findObeliskOrigin(player.world, blockPos)
+            .map(origin -> player.world.getBlockEntity(origin)).map(be -> be instanceof RunestoneBlockEntity runestone && runestone.isPowered()).orElse(false);
+        if (!powered) return false;
+        StatusEffectInstance statusEffect = player.getStatusEffect(RequiemStatusEffects.ATTRITION);
+        return statusEffect == null || statusEffect.getAmplifier() < AttritionStatusEffect.MAX_LEVEL;
     }
 }

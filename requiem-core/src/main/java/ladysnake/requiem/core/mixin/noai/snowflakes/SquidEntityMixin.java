@@ -32,24 +32,32 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.pandemonium.common.item;
+package ladysnake.requiem.core.mixin.noai.snowflakes;
 
-import ladysnake.pandemonium.Pandemonium;
-import ladysnake.pandemonium.common.remnant.PandemoniumRemnantTypes;
-import ladysnake.requiem.common.item.DemonSoulVesselItem;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.util.Formatting;
-import net.minecraft.util.registry.Registry;
+import ladysnake.requiem.core.entity.SoulHolderComponent;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.mob.WaterCreatureEntity;
+import net.minecraft.entity.passive.SquidEntity;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.World;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.ModifyArgs;
+import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 
-public final class PandemoniumItems {
-    public static final DemonSoulVesselItem BALEFUL_SOUL_VESSEL = new DemonSoulVesselItem(PandemoniumRemnantTypes.WANDERING_SPIRIT, Formatting.GRAY, new Item.Settings().group(ItemGroup.MISC).maxCount(1), "requiem:remnant_vessel.banishment");
-
-    public static void init() {
-        registerItem(PandemoniumItems.BALEFUL_SOUL_VESSEL, "baleful_soul_vessel");
+@Mixin(SquidEntity.class)
+public abstract class SquidEntityMixin extends WaterCreatureEntity {
+    protected SquidEntityMixin(EntityType<? extends WaterCreatureEntity> entityType, World world) {
+        super(entityType, world);
     }
 
-    public static <T extends Item> void registerItem(T item, String name) {
-        Registry.register(Registry.ITEM, Pandemonium.id(name), item);
+    @ModifyArgs(method = "tickMovement", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/passive/SquidEntity;setVelocity(DDD)V"))
+    private void preventAutonomousMovement(Args args) {
+        if (SoulHolderComponent.isSoulless(this)) {
+            Vec3d currentVelocity = this.getVelocity();
+            args.set(0, currentVelocity.x);
+            args.set(1, currentVelocity.y);
+            args.set(2, currentVelocity.z);
+        }
     }
 }

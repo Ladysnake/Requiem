@@ -35,12 +35,14 @@
 package ladysnake.requiem.common.item;
 
 import ladysnake.requiem.Requiem;
+import ladysnake.requiem.common.entity.RequiemEntities;
 import ladysnake.requiem.common.entity.effect.RequiemStatusEffects;
 import ladysnake.requiem.common.remnant.RemnantTypes;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
+import net.minecraft.item.SpawnEggItem;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Rarity;
 import net.minecraft.util.registry.Registry;
@@ -55,8 +57,9 @@ public final class RequiemItems {
     public static final CreativeSoulVesselItem CREATIVE_SOUL_VESSEL = new CreativeSoulVesselItem(new Item.Settings().group(ItemGroup.MISC).maxCount(1));
     public static final FilledSoulVesselItem FILLED_SOUL_VESSEL = new FilledSoulVesselItem(new Item.Settings().group(ItemGroup.MISC).recipeRemainder(EMPTY_SOUL_VESSEL).maxCount(1), EMPTY_SOUL_VESSEL);
     public static final Item SHATTERED_SOUL_VESSEL = new Item(new Item.Settings().group(ItemGroup.MISC).maxCount(1));
-    public static final DemonSoulVesselItem SOUL_VESSEL = new DemonSoulVesselItem(RemnantTypes.MORTAL, Formatting.AQUA, new Item.Settings().group(ItemGroup.MISC).maxCount(1), "requiem:opus_daemonium.cure");
-    public static final DemonSoulVesselItem SEALED_REMNANT_VESSEL = new DemonSoulVesselItem(RemnantTypes.REMNANT, Formatting.RED, new Item.Settings().group(ItemGroup.MISC).maxCount(1), "requiem:opus_daemonium.curse");
+    public static final DemonSoulVesselItem PURE_SOUL_VESSEL = new DemonSoulVesselItem(RemnantTypes.MORTAL, Formatting.AQUA, new Item.Settings().group(ItemGroup.MISC).maxCount(1), "requiem:remnant_vessel.cure");
+    public static final DemonSoulVesselItem SEALED_REMNANT_VESSEL = new DemonSoulVesselItem(RemnantTypes.REMNANT, Formatting.RED, new Item.Settings().group(ItemGroup.MISC).maxCount(1), "requiem:remnant_vessel.curse");
+    public static final Item MORTICIAN_SPAWN_EGG = new SpawnEggItem(RequiemEntities.MORTICIAN, 0x592a10, 0x494949, new Item.Settings().group(ItemGroup.MISC));
 
     public static final Map<StatusEffect, IchorVesselItem> vesselsByEffect = new LinkedHashMap<>();
     public static final IchorVesselItem ICHOR_VESSEL_ATTRITION = makeIchorVessel(RequiemStatusEffects.ATTRITION);
@@ -74,7 +77,7 @@ public final class RequiemItems {
     public static void init() {
         registerItem(DEBUG_ITEM, "debug_item");
         registerItem(TOTEM_OF_SKELETONIZATION, "totem_of_skeletonization");
-        registerItem(SOUL_VESSEL, "soul_vessel");
+        registerItem(PURE_SOUL_VESSEL, "pure_soul_vessel");
         registerItem(EMPTY_SOUL_VESSEL, "empty_soul_vessel");
         registerItem(CREATIVE_SOUL_VESSEL, "creative_soul_vessel");
         registerItem(FILLED_SOUL_VESSEL, "filled_soul_vessel");
@@ -84,6 +87,7 @@ public final class RequiemItems {
         registerItem(ICHOR_VESSEL_EMANCIPATION, "ichor_vessel_emancipation");
         registerItem(ICHOR_VESSEL_PENANCE, "ichor_vessel_penance");
         registerItem(ICHOR_VESSEL_RECLAMATION, "ichor_vessel_reclamation");
+        registerItem(MORTICIAN_SPAWN_EGG, "mortician_spawn_egg");
 
         RequiemDispenserBehaviors.registerDispenserBehaviors();
 

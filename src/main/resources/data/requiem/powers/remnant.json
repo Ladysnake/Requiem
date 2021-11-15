@@ -4,7 +4,7 @@
   "name": "origins:power.requiem.remnant.name",
   "description": "origins:power.requiem.remnant.description",
   "key": {
-    "key": "key.origins.primary_active",
+    "key": "key.requiem.dissociation",
     "continuous": false
   }
 }

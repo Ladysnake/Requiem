@@ -51,6 +51,7 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.ItemUsage;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -140,11 +141,12 @@ public class DemonSoulVesselItem extends Item {
                     }
 
                     player.incrementStat(Stats.USED.getOrCreateStat(this));
-                    stack.decrement(1);
+                    ItemStack result = new ItemStack(RequiemItems.EMPTY_SOUL_VESSEL);
+                    return TypedActionResult.success(ItemUsage.exchangeStack(stack, player, result));
                 }
             }
 
-            return new TypedActionResult<>(ActionResult.SUCCESS, stack);
+            return TypedActionResult.success(stack);
         }
 
         return new TypedActionResult<>(ActionResult.FAIL, stack);

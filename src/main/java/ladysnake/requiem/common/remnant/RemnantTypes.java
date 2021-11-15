@@ -43,7 +43,7 @@ import net.minecraft.util.Identifier;
 public final class RemnantTypes {
     private RemnantTypes() { throw new AssertionError(); }
 
-    public static final RemnantType MORTAL = new SimpleRemnantType(p -> NullRemnantState.INSTANCE, false, "requiem:opus.mortal_sentence", () -> RequiemItems.SOUL_VESSEL);
+    public static final RemnantType MORTAL = new SimpleRemnantType(p -> NullRemnantState.INSTANCE, false, "requiem:opus.mortal_sentence", () -> RequiemItems.PURE_SOUL_VESSEL);
     public static final RemnantType REMNANT = new SimpleRemnantType(DemonRemnantState::new, true, "requiem:opus.remnant_sentence", () -> RequiemItems.SEALED_REMNANT_VESSEL);
 
     public static RemnantType get(Identifier id) {
