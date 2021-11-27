@@ -24,7 +24,7 @@
   "requiem:remnant_type.requiem.remnant.name": "残骸",
 
   "requiem:commands.query.success.other": "%2$s 是 %1$s",
-  "requiem:commands.query.success.self": "Y你是 %s",
+  "requiem:commands.query.success.self": "你是 %s",
   "requiem:commands.ethereal.set.fail.mortal": "在%s是凡人时你不能使他们变成灵魂状态",
   "requiem:commands.ethereal.set.fail": "改变%s的灵魂状态失败",
   "requiem:commands.ethereal.set.success.other": "设置%s的灵魂状态为%s",
@@ -63,7 +63,7 @@
   "requiem:dialogue.instructions": "按[%s]/[%s]去选择选项, 然后按下[%s]去确认",
   "requiem:dialogue.first_contact.introduction.text": "你听见一个声音正对你说话,但你不知道它来自哪里.",
   "requiem:dialogue.first_contact.introduction.explain": "这是怎么回事？",
-  "requiem:dialogue.first_contact.introduction.yes": "已经使我成为恶魔",
+  "requiem:dialogue.first_contact.introduction.yes": "使我成为恶魔",
   "requiem:dialogue.first_contact.introduction.no": "我不想与此有任何关系。",
   "requiem:dialogue.first_contact.explanation.text": "拒绝你的人性，并获得永恒的诅咒。拒绝，并保持你的平凡生活与其他人。这是一个在你死后获得全新体验的机会，但接受它意味着改变你的习惯。",
   "requiem:dialogue.first_contact.explanation.ok": "我明白了",
