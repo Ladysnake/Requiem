@@ -52,7 +52,7 @@ public class MoveBackToObeliskGoal extends WanderAroundGoal {
 	@Override
 	public boolean canStart() {
         GlobalPos home = ((MorticianEntity) this.mob).getHome();
-        return home != null && home.getDimension() == this.mob.getEntityWorld().getRegistryKey() && !this.mob.getBlockPos().isWithinDistance(home.getPos(), 16) && super.canStart();
+        return home != null && home.getDimension() == this.mob.getWorld().getRegistryKey() && !this.mob.getBlockPos().isWithinDistance(home.getPos(), 16) && super.canStart();
 	}
 
 	@Override

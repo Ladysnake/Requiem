@@ -50,7 +50,7 @@ public abstract class EntityNavigationMixin implements DisableableAiController {
         this.requiem$disabled = disabled;
     }
 
-    @Inject(method = "tick", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "method_6360", at = @At("HEAD"), cancellable = true)
     private void tick(CallbackInfo ci) {
         if (this.requiem$disabled) {
             ci.cancel();

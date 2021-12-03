@@ -186,7 +186,7 @@ public class EmptySoulVesselItem extends Item {
     }
 
     public static UUID setupRecord(LivingEntity target) {
-        GlobalRecord record = GlobalRecordKeeper.get(target.getEntityWorld()).createRecord();
+        GlobalRecord record = GlobalRecordKeeper.get(target.getWorld()).createRecord();
         EntityPositionClerk.get(target).linkWith(record, RequiemRecordTypes.SOUL_OWNER_REF);
         return record.getUuid();
     }

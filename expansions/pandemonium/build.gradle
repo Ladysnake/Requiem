@@ -57,10 +57,10 @@ repositories {
 }
 
 dependencies {
-    implementation project(path: ":requiem-api", configuration: "dev")
-    implementation project(path: ":requiem-core", configuration: "dev")
-    implementation project(path: ":", configuration: "dev")
-    implementation project(path: ":pandemonium-api", configuration: "dev")
+    implementation project(path: ":requiem-api", configuration: "namedElements")
+    implementation project(path: ":requiem-core", configuration: "namedElements")
+    implementation project(path: ":", configuration: "namedElements")
+    implementation project(path: ":pandemonium-api", configuration: "namedElements")
     include project(":pandemonium-api")
     modImplementation "io.github.ladysnake:satin:${satin_version}"
     modImplementation ("io.github.onyxstudios.Cardinal-Components-API:cardinal-components-entity:${rootProject.cca_version}")

@@ -35,6 +35,7 @@
 package ladysnake.requiem.common.entity.ai.brain;
 
 import com.google.common.collect.ImmutableSet;
+import net.minecraft.class_6670;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.sensor.Sensor;
@@ -45,7 +46,6 @@ import net.minecraft.item.RangedWeaponItem;
 import net.minecraft.server.world.ServerWorld;
 
 import java.util.Comparator;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -65,11 +65,12 @@ public class PlayerHostileSensor extends Sensor<PlayerEntity> {
     }
 
     private Optional<LivingEntity> getNearestHostile(PlayerEntity subject) {
-        return this.getVisibleMobs(subject).flatMap(mobs -> mobs.stream()
-            .filter(entity -> {
-                if (!this.isHostile(subject, entity)) return false;
-                return this.isCloseEnoughForDanger(subject, entity);
-            }).min(Comparator.comparing(subject::squaredDistanceTo)));
+        // Note: method_38980 prunes mobs further than 16 blocks
+        // Probably not a good thing but oh well
+        return this.getVisibleMobs(subject).flatMap(mobs -> mobs.method_38980(entity -> {
+            if (!this.isHostile(subject, entity)) return false;
+            return this.isCloseEnoughForDanger(subject, entity);
+        }).min(Comparator.comparing(subject::squaredDistanceTo)));
     }
 
     private boolean isCloseEnoughForDanger(PlayerEntity subject, LivingEntity entity) {
@@ -88,7 +89,7 @@ public class PlayerHostileSensor extends Sensor<PlayerEntity> {
         return livingEntity instanceof MobEntity && ((MobEntity) livingEntity).getTarget() == subject;
     }
 
-    private Optional<List<LivingEntity>> getVisibleMobs(LivingEntity entity) {
+    private Optional<class_6670> getVisibleMobs(LivingEntity entity) {
         return entity.getBrain().getOptionalMemory(MemoryModuleType.VISIBLE_MOBS);
     }
 }

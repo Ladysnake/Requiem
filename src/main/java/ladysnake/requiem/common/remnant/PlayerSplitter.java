@@ -109,7 +109,7 @@ public final class PlayerSplitter {
     }
 
     public static PlayerShellEntity createShell(ServerPlayerEntity whole) {
-        PlayerShellEntity shell = new PlayerShellEntity(RequiemEntities.PLAYER_SHELL, whole.getServerWorld());
+        PlayerShellEntity shell = new PlayerShellEntity(RequiemEntities.PLAYER_SHELL, whole.getWorld());
         shell.changeGameMode(whole.interactionManager.getGameMode());  // use same gamemode for deserialization
         shell.storePlayerData(whole, computeCopyNbt(whole));
         shell.headYaw = whole.headYaw;
@@ -174,7 +174,7 @@ public final class PlayerSplitter {
             keepInventory.set(false, player.getServer());
             ((SwitchablePlayerEntity) player).cca$markAsSwitchingCharacter();
 
-            ServerPlayerEntity clone = player.getServerWorld().getServer().getPlayerManager().respawnPlayer(player, false);
+            ServerPlayerEntity clone = player.getWorld().getServer().getPlayerManager().respawnPlayer(player, false);
             clone.setSpawnPoint(dimension, blockPos, angle, spawnPointSet, false);
             player.networkHandler.player = clone;
             return clone;

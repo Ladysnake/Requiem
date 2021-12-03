@@ -79,7 +79,7 @@ public class RunestoneBlock extends InertRunestoneBlock implements ObeliskEffect
 
     @Override
     public VoxelShape getCollisionShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
-        if (context instanceof EntityShapeContext ctx && ctx.getEntity().orElse(null) instanceof SoulEntity) {
+        if (context instanceof EntityShapeContext ctx && ctx.getEntity() instanceof SoulEntity) {
             return VoxelShapes.empty();
         }
         return super.getCollisionShape(state, world, pos, context);

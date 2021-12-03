@@ -48,7 +48,6 @@ import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.chunk.StructureConfig;
 import net.minecraft.world.gen.feature.ConfiguredStructureFeature;
 import net.minecraft.world.gen.feature.DefaultFeatureConfig;
-import net.minecraft.world.gen.feature.FeatureConfig;
 import net.minecraft.world.gen.feature.StructureFeature;
 
 public final class RequiemStructures {
@@ -60,7 +59,6 @@ public final class RequiemStructures {
         FabricStructureBuilder.create(Requiem.id("derelict_obelisk"), DERELICT_OBELISK)
             .step(GenerationStep.Feature.SURFACE_STRUCTURES)
             .defaultConfig(new StructureConfig(10, 5, 82692722))
-            .superflatFeature(DERELICT_OBELISK.configure(FeatureConfig.DEFAULT))
             .register();
         Registry.register(BuiltinRegistries.CONFIGURED_STRUCTURE_FEATURE, Requiem.id("configured_derelict_obelisk"), CONFIGURED_DERELICT_OBELISK);
         BiomeModifications.create(Requiem.id("derelict_obelisk_addition"))

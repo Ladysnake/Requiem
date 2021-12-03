@@ -77,7 +77,7 @@ public abstract class PlayerManagerMixin {
     ) {
         if (serializedPlayer != null && serializedPlayer.contains(POSSESSED_ROOT_TAG, NbtType.COMPOUND)) {
             RemnantComponent.KEY.sync(player);
-            ServerWorld world = player.getServerWorld();
+            ServerWorld world = player.getWorld();
             NbtCompound serializedPossessedInfo = serializedPlayer.getCompound(POSSESSED_ROOT_TAG);
             Entity possessedEntityMount = EntityType.loadEntityWithPassengers(
                     serializedPossessedInfo.getCompound(POSSESSED_ENTITY_TAG),
@@ -122,9 +122,8 @@ public abstract class PlayerManagerMixin {
     private void logOutPossessedEntity(ServerPlayerEntity player, CallbackInfo info) {
         Entity possessedEntity = PossessionComponent.get(player).getHost();
         if (possessedEntity != null) {
-            ServerWorld world = player.getServerWorld();
+            ServerWorld world = player.getWorld();
             possessedEntity.streamPassengersAndSelf().forEach(e -> e.setRemoved(Entity.RemovalReason.UNLOADED_WITH_PLAYER));
-            world.getChunk(player.getChunkPos().x, player.getChunkPos().z).markDirty();
         }
     }
 }

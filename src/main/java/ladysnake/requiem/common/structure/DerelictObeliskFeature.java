@@ -38,6 +38,7 @@ import com.google.common.collect.ImmutableList;
 import com.mojang.serialization.Codec;
 import ladysnake.requiem.Requiem;
 import net.minecraft.block.BlockState;
+import net.minecraft.class_6621;
 import net.minecraft.structure.PoolStructurePiece;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructurePiece;
@@ -64,6 +65,7 @@ import net.minecraft.world.gen.feature.StructureFeature;
 import net.minecraft.world.gen.feature.StructurePoolFeatureConfig;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.Random;
 import java.util.stream.Collectors;
@@ -71,7 +73,17 @@ import java.util.stream.Collectors;
 public class DerelictObeliskFeature extends StructureFeature<DefaultFeatureConfig> {
 
     public DerelictObeliskFeature(Codec<DefaultFeatureConfig> codec) {
-        super(codec);
+        super(codec, context -> {
+                // Check if the spot is valid for structure gen. If false, return nothing to signal to the game to skip this spawn attempt.
+                if (!canGenerate(context)) {
+                    return Optional.empty();
+                }
+                // Create the pieces layout of the structure and give it to
+                else {
+                    return createPiecesGenerator(context);
+                }
+            },
+            class_6621.field_34938);
     }
 
     @Override
@@ -91,11 +103,11 @@ public class DerelictObeliskFeature extends StructureFeature<DefaultFeatureConfi
         BlockPos.Mutable pos = new BlockPos.Mutable();
 
         int y;
-        for(y = maxY; y > 15; --y) {
+        for (y = maxY; y > 15; --y) {
             int validCorners = 0;
             pos.set(0, y, 0);
 
-            for(VerticalBlockSample cornerColumn : cornerColumns) {
+            for (VerticalBlockSample cornerColumn : cornerColumns) {
                 BlockState blockState = cornerColumn.getState(pos);
                 if (heightmapType.getBlockPredicate().test(blockState)) {
                     ++validCorners;
@@ -106,12 +118,12 @@ public class DerelictObeliskFeature extends StructureFeature<DefaultFeatureConfi
                 validCorners = 0;
                 pos.move(Direction.UP, box.getBlockCountY() - 1);
 
-                for(VerticalBlockSample cornerColumn : cornerColumns) {
+                for (VerticalBlockSample cornerColumn : cornerColumns) {
                     BlockState blockState = cornerColumn.getState(pos);
                     if (blockState.isAir()) {
                         ++validCorners;
                         if (validCorners == 2) {
-                            return OptionalInt.of(y+1);
+                            return OptionalInt.of(y + 1);
                         }
                     }
                 }
@@ -170,7 +182,7 @@ public class DerelictObeliskFeature extends StructureFeature<DefaultFeatureConfi
                 Vec3i structureCenter = this.children.get(0).getBoundingBox().getCenter();
                 int xOffset = centerPos.getX() - structureCenter.getX();
                 int zOffset = centerPos.getZ() - structureCenter.getZ();
-                for(StructurePiece structurePiece : this.children){
+                for (StructurePiece structurePiece : this.children) {
                     structurePiece.translate(xOffset, 0, zOffset);
                 }
 

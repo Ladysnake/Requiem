@@ -13,6 +13,6 @@ repositories {
 }
 
 dependencies {
-    api project(path: ":requiem-api", configuration: "dev")
+    api project(path: ":requiem-api", configuration: "namedElements")
     modApi ("io.github.onyxstudios.Cardinal-Components-API:cardinal-components-base:${rootProject.cca_version}")
 }

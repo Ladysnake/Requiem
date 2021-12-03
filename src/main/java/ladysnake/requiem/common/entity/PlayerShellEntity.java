@@ -152,7 +152,7 @@ public class PlayerShellEntity extends FakeServerPlayerEntity {
         this.getDataTracker().set(PlayerEntity.PLAYER_MODEL_PARTS, player.getDataTracker().get(PlayerEntity.PLAYER_MODEL_PARTS));
 
         this.setDisplayProfile(Optional.ofNullable(Impersonator.get(player).getImpersonatedProfile()).orElse(player.getGameProfile()));
-        this.setHome(GlobalPos.create(player.getServerWorld().getRegistryKey(), player.getBlockPos()));
+        this.setHome(GlobalPos.create(player.getWorld().getRegistryKey(), player.getBlockPos()));
     }
 
     @Override
@@ -176,7 +176,7 @@ public class PlayerShellEntity extends FakeServerPlayerEntity {
         super.tickNewAi();
         if (this.shouldTickBrain()) {
             this.world.getProfiler().push("requiem:playerShellBrain");
-            this.getBrain().tick(this.getServerWorld(), this);
+            this.getBrain().tick(this.getWorld(), this);
             this.world.getProfiler().pop();
             PlayerShellBrain.refreshActivities(this);
             DebugInfoSender.sendBrainDebugData(this);   // TODO 1.17 check if we can debug this mess

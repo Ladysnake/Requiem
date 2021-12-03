@@ -111,8 +111,8 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffect;
-import net.minecraft.entity.effect.StatusEffectCategory;
 import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.effect.StatusEffectType;
 import net.minecraft.entity.mob.EndermanEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -525,7 +525,7 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
 
     private static void revertHarmfulEffects(PlayerEntity player, Map<StatusEffect, StatusEffectInstance> before, Map<StatusEffect, StatusEffectInstance> after) {
         for (StatusEffect statusEffect : after.keySet()) {
-            if (statusEffect.getCategory() == StatusEffectCategory.HARMFUL) {
+            if (statusEffect.getType() == StatusEffectType.HARMFUL) {
                 StatusEffectInstance previous = before.get(statusEffect);
                 StatusEffectInstance current = after.get(statusEffect);
                 if (!Objects.equals(previous, current)) {

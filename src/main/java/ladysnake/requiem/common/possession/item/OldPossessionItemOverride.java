@@ -150,7 +150,7 @@ public record OldPossessionItemOverride(
 
     public static class Result {
         public static final Codec<Result> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            RequiemRegistries.MOB_ACTIONS.fieldOf("action").forGetter(Result::getAction),
+            RequiemRegistries.MOB_ACTIONS.method_39673().fieldOf("action").forGetter(Result::getAction),
             Codec.INT.optionalFieldOf("cooldown", 0).forGetter(Result::getCooldown)
             ).apply(instance, Result::new)
         );

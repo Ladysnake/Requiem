@@ -109,7 +109,7 @@ public class RunestoneBlockEntity extends BlockEntity {
             int obeliskWidth = be.obeliskCoreWidth;
             Vec3d obeliskCenter = getObeliskCenter(pos, obeliskWidth);
 
-            if (!be.levels.isEmpty() && be.findPowerSource((ServerWorld) world, obeliskCenter, getRange(obeliskWidth))) {
+            if (!be.levels.isEmpty() && findPowerSource((ServerWorld) world, obeliskCenter, getRange(obeliskWidth))) {
                 be.applyPlayerEffects(world, pos);
                 world.playSound(null, pos, RequiemSoundEvents.BLOCK_OBELISK_AMBIENT, SoundCategory.BLOCKS, 1.0F, 1.4F);
             }
@@ -222,7 +222,7 @@ public class RunestoneBlockEntity extends BlockEntity {
                         this.recordUuid = record.getUuid();
                     }
                 },
-                () -> this.world.getBlockTickScheduler().schedule(this.pos, state.getBlock(), 0)
+                () -> this.world.method_39279(this.pos, state.getBlock(), 0)
             );
     }
 
@@ -263,7 +263,7 @@ public class RunestoneBlockEntity extends BlockEntity {
     }
 
     @Override
-    public NbtCompound writeNbt(NbtCompound nbt) {
+    public void writeNbt(NbtCompound nbt) {
         super.writeNbt(nbt);
 
         if (this.customName != null) {
@@ -273,8 +273,6 @@ public class RunestoneBlockEntity extends BlockEntity {
         if (this.recordUuid != null) {
             nbt.putUuid("linked_record", this.recordUuid);
         }
-
-        return nbt;
     }
 
     /**

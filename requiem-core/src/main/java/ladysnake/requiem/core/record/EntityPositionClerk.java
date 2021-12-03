@@ -116,7 +116,7 @@ public final class EntityPositionClerk implements Component {
     }
 
     private GlobalRecordKeeper getTracker() {
-        return GlobalRecordKeeper.get(entity.getEntityWorld());
+        return GlobalRecordKeeper.get(entity.getWorld());
     }
 
     @Override
