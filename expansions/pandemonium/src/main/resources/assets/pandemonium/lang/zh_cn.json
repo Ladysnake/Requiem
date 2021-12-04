@@ -1,0 +1,11 @@
+{
+  "item.pandemonium.baleful_soul_vessel": "恶意灵魂容器",
+  "requiem:remnant_vessel.banishment": "放逐",
+  "config.pandemonium.possession": "占有",
+  "config.pandemonium.allow_possessing_all_mobs": "允许占有所有生物",
+  "requiem:remnant_type.pandemonium.wandering_spirit.name": "流浪的灵魂",
+  "origins:origin.pandemonium.wandering_spirit.name": "流浪的灵魂",
+  "origins:origin.pandemonium.wandering_spirit.description": "那些久违的恶魔已经无法重生他们的人形。",
+  "origins:power.pandemonium.wandering_spirit.name": "过路人",
+  "origins:power.pandemonium.wandering_spirit.description": "你可以随时离开被占有的身体。"
+}
