@@ -62,7 +62,7 @@ public abstract class ClientPlayerInteractionManagerMixin {
 
     @Unique
     private void checkInteraction(PlayerEntity player, Entity entity, Hand hand, CallbackInfoReturnable<ActionResult> info) {
-        boolean result = AllowUseEntityCallback.EVENT.invoker().allow(player, player.getEntityWorld(), hand, entity);
+        boolean result = AllowUseEntityCallback.EVENT.invoker().allow(player, player.getWorld(), hand, entity);
 
         if (!result) {
             info.setReturnValue(ActionResult.FAIL);

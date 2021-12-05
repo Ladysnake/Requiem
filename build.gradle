@@ -84,8 +84,6 @@ allprojects {
         compileOnly "org.jetbrains:annotations:${jb_annotations_version}"
         compileOnly "org.apiguardian:apiguardian-api:${apiguardian_version}"
         compileOnly "com.demonwav.mcdev:annotations:1.0"
-
-        testImplementation "org.junit.jupiter:junit-jupiter-api:5.4.0-M1"
     }
 
     license {
@@ -268,7 +266,7 @@ dependencies {
     include "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-world:${cca_version}"
     modImplementation "io.github.ladysnake:PlayerAbilityLib:${pal_version}"
     include "io.github.ladysnake:PlayerAbilityLib:${pal_version}"
-    modImplementation "io.github.ladysnake:locki:${locki_version}"
+    modImplementation ("io.github.ladysnake:locki:${locki_version}")
     include "io.github.ladysnake:locki:${locki_version}"
     modImplementation "io.github.ladysnake:impersonate:${impersonate_version}"
     include "io.github.ladysnake:impersonate:${impersonate_version}"
@@ -283,6 +281,11 @@ dependencies {
     include "me.zeroeightsix:fiber:${fiber_version}"
     modImplementation "me.lucko:fabric-permissions-api:${fpa_version}"
     include "me.lucko:fabric-permissions-api:${fpa_version}"
+    // Test dependencies
+    modCompileOnly "io.github.ladysnake:elmendorf:${elmendorf_version}"
+    modRuntimeOnly "io.github.ladysnake:elmendorf:${elmendorf_version}"
+    testmodImplementation sourceSets.main.output
+
     // Optional dependencies
     modCompileOnly ("com.terraformersmc:modmenu:${modmenu_version}") { transitive = false }
     modRuntimeOnly ("com.terraformersmc:modmenu:${modmenu_version}") { transitive = false }
@@ -307,7 +310,7 @@ dependencies {
 //    modRuntimeOnly("io.github.Lemonszz:Biome-Makeover:${biome_makeover_version}")
 
     modRuntimeOnly "com.jamieswhiteshirt:reach-entity-attributes:${reach_version}"
-    modRuntimeOnly "net.adriantodt.fabricmc:fallflyinglib:${fallflyinglib_version}"
+//    modRuntimeOnly "net.adriantodt.fabricmc:fallflyinglib:${fallflyinglib_version}"
     modCompileOnly "dev.emi:trinkets:${trinkets_version}"
     modCompileOnly("curse.maven:Pehkui-319596:${pehkui_version}") { transitive = false }
 //    modRuntimeOnly("curse.maven:Pehkui-319596:${pehkui_version}") { transitive = false }
@@ -319,20 +322,15 @@ dependencies {
     modRuntimeOnly("com.github.apace100:calio:${calio_version}") { transitive = false }
     modCompileOnly("com.github.apace100:origins-fabric:${origins_version}") { transitive = false }
     modRuntimeOnly("com.github.apace100:origins-fabric:${origins_version}") { transitive = false }
-    modRuntimeOnly "curse.maven:BackSlot-402739:${backslot_version}"
-    // required by backslot
-    modRuntime ("de.siphalor:amecsapi-1.17:${project.amecs_version}") {
-        exclude group: "net.fabricmc.fabric-api"
-        exclude module: "nmuk-1.17"
-    }
+
     modCompileOnly("io.github.HyperPigeon:Eldritch-Mobs:${eldritch_mobs_version}") { transitive = false }
 //    modRuntimeOnly "io.github.cottonmc:LibGui:${libgui_version}"
     modCompileOnly("curse.maven:haema-391257:${haema_version}")
-    modRuntimeOnly("curse.maven:haema-391257:${haema_version}")
-    modRuntimeOnly("top.theillusivec4.somnus:somnus-fabric:${somnus_version}")
-    modRuntimeOnly("vazkii.patchouli:Patchouli:${project.patchouli_version}")
-    modRuntimeOnly("net.fabricmc:fabric-language-kotlin:${flk_version}")
-    modRuntimeOnly("io.github.onyxstudios.Cardinal-Components-API:cardinal-components-world:${rootProject.cca_version}")
+//    modRuntimeOnly("curse.maven:haema-391257:${haema_version}")
+//    modRuntimeOnly("top.theillusivec4.somnus:somnus-fabric:${somnus_version}")
+//    modRuntimeOnly("vazkii.patchouli:Patchouli:${project.patchouli_version}")
+//    modRuntimeOnly("net.fabricmc:fabric-language-kotlin:${flk_version}")
+//    modRuntimeOnly("io.github.onyxstudios.Cardinal-Components-API:cardinal-components-world:${rootProject.cca_version}")
     modCompileOnly("curse.maven:golems-galore-387197:${golems_galore_version}")
 //    modRuntimeOnly("curse.maven:golems-galore-387197:${golems_galore_version}")
 //    modRuntimeOnly 'com.github.Draylar:structurized:1.3.0-21w20a'

@@ -87,7 +87,7 @@ public abstract class PlayerManagerMixin {
     )
     private ServerPlayerEntity firePrepareRespawnEvent(ServerPlayerEntity clone, ServerPlayerEntity original, boolean returnFromEnd) {
         PrepareRespawnCallback.EVENT.invoker().prepareRespawn(original, clone, returnFromEnd);
-        REQUIEM$RESPAWN_WORLD.set(clone.getServerWorld());
+        REQUIEM$RESPAWN_WORLD.set(clone.getWorld());
         // Prevent players from respawning in fairly bad conditions
         while(!clone.world.isSpaceEmpty(clone) && clone.getY() < 256.0D) {
             clone.setPosition(clone.getX(), clone.getY() + 1.0D, clone.getZ());

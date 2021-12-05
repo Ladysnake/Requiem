@@ -11,6 +11,14 @@ repositories {
         }
     }
     maven {
+        name = "TerraformersMC"
+        url = "https://maven.terraformersmc.com/releases"
+        content {
+            includeGroup 'com.terraformersmc'
+            includeGroup 'dev.emi'
+        }
+    }
+    maven {
         url = 'https://oss.sonatype.org/content/repositories/snapshots'
         content {
             includeGroup 'me.lucko'

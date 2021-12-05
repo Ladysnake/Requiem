@@ -34,7 +34,9 @@
  */
 package ladysnake.requiem.compat.mixin.the_bumblezone;
 
-import com.telepathicgrunt.bumblezone.Bumblezone;
+import com.telepathicgrunt.bumblezone.modinit.BzCriterias;
+import com.telepathicgrunt.bumblezone.world.dimension.BzDimension;
+import com.telepathicgrunt.bumblezone.world.dimension.BzWorldSavedData;
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.compat.BumblezoneCompat;
@@ -43,6 +45,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.passive.BeeEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
@@ -59,8 +62,9 @@ public abstract class BeehiveBlockMixin {
     private void onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit, CallbackInfoReturnable<ActionResult> cir) {
         try {
             MobEntity possessedEntity = PossessionComponent.getHost(player);
-            if (possessedEntity instanceof BeeEntity && player.getEntityWorld().getRegistryKey() != BumblezoneCompat.BZ_WORLD_KEY) {
-                Bumblezone.ENTITY_COMPONENT.get(player).setIsTeleporting(true);
+            if (player instanceof ServerPlayerEntity spe && possessedEntity instanceof BeeEntity && player.getWorld().getRegistryKey() != BumblezoneCompat.BZ_WORLD_KEY) {
+                BzCriterias.TELEPORT_TO_BUMBLEZONE_PEARL_TRIGGER.trigger(spe);
+                BzWorldSavedData.queueEntityToTeleport(player, BzDimension.BZ_WORLD_KEY);
                 cir.setReturnValue(ActionResult.SUCCESS);
             }
         } catch (Throwable t) {

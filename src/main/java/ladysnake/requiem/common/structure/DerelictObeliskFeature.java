@@ -39,10 +39,11 @@ import com.mojang.serialization.Codec;
 import ladysnake.requiem.Requiem;
 import net.minecraft.block.BlockState;
 import net.minecraft.class_6621;
-import net.minecraft.structure.PoolStructurePiece;
+import net.minecraft.class_6622;
+import net.minecraft.class_6834;
 import net.minecraft.structure.StructureManager;
-import net.minecraft.structure.StructurePiece;
-import net.minecraft.structure.StructureStart;
+import net.minecraft.structure.piece.PoolStructurePiece;
+import net.minecraft.structure.piece.StructurePiece;
 import net.minecraft.structure.pool.EmptyPoolElement;
 import net.minecraft.structure.pool.StructurePoolElement;
 import net.minecraft.util.BlockRotation;
@@ -50,14 +51,12 @@ import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3i;
-import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.Heightmap;
-import net.minecraft.world.biome.Biome;
+import net.minecraft.world.gen.ChunkRandom;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.VerticalBlockSample;
 import net.minecraft.world.gen.feature.DefaultFeatureConfig;
@@ -73,22 +72,58 @@ import java.util.stream.Collectors;
 public class DerelictObeliskFeature extends StructureFeature<DefaultFeatureConfig> {
 
     public DerelictObeliskFeature(Codec<DefaultFeatureConfig> codec) {
-        super(codec, context -> {
-                // Check if the spot is valid for structure gen. If false, return nothing to signal to the game to skip this spawn attempt.
-                if (!canGenerate(context)) {
-                    return Optional.empty();
-                }
-                // Create the pieces layout of the structure and give it to
-                else {
-                    return createPiecesGenerator(context);
-                }
-            },
-            class_6621.field_34938);
+        super(codec, DerelictObeliskFeature::createPiecesGenerator, class_6621.field_34938);
     }
 
-    @Override
-    public StructureStartFactory<DefaultFeatureConfig> getStructureStartFactory() {
-        return Start::new;
+    private static Optional<class_6622<DefaultFeatureConfig>> createPiecesGenerator(class_6834.class_6835<DefaultFeatureConfig> context) {
+        // Turns the chunk coordinates into actual coordinates we can use. (Gets center of that chunk)
+        ChunkPos chunkPos = context.comp_309();
+        int x = chunkPos.x * 16;
+        int z = chunkPos.z * 16;
+        BlockPos.Mutable centerPos = new BlockPos.Mutable(x, 0, z);
+
+        StructurePoolFeatureConfig structureSettingsAndStartPool = new StructurePoolFeatureConfig(
+            () -> context.comp_314().get(Registry.STRUCTURE_POOL_KEY).get(Requiem.id("derelict_obelisk")), 1
+        );
+
+        return Optional.of((structurePieces, ctx) -> {
+            ChunkRandom chunkRandom = ctx.comp_130();
+            StructurePoolElement spawnedStructure = structureSettingsAndStartPool.getStartPool().get().getRandomElement(chunkRandom);
+
+            if (spawnedStructure != EmptyPoolElement.INSTANCE) {
+                BlockRotation rotation = Util.getRandom(BlockRotation.values(), chunkRandom);
+                BlockPos startPos = chunkPos.getStartPos();
+                StructureManager structureManager = context.comp_313();
+                PoolStructurePiece piece = new PoolStructurePiece(
+                    structureManager,
+                    spawnedStructure,
+                    startPos,
+                    spawnedStructure.getGroundLevelDelta(),
+                    rotation,
+                    spawnedStructure.getBoundingBox(structureManager, startPos, rotation)
+                );
+                BlockBox boundingBox = piece.getBoundingBox();
+                OptionalInt floorY = getFloorHeight(chunkRandom, context.comp_306(), boundingBox, context.comp_311());
+
+                if (floorY.isEmpty()) return;
+
+                int lowering = boundingBox.getMinY() + piece.getGroundLevelDelta();
+                piece.translate(0, floorY.getAsInt() - lowering, 0);
+                structurePieces.m_dxmbwonc(piece);
+
+                // Since by default, the start piece of a structure spawns with its corner at centerPos
+                // and will randomly rotate around that corner, we will center the piece on centerPos instead.
+                // This is so that our structure's start piece is now centered on the water check done in shouldStartAt.
+                // Whatever the offset done to center the start piece, that offset is applied to all other pieces
+                // so the entire structure is shifted properly to the new spot.
+                Vec3i structureCenter = structurePieces.method_38714().pieces().get(0).getBoundingBox().getCenter();
+                int xOffset = centerPos.getX() - structureCenter.getX();
+                int zOffset = centerPos.getZ() - structureCenter.getZ();
+                for (StructurePiece structurePiece : structurePieces.method_38714().pieces()) {
+                    structurePiece.translate(xOffset, 0, zOffset);
+                }
+            }
+        });
     }
 
     /**
@@ -100,15 +135,13 @@ public class DerelictObeliskFeature extends StructureFeature<DefaultFeatureConfi
         List<BlockPos> corners = ImmutableList.of(new BlockPos(box.getMinX(), 0, box.getMinZ()), new BlockPos(box.getMaxX(), 0, box.getMinZ()), new BlockPos(box.getMinX(), 0, box.getMaxZ()), new BlockPos(box.getMaxX(), 0, box.getMaxZ()));
         List<VerticalBlockSample> cornerColumns = corners.stream().map(blockPos -> chunkGenerator.getColumnSample(blockPos.getX(), blockPos.getZ(), world)).collect(Collectors.toList());
         Heightmap.Type heightmapType = Heightmap.Type.OCEAN_FLOOR_WG;
-        BlockPos.Mutable pos = new BlockPos.Mutable();
 
         int y;
         for (y = maxY; y > 15; --y) {
             int validCorners = 0;
-            pos.set(0, y, 0);
 
             for (VerticalBlockSample cornerColumn : cornerColumns) {
-                BlockState blockState = cornerColumn.getState(pos);
+                BlockState blockState = cornerColumn.getState(y);
                 if (heightmapType.getBlockPredicate().test(blockState)) {
                     ++validCorners;
                 }
@@ -116,10 +149,9 @@ public class DerelictObeliskFeature extends StructureFeature<DefaultFeatureConfi
 
             if (validCorners >= 3) {
                 validCorners = 0;
-                pos.move(Direction.UP, box.getBlockCountY() - 1);
 
                 for (VerticalBlockSample cornerColumn : cornerColumns) {
-                    BlockState blockState = cornerColumn.getState(pos);
+                    BlockState blockState = cornerColumn.getState(y + box.getBlockCountY() - 1);
                     if (blockState.isAir()) {
                         ++validCorners;
                         if (validCorners == 2) {
@@ -131,64 +163,5 @@ public class DerelictObeliskFeature extends StructureFeature<DefaultFeatureConfi
         }
 
         return OptionalInt.empty();
-    }
-
-    /**
-     * Handles calling up the structure's pieces class and height that structure will spawn at.
-     */
-    public static class Start extends StructureStart<DefaultFeatureConfig> {
-        public Start(StructureFeature<DefaultFeatureConfig> structureIn, ChunkPos chunkPos, int referenceIn, long seedIn) {
-            super(structureIn, chunkPos, referenceIn, seedIn);
-        }
-
-        @Override
-        public void init(DynamicRegistryManager dynamicRegistryManager, ChunkGenerator chunkGenerator, StructureManager structureManager, ChunkPos chunkPos, Biome biome, DefaultFeatureConfig config, HeightLimitView world) {
-            // Turns the chunk coordinates into actual coordinates we can use. (Gets center of that chunk)
-            int x = chunkPos.x * 16;
-            int z = chunkPos.z * 16;
-            BlockPos.Mutable centerPos = new BlockPos.Mutable(x, 0, z);
-
-            StructurePoolFeatureConfig structureSettingsAndStartPool = new StructurePoolFeatureConfig(
-                () -> dynamicRegistryManager.get(Registry.STRUCTURE_POOL_KEY).get(Requiem.id("derelict_obelisk")), 1
-            );
-
-            StructurePoolElement spawnedStructure = structureSettingsAndStartPool.getStartPool().get().getRandomElement(random);
-
-            if (spawnedStructure != EmptyPoolElement.INSTANCE) {
-                BlockRotation rotation = Util.getRandom(BlockRotation.values(), this.random);
-                BlockPos startPos = chunkPos.getStartPos();
-                PoolStructurePiece piece = new PoolStructurePiece(
-                    structureManager,
-                    spawnedStructure,
-                    startPos,
-                    spawnedStructure.getGroundLevelDelta(),
-                    rotation,
-                    spawnedStructure.getBoundingBox(structureManager, startPos, rotation)
-                );
-                BlockBox boundingBox = piece.getBoundingBox();
-                OptionalInt floorY = getFloorHeight(this.random, chunkGenerator, boundingBox, world);
-
-                if (floorY.isEmpty()) return;
-
-                int lowering = boundingBox.getMinY() + piece.getGroundLevelDelta();
-                piece.translate(0, floorY.getAsInt() - lowering, 0);
-                this.addPiece(piece);
-
-                // Since by default, the start piece of a structure spawns with its corner at centerPos
-                // and will randomly rotate around that corner, we will center the piece on centerPos instead.
-                // This is so that our structure's start piece is now centered on the water check done in shouldStartAt.
-                // Whatever the offset done to center the start piece, that offset is applied to all other pieces
-                // so the entire structure is shifted properly to the new spot.
-                Vec3i structureCenter = this.children.get(0).getBoundingBox().getCenter();
-                int xOffset = centerPos.getX() - structureCenter.getX();
-                int zOffset = centerPos.getZ() - structureCenter.getZ();
-                for (StructurePiece structurePiece : this.children) {
-                    structurePiece.translate(xOffset, 0, zOffset);
-                }
-
-                // Sets the bounds of the structure once you are finished.
-                this.setBoundingBoxFromChildren();
-            }
-        }
     }
 }

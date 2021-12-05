@@ -57,9 +57,8 @@ import ladysnake.requiem.api.v1.remnant.RemnantType;
 import ladysnake.requiem.common.RequiemRegistries;
 import ladysnake.requiem.common.gamerule.RequiemSyncedGamerules;
 import ladysnake.requiem.common.gamerule.StartingRemnantType;
-import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
@@ -80,10 +79,10 @@ public final class OriginsCompat {
             .add("value", REMNANT_TYPE)
             .add("key", ApoliDataTypes.KEY, new Active.Key()),
         instance -> {
-            RemnantType remnantType = ((RemnantType) instance.get("value"));
+            RemnantType remnantType = instance.get("value");
             return (type, entity) -> {
                 OriginsRemnantPower power = new OriginsRemnantPower(type, entity, remnantType);
-                power.setKey((Active.Key) instance.get("key"));
+                power.setKey(instance.get("key"));
                 return power;
             };
         }
@@ -91,7 +90,7 @@ public final class OriginsCompat {
 
     // The factory for the origins player condition that locks access based on the requiem:startingRemnantType gamerule
     public static final Identifier GAMERULE_CONDITION_ID = Requiem.id("start_remnant_gamerule");
-    public static final ConditionFactory<LivingEntity> GAMERULE_CONDITION_FACTORY = new ConditionFactory<>(
+    public static final ConditionFactory<Entity> GAMERULE_CONDITION_FACTORY = new ConditionFactory<>(
         GAMERULE_CONDITION_ID,
         new SerializableData().add("value", SerializableDataType.list(SerializableDataType.enumValue(StartingRemnantType.class)), Collections.singletonList(StartingRemnantType.CHOOSE)),
         (instance, entity) -> {
@@ -147,12 +146,6 @@ public final class OriginsCompat {
     public static class OriginDataHolder extends ComponentDataHolder<OriginComponent> {
         public OriginDataHolder(ComponentKey<OriginComponent> originKey, ComponentKey<OriginDataHolder> selfKey) {
             super(originKey, selfKey);
-        }
-
-        @Override
-        protected void restoreData0(OriginComponent component, NbtCompound data) {
-            super.restoreData0(component, data);
-            component.onPowersRead();
         }
     }
 }

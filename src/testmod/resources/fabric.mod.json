@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "id": "requiem-test",
+  "version": "${version}",
+  "name": "Requiem Test Mod",
+  "description": "It's just a test... Or is it ?",
+  "license": "LGPL-3.0-or-later",
+  "icon": "assets/requiem-test/textures/skull_logo.png",
+  "authors": [
+    "Pyrofab"
+  ],
+  "contact": {
+    "sources": "https://github.com/Ladysnake/Requiem",
+    "issues": "https://github.com/Ladysnake/Requiem/issues",
+    "discord": "ladysnake.glitch.me"
+  },
+  "environment": "*",
+  "entrypoints": {
+    "fabric-gametest": [
+      "ladysnake.requiemtest.RequiemTestSuite"
+    ]
+  },
+  "depends": {
+    "fabric": "*"
+  }
+}

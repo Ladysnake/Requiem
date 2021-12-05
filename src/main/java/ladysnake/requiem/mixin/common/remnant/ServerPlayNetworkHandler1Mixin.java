@@ -59,7 +59,7 @@ public abstract class ServerPlayNetworkHandler1Mixin implements PlayerInteractEn
     @SuppressWarnings({"InvalidInjectorMethodSignature", "UnnecessaryQualifiedMemberReference"})
     @Inject(method = "Lnet/minecraft/server/network/ServerPlayNetworkHandler$1;processInteract(Lnet/minecraft/util/Hand;Lnet/minecraft/server/network/ServerPlayNetworkHandler$Interaction;)V", at = @At("HEAD"), cancellable = true)
     private void onPlayerInteractEntity(Hand hand, @Coerce Object action, CallbackInfo ci) {
-        ServerWorld world = this.networkHandler.getPlayer().getServerWorld();
+        ServerWorld world = this.networkHandler.getPlayer().getWorld();
 
         if (!AllowUseEntityCallback.EVENT.invoker().allow(this.networkHandler.getPlayer(), world, hand, entity)) {
             ci.cancel();

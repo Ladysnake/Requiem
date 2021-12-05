@@ -23,6 +23,14 @@ repositories {
             includeGroup 'com.jamieswhiteshirt'
         }
     }
+    maven {
+        name = "TerraformersMC"
+        url = "https://maven.terraformersmc.com/releases"
+        content {
+            includeGroup 'com.terraformersmc'
+            includeGroup 'dev.emi'
+        }
+    }
 }
 
 dependencies {
