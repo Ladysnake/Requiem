@@ -35,6 +35,7 @@
     "inventory.PlayerScreenHandlerMixin",
     "inventory.SlotMixin",
     "inventory.balance.EntityPredicatesEquipableMixin",
+    "mortician.MerchantInventoryMixin",
     "opus.LecternBlockEntityMixin",
     "possession.gameplay.AbstractPiglinEntityMixin",
     "possession.gameplay.BedBlockMixin",

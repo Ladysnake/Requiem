@@ -10,6 +10,7 @@
     "inventory.CraftingScreenMixin",
     "inventory.InventoryScreenMixin",
     "inventory.RecipeBookWidgetMixin",
+    "mortician.MerchantScreenMixin",
     "opus.EditBookScreenAccessor",
     "opus.LecternScreenMixin",
     "opus.WrittenBookScreenContentsMixin",
