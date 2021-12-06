@@ -85,7 +85,7 @@ public abstract class CraftingScreenMixin extends HandledScreen<CraftingScreenHa
     }
 
     @Dynamic("Lambda method, implementation of PressAction for the crafting book button")
-    @Inject(method = "method_19890", at = @At("RETURN"), remap = false)
+    @Inject(method = "m_rvbeuffp", at = @At("RETURN"), remap = false)
     private void repositionCraftingButton(ButtonWidget button, CallbackInfo ci) {
         if (this.supercrafterButton != null) {
             this.supercrafterButton.setPos(this.x + 5, this.height / 2 - 30);

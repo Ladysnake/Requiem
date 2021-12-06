@@ -303,7 +303,7 @@ dependencies {
 //    modRuntimeOnly curse.resolve('immersive-portals-mod', 2845123)
 //    modRuntimeOnly "curse.maven:mobz:2965825"
     modCompileOnly("curse.maven:Health-Overlay-Fabric-313219:3403605")
-    modRuntimeOnly("curse.maven:Health-Overlay-Fabric-313219:3403605")
+//    modRuntimeOnly("curse.maven:Health-Overlay-Fabric-313219:3403605")
     modCompileOnly("io.github.CerulanLumina:better-graves:${better_graves_version}") { transitive = false }
 //    modRuntimeOnly("io.github.CerulanLumina:better-graves:${better_graves_version}")
     modCompileOnly("io.github.Lemonszz:Biome-Makeover:${biome_makeover_version}")

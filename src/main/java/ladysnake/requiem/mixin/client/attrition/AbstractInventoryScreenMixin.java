@@ -65,7 +65,7 @@ public abstract class AbstractInventoryScreenMixin<T extends ScreenHandler> exte
 
     // ModifyVariable is only used to capture the local variable more easily
     // we cannot use INVOKE_ASSIGN and Iterator#next, because there is a hidden cast instruction
-    @ModifyVariable(method = "drawStatusEffectBackgrounds", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screen/ingame/AbstractInventoryScreen;drawTexture(Lnet/minecraft/client/util/math/MatrixStack;IIIIII)V"))
+    @ModifyVariable(method = "drawStatusEffectBackgrounds", at = @At(value = "STORE"))
     private StatusEffectInstance customizeDrawnBackground(StatusEffectInstance effect) {
         if (SoulbindingRegistry.instance().isSoulbound(effect.getEffectType())) {
             assert client != null;
@@ -76,7 +76,7 @@ public abstract class AbstractInventoryScreenMixin<T extends ScreenHandler> exte
     }
 
     @Inject(method = "drawStatusEffectBackgrounds", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screen/ingame/AbstractInventoryScreen;drawTexture(Lnet/minecraft/client/util/math/MatrixStack;IIIIII)V", shift = At.Shift.AFTER))
-    private void restoreDrawnBackground(MatrixStack matrices, int x, int yIncrement, Iterable<StatusEffectInstance> effects, CallbackInfo ci) {
+    private void restoreDrawnBackground(MatrixStack matrices, int x, int height, Iterable<StatusEffectInstance> statusEffects, boolean bl, CallbackInfo ci) {
         if (boundSpecialBackground) {
             assert client != null;
             RenderSystem.setShaderTexture(0, BACKGROUND_TEXTURE);
