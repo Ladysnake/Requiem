@@ -36,7 +36,6 @@ package ladysnake.requiemtest;
 
 import dev.onyxstudios.cca.internal.entity.CardinalComponentsEntity;
 import io.github.ladysnake.elmendorf.GameTestUtil;
-import io.github.ladysnake.elmendorf.PacketChecker;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.common.item.RequiemItems;
 import ladysnake.requiem.common.network.RequiemNetworking;
@@ -59,14 +58,7 @@ public class RequiemTestSuite implements FabricGameTest {
         GameTestUtil.assertTrue("Sealed vessel should convert to remnant", RemnantComponent.get(player).getRemnantType() == RemnantTypes.REMNANT);
         GameTestUtil.verifyConnection(player).sent(
             CardinalComponentsEntity.PACKET_ID,
-            c -> c.checkVarInt(any())
-                .checkIdentifier(RemnantComponent.KEY.getId())
-                .checkVarInt(RemnantTypes.getRawId(RemnantTypes.MORTAL))
-                .checkBoolean(false)
-                .noMoreData()
-        ).thenSent(PacketChecker.Delay.SAME_TICK,
-            CardinalComponentsEntity.PACKET_ID,
-            c -> c.checkVarInt(any())
+            c -> c.checkInt(any())
                 .checkIdentifier(RemnantComponent.KEY.getId())
                 .checkVarInt(RemnantTypes.getRawId(RemnantTypes.REMNANT))
                 .checkBoolean(false)
