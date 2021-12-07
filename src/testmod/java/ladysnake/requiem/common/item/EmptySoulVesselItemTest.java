@@ -34,7 +34,9 @@
  */
 package ladysnake.requiem.common.item;
 
+import ladysnake.requiem.Requiem;
 import ladysnake.requiem.common.entity.RequiemEntityAttributes;
+import net.fabricmc.fabric.api.gametest.v1.FabricGameTest;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.AttributeContainer;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
@@ -46,19 +48,20 @@ import net.minecraft.test.GameTest;
 import net.minecraft.test.TestContext;
 import org.mockito.Mockito;
 
-public class EmptySoulVesselItemTest {
-    @GameTest
+public class EmptySoulVesselItemTest implements FabricGameTest {
+    @GameTest(structureName = EMPTY_STRUCTURE)
     public void computeSoulDefense(TestContext ctx) {
         LivingEntity mob = Mockito.mock(LivingEntity.class);
         setupMob(mob, PiglinBruteEntity.createPiglinBruteAttributes());
         // "integration testing"
-        System.out.println(EmptySoulVesselItem.computeSoulDefense(mob));
+        Requiem.LOGGER.info(EmptySoulVesselItem.computeSoulDefense(mob));
         Mockito.when(mob.getHealth()).thenReturn(1.0F);
-        System.out.println(EmptySoulVesselItem.computeSoulDefense(mob));
+        Requiem.LOGGER.info(EmptySoulVesselItem.computeSoulDefense(mob));
         setupMob(mob, PillagerEntity.createPillagerAttributes());
-        System.out.println(EmptySoulVesselItem.computeSoulDefense(mob));
+        Requiem.LOGGER.info(EmptySoulVesselItem.computeSoulDefense(mob));
         Mockito.when(mob.getHealth()).thenReturn(3.0F);
-        System.out.println(EmptySoulVesselItem.computeSoulDefense(mob));
+        Requiem.LOGGER.info(EmptySoulVesselItem.computeSoulDefense(mob));
+        ctx.complete();
     }
 
     private void setupMob(LivingEntity mob, DefaultAttributeContainer.Builder attributeBuilder) {

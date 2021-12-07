@@ -157,6 +157,7 @@ loom {
         }
     }
 }
+check.dependsOn runGametest
 
 repositories {
     maven {
