@@ -166,7 +166,7 @@ public final class PlayerSplitter {
         boolean keepInv = keepInventory.get();
         RegistryKey<World> dimension = player.getSpawnPointDimension();
         BlockPos blockPos = player.getSpawnPointPosition();
-        boolean spawnPointSet = player.isSpawnPointSet();
+        boolean spawnPointSet = player.isSpawnForced();
         float angle = player.getSpawnAngle();
         player.setSpawnPoint(World.OVERWORLD, null, 0, false, false);
 

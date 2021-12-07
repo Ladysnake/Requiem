@@ -3,6 +3,9 @@ Version 2.0.0
 ------------------------------------------------------
 **Warning: future betas may still break compatibility with worlds started with this version. Don't start using those versions on any world you care about.**
 
+### Changes in Beta 3
+- Fixed crash at launch
+
 ### Changes in Beta 2
 - Updated to MC 1.18
 - Added custom background when doing the mortician exorcism trade

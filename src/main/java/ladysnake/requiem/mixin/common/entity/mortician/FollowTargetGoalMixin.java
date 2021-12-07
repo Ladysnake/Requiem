@@ -38,7 +38,7 @@ import ladysnake.requiem.common.entity.MorticianEntity;
 import ladysnake.requiem.mixin.common.shell.ai.TargetPredicateAccessor;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.TargetPredicate;
-import net.minecraft.entity.ai.goal.TargetGoal;
+import net.minecraft.entity.ai.goal.ActiveTargetGoal;
 import net.minecraft.entity.ai.goal.TrackTargetGoal;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.passive.MerchantEntity;
@@ -51,7 +51,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.function.Predicate;
 
-@Mixin(TargetGoal.class)
+@Mixin(ActiveTargetGoal.class)
 public abstract class FollowTargetGoalMixin extends TrackTargetGoal {
     @Shadow protected TargetPredicate targetPredicate;
 

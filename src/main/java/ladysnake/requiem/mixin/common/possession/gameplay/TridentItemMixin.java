@@ -58,7 +58,7 @@ public abstract class TridentItemMixin extends Item {
         super(settings);
     }
 
-    @Inject(method = "onStoppedUsing", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/projectile/TridentEntity;setProperties(Lnet/minecraft/entity/Entity;FFFFF)V"))
+    @Inject(method = "onStoppedUsing", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/projectile/TridentEntity;setVelocity(Lnet/minecraft/entity/Entity;FFFFF)V"))
     private void giveDrownedInfinity(ItemStack stack, World world, LivingEntity user, int ticks, CallbackInfo ci) {
         if (PossessionComponent.getHost(user) instanceof DrownedEntity && world.getRandom().nextFloat() < 0.8f) {
             PlayerAbilities abilities = ((PlayerEntity) user).getAbilities();

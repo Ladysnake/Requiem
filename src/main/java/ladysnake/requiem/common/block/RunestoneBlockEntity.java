@@ -58,11 +58,7 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.text.Text;
 import net.minecraft.util.dynamic.GlobalPos;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.*;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
@@ -222,7 +218,7 @@ public class RunestoneBlockEntity extends BlockEntity {
                         this.recordUuid = record.getUuid();
                     }
                 },
-                () -> this.world.method_39279(this.pos, state.getBlock(), 0)
+                () -> this.world.createAndScheduleBlockTick(this.pos, state.getBlock(), 0)
             );
     }
 

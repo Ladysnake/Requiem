@@ -47,7 +47,7 @@ public class SnowmanSnowballAbility<T extends LivingEntity> extends IndirectAbil
     public boolean run() {
         if (!this.owner.world.isClient) {
             SnowballEntity snowball = new SnowballEntity(this.owner.world, this.owner);
-            snowball.setProperties(this.owner, this.owner.getPitch(), this.owner.getYaw(), 0.0F, 1.5F, 1.0F);
+            snowball.setVelocity(this.owner, this.owner.getPitch(), this.owner.getYaw(), 0.0F, 1.5F, 1.0F);
             this.owner.playSound(SoundEvents.ENTITY_SNOW_GOLEM_SHOOT, 1.0F, 1.0F / (this.owner.getRandom().nextFloat() * 0.4F + 0.8F));
             this.owner.world.spawnEntity(snowball);
             this.beginCooldown();

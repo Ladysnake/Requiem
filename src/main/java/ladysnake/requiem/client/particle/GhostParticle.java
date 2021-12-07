@@ -38,11 +38,7 @@ import ladysnake.requiem.client.render.RequiemRenderPhases;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.particle.AbstractSlowingParticle;
-import net.minecraft.client.particle.Particle;
-import net.minecraft.client.particle.ParticleFactory;
-import net.minecraft.client.particle.ParticleTextureSheet;
-import net.minecraft.client.particle.SpriteProvider;
+import net.minecraft.client.particle.*;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.VertexConsumer;
@@ -100,7 +96,7 @@ public final class GhostParticle extends AbstractSlowingParticle {
     }
 
     public boolean isColliding() {
-        return this.world.method_39454(null, this.getBoundingBox());
+        return this.world.isSpaceEmpty(null, this.getBoundingBox());
     }
 
     @Override

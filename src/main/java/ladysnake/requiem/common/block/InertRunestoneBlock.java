@@ -77,7 +77,7 @@ public class InertRunestoneBlock extends BlockWithEntity {
                     if (checkedPos.getManhattanDistance(pos) > 1) {
                         BlockState checkedState = world.getBlockState(checkedPos);
                         if (checkedState.isIn(RequiemBlockTags.OBELISK_CORE)) {
-                            world.method_39279(checkedPos, checkedState.getBlock(), 0);
+                            world.createAndScheduleBlockTick(checkedPos, checkedState.getBlock(), 0);
                         }
                     }
                 }
@@ -132,7 +132,7 @@ public class InertRunestoneBlock extends BlockWithEntity {
     @Override
     public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
         if (!oldState.isIn(RequiemBlockTags.OBELISK_CORE)) {
-            world.method_39279(pos, this, 0);
+            world.createAndScheduleBlockTick(pos, this, 0);
         }
     }
 
@@ -147,7 +147,7 @@ public class InertRunestoneBlock extends BlockWithEntity {
 
     @Override
     public void neighborUpdate(BlockState state, World world, BlockPos pos, Block block, BlockPos fromPos, boolean notify) {
-        world.method_39279(pos, this, 0);
+        world.createAndScheduleBlockTick(pos, this, 0);
     }
 
     @Override

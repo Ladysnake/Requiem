@@ -49,9 +49,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(BedBlock.class)
 public class BedBlockMixin {
     @Dynamic
-    @Inject(at = @At(value = "INVOKE", target = "net/minecraft/entity/player/PlayerEntity.sendMessage(Lnet/minecraft/text/Text;Z)V"), method = "m_uofsuxhh(Lnet/minecraft/entity/player/PlayerEntity;Lnet/minecraft/entity/player/PlayerEntity$SleepFailureReason;)V", cancellable = true)
+    @Inject(at = @At(value = "INVOKE", target = "net/minecraft/entity/player/PlayerEntity.sendMessage(Lnet/minecraft/text/Text;Z)V"), method = "method_19283(Lnet/minecraft/entity/player/PlayerEntity;Lnet/minecraft/entity/player/PlayerEntity$SleepFailureReason;)V", cancellable = true)
     private static void requiem$sendMessage(PlayerEntity unused, SleepFailureReason reason, CallbackInfo ci) {
-        if (reason.toText() == null) {
+        if (reason.getMessage() == null) {
             ci.cancel();
         }
     }

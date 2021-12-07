@@ -44,8 +44,8 @@ import net.minecraft.entity.attribute.AttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffect;
+import net.minecraft.entity.effect.StatusEffectCategory;
 import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.effect.StatusEffectType;
 import net.minecraft.entity.player.PlayerEntity;
 
 import javax.annotation.Nonnegative;
@@ -109,7 +109,7 @@ public class AttritionStatusEffect extends StatusEffect implements StickyStatusE
         }
     }
 
-    public AttritionStatusEffect(StatusEffectType type, int color) {
+    public AttritionStatusEffect(StatusEffectCategory type, int color) {
         super(type, color);
     }
 

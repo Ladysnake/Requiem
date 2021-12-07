@@ -104,7 +104,7 @@ public abstract class InventoryScreenMixin extends AbstractInventoryScreen<Playe
     }
 
     @Dynamic("Lambda method, implementation of PressAction for the crafting book button")
-    @Inject(method = "m_ekzothcc", at = @At("RETURN"), remap = false)
+    @Inject(method = "method_19891", at = @At("RETURN"), remap = false)
     private void repositionCraftingButton(ButtonWidget button, CallbackInfo ci) {
         if (this.supercrafterButton != null) {
             this.supercrafterButton.setPos(this.x + 131, this.height / 2 - 22);

@@ -58,11 +58,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.stat.Stats;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.ChatUtil;
-import net.minecraft.util.Formatting;
-import net.minecraft.util.Hand;
-import net.minecraft.util.TypedActionResult;
+import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -161,7 +157,7 @@ public class DemonSoulVesselItem extends Item {
             NbtCompound tag = stack.getNbt();
             assert tag != null;
             String author = tag.getString("author");
-            if (!ChatUtil.isEmpty(author)) {
+            if (!StringHelper.isEmpty(author)) {
                 lines.add((new TranslatableText("book.byAuthor", author)).formatted(Formatting.GRAY));
             }
         }

@@ -82,20 +82,20 @@ public abstract class PlayerEntityMixin extends LivingEntity implements RequiemP
 
     @Inject(method = "travel",
         slice = @Slice(
-            from = @At(value = "FIELD", target = "Lnet/minecraft/entity/player/PlayerEntity;flyingSpeed:F", ordinal = 0),
+            from = @At(value = "FIELD", target = "Lnet/minecraft/entity/player/PlayerEntity;airStrafingSpeed:F", ordinal = 0),
             to = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerEntity;setFlag(IZ)V")
         ),
         at = @At(
             value = "FIELD",
             opcode = Opcodes.PUTFIELD,
-            target = "Lnet/minecraft/entity/player/PlayerEntity;flyingSpeed:F",
+            target = "Lnet/minecraft/entity/player/PlayerEntity;airStrafingSpeed:F",
             ordinal = 0,
             shift = At.Shift.AFTER
         )
     )
     private void slowGhosts(Vec3d movementInput, CallbackInfo ci) {
         if (MovementAlterer.KEY.get(this).isNoClipping()) {
-            this.flyingSpeed *= 0.1;
+            this.airStrafingSpeed *= 0.1;
         }
     }
 

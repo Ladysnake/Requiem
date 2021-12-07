@@ -107,7 +107,7 @@ public abstract class MobEntityMixin extends LivingEntityMixin implements Posses
                 forwardSpeed *= 0.25F;
             }
 
-            this.flyingSpeed = this.getMovementSpeed() * 0.1F;
+            this.requiem$setAirStrafingSpeed(this.getMovementSpeed() * 0.1F);
             // isLogicalSideForUpdatingMovement but inlined
             if (passenger instanceof PlayerEntity player && player.isMainPlayer() || !this.world.isClient()) {
                 float speed;
