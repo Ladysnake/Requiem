@@ -35,8 +35,6 @@
 package ladysnake.requiem.common.item;
 
 import ladysnake.requiem.common.entity.RequiemEntityAttributes;
-import net.minecraft.Bootstrap;
-import net.minecraft.SharedConstants;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.AttributeContainer;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
@@ -44,20 +42,13 @@ import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.mob.PiglinBruteEntity;
 import net.minecraft.entity.mob.PillagerEntity;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import net.minecraft.test.GameTest;
+import net.minecraft.test.TestContext;
 import org.mockito.Mockito;
 
 public class EmptySoulVesselItemTest {
-
-    @BeforeClass
-    public static void setUp() {
-        SharedConstants.createGameVersion();
-        Bootstrap.initialize();
-    }
-
-    @Test
-    public void computeSoulDefense() {
+    @GameTest
+    public void computeSoulDefense(TestContext ctx) {
         LivingEntity mob = Mockito.mock(LivingEntity.class);
         setupMob(mob, PiglinBruteEntity.createPiglinBruteAttributes());
         // "integration testing"

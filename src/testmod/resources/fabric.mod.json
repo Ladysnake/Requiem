@@ -17,7 +17,8 @@
   "environment": "*",
   "entrypoints": {
     "fabric-gametest": [
-      "ladysnake.requiemtest.RequiemTestSuite"
+      "ladysnake.requiemtest.RequiemTestSuite",
+      "ladysnake.requiem.common.item.EmptySoulVesselItemTest"
     ]
   },
   "depends": {

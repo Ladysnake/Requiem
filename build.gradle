@@ -1,8 +1,9 @@
 // Credits to UpcraftLP for the base build script
 
 
-import java.time.Year
 import com.modrinth.minotaur.TaskModrinthUpload
+
+import java.time.Year
 
 plugins {
     id 'fabric-loom' version '0.10-SNAPSHOT'
@@ -252,6 +253,7 @@ dependencies {
 
     testImplementation 'junit:junit:4.13'
     testImplementation 'org.mockito:mockito-core:3.+'
+    testmodImplementation 'org.mockito:mockito-core:3.+'
 
     // Required dependencies
     modApi "io.github.ladysnake:satin:${satin_version}"
