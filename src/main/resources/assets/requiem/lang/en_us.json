@@ -40,6 +40,7 @@
   "requiem:commands.remnant.soul.restore.success": "Restored %s's soul",
   "requiem:ethereal": "Ethereal",
   "requiem:not_ethereal": "Corporeal",
+  "requiem:dialogue.not_found": "Unknown Dialogue: %s",
   "requiem:remnant_type.not_found": "Unknown Remnant Type: %s",
   "requiem:commands.possession.start.fail.not_mob": "%s cannot be possessed as it is not a mob entity",
   "requiem:commands.possession.start.fail.not_incorporeal": "%s is not incorporeal",

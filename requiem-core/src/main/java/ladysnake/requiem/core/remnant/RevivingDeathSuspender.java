@@ -37,6 +37,7 @@ package ladysnake.requiem.core.remnant;
 import io.github.ladysnake.pal.AbilitySource;
 import io.github.ladysnake.pal.Pal;
 import io.github.ladysnake.pal.VanillaAbilities;
+import ladysnake.requiem.api.v1.dialogue.DialogueTracker;
 import ladysnake.requiem.api.v1.remnant.DeathSuspender;
 import ladysnake.requiem.core.RequiemCore;
 import ladysnake.requiem.core.util.serde.DamageSourceSerialization;
@@ -55,6 +56,7 @@ public final class RevivingDeathSuspender implements DeathSuspender {
     private boolean lifeTransient;
     @Nullable
     private DamageSource deathCause;
+    private int timeBeforeDialogue = 20;
 
     public RevivingDeathSuspender(PlayerEntity player) {
         this.player = player;
@@ -91,6 +93,17 @@ public final class RevivingDeathSuspender implements DeathSuspender {
         this.setLifeTransient(false);
         DeathSuspender.KEY.sync(this.player);
         this.player.onDeath(this.deathCause != null ? deathCause : DamageSource.GENERIC);
+    }
+
+    @Override
+    public void serverTick() {
+        if (this.isLifeTransient()) {
+            if (--timeBeforeDialogue == 0) {
+                DialogueTracker.get(this.player).startDialogue(RequiemCore.id("remnant_choice"));
+            } else if (timeBeforeDialogue < 0) {
+                timeBeforeDialogue = 20;
+            }
+        }
     }
 
     @Override

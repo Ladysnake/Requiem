@@ -39,6 +39,7 @@ import ladysnake.requiem.api.v1.dialogue.ChoiceResult;
 import ladysnake.requiem.api.v1.dialogue.CutsceneDialogue;
 import ladysnake.requiem.common.network.RequiemNetworking;
 import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 
 import javax.annotation.Nullable;
 import java.util.Map;
@@ -47,16 +48,23 @@ import java.util.Objects;
 public class DialogueStateMachine implements CutsceneDialogue {
 
     private final Map<String, DialogueState> states;
+    private final Identifier id;
     private @Nullable DialogueState currentState;
     private ImmutableList<Text> currentChoices = ImmutableList.of();
 
-    public DialogueStateMachine(DialogueTemplate template) {
+    public DialogueStateMachine(DialogueTemplate template, Identifier id) {
         this.states = template.states();
+        this.id = id;
         this.selectState(template.start());
     }
 
     private DialogueState getCurrentState() {
         return Objects.requireNonNull(this.currentState, () -> this + " has not been initialized !");
+    }
+
+    @Override
+    public Identifier getId() {
+        return this.id;
     }
 
     @Override

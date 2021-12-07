@@ -20,11 +20,12 @@ package ladysnake.requiem.api.v1.remnant;
 import dev.onyxstudios.cca.api.v3.component.ComponentKey;
 import dev.onyxstudios.cca.api.v3.component.ComponentRegistry;
 import dev.onyxstudios.cca.api.v3.component.sync.AutoSyncedComponent;
+import dev.onyxstudios.cca.api.v3.component.tick.ServerTickingComponent;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Identifier;
 
-public interface DeathSuspender extends AutoSyncedComponent {
+public interface DeathSuspender extends AutoSyncedComponent, ServerTickingComponent {
     ComponentKey<DeathSuspender> KEY = ComponentRegistry.getOrCreate(new Identifier("requiem", "death_suspension"), DeathSuspender.class);
 
     static DeathSuspender get(PlayerEntity player) {

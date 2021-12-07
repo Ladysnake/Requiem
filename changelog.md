@@ -3,6 +3,12 @@ Version 2.0.0
 ------------------------------------------------------
 **Warning: future betas may still break compatibility with worlds started with this version. Don't start using those versions on any world you care about.**
 
+### Changes in Beta 2
+- Updated to MC 1.18
+- Added custom background when doing the mortician exorcism trade
+- Added the `/requiem dialogue` command for interacting with requiem's dialogue system
+  - dialogues can be defined through datapacks, see `remnant_choice.json` for an example
+
 ### Changes in Beta 1
 - Rifts now give attrition upon teleporting you
 - Rifts now refuse to work if you have maxxed out attrition
@@ -162,7 +168,7 @@ Version 2.0.0
 
 ### The "Cry of the Obelisks" update
 
-Updated to MC 1.17
+Updated to MC 1.18
 
 **Additions**
 - Added more Soul Status Effects:

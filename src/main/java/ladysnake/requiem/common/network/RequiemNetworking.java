@@ -55,11 +55,10 @@ import net.minecraft.util.math.BlockPos;
 import org.jetbrains.annotations.Contract;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static io.netty.buffer.Unpooled.buffer;
 
-public class RequiemNetworking {
+public final class RequiemNetworking {
     // Server -> Client
     public static final Identifier ANCHOR_DAMAGE = Requiem.id("anchor_damage");
     public static final Identifier DATA_SYNC = Requiem.id("data_sync");
@@ -107,7 +106,7 @@ public class RequiemNetworking {
 
     public static CustomPayloadS2CPacket createDataSyncMessage(SubDataManagerHelper helper) {
         PacketByteBuf buf = createEmptyBuffer();
-        List<SubDataManager<?>> managers = helper.streamDataManagers().collect(Collectors.toList());
+        List<SubDataManager<?>> managers = helper.streamDataManagers().toList();
         buf.writeVarInt(managers.size());
         for (SubDataManager<?> manager : managers) {
             Requiem.LOGGER.info("[Requiem] Synchronizing data for {} ({})", manager.getFabricId(), manager);

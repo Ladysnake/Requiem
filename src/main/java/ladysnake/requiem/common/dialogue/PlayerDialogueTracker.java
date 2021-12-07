@@ -34,17 +34,19 @@
  */
 package ladysnake.requiem.common.dialogue;
 
+import dev.onyxstudios.cca.api.v3.component.sync.AutoSyncedComponent;
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.dialogue.CutsceneDialogue;
 import ladysnake.requiem.api.v1.dialogue.DialogueRegistry;
 import ladysnake.requiem.api.v1.dialogue.DialogueTracker;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 
 import javax.annotation.Nullable;
 
-public final class PlayerDialogueTracker implements DialogueTracker {
+public final class PlayerDialogueTracker implements DialogueTracker, AutoSyncedComponent {
     public static final Identifier BECOME_REMNANT = Requiem.id("become_remnant");
     public static final Identifier BECOME_WANDERING_SPIRIT = Requiem.id("become_wandering_spirit");
     public static final Identifier STAY_MORTAL = Requiem.id("stay_mortal");
@@ -70,6 +72,7 @@ public final class PlayerDialogueTracker implements DialogueTracker {
     @Override
     public void startDialogue(Identifier id) {
         this.currentDialogue = this.manager.startDialogue(this.player.world, id);
+        KEY.sync(this.player);
     }
 
     @Override
@@ -81,5 +84,27 @@ public final class PlayerDialogueTracker implements DialogueTracker {
     @Override
     public CutsceneDialogue getCurrentDialogue() {
         return this.currentDialogue;
+    }
+
+    @Override
+    public boolean shouldSyncWith(ServerPlayerEntity player) {
+        return player == this.player;
+    }
+
+    @Override
+    public void writeSyncPacket(PacketByteBuf buf, ServerPlayerEntity recipient) {
+        buf.writeBoolean(this.currentDialogue != null);
+        if (this.currentDialogue != null) buf.writeIdentifier(this.currentDialogue.getId());
+    }
+
+    @Override
+    public void applySyncPacket(PacketByteBuf buf) {
+        boolean hasDialogue = buf.readBoolean();
+        if (hasDialogue) {
+            Identifier dialogueId = buf.readIdentifier();
+            this.startDialogue(dialogueId);
+        } else {
+            this.currentDialogue = null;
+        }
     }
 }

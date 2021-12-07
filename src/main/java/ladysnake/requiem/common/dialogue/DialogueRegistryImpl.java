@@ -52,7 +52,8 @@ public final class DialogueRegistryImpl implements DialogueRegistry {
     public CutsceneDialogue startDialogue(World world, Identifier id) {
         return new DialogueStateMachine(
             world.getRegistryManager().get(RequiemRegistries.DIALOGUES).getOrEmpty(id)
-                .orElseThrow(() -> new IllegalArgumentException("Unknown dialogue " + id))
+                .orElseThrow(() -> new IllegalArgumentException("Unknown dialogue " + id)),
+            id
         );
     }
 

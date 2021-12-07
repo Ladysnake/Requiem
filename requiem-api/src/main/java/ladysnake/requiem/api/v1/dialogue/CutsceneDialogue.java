@@ -19,8 +19,11 @@ package ladysnake.requiem.api.v1.dialogue;
 
 import com.google.common.collect.ImmutableList;
 import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 
 public interface CutsceneDialogue {
+    Identifier getId();
+
     Text getCurrentText();
 
     ImmutableList<Text> getCurrentChoices();

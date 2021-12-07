@@ -37,6 +37,7 @@ package ladysnake.requiem.client;
 import baritone.api.fakeplayer.FakeClientPlayerEntity;
 import com.mojang.blaze3d.systems.RenderSystem;
 import ladysnake.requiem.Requiem;
+import ladysnake.requiem.api.v1.dialogue.CutsceneDialogue;
 import ladysnake.requiem.api.v1.dialogue.DialogueTracker;
 import ladysnake.requiem.api.v1.event.minecraft.ItemTooltipCallback;
 import ladysnake.requiem.api.v1.event.minecraft.client.ApplyCameraTransformsCallback;
@@ -44,7 +45,6 @@ import ladysnake.requiem.api.v1.event.minecraft.client.CrosshairRenderCallback;
 import ladysnake.requiem.api.v1.event.requiem.PossessionStateChangeCallback;
 import ladysnake.requiem.api.v1.event.requiem.client.RenderSelfPossessedEntityCallback;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
-import ladysnake.requiem.api.v1.remnant.DeathSuspender;
 import ladysnake.requiem.client.gui.CutsceneDialogueScreen;
 import ladysnake.requiem.client.particle.GhostParticle;
 import ladysnake.requiem.client.screen.RiftScreen;
@@ -154,19 +154,21 @@ public final class RequiemClientListener implements
     public void onEndTick(MinecraftClient client) {
         if (client.player != null) {
             MobEntity possessedEntity = PossessionComponent.get(client.player).getHost();
+
             if (possessedEntity != null && possessedEntity.getHealth() != client.player.getHealth()) {
                 client.player.updateHealth(possessedEntity.getHealth());
                 if (client.player.getHealth() <= 0) client.player.setHealth(1);
             }
+
             if (client.currentScreen == null) {
-                if (DeathSuspender.get(client.player).isLifeTransient()) {
-                    if (--timeBeforeDialogueGui == 0) {
-                        DialogueTracker dialogueTracker = DialogueTracker.get(client.player);
-                        dialogueTracker.startDialogue(Requiem.id("remnant_choice"));
-                        client.setScreen(new CutsceneDialogueScreen(new TranslatableText("requiem:dialogue_screen"), dialogueTracker.getCurrentDialogue(), this.rc.worldFreezeFxRenderer()));
-                    } else if (timeBeforeDialogueGui < 0) {
-                        timeBeforeDialogueGui = 20;
-                    }
+                CutsceneDialogue currentDialogue = DialogueTracker.get(client.player).getCurrentDialogue();
+
+                if (currentDialogue != null) {
+                    client.setScreen(new CutsceneDialogueScreen(
+                        new TranslatableText("requiem:dialogue_screen"),
+                        currentDialogue,
+                        this.rc.worldFreezeFxRenderer()
+                    ));
                 }
             }
         }

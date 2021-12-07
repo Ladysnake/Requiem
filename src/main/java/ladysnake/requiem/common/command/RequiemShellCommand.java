@@ -47,7 +47,6 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.Vec3d;
 
 import java.util.Collection;
-import java.util.function.Consumer;
 
 import static net.minecraft.command.argument.EntityArgumentType.*;
 import static net.minecraft.command.argument.GameProfileArgumentType.gameProfile;
@@ -61,28 +60,28 @@ public final class RequiemShellCommand {
     public static LiteralArgumentBuilder<ServerCommandSource> shellSubcommand() {
         return literal(SHELL_SUBCOMMAND)
             .then(literal("create")
-                .executes(context -> runOne(context.getSource().getPlayer(), player -> createShell(context.getSource().getPosition(), player)))
+                .executes(context -> RequiemCommand.runOne(context.getSource().getPlayer(), player -> createShell(context.getSource().getPosition(), player)))
                 // pandemonium shell create
                 .then(argument("player", player())
                     // pandemonium shell create <player>
-                    .executes(context -> runOne(getPlayer(context, "player"), player -> createShell(context.getSource().getPosition(), player)))
+                    .executes(context -> RequiemCommand.runOne(getPlayer(context, "player"), player -> createShell(context.getSource().getPosition(), player)))
                 )
             )
             .then(literal("split")
                 // pandemonium shell split
-                .executes(context -> runOne(context.getSource().getPlayer(), RequiemShellCommand::split))
+                .executes(context -> RequiemCommand.runOne(context.getSource().getPlayer(), RequiemShellCommand::split))
                 .then(argument("players", players())
                     // pandemonium shell split <players>
-                    .executes(context -> runMany(getPlayers(context, "players"), RequiemShellCommand::split))
+                    .executes(context -> RequiemCommand.runMany(getPlayers(context, "players"), RequiemShellCommand::split))
                 )
             )
             .then(literal("merge").then(argument("shell", entity())
                 .executes(context -> {
                     Entity shell = getEntity(context, "shell");
-                    return runOne(context.getSource().getPlayer(), player -> merge(player, shell));
+                    return RequiemCommand.runOne(context.getSource().getPlayer(), player -> merge(player, shell));
                 }).then(argument("player", player()).executes(context -> {
                     Entity shell = getEntity(context, "shell");
-                    return runOne(getPlayer(context, "player"), player -> merge(player, shell));
+                    return RequiemCommand.runOne(getPlayer(context, "player"), player -> merge(player, shell));
                 })))
             )
             .then(literal("identity").then(literal("set")
@@ -91,7 +90,7 @@ public final class RequiemShellCommand {
                             Collection<GameProfile> profiles = getProfileArgument(context, "profile");
                             if (profiles.size() > 1) throw TOO_MANY_PLAYERS_EXCEPTION.create();
                             GameProfile profile = profiles.iterator().next();
-                            return runMany(getEntities(context, "shells"), s -> setIdentity(s, profile));
+                            return RequiemCommand.runMany(getEntities(context, "shells"), s -> setIdentity(s, profile));
                         })
                     ))
                 )
@@ -126,19 +125,5 @@ public final class RequiemShellCommand {
             throw new CommandException(new TranslatableText("pandemonium:commands.shell.split.fail.vagrant", player.getDisplayName()));
         }
         PlayerSplitter.split(player, true);
-    }
-
-    private static <T> int runOne(T element, Consumer<T> action) {
-        action.accept(element);
-        return 1;
-    }
-
-    private static <T> int runMany(Collection<T> collection, Consumer<T> action) {
-        int count = 0;
-        for (T element : collection) {
-            action.accept(element);
-            count++;
-        }
-        return count;
     }
 }

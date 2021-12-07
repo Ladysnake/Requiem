@@ -34,64 +34,39 @@
  */
 package ladysnake.requiem.common.command;
 
-import com.mojang.brigadier.CommandDispatcher;
-import me.lucko.fabric.api.permissions.v0.Permissions;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import ladysnake.requiem.api.v1.dialogue.DialogueTracker;
+import net.minecraft.command.argument.EntityArgumentType;
+import net.minecraft.command.argument.IdentifierArgumentType;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.Identifier;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
-
+import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
 
-public final class RequiemCommand {
+public final class RequiemDialogueCommand {
+    public static final String DIALOGUE_SUBCOMMAND = "dialogue";
 
-    public static final String REQUIEM_ROOT_COMMAND = "requiem";
-
-    private static final Set<String> permissions = new HashSet<>();
-
-    public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        dispatcher.register(literal(REQUIEM_ROOT_COMMAND)
-            .requires(RequiemCommand::checkPermissions)
-            .then(RequiemDialogueCommand.dialogueSubcommand())
-            .then(RequiemEtherealCommand.etherealSubcommand())
-            .then(RequiemPossessionCommand.possessionSubcommand())
-            .then(RequiemRemnantCommand.remnantSubcommand())
-            .then(RequiemShellCommand.shellSubcommand())
-            .then(RequiemSoulCommand.soulSubcommand())
-        );
+    static LiteralArgumentBuilder<ServerCommandSource> dialogueSubcommand() {
+        return literal(DIALOGUE_SUBCOMMAND)
+            .requires(RequiemCommand.permission("dialogue.start"))
+            // requiem dialogue start <dialogue> [players]
+            .then(literal("start")
+                .requires(RequiemCommand.permission("dialogue.start"))
+                .then(argument("dialogue", IdentifierArgumentType.identifier())
+                    .executes(context -> RequiemCommand.runOne(context.getSource().getPlayer(),
+                        p -> startDialogue(context.getSource(), IdentifierArgumentType.getIdentifier(context, "dialogue"), p)
+                    ))
+                    .then(argument("players", EntityArgumentType.players())
+                        .executes(context -> RequiemCommand.runMany(EntityArgumentType.getPlayers(context, "players"),
+                            p -> startDialogue(context.getSource(), IdentifierArgumentType.getIdentifier(context, "dialogue"), p)))
+                    )
+                )
+            );
     }
 
-    public static Predicate<ServerCommandSource> permission(String name) {
-        String perm = "requiem.command" + name;
-        permissions.add(perm);
-        return Permissions.require(perm, 2);
-    }
-
-    private static boolean checkPermissions(ServerCommandSource source) {
-        if (source.hasPermissionLevel(2)) return true;
-
-        for (String perm : permissions) {
-            if (Permissions.check(source, perm)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public static <T> int runOne(T element, Consumer<T> action) {
-        action.accept(element);
-        return 1;
-    }
-
-    public static <T> int runMany(Collection<T> collection, Consumer<T> action) {
-        int count = 0;
-        for (T element : collection) {
-            action.accept(element);
-            count++;
-        }
-        return count;
+    private static void startDialogue(ServerCommandSource source, Identifier dialogue, ServerPlayerEntity player) {
+        DialogueTracker.get(player).startDialogue(dialogue);
     }
 }
