@@ -5,6 +5,7 @@ Version 2.0.0
 
 ### Changes in Beta 3
 - Fixed crash at launch
+- Fixed crash with Iris
 - Fixed derelict obelisks spawning in every biome instead of just soul sand valleys
 - Fixed axolotls and fish getting their soul back when put in a bucket
 
