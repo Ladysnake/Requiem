@@ -38,12 +38,21 @@ import com.google.common.collect.ImmutableList;
 import com.mojang.serialization.Codec;
 import ladysnake.requiem.Requiem;
 import net.minecraft.block.BlockState;
-import net.minecraft.structure.*;
+import net.minecraft.structure.PoolStructurePiece;
+import net.minecraft.structure.PostPlacementProcessor;
+import net.minecraft.structure.StructureGeneratorFactory;
+import net.minecraft.structure.StructureManager;
+import net.minecraft.structure.StructurePiece;
+import net.minecraft.structure.StructurePiecesGenerator;
 import net.minecraft.structure.pool.EmptyPoolElement;
 import net.minecraft.structure.pool.StructurePoolElement;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Util;
-import net.minecraft.util.math.*;
+import net.minecraft.util.math.BlockBox;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3i;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.Heightmap;
@@ -58,7 +67,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.Random;
-import java.util.stream.Collectors;
 
 public class DerelictObeliskFeature extends StructureFeature<DefaultFeatureConfig> {
 
@@ -71,6 +79,12 @@ public class DerelictObeliskFeature extends StructureFeature<DefaultFeatureConfi
         ChunkPos chunkPos = context.chunkPos();
         int x = chunkPos.x * 16;
         int z = chunkPos.z * 16;
+
+        // Probably won't work too well with 3D biomes, but works well enough in vanilla nether
+        if (!context.isBiomeValid(Heightmap.Type.OCEAN_FLOOR)) {
+            return Optional.empty();
+        }
+
         BlockPos.Mutable centerPos = new BlockPos.Mutable(x, 0, z);
 
         StructurePoolFeatureConfig structureSettingsAndStartPool = new StructurePoolFeatureConfig(
@@ -124,7 +138,7 @@ public class DerelictObeliskFeature extends StructureFeature<DefaultFeatureConfi
         int maxY = MathHelper.nextBetween(random, 60, 100);
 
         List<BlockPos> corners = ImmutableList.of(new BlockPos(box.getMinX(), 0, box.getMinZ()), new BlockPos(box.getMaxX(), 0, box.getMinZ()), new BlockPos(box.getMinX(), 0, box.getMaxZ()), new BlockPos(box.getMaxX(), 0, box.getMaxZ()));
-        List<VerticalBlockSample> cornerColumns = corners.stream().map(blockPos -> chunkGenerator.getColumnSample(blockPos.getX(), blockPos.getZ(), world)).collect(Collectors.toList());
+        List<VerticalBlockSample> cornerColumns = corners.stream().map(blockPos -> chunkGenerator.getColumnSample(blockPos.getX(), blockPos.getZ(), world)).toList();
         Heightmap.Type heightmapType = Heightmap.Type.OCEAN_FLOOR_WG;
 
         int y;
