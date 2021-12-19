@@ -47,6 +47,10 @@
   "minecraft:ghast": {
     "flightMode": "FORCED"
   },
+  "minecraft:glow_squid": {
+    "landedSpeedModifier": -0.95,
+    "swimMode": "FORCED"
+  },
   "minecraft:guardian": {
     "swimMode": "FORCED",
     "flopsOnLand": true
@@ -89,6 +93,7 @@
     "swimMode": "SINKING"
   },
   "minecraft:squid": {
+    "landedSpeedModifier": -0.95,
     "swimMode": "FORCED"
   },
   "minecraft:spider": {
