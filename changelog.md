@@ -3,6 +3,10 @@ Version 2.0.0
 ------------------------------------------------------
 **Warning: future betas may still break compatibility with worlds started with this version. Don't start using those versions on any world you care about.**
 
+### Changes in Beta 5
+- Fixed a build issue
+- Made squids way slower on land
+
 ### Changes in Beta 4
 - Fixed failure on servers when interacting with a villager-like mob
 
