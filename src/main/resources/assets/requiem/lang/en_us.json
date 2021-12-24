@@ -52,6 +52,12 @@
   "requiem:commands.shell.split.fail.mortal": "Failed to split %s as they are Mortal",
   "requiem:commands.shell.split.fail.vagrant": "Failed to split %s as they are already Vagrant",
   "requiem:commands.shell.fail.not_shell": "%s is not a player shell",
+  "requiem:commands.soul.query.has_soul": "%s currently has a soul",
+  "requiem:commands.soul.query.no_soul": "%s currently has no soul",
+  "requiem:commands.soul.set.fail.not_living": "%s is not a living entity",
+  "requiem:commands.soul.set.fail.permanently_soulless": "%s cannot have a soul of its own",
+  "requiem:commands.soul.remove.success": "Successfully removed the soul from %s",
+  "requiem:commands.soul.restore.success": "Successfully restored its soul to %s",
 
   "requiem:container.obelisk_rift": "Rift",
 

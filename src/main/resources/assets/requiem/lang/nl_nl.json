@@ -16,7 +16,6 @@
 
   "requiem:remnant_type.requiem.mortal.name": "Sterveling",
   "requiem:remnant_type.requiem.remnant.name": "Overblijfsel",
-  "requiem:remnant_type.requiem.wandering_spirit.name": "Dwalend Ziel",
 
   "requiem:commands.query.success.other": "%2$s is %1$s",
   "requiem:commands.query.success.self": "Jij bent %s",
@@ -64,7 +63,6 @@
   "requiem:subtitles.effect.phasing": "Speler Fasering",
   "requiem:subtitles.effect.possession.attempt": "Bezits Poging",
   "requiem:subtitles.effect.time.stop": "ZA WARUDO! TOKI WO TOMARE",
-  "requiem:subtitles.item.opus.use": "Opus Daemonium Geactiveerd",
 
   "requiem:tooltip.ammo_generator": "Munitie Generatie",
   "requiem:tooltip.bolt_hoarder": "Pijlen Bewaarder",
@@ -116,15 +114,8 @@
   "entity.requiem.cured_piglin": "Pigman",
   "entity.requiem.cured_piglin_brute": "Pigman Bruut",
 
-  "item.requiem.human_flesh": "Mensenvlees",
   "item.requiem.totem_of_skeletonization": "Totem der Skelettonizatie",
   "item.requiem.opus_daemonium": "Opus Daemonium",
-  "item.requiem.opus_daemonium_cure": "Opus Daemonium",
-  "item.requiem.opus_daemonium_curse": "Opus Daemonium",
-  "item.requiem.opus_daemonium_banishment": "Opus Daemonium",
-  "requiem:opus_daemonium.curse": "Vloek",
-  "requiem:opus_daemonium.cure": "Vloek",
-  "requiem:opus_daemonium.banishment": "Verbanning",
 
   "origins:layer.requiem.soul_type.name": "Ziel Type",
   "origins:layer.requiem.soul_type.missing_origin.name": "Missend",
@@ -133,8 +124,6 @@
   "origins:origin.requiem.mortal.description": "Een gewone sterveling. Jouw doodgewone Minecraft ervaring wacht.",
   "origins:origin.requiem.remnant.name": "Demoon",
   "origins:origin.requiem.remnant.description": "Er gaan geruchten over mysterieuze demonen die lichamen van de dood overnemen. Niemand weet echt wat ze zijn, maar bijna niemand wil het uitzoeken.",
-  "origins:origin.requiem.wandering_spirit.name": "Dwalende Geest",
-  "origins:origin.requiem.wandering_spirit.description": "Deze verloren demonen is het niet meer gelukt hun lichamelijke vorm aan te nemen.",
   "origins:origin.requiem.vagrant.name": "Zwervende",
   "origins:origin.requiem.vagrant.description": "Een demoon zonder normaal lichaam. Vervloekt om te dwalen en zwakkere wezens over te nemen. Ze doen zich voor als echte wezens zodat ze contact krijgen met de echte wereld.",
   "origins:power.requiem.remnant.name": "Uiteenval",
@@ -147,8 +136,6 @@
   "origins:power.requiem.possession.description": "Als een vrij Ziel, mag je de lege lichamen overnemen die ronddwalen in deze wereld.",
   "origins:power.requiem.resurrection.name": "Dode Grip",
   "origins:power.requiem.resurrection.description": "Onder bepaalde omstandigheden, zal je ziel vast blijven zitten in je uiteengevallen lichaam zelfs na je dood.",
-  "origins:power.requiem.wandering_spirit.name": "Voorbijganger",
-  "origins:power.requiem.wandering_spirit.description": "Je kunt je bezeten lichaam verlaten wanneer je wilt.",
   "origins:power.requiem.soul_mending.name": "Ziels Herstel",
   "origins:power.requiem.soul_mending.description": "Je Ziel langzaam herstelt zichzelf tijdens bezittingen.",
   "origins:power.requiem.banished.name": "Verbannen",

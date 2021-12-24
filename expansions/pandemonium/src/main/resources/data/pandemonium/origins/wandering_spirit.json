@@ -5,7 +5,7 @@
     "requiem:banished"
   ],
   "icon": "pandemonium:baleful_soul_vessel",
-  "name": "origins:origin.requiem.wandering_spirit.name",
+  "name": "origins:origin.pandemonium.wandering_spirit.name",
   "description": "origins:origin.pandemonium.wandering_spirit.description",
   "order": 1,
   "impact": 3

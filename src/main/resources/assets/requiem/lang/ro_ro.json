@@ -16,7 +16,6 @@
 
   "requiem:remnant_type.requiem.mortal.name": "Mortal",
   "requiem:remnant_type.requiem.remnant.name": "Ramasit",
-  "requiem:remnant_type.requiem.wandering_spirit.name": "Duh ratacitor",
 
   "requiem:commands.query.success.other": "%2$s is %1$s",
   "requiem:commands.query.success.self": "You are %s",
@@ -64,7 +63,6 @@
   "requiem:subtitles.effect.phasing": "Player trecand prin pereti",
   "requiem:subtitles.effect.possession.attempt": "Încercare de pozedare",
   "requiem:subtitles.effect.time.stop": "ZA WARUDO! TOKI WO TOMARE",
-  "requiem:subtitles.item.opus.use": "Sa activeaza Opus Daemonium",
 
   "requiem:tooltip.ammo_generator": "Generare de Amunitie",
   "requiem:tooltip.bolt_hoarder": "Acumulator de Bolturi",
@@ -116,23 +114,14 @@
   "entity.requiem.cured_piglin": "Pigman",
   "entity.requiem.cured_piglin_brute": "Pigman Brute",
 
-  "item.requiem.human_flesh": "Carne Umană",
   "item.requiem.totem_of_skeletonization": "Totem de Skelotizare",
   "item.requiem.opus_daemonium": "Opus Daemonium",
-  "item.requiem.opus_daemonium_cure": "Opus Daemonium",
-  "item.requiem.opus_daemonium_curse": "Opus Daemonium",
-  "item.requiem.opus_daemonium_banishment": "Opus Daemonium",
-  "requiem:opus_daemonium.curse": "Blestem",
-  "requiem:opus_daemonium.cure": "Vindecare",
-  "requiem:opus_daemonium.banishment": "Alungarea",
 
   "origins:layer.requiem.soul_type.name": "Tip de suflet",
   "origins:origin.requiem.mortal.name": "Mortal",
   "origins:origin.requiem.mortal.description": "Doar un mortal. Experienta ta normala de minecraft incepe.",
   "origins:origin.requiem.remnant.name": "Demon",
   "origins:origin.requiem.remnant.description": "Povestile au spus despre demonii misteriosi care au preluat trupurile mortilor. Nimeni nu stie cu adevarat ce sunt, dar puyini isi doresc cu adevarat sa afle.",
-  "origins:origin.requiem.wandering_spirit.name": "Duh ratacitor",
-  "origins:origin.requiem.wandering_spirit.description": "Acesti demoni pierduti de mult au devenit incapabili sa-si regenereze forma umana.",
   "origins:origin.requiem.vagrant.name": "Vagabond",
   "origins:origin.requiem.vagrant.description": "Un demon in afara unui corp congruent. Condamnat sa rataceasca si sa preia entitati mai slabe pentru a actiona ca împuterniciti cu lumea fizica.",
   "origins:power.requiem.remnant.name": "Dissociation",
@@ -145,8 +134,6 @@
   "origins:power.requiem.possession.description": "Ca un suflet liber, boti sa iei corpuri care merg peste lumea asta.",
   "origins:power.requiem.resurrection.name": "Death Grip",
   "origins:power.requiem.resurrection.description": "in anumite circumstante, sufletul tau se poate tine de corpul tau desfigurat dupa moartea acestuia.",
-  "origins:power.requiem.wandering_spirit.name": "Trecator",
-  "origins:power.requiem.wandering_spirit.description": "Poti sa iesi un corp posezat oricand.",
   "origins:power.requiem.soul_mending.name": "Remedierea sufletului",
   "origins:power.requiem.soul_mending.description": "Sufletul tau se repara încet în timpul posesiei.",
   "origins:power.requiem.banished.name": "Alungat",
