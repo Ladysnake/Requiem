@@ -1,0 +1,124 @@
+/*
+ * Requiem
+ * Copyright (C) 2017-2021 Ladysnake
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses>.
+ *
+ * Linking this mod statically or dynamically with other
+ * modules is making a combined work based on this mod.
+ * Thus, the terms and conditions of the GNU General Public License cover the whole combination.
+ *
+ * In addition, as a special exception, the copyright holders of
+ * this mod give you permission to combine this mod
+ * with free software programs or libraries that are released under the GNU LGPL
+ * and with code included in the standard release of Minecraft under All Rights Reserved (or
+ * modified versions of such code, with unchanged license).
+ * You may copy and distribute such a system following the terms of the GNU GPL for this mod
+ * and the licenses of the other code concerned.
+ *
+ * Note that people who make modified versions of this mod are not obligated to grant
+ * this special exception for their modified versions; it is their choice whether to do so.
+ * The GNU General Public License gives permission to release a modified version without this exception;
+ * this exception also makes it possible to release a modified version which carries forward this exception.
+ */
+package ladysnake.requiem.common.screen;
+
+import com.demonwav.mcdev.annotations.CheckEnv;
+import com.demonwav.mcdev.annotations.Env;
+import com.google.common.collect.ImmutableList;
+import ladysnake.requiem.api.v1.dialogue.ChoiceResult;
+import ladysnake.requiem.api.v1.dialogue.CutsceneDialogue;
+import ladysnake.requiem.api.v1.dialogue.DialogueTracker;
+import ladysnake.requiem.common.network.RequiemNetworking;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.screen.ScreenHandler;
+import net.minecraft.screen.ScreenHandlerType;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.Text;
+import org.jetbrains.annotations.Nullable;
+
+public class DialogueScreenHandler extends ScreenHandler {
+    private final boolean unskippable;
+    private Text currentText;
+    private ImmutableList<Text> currentChoices;
+    private int selectedChoice;
+
+    public DialogueScreenHandler(int syncId, boolean unskippable) {
+        this(RequiemScreenHandlers.DIALOGUE_SCREEN_HANDLER, syncId, unskippable);
+    }
+
+    public DialogueScreenHandler(@Nullable ScreenHandlerType<?> type, int syncId, boolean unskippable) {
+        super(type, syncId);
+        this.unskippable = unskippable;
+    }
+
+    public void updateContent(PlayerEntity player, boolean bigChoice, Text currentText, ImmutableList<Text> currentChoices) {
+        this.currentText = currentText;
+        this.currentChoices = currentChoices;
+        this.selectedChoice = 0;
+
+        if (player instanceof ServerPlayerEntity sp) {
+            RequiemNetworking.sendDialogueUpdateMessage(sp, this.getCurrentText(), this.getCurrentChoices(), bigChoice);
+        }
+    }
+
+    public boolean isUnskippable() {
+        return unskippable;
+    }
+
+    public Text getCurrentText() {
+        return currentText;
+    }
+
+    public ImmutableList<Text> getCurrentChoices() {
+        return currentChoices;
+    }
+
+    @CheckEnv(Env.CLIENT)
+    public void setSelectedChoice(int selected) {
+        this.selectedChoice = selected;
+    }
+
+    @CheckEnv(Env.CLIENT)
+    public int getSelectedChoice() {
+        return this.selectedChoice;
+    }
+
+    @Override
+    public boolean canUse(PlayerEntity player) {
+        return true;
+    }
+
+    public void confirmChoice(boolean resetSelection) {
+        this.makeChoice(this.selectedChoice, resetSelection);
+    }
+
+    public void makeChoice(int choice, boolean resetSelection) {
+        RequiemNetworking.sendDialogueActionMessage(choice);
+        if (resetSelection) this.setSelectedChoice(0);
+    }
+
+    public void makeChoice(ServerPlayerEntity player, int choice) {
+        CutsceneDialogue dialogue = DialogueTracker.get(player).getCurrentDialogue();
+
+        if (dialogue != null) {
+            ChoiceResult result = dialogue.choose(choice, action -> action.handle(player));
+            switch (result) {
+                case END_DIALOGUE -> DialogueTracker.get(player).endDialogue();
+                case DEFAULT -> updateContent(player, true, dialogue.getCurrentText(), dialogue.getCurrentChoices());
+                case ASK_CONFIRMATION -> updateContent(player, false, dialogue.getCurrentText(), dialogue.getCurrentChoices());
+            }
+        }
+    }
+}

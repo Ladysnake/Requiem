@@ -34,88 +34,52 @@
  */
 package ladysnake.requiem.client.gui;
 
-import com.google.common.collect.ImmutableList;
-import ladysnake.requiem.api.v1.dialogue.ChoiceResult;
-import ladysnake.requiem.api.v1.dialogue.CutsceneDialogue;
-import ladysnake.requiem.api.v1.dialogue.DialogueTracker;
-import ladysnake.requiem.api.v1.remnant.DeathSuspender;
+import ladysnake.requiem.client.RequiemClient;
 import ladysnake.requiem.client.ZaWorldFx;
+import ladysnake.requiem.common.screen.DialogueScreenHandler;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.ConfirmScreen;
-import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.LiteralText;
+import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import org.lwjgl.glfw.GLFW;
 
-public class CutsceneDialogueScreen extends Screen {
+import java.util.List;
+
+public class CutsceneDialogueScreen extends HandledScreen<DialogueScreenHandler> {
     public static final int MIN_RENDER_Y = 40;
     public static final int TITLE_GAP = 20;
     public static final int CHOICE_GAP = 5;
     public static final int MAX_TEXT_WIDTH = 300;
 
     private final ZaWorldFx fxRenderer;
-    private final CutsceneDialogue dialogue;
-    private int selectedChoice;
     private boolean hoveringChoice;
 
-    public CutsceneDialogueScreen(Text title, CutsceneDialogue dialogue, ZaWorldFx fxRenderer) {
-        super(title);
-        this.dialogue = dialogue;
-        this.fxRenderer = fxRenderer;
+    public CutsceneDialogueScreen(DialogueScreenHandler handler, PlayerInventory inventory, Text title) {
+        super(handler, inventory, title);
+        this.fxRenderer = RequiemClient.instance().worldFreezeFxRenderer();
     }
 
     @Override
     public boolean shouldCloseOnEsc() {
-        return false;
+        return !this.handler.isUnskippable();
     }
 
     @Override
     public boolean mouseClicked(double x, double y, int button) {
         if (hoveringChoice) {
-            confirmChoice(selectedChoice);
+            this.handler.confirmChoice(false);
         }
         return true;
-    }
-
-    private ChoiceResult confirmChoice(int selectedChoice) {
-        assert this.client != null;
-        ChoiceResult result = this.dialogue.choose(selectedChoice);
-
-        if (result == ChoiceResult.END_DIALOGUE) {
-            this.client.setScreen(null);
-            assert this.client.player != null;
-            DialogueTracker.get(this.client.player).endDialogue();
-            DeathSuspender.get(this.client.player).setLifeTransient(false);
-        } else if (result == ChoiceResult.ASK_CONFIRMATION) {
-            ImmutableList<Text> choices = this.dialogue.getCurrentChoices();
-            this.client.setScreen(new ConfirmScreen(
-                    this::onBigChoiceMade,
-                    this.dialogue.getCurrentText(),
-                    new LiteralText(""),
-                    choices.get(0),
-                    choices.get(1)
-            ));
-        } else {
-            this.selectedChoice = 0;
-        }
-        return result;
-    }
-
-    private void onBigChoiceMade(boolean yes) {
-        assert client != null;
-        if (this.confirmChoice(yes ? 0 : 1) == ChoiceResult.DEFAULT) {
-            this.client.setScreen(this);
-        }
     }
 
     @Override
     public boolean keyPressed(int key, int scancode, int modifiers) {
         GameOptions options = MinecraftClient.getInstance().options;
         if (key == GLFW.GLFW_KEY_ENTER || options.keyInventory.matchesKey(key, scancode)) {
-            confirmChoice(selectedChoice);
+            this.handler.confirmChoice(!this.hoveringChoice);
             return true;
         }
         boolean tab = GLFW.GLFW_KEY_TAB == key;
@@ -135,20 +99,20 @@ public class CutsceneDialogueScreen extends Screen {
     }
 
     private void scrollDialogueChoice(double scrollAmount) {
-        this.selectedChoice = Math.floorMod((int) (this.selectedChoice - scrollAmount), this.dialogue.getCurrentChoices().size());
+        this.handler.setSelectedChoice(Math.floorMod((int) (this.handler.getSelectedChoice() - scrollAmount), this.handler.getCurrentChoices().size()));
     }
 
     @Override
     public void mouseMoved(double mouseX, double mouseY) {
-        ImmutableList<Text> choices = this.dialogue.getCurrentChoices();
-        Text title = this.dialogue.getCurrentText();
+        List<Text> choices = this.handler.getCurrentChoices();
+        Text title = this.handler.getCurrentText();
         int y = MIN_RENDER_Y + this.getTextBoundedHeight(title, MAX_TEXT_WIDTH) + TITLE_GAP;
         for (int i = 0; i < choices.size(); i++) {
             Text choice = choices.get(i);
             int strHeight = this.getTextBoundedHeight(choice, width);
             int strWidth = strHeight == 9 ? this.textRenderer.getWidth(choice) : width;
             if (mouseX < strWidth && mouseY > y && mouseY < y + strHeight) {
-                this.selectedChoice = i;
+                this.handler.setSelectedChoice(i);
                 this.hoveringChoice = true;
                 return;
             }
@@ -171,18 +135,25 @@ public class CutsceneDialogueScreen extends Screen {
 
         this.renderBackground(matrices);
         int y = MIN_RENDER_Y;
-        Text title = this.dialogue.getCurrentText();
+        Text title = this.handler.getCurrentText();
         this.textRenderer.drawTrimmed(title, 10, y, MAX_TEXT_WIDTH, 0xFFFFFF);
         y += this.getTextBoundedHeight(title, MAX_TEXT_WIDTH) + TITLE_GAP;
-        ImmutableList<Text> choices = this.dialogue.getCurrentChoices();
+        List<Text> choices = this.handler.getCurrentChoices();
+
         for (int i = 0; i < choices.size(); i++) {
             Text choice = choices.get(i);
             int strHeight = this.getTextBoundedHeight(choice, MAX_TEXT_WIDTH);
-            this.textRenderer.drawTrimmed(choice, 10, y, MAX_TEXT_WIDTH, i == this.selectedChoice ? 0xE0E044 : 0xA0A0A0);
+            this.textRenderer.drawTrimmed(choice, 10, y, MAX_TEXT_WIDTH, i == this.handler.getSelectedChoice() ? 0xE0E044 : 0xA0A0A0);
             y += strHeight + CHOICE_GAP;
         }
+
         Text tip = new TranslatableText("requiem:dialogue.instructions", client.options.keyForward.getBoundKeyLocalizedText(), client.options.keyBack.getBoundKeyLocalizedText(), client.options.keyInventory.getBoundKeyLocalizedText());
         this.textRenderer.draw(matrices, tip, (this.width - this.textRenderer.getWidth(tip)) * 0.5f, this.height - 30, 0x808080);
         super.render(matrices, mouseX, mouseY, tickDelta);
+    }
+
+    @Override
+    protected void drawBackground(MatrixStack matrices, float delta, int mouseX, int mouseY) {
+        // NO-OP
     }
 }

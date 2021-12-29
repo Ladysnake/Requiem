@@ -1,5 +1,6 @@
 {
   "start_at": "introduction",
+  "unskippable": true,
   "states": {
     "introduction": {
       "text": {

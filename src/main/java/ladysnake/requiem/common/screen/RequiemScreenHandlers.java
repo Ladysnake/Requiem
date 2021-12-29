@@ -52,4 +52,9 @@ public final class RequiemScreenHandlers {
         }
         return new RiftScreenHandler(syncId, source, obeliskPositions);
     });
+
+    public static final ScreenHandlerType<DialogueScreenHandler> DIALOGUE_SCREEN_HANDLER = ScreenHandlerRegistry.registerExtended(Requiem.id("dialogue"), (syncId, inventory, buf) -> {
+        boolean unskippable = buf.readBoolean();
+        return new DialogueScreenHandler(syncId, unskippable);
+    });
 }

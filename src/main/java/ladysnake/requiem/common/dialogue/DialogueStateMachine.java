@@ -34,27 +34,32 @@
  */
 package ladysnake.requiem.common.dialogue;
 
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableList;
 import ladysnake.requiem.api.v1.dialogue.ChoiceResult;
 import ladysnake.requiem.api.v1.dialogue.CutsceneDialogue;
-import ladysnake.requiem.common.network.RequiemNetworking;
+import ladysnake.requiem.api.v1.dialogue.DialogueAction;
+import ladysnake.requiem.api.v1.dialogue.DialogueRegistry;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 import javax.annotation.Nullable;
-import java.util.Map;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 public class DialogueStateMachine implements CutsceneDialogue {
 
-    private final Map<String, DialogueState> states;
+    private final BiMap<String, DialogueState> states;
     private final Identifier id;
+    private final boolean unskippable;
     private @Nullable DialogueState currentState;
     private ImmutableList<Text> currentChoices = ImmutableList.of();
 
     public DialogueStateMachine(DialogueTemplate template, Identifier id) {
-        this.states = template.states();
+        this.states = HashBiMap.create(template.states());
         this.id = id;
+        this.unskippable = template.unskippable();
         this.selectState(template.start());
     }
 
@@ -78,18 +83,29 @@ public class DialogueStateMachine implements CutsceneDialogue {
     }
 
     @Override
-    public ChoiceResult choose(int choice) {
-        return this.selectState(this.getCurrentState().getNextState(choice));
+    public ChoiceResult choose(int choice, Consumer<DialogueAction> actionRunner) {
+        DialogueState nextState = this.selectState(this.getCurrentState().getNextState(choice));
+        nextState.action().map(DialogueRegistry.get()::getAction).ifPresent(actionRunner);
+        return nextState.type();
     }
 
-    private ChoiceResult selectState(String state) {
+    public DialogueState selectState(String state) {
         if (!this.states.containsKey(state)) {
             throw new IllegalArgumentException(state + " is not an available dialogue state");
         }
         this.currentState = this.states.get(state);
         this.currentChoices = this.currentState.getAvailableChoices();
-        currentState.action().ifPresent(RequiemNetworking::sendDialogueActionMessage);
-        return this.currentState.type();
+        return this.currentState;
+    }
+
+    @Override
+    public String getCurrentStateKey() {
+        return this.states.inverse().get(this.getCurrentState());
+    }
+
+    @Override
+    public boolean isUnskippable() {
+        return this.unskippable;
     }
 
     @Override

@@ -34,6 +34,7 @@
  */
 package ladysnake.requiem.client.network;
 
+import com.google.common.collect.ImmutableList;
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.possession.Possessable;
 import ladysnake.requiem.api.v1.remnant.RemnantType;
@@ -41,13 +42,17 @@ import ladysnake.requiem.api.v1.util.SubDataManager;
 import ladysnake.requiem.api.v1.util.SubDataManagerHelper;
 import ladysnake.requiem.client.RequiemClient;
 import ladysnake.requiem.client.RequiemFx;
+import ladysnake.requiem.client.gui.CutsceneDialogueScreen;
 import ladysnake.requiem.common.particle.RequiemParticleTypes;
 import ladysnake.requiem.common.remnant.RemnantTypes;
+import ladysnake.requiem.common.screen.DialogueScreenHandler;
 import ladysnake.requiem.common.sound.RequiemSoundEvents;
 import ladysnake.requiem.core.RequiemCoreNetworking;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.screen.ConfirmScreen;
+import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -55,10 +60,13 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.thread.ThreadExecutor;
 import net.minecraft.world.World;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
@@ -120,6 +128,30 @@ public class ClientMessageHandler {
                 Requiem.LOGGER.info("[Requiem] Received data for {}", manager.getFabricId());
                 syncSubDataManager(buf, manager, client);
             }
+        });
+        ClientPlayNetworking.registerGlobalReceiver(DIALOGUE_UPDATE, (client, handler, buf, responseSender) -> {
+            Text currentText = buf.readText();
+            List<Text> currentChoices = buf.readList(PacketByteBuf::readText);
+            boolean bigChoice = buf.readBoolean();
+
+            client.execute(() -> {
+                ClientPlayerEntity player = client.player;
+
+                if (player != null && player.currentScreenHandler instanceof DialogueScreenHandler h) {
+                    h.updateContent(player, bigChoice, currentText, ImmutableList.copyOf(currentChoices));
+                    if (bigChoice) {
+                        this.mc.setScreen(new ConfirmScreen(
+                            yes -> h.makeChoice(yes ? 0 : 1, true),
+                            currentText,
+                            LiteralText.EMPTY,
+                            currentChoices.get(0),
+                            currentChoices.get(1)
+                        ));
+                    } else if (!(this.mc.currentScreen instanceof CutsceneDialogueScreen)) {
+                        this.mc.setScreen(new CutsceneDialogueScreen(h, player.getInventory(), LiteralText.EMPTY));
+                    }
+                }
+            });
         });
         ClientPlayNetworking.registerGlobalReceiver(ETHEREAL_ANIMATION, (client, handler, buf, responseSender) -> client.execute(() -> {
             MinecraftClient mc = this.mc;

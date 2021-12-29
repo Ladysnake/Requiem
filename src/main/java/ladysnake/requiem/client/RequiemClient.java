@@ -37,6 +37,7 @@ package ladysnake.requiem.client;
 import com.google.common.collect.ImmutableSet;
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.annotation.CalledThroughReflection;
+import ladysnake.requiem.client.gui.CutsceneDialogueScreen;
 import ladysnake.requiem.client.model.lib.SimpleBakedModel;
 import ladysnake.requiem.client.model.lib.SimpleUnbakedModel;
 import ladysnake.requiem.client.network.ClientMessageHandler;
@@ -144,6 +145,7 @@ public final class RequiemClient {
 
     private void registerScreens() {
         ScreenRegistry.register(RequiemScreenHandlers.RIFT_SCREEN_HANDLER, RiftScreen::new);
+        ScreenRegistry.register(RequiemScreenHandlers.DIALOGUE_SCREEN_HANDLER, CutsceneDialogueScreen::new);
     }
 
     private void registerBlockModels() {

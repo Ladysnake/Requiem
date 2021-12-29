@@ -35,12 +35,10 @@
 package ladysnake.requiem.common.item;
 
 import ladysnake.requiem.api.v1.remnant.DeathSuspender;
-import ladysnake.requiem.common.dialogue.PlayerDialogueTracker;
 import ladysnake.requiem.common.network.RequiemNetworking;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
@@ -66,7 +64,9 @@ public class DebugItem extends Item {
                 case 0:
                     if (world.isClient) {
                         if (DeathSuspender.get(player).isLifeTransient()) {
-                            RequiemNetworking.sendDialogueActionMessage(PlayerDialogueTracker.BECOME_REMNANT);
+                            RequiemNetworking.sendDialogueActionMessage(0);
+                            RequiemNetworking.sendDialogueActionMessage(1);
+                            RequiemNetworking.sendDialogueActionMessage(0);
                             DeathSuspender.get(player).setLifeTransient(false);
                         } else {
                             DeathSuspender.get(player).setLifeTransient(true);
@@ -75,7 +75,7 @@ public class DebugItem extends Item {
                     break;
                 case 1:
                     if (!world.isClient) {
-                        RequiemNetworking.sendBodyCureMessage((ServerPlayerEntity) player);
+                        RequiemNetworking.sendBodyCureMessage(player);
                     }
                     break;
             }

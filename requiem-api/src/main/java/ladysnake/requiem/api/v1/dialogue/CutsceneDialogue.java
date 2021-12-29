@@ -21,6 +21,8 @@ import com.google.common.collect.ImmutableList;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
+import java.util.function.Consumer;
+
 public interface CutsceneDialogue {
     Identifier getId();
 
@@ -34,5 +36,9 @@ public interface CutsceneDialogue {
      * @throws IllegalArgumentException if the given choice is not part of the {@link #getCurrentChoices() current choices}
      * @return true if the new state is an end state
      */
-    ChoiceResult choose(int choice);
+    ChoiceResult choose(int choice, Consumer<DialogueAction> actionRunner);
+
+    String getCurrentStateKey();
+
+    boolean isUnskippable();
 }

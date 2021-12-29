@@ -34,19 +34,24 @@
  */
 package ladysnake.requiem.common.dialogue;
 
-import dev.onyxstudios.cca.api.v3.component.sync.AutoSyncedComponent;
+import com.google.common.base.Preconditions;
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.dialogue.CutsceneDialogue;
 import ladysnake.requiem.api.v1.dialogue.DialogueRegistry;
 import ladysnake.requiem.api.v1.dialogue.DialogueTracker;
+import ladysnake.requiem.common.screen.DialogueScreenHandler;
+import ladysnake.requiem.common.screen.RequiemScreenHandlers;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.PacketByteBuf;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.screen.SimpleNamedScreenHandlerFactory;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 import javax.annotation.Nullable;
 
-public final class PlayerDialogueTracker implements DialogueTracker, AutoSyncedComponent {
+public final class PlayerDialogueTracker implements DialogueTracker {
     public static final Identifier BECOME_REMNANT = Requiem.id("become_remnant");
     public static final Identifier BECOME_WANDERING_SPIRIT = Requiem.id("become_wandering_spirit");
     public static final Identifier STAY_MORTAL = Requiem.id("stay_mortal");
@@ -78,6 +83,10 @@ public final class PlayerDialogueTracker implements DialogueTracker, AutoSyncedC
     @Override
     public void endDialogue() {
         this.currentDialogue = null;
+
+        if (this.player instanceof ServerPlayerEntity sp && this.player.currentScreenHandler instanceof DialogueScreenHandler) {
+            sp.closeScreenHandler();
+        }
     }
 
     @Nullable
@@ -87,24 +96,43 @@ public final class PlayerDialogueTracker implements DialogueTracker, AutoSyncedC
     }
 
     @Override
-    public boolean shouldSyncWith(ServerPlayerEntity player) {
-        return player == this.player;
-    }
-
-    @Override
-    public void writeSyncPacket(PacketByteBuf buf, ServerPlayerEntity recipient) {
-        buf.writeBoolean(this.currentDialogue != null);
-        if (this.currentDialogue != null) buf.writeIdentifier(this.currentDialogue.getId());
-    }
-
-    @Override
-    public void applySyncPacket(PacketByteBuf buf) {
-        boolean hasDialogue = buf.readBoolean();
-        if (hasDialogue) {
-            Identifier dialogueId = buf.readIdentifier();
-            this.startDialogue(dialogueId);
-        } else {
-            this.currentDialogue = null;
+    public void readFromNbt(NbtCompound tag) {
+        if (tag.contains("current_dialogue_id", NbtElement.STRING_TYPE)) {
+            Identifier dialogueId = Identifier.tryParse(tag.getString("current_dialogue_id"));
+            if (dialogueId != null) {
+                try {
+                    this.startDialogue(dialogueId);
+                    if (this.currentDialogue != null && tag.contains("current_dialogue_state", NbtElement.STRING_TYPE)) {
+                        ((DialogueStateMachine) this.currentDialogue).selectState(tag.getString("current_dialogue_state"));
+                    }
+                } catch (IllegalArgumentException e) {
+                    Requiem.LOGGER.warn("[Requiem] Unknown dialogue {}", dialogueId);
+                }
+            }
         }
+    }
+
+    @Override
+    public void writeToNbt(NbtCompound tag) {
+        if (this.currentDialogue != null) {
+            tag.putString("current_dialogue_id", this.currentDialogue.getId().toString());
+            tag.putString("current_dialogue_state", this.currentDialogue.getCurrentStateKey());
+        }
+    }
+
+    @Override
+    public void serverTick() {
+        if (this.currentDialogue != null && this.currentDialogue.isUnskippable() && this.player.currentScreenHandler == null) {
+            this.openDialogueScreen();
+        }
+    }
+
+    private void openDialogueScreen() {
+        Preconditions.checkState(this.currentDialogue != null);
+        this.player.openHandledScreen(new SimpleNamedScreenHandlerFactory((syncId, inv, p) -> new DialogueScreenHandler(
+            RequiemScreenHandlers.DIALOGUE_SCREEN_HANDLER,
+            syncId,
+            this.currentDialogue.isUnskippable()
+        ), Text.of("Requiem Dialogue Screen")));
     }
 }

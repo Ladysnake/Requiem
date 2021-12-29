@@ -27,14 +27,13 @@ import static org.apiguardian.api.API.Status.EXPERIMENTAL;
 
 public interface DialogueRegistry {
     /**
-     * Retrieve the dialogue registry for the given {@link World}.
+     * Retrieve the dialogue registry.
      *
-     * <p> If {@code world} is {@code null}, the returned dialogue registry is the one
-     * used by server worlds. Although that registry is fit for registering new dialogues,
+     * <p> Although the returned registry is fit for registering new dialogues,
      * one should prefer using implementing {@link RequiemPlugin#registerDialogueActions(DialogueRegistry)}
      * to do so at an appropriate time.
      *
-     * @return the dialogue registry for the given world
+     * @return the dialogue registry instance
      */
     static DialogueRegistry get() {
         return ApiInternals.getDialogueRegistry();

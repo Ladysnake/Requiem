@@ -52,11 +52,13 @@ import javax.annotation.Nullable;
 
 public final class RevivingDeathSuspender implements DeathSuspender {
     public static final AbilitySource DEATH_SUSPENSION_ABILITIES = Pal.getAbilitySource(RequiemCore.id("death_suspension"), AbilitySource.FREE);
+    public static final int TIME_BEFORE_DIALOGUE = 20;
+
     private final PlayerEntity player;
     private boolean lifeTransient;
     @Nullable
     private DamageSource deathCause;
-    private int timeBeforeDialogue = 20;
+    private int timeBeforeDialogue;
 
     public RevivingDeathSuspender(PlayerEntity player) {
         this.player = player;
@@ -71,6 +73,7 @@ public final class RevivingDeathSuspender implements DeathSuspender {
         this.player.setInvulnerable(true);
         Pal.grantAbility(player, VanillaAbilities.INVULNERABLE, DEATH_SUSPENSION_ABILITIES);
         this.deathCause = deathCause;
+        this.timeBeforeDialogue = TIME_BEFORE_DIALOGUE;
         this.setLifeTransient(true);
         DeathSuspender.KEY.sync(this.player);
     }
@@ -100,8 +103,6 @@ public final class RevivingDeathSuspender implements DeathSuspender {
         if (this.isLifeTransient()) {
             if (--timeBeforeDialogue == 0) {
                 DialogueTracker.get(this.player).startDialogue(RequiemCore.id("remnant_choice"));
-            } else if (timeBeforeDialogue < 0) {
-                timeBeforeDialogue = 20;
             }
         }
     }

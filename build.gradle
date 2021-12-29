@@ -8,7 +8,7 @@ import java.time.Year
 plugins {
     id 'fabric-loom' version '0.10-SNAPSHOT'
     id 'org.quiltmc.quilt-mappings-on-loom' version "3.1.1"
-    id 'io.github.juuxel.loom-quiltflower-mini' version "1.1.0"
+    id 'io.github.juuxel.loom-quiltflower-mini' version "1.2.1"
     id 'org.cadixdev.licenser' version '0.6.1'
     id 'com.matthewprenger.cursegradle' version '1.4.0'
     id 'com.jfrog.artifactory' version '4.21.0'

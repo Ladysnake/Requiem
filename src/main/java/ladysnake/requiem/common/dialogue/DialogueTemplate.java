@@ -55,18 +55,25 @@ public final class DialogueTemplate {
     public static final Codec<DialogueTemplate> CODEC = codec(MoreCodecs.DYNAMIC_JSON);
     public static final Codec<DialogueTemplate> NETWORK_CODEC = codec(MoreCodecs.STRING_JSON);
     private final String start;
+    private final boolean unskippable;
     private final Map<String, DialogueState> states;
 
-    private DialogueTemplate(String start, Map<String, DialogueState> states) {
+    private DialogueTemplate(String start, boolean unskippable, Map<String, DialogueState> states) {
         this.start = start;
+        this.unskippable = unskippable;
         this.states = Map.copyOf(states);
     }
 
     private static Codec<DialogueTemplate> codec(Codec<JsonElement> jsonCodec) {
         return RecordCodecBuilder.create(instance -> instance.group(
             Codec.STRING.fieldOf("start_at").forGetter(DialogueTemplate::start),
+            Codec.BOOL.fieldOf("unskippable").forGetter(DialogueTemplate::unskippable),
             Codec.unboundedMap(Codec.STRING, DialogueState.codec(jsonCodec)).fieldOf("states").forGetter(DialogueTemplate::states)
         ).apply(instance, DialogueTemplate::new));
+    }
+
+    public boolean unskippable() {
+        return this.unskippable;
     }
 
     public String start() {
@@ -79,9 +86,7 @@ public final class DialogueTemplate {
 
     @Override
     public String toString() {
-        return "DialogueTemplate[" +
-            "start=" + start + ", " +
-            "states=" + states + ']';
+        return "DialogueTemplate[start=%s, states=%s%s]".formatted(start, states, unskippable ? " (unskippable)" : "");
     }
 
 }
