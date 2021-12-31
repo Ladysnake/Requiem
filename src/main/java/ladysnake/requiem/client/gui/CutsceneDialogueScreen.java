@@ -34,14 +34,18 @@
  */
 package ladysnake.requiem.client.gui;
 
+import com.google.common.collect.ImmutableList;
+import ladysnake.requiem.api.v1.dialogue.ChoiceResult;
 import ladysnake.requiem.client.RequiemClient;
 import ladysnake.requiem.client.ZaWorldFx;
 import ladysnake.requiem.common.screen.DialogueScreenHandler;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.screen.ConfirmScreen;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import org.lwjgl.glfw.GLFW;
@@ -55,6 +59,7 @@ public class CutsceneDialogueScreen extends HandledScreen<DialogueScreenHandler>
     public static final int MAX_TEXT_WIDTH = 300;
 
     private final ZaWorldFx fxRenderer;
+    private int selectedChoice;
     private boolean hoveringChoice;
 
     public CutsceneDialogueScreen(DialogueScreenHandler handler, PlayerInventory inventory, Text title) {
@@ -70,7 +75,7 @@ public class CutsceneDialogueScreen extends HandledScreen<DialogueScreenHandler>
     @Override
     public boolean mouseClicked(double x, double y, int button) {
         if (hoveringChoice) {
-            this.handler.confirmChoice(false);
+            this.confirmChoice(this.selectedChoice);
         }
         return true;
     }
@@ -79,7 +84,7 @@ public class CutsceneDialogueScreen extends HandledScreen<DialogueScreenHandler>
     public boolean keyPressed(int key, int scancode, int modifiers) {
         GameOptions options = MinecraftClient.getInstance().options;
         if (key == GLFW.GLFW_KEY_ENTER || options.keyInventory.matchesKey(key, scancode)) {
-            this.handler.confirmChoice(!this.hoveringChoice);
+            this.confirmChoice(this.selectedChoice);
             return true;
         }
         boolean tab = GLFW.GLFW_KEY_TAB == key;
@@ -92,6 +97,35 @@ public class CutsceneDialogueScreen extends HandledScreen<DialogueScreenHandler>
         return super.keyPressed(key, scancode, modifiers);
     }
 
+    private ChoiceResult confirmChoice(int selectedChoice) {
+        assert this.client != null;
+        ChoiceResult result = this.handler.makeChoice(selectedChoice);
+
+        switch (result) {
+            case END_DIALOGUE -> this.client.setScreen(null);
+            case ASK_CONFIRMATION -> {
+                ImmutableList<Text> choices = this.handler.getCurrentChoices();
+                this.client.setScreen(new ConfirmScreen(
+                    this::onBigChoiceMade,
+                    this.handler.getCurrentText(),
+                    new LiteralText(""),
+                    choices.get(0),
+                    choices.get(1)
+                ));
+            }
+            default -> this.selectedChoice = 0;
+        }
+
+        return result;
+    }
+
+    private void onBigChoiceMade(boolean yes) {
+        assert client != null;
+        if (this.confirmChoice(yes ? 0 : 1) == ChoiceResult.DEFAULT) {
+            this.client.setScreen(this);
+        }
+    }
+
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double scrollAmount) {
         this.scrollDialogueChoice(scrollAmount);
@@ -99,7 +133,7 @@ public class CutsceneDialogueScreen extends HandledScreen<DialogueScreenHandler>
     }
 
     private void scrollDialogueChoice(double scrollAmount) {
-        this.handler.setSelectedChoice(Math.floorMod((int) (this.handler.getSelectedChoice() - scrollAmount), this.handler.getCurrentChoices().size()));
+        this.selectedChoice = Math.floorMod((int) (this.selectedChoice - scrollAmount), this.handler.getCurrentChoices().size());
     }
 
     @Override
@@ -112,7 +146,7 @@ public class CutsceneDialogueScreen extends HandledScreen<DialogueScreenHandler>
             int strHeight = this.getTextBoundedHeight(choice, width);
             int strWidth = strHeight == 9 ? this.textRenderer.getWidth(choice) : width;
             if (mouseX < strWidth && mouseY > y && mouseY < y + strHeight) {
-                this.handler.setSelectedChoice(i);
+                this.selectedChoice = i;
                 this.hoveringChoice = true;
                 return;
             }
@@ -143,7 +177,7 @@ public class CutsceneDialogueScreen extends HandledScreen<DialogueScreenHandler>
         for (int i = 0; i < choices.size(); i++) {
             Text choice = choices.get(i);
             int strHeight = this.getTextBoundedHeight(choice, MAX_TEXT_WIDTH);
-            this.textRenderer.drawTrimmed(choice, 10, y, MAX_TEXT_WIDTH, i == this.handler.getSelectedChoice() ? 0xE0E044 : 0xA0A0A0);
+            this.textRenderer.drawTrimmed(choice, 10, y, MAX_TEXT_WIDTH, i == this.selectedChoice ? 0xE0E044 : 0xA0A0A0);
             y += strHeight + CHOICE_GAP;
         }
 
@@ -154,6 +188,11 @@ public class CutsceneDialogueScreen extends HandledScreen<DialogueScreenHandler>
 
     @Override
     protected void drawBackground(MatrixStack matrices, float delta, int mouseX, int mouseY) {
+        // NO-OP
+    }
+
+    @Override
+    protected void drawForeground(MatrixStack matrices, int mouseX, int mouseY) {
         // NO-OP
     }
 }

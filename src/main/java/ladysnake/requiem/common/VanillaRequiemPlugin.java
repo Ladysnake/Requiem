@@ -47,12 +47,29 @@ import ladysnake.requiem.api.v1.entity.ability.AbilityType;
 import ladysnake.requiem.api.v1.entity.ability.MobAbilityConfig;
 import ladysnake.requiem.api.v1.entity.ability.MobAbilityController;
 import ladysnake.requiem.api.v1.entity.ability.MobAbilityRegistry;
-import ladysnake.requiem.api.v1.event.minecraft.*;
-import ladysnake.requiem.api.v1.event.requiem.*;
+import ladysnake.requiem.api.v1.event.minecraft.AllowUseEntityCallback;
+import ladysnake.requiem.api.v1.event.minecraft.LivingEntityDropCallback;
+import ladysnake.requiem.api.v1.event.minecraft.MobTravelRidingCallback;
+import ladysnake.requiem.api.v1.event.minecraft.PlayerRespawnCallback;
+import ladysnake.requiem.api.v1.event.minecraft.PrepareRespawnCallback;
+import ladysnake.requiem.api.v1.event.requiem.CanCurePossessedCallback;
+import ladysnake.requiem.api.v1.event.requiem.ConsumableItemEvents;
+import ladysnake.requiem.api.v1.event.requiem.HumanityCheckCallback;
+import ladysnake.requiem.api.v1.event.requiem.InitiateFractureCallback;
+import ladysnake.requiem.api.v1.event.requiem.PlayerShellEvents;
+import ladysnake.requiem.api.v1.event.requiem.PossessionEvents;
+import ladysnake.requiem.api.v1.event.requiem.PossessionStateChangeCallback;
+import ladysnake.requiem.api.v1.event.requiem.RemnantStateChangeCallback;
+import ladysnake.requiem.api.v1.event.requiem.SoulCaptureEvents;
 import ladysnake.requiem.api.v1.possession.PossessedData;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.api.v1.possession.item.PossessionItemAction;
-import ladysnake.requiem.api.v1.remnant.*;
+import ladysnake.requiem.api.v1.remnant.DeathSuspender;
+import ladysnake.requiem.api.v1.remnant.MobResurrectable;
+import ladysnake.requiem.api.v1.remnant.RemnantComponent;
+import ladysnake.requiem.api.v1.remnant.RemnantType;
+import ladysnake.requiem.api.v1.remnant.SoulbindingRegistry;
+import ladysnake.requiem.api.v1.remnant.VagrantInteractionRegistry;
 import ladysnake.requiem.common.advancement.criterion.RequiemCriteria;
 import ladysnake.requiem.common.dialogue.PlayerDialogueTracker;
 import ladysnake.requiem.common.enchantment.RequiemEnchantments;
@@ -82,7 +99,11 @@ import ladysnake.requiem.core.resurrection.ResurrectionDataLoader;
 import ladysnake.requiem.core.tag.RequiemCoreTags;
 import ladysnake.requiem.core.util.RayHelper;
 import net.fabricmc.fabric.api.entity.event.v1.EntitySleepEvents;
-import net.fabricmc.fabric.api.event.player.*;
+import net.fabricmc.fabric.api.event.player.AttackBlockCallback;
+import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
+import net.fabricmc.fabric.api.event.player.UseBlockCallback;
+import net.fabricmc.fabric.api.event.player.UseEntityCallback;
+import net.fabricmc.fabric.api.event.player.UseItemCallback;
 import net.fabricmc.fabric.api.util.TriState;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
@@ -437,16 +458,19 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
     }
 
     public static void handleRemnantChoiceAction(ServerPlayerEntity player, RemnantType chosenType) {
+        makeRemnantChoice(player, chosenType);
+
         DeathSuspender deathSuspender = DeathSuspender.get(player);
         if (deathSuspender.isLifeTransient()) {
-            makeRemnantChoice(player, chosenType);
             deathSuspender.resumeDeath();
         }
     }
 
     public static void makeRemnantChoice(ServerPlayerEntity player, RemnantType chosenType) {
-        RemnantComponent.get(player).become(chosenType, true);
-        if (chosenType != MORTAL) {
+        RemnantComponent remnantComponent = RemnantComponent.get(player);
+        RemnantType currentType = remnantComponent.getRemnantType();
+        if (chosenType != currentType) {
+            remnantComponent.become(chosenType, true);
             player.world.playSound(null, player.getX(), player.getY(), player.getZ(), RequiemSoundEvents.EFFECT_BECOME_REMNANT, player.getSoundCategory(), 1.4F, 0.1F);
             RequiemNetworking.sendTo(player, RequiemNetworking.createOpusUsePacket(chosenType, false));
         }

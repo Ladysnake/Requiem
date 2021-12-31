@@ -35,6 +35,8 @@
 package ladysnake.requiem.common.screen;
 
 import ladysnake.requiem.Requiem;
+import ladysnake.requiem.api.v1.dialogue.CutsceneDialogue;
+import ladysnake.requiem.common.dialogue.DialogueStateMachine;
 import net.fabricmc.fabric.api.screenhandler.v1.ScreenHandlerRegistry;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.util.math.BlockPos;
@@ -54,7 +56,7 @@ public final class RequiemScreenHandlers {
     });
 
     public static final ScreenHandlerType<DialogueScreenHandler> DIALOGUE_SCREEN_HANDLER = ScreenHandlerRegistry.registerExtended(Requiem.id("dialogue"), (syncId, inventory, buf) -> {
-        boolean unskippable = buf.readBoolean();
-        return new DialogueScreenHandler(syncId, unskippable);
+        CutsceneDialogue dialogue = DialogueStateMachine.fromPacket(inventory.player.world, buf);
+        return new DialogueScreenHandler(syncId, dialogue);
     });
 }

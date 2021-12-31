@@ -34,7 +34,6 @@
  */
 package ladysnake.requiem.common.network;
 
-import com.google.common.collect.ImmutableList;
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.entity.ability.AbilityType;
 import ladysnake.requiem.api.v1.remnant.RemnantType;
@@ -51,7 +50,6 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.c2s.play.CustomPayloadC2SPacket;
 import net.minecraft.network.packet.s2c.play.CustomPayloadS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import org.jetbrains.annotations.Contract;
@@ -67,7 +65,6 @@ public final class RequiemNetworking {
     public static final Identifier OPUS_USE = Requiem.id("opus_use");
     public static final Identifier ETHEREAL_ANIMATION = Requiem.id("ethereal_animation");
     public static final Identifier BODY_CURE = Requiem.id("body_cure");
-    public static final Identifier DIALOGUE_UPDATE = Requiem.id("dialogue_update");
 
     // Client -> Server
     public static final Identifier DIALOGUE_ACTION = Requiem.id("dialogue_action");
@@ -128,14 +125,6 @@ public final class RequiemNetworking {
         PacketByteBuf buf = new PacketByteBuf(buffer());
         buf.writeByte(choice);
         sendToServer(new CustomPayloadC2SPacket(DIALOGUE_ACTION, buf));
-    }
-
-    public static void sendDialogueUpdateMessage(ServerPlayerEntity player, Text currentText, ImmutableList<Text> currentChoices, boolean bigChoice) {
-        PacketByteBuf buf = PacketByteBufs.create();
-        buf.writeText(currentText);
-        buf.writeCollection(currentChoices, PacketByteBuf::writeText);
-        buf.writeBoolean(bigChoice);
-        sendToPlayer(player, ServerPlayNetworking.createS2CPacket(DIALOGUE_UPDATE, buf));
     }
 
     public static void sendRiftUseMessage(BlockPos target) {

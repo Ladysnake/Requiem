@@ -34,8 +34,6 @@
  */
 package ladysnake.requiem.common.screen;
 
-import com.demonwav.mcdev.annotations.CheckEnv;
-import com.demonwav.mcdev.annotations.Env;
 import com.google.common.collect.ImmutableList;
 import ladysnake.requiem.api.v1.dialogue.ChoiceResult;
 import ladysnake.requiem.api.v1.dialogue.CutsceneDialogue;
@@ -49,50 +47,27 @@ import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
 
 public class DialogueScreenHandler extends ScreenHandler {
-    private final boolean unskippable;
-    private Text currentText;
-    private ImmutableList<Text> currentChoices;
-    private int selectedChoice;
+    private final CutsceneDialogue dialogue;
 
-    public DialogueScreenHandler(int syncId, boolean unskippable) {
-        this(RequiemScreenHandlers.DIALOGUE_SCREEN_HANDLER, syncId, unskippable);
+    public DialogueScreenHandler(int syncId, CutsceneDialogue dialogue) {
+        this(RequiemScreenHandlers.DIALOGUE_SCREEN_HANDLER, syncId, dialogue);
     }
 
-    public DialogueScreenHandler(@Nullable ScreenHandlerType<?> type, int syncId, boolean unskippable) {
+    public DialogueScreenHandler(@Nullable ScreenHandlerType<?> type, int syncId, CutsceneDialogue dialogue) {
         super(type, syncId);
-        this.unskippable = unskippable;
-    }
-
-    public void updateContent(PlayerEntity player, boolean bigChoice, Text currentText, ImmutableList<Text> currentChoices) {
-        this.currentText = currentText;
-        this.currentChoices = currentChoices;
-        this.selectedChoice = 0;
-
-        if (player instanceof ServerPlayerEntity sp) {
-            RequiemNetworking.sendDialogueUpdateMessage(sp, this.getCurrentText(), this.getCurrentChoices(), bigChoice);
-        }
+        this.dialogue = dialogue;
     }
 
     public boolean isUnskippable() {
-        return unskippable;
+        return this.dialogue.isUnskippable();
     }
 
     public Text getCurrentText() {
-        return currentText;
+        return this.dialogue.getCurrentText();
     }
 
     public ImmutableList<Text> getCurrentChoices() {
-        return currentChoices;
-    }
-
-    @CheckEnv(Env.CLIENT)
-    public void setSelectedChoice(int selected) {
-        this.selectedChoice = selected;
-    }
-
-    @CheckEnv(Env.CLIENT)
-    public int getSelectedChoice() {
-        return this.selectedChoice;
+        return this.dialogue.getCurrentChoices();
     }
 
     @Override
@@ -100,25 +75,15 @@ public class DialogueScreenHandler extends ScreenHandler {
         return true;
     }
 
-    public void confirmChoice(boolean resetSelection) {
-        this.makeChoice(this.selectedChoice, resetSelection);
-    }
-
-    public void makeChoice(int choice, boolean resetSelection) {
+    public ChoiceResult makeChoice(int choice) {
         RequiemNetworking.sendDialogueActionMessage(choice);
-        if (resetSelection) this.setSelectedChoice(0);
+        return this.dialogue.choose(choice, action -> {});
     }
 
     public void makeChoice(ServerPlayerEntity player, int choice) {
-        CutsceneDialogue dialogue = DialogueTracker.get(player).getCurrentDialogue();
-
-        if (dialogue != null) {
-            ChoiceResult result = dialogue.choose(choice, action -> action.handle(player));
-            switch (result) {
-                case END_DIALOGUE -> DialogueTracker.get(player).endDialogue();
-                case DEFAULT -> updateContent(player, true, dialogue.getCurrentText(), dialogue.getCurrentChoices());
-                case ASK_CONFIRMATION -> updateContent(player, false, dialogue.getCurrentText(), dialogue.getCurrentChoices());
-            }
+        ChoiceResult result = this.dialogue.choose(choice, action -> action.handle(player));
+        if (result == ChoiceResult.END_DIALOGUE) {
+            DialogueTracker.get(player).endDialogue();
         }
     }
 }

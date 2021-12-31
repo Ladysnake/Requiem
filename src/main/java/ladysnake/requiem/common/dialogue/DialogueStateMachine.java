@@ -41,8 +41,10 @@ import ladysnake.requiem.api.v1.dialogue.ChoiceResult;
 import ladysnake.requiem.api.v1.dialogue.CutsceneDialogue;
 import ladysnake.requiem.api.v1.dialogue.DialogueAction;
 import ladysnake.requiem.api.v1.dialogue.DialogueRegistry;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
 import java.util.Objects;
@@ -57,10 +59,23 @@ public class DialogueStateMachine implements CutsceneDialogue {
     private ImmutableList<Text> currentChoices = ImmutableList.of();
 
     public DialogueStateMachine(DialogueTemplate template, Identifier id) {
+        this(template, id, template.start());
+    }
+
+    private DialogueStateMachine(DialogueTemplate template, Identifier id, String start) {
         this.states = HashBiMap.create(template.states());
         this.id = id;
         this.unskippable = template.unskippable();
-        this.selectState(template.start());
+        this.selectState(start);
+    }
+
+    public static CutsceneDialogue fromPacket(World world, PacketByteBuf buf) {
+        Identifier id = buf.readIdentifier();
+        String currentState = buf.readString();
+
+        DialogueStateMachine dialogue = (DialogueStateMachine) DialogueRegistry.get().startDialogue(world, id);
+        dialogue.selectState(currentState);
+        return dialogue;
     }
 
     private DialogueState getCurrentState() {

@@ -40,11 +40,10 @@ import ladysnake.requiem.api.v1.dialogue.CutsceneDialogue;
 import ladysnake.requiem.api.v1.dialogue.DialogueRegistry;
 import ladysnake.requiem.api.v1.dialogue.DialogueTracker;
 import ladysnake.requiem.common.screen.DialogueScreenHandler;
-import ladysnake.requiem.common.screen.RequiemScreenHandlers;
+import ladysnake.requiem.common.screen.DialogueScreenHandlerFactory;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
-import net.minecraft.screen.SimpleNamedScreenHandlerFactory;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -76,8 +75,13 @@ public final class PlayerDialogueTracker implements DialogueTracker {
 
     @Override
     public void startDialogue(Identifier id) {
+        this.startDialogue0(id);
+        this.openDialogueScreen();
+    }
+
+    private CutsceneDialogue startDialogue0(Identifier id) {
         this.currentDialogue = this.manager.startDialogue(this.player.world, id);
-        KEY.sync(this.player);
+        return this.currentDialogue;
     }
 
     @Override
@@ -101,9 +105,9 @@ public final class PlayerDialogueTracker implements DialogueTracker {
             Identifier dialogueId = Identifier.tryParse(tag.getString("current_dialogue_id"));
             if (dialogueId != null) {
                 try {
-                    this.startDialogue(dialogueId);
-                    if (this.currentDialogue != null && tag.contains("current_dialogue_state", NbtElement.STRING_TYPE)) {
-                        ((DialogueStateMachine) this.currentDialogue).selectState(tag.getString("current_dialogue_state"));
+                    CutsceneDialogue d = this.startDialogue0(dialogueId);
+                    if (tag.contains("current_dialogue_state", NbtElement.STRING_TYPE)) {
+                        ((DialogueStateMachine) d).selectState(tag.getString("current_dialogue_state"));
                     }
                 } catch (IllegalArgumentException e) {
                     Requiem.LOGGER.warn("[Requiem] Unknown dialogue {}", dialogueId);
@@ -122,17 +126,13 @@ public final class PlayerDialogueTracker implements DialogueTracker {
 
     @Override
     public void serverTick() {
-        if (this.currentDialogue != null && this.currentDialogue.isUnskippable() && this.player.currentScreenHandler == null) {
+        if (this.currentDialogue != null && this.currentDialogue.isUnskippable() && this.player.currentScreenHandler == this.player.playerScreenHandler) {
             this.openDialogueScreen();
         }
     }
 
     private void openDialogueScreen() {
         Preconditions.checkState(this.currentDialogue != null);
-        this.player.openHandledScreen(new SimpleNamedScreenHandlerFactory((syncId, inv, p) -> new DialogueScreenHandler(
-            RequiemScreenHandlers.DIALOGUE_SCREEN_HANDLER,
-            syncId,
-            this.currentDialogue.isUnskippable()
-        ), Text.of("Requiem Dialogue Screen")));
+        this.player.openHandledScreen(new DialogueScreenHandlerFactory(this.currentDialogue, Text.of("Requiem Dialogue Screen")));
     }
 }

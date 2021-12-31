@@ -114,7 +114,7 @@ public class ZaWorldFx implements PostWorldRenderCallback, ClientTickEvents.EndT
     }
 
     public boolean hasFinishedAnimation() {
-        return this.ticks > 60;
+        return !this.renderingEffect || this.ticks > 60;
     }
 
     @Override
