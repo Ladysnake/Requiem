@@ -45,7 +45,12 @@ import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.*;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Matrix4f;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.Vec3f;
+import net.minecraft.util.math.Vector4f;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -151,7 +156,7 @@ public class RiftScreen extends HandledScreen<RiftScreenHandler> {
                     v = obeliskV;
                 }
 
-                drawTexture(matrices, x - iconHalfSize, y - iconHalfSize, this.getZOffset(), 0, v, iconSize, iconSize, textureHeight, textureWidth);
+                drawTexture(matrices, x - iconHalfSize, y - iconHalfSize, this.getZOffset(), 0, v, iconSize, iconSize, textureWidth, textureHeight);
             }
 
             if (!selected.isEmpty()) {
