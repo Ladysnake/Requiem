@@ -132,7 +132,7 @@ curseforge {
 tasks.curseforge.dependsOn(checkGitStatus)
 
 task modrinth (type: ModrinthUpload, dependsOn: checkGitStatus){
-    if (project.hasProperty('modrinth_key') != null) {
+    if (project.hasProperty('modrinth_key')) {
         token = project.findProperty('modrinth_key')
     }
     projectId = findProperty("modrinth_id")
