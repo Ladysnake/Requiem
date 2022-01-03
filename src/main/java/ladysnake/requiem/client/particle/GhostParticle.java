@@ -1,6 +1,6 @@
 /*
  * Requiem
- * Copyright (C) 2017-2021 Ladysnake
+ * Copyright (C) 2017-2022 Ladysnake
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,7 +38,11 @@ import ladysnake.requiem.client.render.RequiemRenderPhases;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.particle.*;
+import net.minecraft.client.particle.AbstractSlowingParticle;
+import net.minecraft.client.particle.Particle;
+import net.minecraft.client.particle.ParticleFactory;
+import net.minecraft.client.particle.ParticleTextureSheet;
+import net.minecraft.client.particle.SpriteProvider;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.VertexConsumer;
