@@ -40,9 +40,9 @@ import ladysnake.requiem.api.v1.event.requiem.CanCurePossessedCallback;
 import ladysnake.requiem.api.v1.event.requiem.PlayerShellEvents;
 import ladysnake.requiem.api.v1.event.requiem.PossessionStartCallback;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
+import ladysnake.requiem.api.v1.remnant.PlayerSplitResult;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.api.v1.remnant.StickyStatusEffect;
-import ladysnake.requiem.common.remnant.PlayerSplitter;
 import net.fabricmc.fabric.api.util.TriState;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.AttributeContainer;
@@ -112,7 +112,7 @@ public class PenanceStatusEffect extends StatusEffect implements StickyStatusEff
             RemnantComponent remnant = RemnantComponent.get(player);
             if (!remnant.isVagrant()) {
                 if (remnant.getRemnantType().isDemon()) {
-                    return new Result(true, PlayerSplitter.split(player, true));
+                    return new Result(true, remnant.splitPlayer(true).map(PlayerSplitResult::soul).orElse(null));
                 } else {
                     player.damage(DamageSource.MAGIC, (amplifier + 1) * 4);
                     PenanceComponent.KEY.get(player).resetPenanceTime();

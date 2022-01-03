@@ -29,9 +29,9 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import org.apiguardian.api.API;
-import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.Nullable;
+
+import java.util.Optional;
 
 /**
  * @since 1.2.0
@@ -108,7 +108,7 @@ public interface RemnantComponent extends AutoSyncedComponent, ServerTickingComp
      */
     boolean isIncorporeal();
 
-    @Deprecated
+    @Deprecated(forRemoval = true)
     default boolean isSoul() {
         return this.isVagrant();
     }
@@ -161,9 +161,22 @@ public interface RemnantComponent extends AutoSyncedComponent, ServerTickingComp
     /**
      *
      * @return {@code true} if this player can currently split into a player shell and a vagrant form
-     * @param forced
+     * @param forced if {@code true}, external factors like status effects will be ignored
      */
-    boolean canPerformSplit(boolean forced);
+    boolean canSplitPlayer(boolean forced);
+
+    /**
+     * Attempts to split a player into a player-controlled vagrant part and an inert shell.
+     *
+     * <p>This operation fails if the player is currently {@linkplain #isVagrant() vagrant}.
+     *
+     * @return an {@link Optional} describing the spawned player shell, or {@link Optional#empty()} if
+     * the operation failed.
+     * @param forced if {@code true}, the player will be split regardless of external factors like status effects
+     * @since 2.0.0
+     */
+    @API(status = API.Status.EXPERIMENTAL)
+    Optional<PlayerSplitResult> splitPlayer(boolean forced);
 
     /**
      * Called when this remnant state's player is cloned
@@ -174,23 +187,4 @@ public interface RemnantComponent extends AutoSyncedComponent, ServerTickingComp
      */
     void prepareRespawn(ServerPlayerEntity original, boolean lossless);
 
-    /**
-     * Set the default remnant type according to the current server settings
-     *
-     * @since 1.3.0
-     * @deprecated this is controlled through the startingRemnantType gamerule
-     */
-    @Deprecated
-    @ApiStatus.ScheduledForRemoval
-    default void setDefaultRemnantType(@Nullable RemnantType defaultType) {
-        // NO-OP
-    }
-
-    /**
-     * Return the default remnant type according to the current server settings
-     *
-     * @since 1.3.0
-     */
-    @ApiStatus.Experimental
-    @Nullable RemnantType getDefaultRemnantType();
 }

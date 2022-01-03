@@ -118,12 +118,13 @@ public final class RequiemShellCommand {
     }
 
     private static void split(ServerPlayerEntity player) {
-        if (!RemnantComponent.get(player).getRemnantType().isDemon()) {
+        RemnantComponent remnantComponent = RemnantComponent.get(player);
+        if (!remnantComponent.getRemnantType().isDemon()) {
             throw new CommandException(new TranslatableText("pandemonium:commands.shell.split.fail.mortal", player.getDisplayName()));
         }
-        if (RemnantComponent.get(player).isVagrant()) {
+        if (remnantComponent.isVagrant()) {
             throw new CommandException(new TranslatableText("pandemonium:commands.shell.split.fail.vagrant", player.getDisplayName()));
         }
-        PlayerSplitter.split(player, true);
+        remnantComponent.splitPlayer(true);
     }
 }

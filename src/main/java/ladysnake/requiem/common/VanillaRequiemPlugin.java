@@ -170,12 +170,13 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
             return false;
         });
         InitiateFractureCallback.EVENT.register(player -> {
+            RemnantComponent remnantComponent = RemnantComponent.get(player);
             PossessionComponent possessionComponent = PossessionComponent.get(player);
             MobEntity host = possessionComponent.getHost();
 
             boolean success;
 
-            if (PlayerSplitter.split(player) != null) {
+            if (remnantComponent.splitPlayer(false).isPresent()) {
                 success = true;
             } else if (host != null) {
                 Entity targetedEntity = RayHelper.getTargetedEntity(player);
@@ -184,7 +185,7 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
                     PlayerSplitter.merge((PlayerShellEntity) targetedEntity, player);
                     RequiemNetworking.sendBodyCureMessage(player);
                     success = true;
-                } else if (RemnantComponent.get(player).canDissociateFrom(host)) {
+                } else if (remnantComponent.canDissociateFrom(host)) {
                     possessionComponent.stopPossessing();
                     success = true;
                 } else {

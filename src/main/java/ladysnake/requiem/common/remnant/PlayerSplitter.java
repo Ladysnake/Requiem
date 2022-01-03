@@ -45,6 +45,7 @@ import ladysnake.requiem.api.v1.entity.InventoryLimiter;
 import ladysnake.requiem.api.v1.event.requiem.PlayerShellEvents;
 import ladysnake.requiem.api.v1.record.GlobalRecord;
 import ladysnake.requiem.api.v1.record.GlobalRecordKeeper;
+import ladysnake.requiem.api.v1.remnant.PlayerSplitResult;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.api.v1.remnant.SoulbindingRegistry;
 import ladysnake.requiem.common.RequiemRecordTypes;
@@ -64,8 +65,6 @@ import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.EnumSet;
 import java.util.List;
@@ -75,23 +74,10 @@ import java.util.Set;
 public final class PlayerSplitter {
     public static final Identifier BODY_IMPERSONATION = RequiemCore.id("body_impersonation");
 
-    public static @Nullable ServerPlayerEntity split(ServerPlayerEntity whole) {
-        return split(whole, false);
-    }
-
-    public static @Nullable ServerPlayerEntity split(ServerPlayerEntity whole, boolean forced) {
-        if (isReadyForSplit(whole, forced)) {
-            return doSplit(whole);
-        }
-
-        return null;
-    }
-
-    private static boolean isReadyForSplit(ServerPlayerEntity whole, boolean forced) {
-        return RemnantComponent.get(whole).canPerformSplit(forced);
-    }
-
-    private static ServerPlayerEntity doSplit(ServerPlayerEntity whole) {
+    /**
+     * @see RemnantComponent#splitPlayer(boolean)
+     */
+    public static PlayerSplitResult doSplit(ServerPlayerEntity whole) {
         PlayerShellEntity shell = createShell(whole);
         Entity mount = whole.getVehicle();
         ServerPlayerEntity soul = performRespawn(whole);
@@ -99,7 +85,7 @@ public final class PlayerSplitter {
         if (mount != null) shell.startRiding(mount);
         setupRecord(whole, shell, soul);
         PlayerShellEvents.PLAYER_SPLIT.invoker().onPlayerSplit(whole, soul, shell);
-        return soul;
+        return new PlayerSplitResult(soul, shell);
     }
 
     private static void setupRecord(ServerPlayerEntity whole, PlayerShellEntity shell, ServerPlayerEntity soul) {
@@ -184,8 +170,7 @@ public final class PlayerSplitter {
         }
     }
 
-    @NotNull
-    public static NbtCompound computeCopyNbt(Entity template) {
+    private static NbtCompound computeCopyNbt(Entity template) {
         //Player keeps everything that goes through death
         NbtCompound templateNbt = template.writeNbt(new NbtCompound());
         deduplicateVanillaData(templateNbt);

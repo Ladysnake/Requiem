@@ -37,12 +37,12 @@ package ladysnake.requiem.common.remnant;
 import com.google.common.base.Preconditions;
 import ladysnake.requiem.api.v1.event.requiem.PlayerShellEvents;
 import ladysnake.requiem.api.v1.event.requiem.RemnantStateChangeCallback;
+import ladysnake.requiem.api.v1.remnant.PlayerSplitResult;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.api.v1.remnant.RemnantState;
 import ladysnake.requiem.api.v1.remnant.RemnantType;
 import ladysnake.requiem.common.advancement.criterion.RequiemCriteria;
 import ladysnake.requiem.common.gamerule.RequiemGamerules;
-import ladysnake.requiem.common.gamerule.RequiemSyncedGamerules;
 import ladysnake.requiem.core.remnant.NullRemnantState;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.MobEntity;
@@ -51,7 +51,8 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
-import org.jetbrains.annotations.Nullable;
+
+import java.util.Optional;
 
 public final class RemnantComponentImpl implements RemnantComponent {
     public static final String ETHEREAL_TAG = "ethereal";
@@ -152,18 +153,25 @@ public final class RemnantComponentImpl implements RemnantComponent {
     }
 
     @Override
-    public boolean canPerformSplit(boolean forced) {
-        return !this.player.isRemoved() && this.state.canSplit(forced) && !this.isVagrant() && PlayerShellEvents.PRE_SPLIT.invoker().canSplit(this.player);
+    public boolean canSplitPlayer(boolean forced) {
+        return !this.player.isRemoved()
+            && this.state.canSplit(forced)
+            && !this.isVagrant()
+            && (forced || PlayerShellEvents.PRE_SPLIT.invoker().canSplit(this.player));
+    }
+
+    @Override
+    public Optional<PlayerSplitResult> splitPlayer(boolean forced) {
+        if (this.player instanceof ServerPlayerEntity player && this.canSplitPlayer(forced)) {
+            return Optional.of(PlayerSplitter.doSplit(player));
+        }
+
+        return Optional.empty();
     }
 
     @Override
     public void prepareRespawn(ServerPlayerEntity original, boolean lossless) {
         this.state.prepareRespawn(original, lossless);
-    }
-
-    @Override
-    public @Nullable RemnantType getDefaultRemnantType() {
-        return RequiemSyncedGamerules.get(this.player.world).getStartingRemnantType().getRemnantType();
     }
 
     @Override
