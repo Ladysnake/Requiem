@@ -40,6 +40,7 @@ import ladysnake.requiem.api.v1.block.VagrantTargetableBlock;
 import ladysnake.requiem.api.v1.entity.ability.AbilityType;
 import ladysnake.requiem.api.v1.event.minecraft.client.CrosshairRenderCallback;
 import ladysnake.requiem.api.v1.event.minecraft.client.UpdateTargetedEntityCallback;
+import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.core.ability.PlayerAbilityController;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
@@ -114,7 +115,7 @@ public final class RequiemTargetHandler implements UpdateTargetedEntityCallback,
 
     @Override
     public void onCrosshairRender(MatrixStack matrices, int scaledWidth, int scaledHeight) {
-        if (this.client.player != null) {
+        if (this.client.player != null && RemnantComponent.isVagrant(this.client.player) && this.client.currentScreen == null) {
             PlayerAbilityController abilityController = PlayerAbilityController.get(this.client.player);
             AbilityType renderedType = AbilityType.ATTACK;
 

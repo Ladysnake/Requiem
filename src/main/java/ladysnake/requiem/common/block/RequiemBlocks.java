@@ -71,8 +71,8 @@ public final class RequiemBlocks {
     public static final SlabBlock TACHYLITE_SLAB = makeSlab(TACHYLITE);
     public static final StairsBlock TACHYLITE_STAIRS = makeStairs(TACHYLITE);
     public static final Block SCRAPED_TACHYLITE = makeVariant(TACHYLITE, "tachylite/scraped");
-    public static final Block TACHYLITE_RUNESTONE = make(() -> new InertRunestoneBlock(AbstractBlock.Settings.copy(TACHYLITE)), "tachylite/runestone");
-    public static final Block DERELICT_TACHYLITE = make(() -> new OreBlock(AbstractBlock.Settings.copy(TACHYLITE), UniformIntProvider.create(7, 14)), "tachylite/derelict");
+    public static final InertRunestoneBlock TACHYLITE_RUNESTONE = make(() -> new InertRunestoneBlock(AbstractBlock.Settings.copy(TACHYLITE)), "tachylite/runestone");
+    public static final OreBlock DERELICT_TACHYLITE = make(() -> new OreBlock(AbstractBlock.Settings.copy(TACHYLITE), UniformIntProvider.create(7, 14)), "tachylite/derelict");
     public static final RunestoneBlock RUNIC_TACHYLITE_ATTRITION = makeRunic("attrition", 3);
     public static final RunestoneBlock RUNIC_TACHYLITE_EMANCIPATION = makeRunic("emancipation", 1);
     public static final RunestoneBlock RUNIC_TACHYLITE_PENANCE = makeRunic("penance", 3);

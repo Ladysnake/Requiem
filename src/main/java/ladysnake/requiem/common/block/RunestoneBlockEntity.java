@@ -48,6 +48,7 @@ import ladysnake.requiem.common.RequiemRecordTypes;
 import ladysnake.requiem.common.particle.RequiemParticleTypes;
 import ladysnake.requiem.common.sound.RequiemSoundEvents;
 import ladysnake.requiem.common.tag.RequiemBlockTags;
+import ladysnake.requiem.common.util.ObeliskDescriptor;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -57,19 +58,24 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.text.Text;
-import net.minecraft.util.dynamic.GlobalPos;
-import net.minecraft.util.math.*;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
+import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.function.Consumer;
 
-public class RunestoneBlockEntity extends BlockEntity {
+public class RunestoneBlockEntity extends InertRunestoneBlockEntity {
     public static final Direction[] OBELISK_SIDES = {Direction.SOUTH, Direction.EAST, Direction.NORTH, Direction.WEST};
     public static final int POWER_ATTEMPTS = 6;
     public static final int MAX_OBELISK_CORE_WIDTH = 5;
@@ -79,7 +85,6 @@ public class RunestoneBlockEntity extends BlockEntity {
     public static final DataResult<ObeliskMatch> INVALID_CAP = DataResult.error("Structure does not have a matching cap");
     public static final int NO_MATCH = 0;
 
-    private @Nullable Text customName;
     private final Object2IntMap<ObeliskRune> levels = new Object2IntOpenHashMap<>();
     private @Nullable UUID recordUuid;
     private int obeliskCoreWidth = 0;
@@ -197,6 +202,14 @@ public class RunestoneBlockEntity extends BlockEntity {
         return this.obeliskCoreHeight;
     }
 
+    public Optional<ObeliskDescriptor> getDescriptor() {
+        if (this.world != null && this.recordUuid != null) {
+            return GlobalRecordKeeper.get(this.world).getRecord(this.recordUuid).flatMap(r -> r.get(RequiemRecordTypes.OBELISK_REF));
+        }
+
+        return Optional.empty();
+    }
+
     private void refreshStructure(BlockState state) {
         assert this.world != null;
         this.levels.clear();
@@ -210,10 +223,23 @@ public class RunestoneBlockEntity extends BlockEntity {
                     this.obeliskCoreWidth = match.coreWidth();
                     this.obeliskCoreHeight = match.coreHeight();
                     this.levels.putAll(runes);
-
+                    Optional<Text> customName = match.names().stream().unordered().findAny();
                     if (this.recordUuid == null && runes.containsKey(RequiemBlocks.RIFT_RUNE)) {
+                        // Clear leftover global records, should not be needed but uuuh bugs
+                        GlobalRecordKeeper.get(this.world).getRecords()
+                            .stream()
+                            .filter(r -> r.get(RequiemRecordTypes.OBELISK_REF)
+                                .map(ObeliskDescriptor::pos)
+                                .filter(this.pos::equals).isPresent())
+                            .forEach(GlobalRecord::invalidate);
                         GlobalRecord record = GlobalRecordKeeper.get(this.world).createRecord();
-                        record.put(RequiemRecordTypes.OBELISK_REF, GlobalPos.create(this.world.getRegistryKey(), this.getPos()));
+                        record.put(RequiemRecordTypes.OBELISK_REF, new ObeliskDescriptor(
+                            this.world.getRegistryKey(),
+                            this.getPos(),
+                            this.obeliskCoreWidth,
+                            this.obeliskCoreHeight,
+                            customName.or(this::generateName)
+                        ));
                         record.put(RequiemRecordTypes.RIFT_OBELISK, Unit.INSTANCE);
                         this.recordUuid = record.getUuid();
                     }
@@ -222,8 +248,9 @@ public class RunestoneBlockEntity extends BlockEntity {
             );
     }
 
-    public Optional<Text> getCustomName() {
-        return Optional.ofNullable(this.customName);
+    private Optional<Text> generateName() {
+        // TODO name generation
+        return Optional.empty();
     }
 
     public boolean canBeUsedBy(PlayerEntity player) {
@@ -252,19 +279,11 @@ public class RunestoneBlockEntity extends BlockEntity {
         if (nbt.contains("linked_record")) {
             this.recordUuid = nbt.getUuid("linked_record");
         }
-
-        if (nbt.contains("CustomName", 8)) {
-            this.customName = Text.Serializer.fromJson(nbt.getString("CustomName"));
-        }
     }
 
     @Override
     public void writeNbt(NbtCompound nbt) {
         super.writeNbt(nbt);
-
-        if (this.customName != null) {
-            nbt.putString("CustomName", Text.Serializer.toJson(this.customName));
-        }
 
         if (this.recordUuid != null) {
             nbt.putUuid("linked_record", this.recordUuid);
@@ -352,6 +371,7 @@ public class RunestoneBlockEntity extends BlockEntity {
         BlockPos start = origin.add(-1, 0, -1);
         BlockPos.Mutable pos = start.mutableCopy();
         List<RuneSearchResult> layers = new ArrayList<>();
+        Set<Text> names = new HashSet<>();
         int height;
 
         for (height = 0; height < MAX_OBELISK_CORE_HEIGHT; height++) {
@@ -359,9 +379,10 @@ public class RunestoneBlockEntity extends BlockEntity {
             RuneSearchResult result = findRune(world, origin, coreWidth, height);
             if (!result.valid()) break;
             layers.add(result);
+            names.addAll(result.names());
         }
 
-        return new ObeliskMatch(origin, coreWidth, height, layers);
+        return new ObeliskMatch(origin, coreWidth, height, layers, names);
     }
 
     private static boolean testCoreLayerFrame(World world, BlockPos start, BlockPos.Mutable pos, int width, int height) {
@@ -372,15 +393,19 @@ public class RunestoneBlockEntity extends BlockEntity {
     }
 
     private static RuneSearchResult findRune(World world, BlockPos origin, int width, int height) {
+        Set<Text> names = new HashSet<>();
         ObeliskRune rune = null;
         boolean first = true;
+
         for (BlockPos corePos : iterateCoreBlocks(origin, width, height)) {
             BlockState state = world.getBlockState(corePos);
             if (state.isIn(RequiemBlockTags.OBELISK_CORE)) {
-                @Nullable ObeliskRune foundRune = ObeliskRune.LOOKUP.find(world, corePos, state, null, null);
+                BlockEntity be = state.hasBlockEntity() ? world.getBlockEntity(corePos) : null;
+                @Nullable ObeliskRune foundRune = ObeliskRune.LOOKUP.find(world, corePos, state, be, null);
                 if (first) {
                     rune = foundRune;
                     first = false;
+                    if (be instanceof InertRunestoneBlockEntity runestone) runestone.getCustomName().ifPresent(names::add);
                 } else if (foundRune != rune) {
                     return RuneSearchResult.FAILED;
                 }
@@ -388,7 +413,8 @@ public class RunestoneBlockEntity extends BlockEntity {
                 return RuneSearchResult.FAILED;
             }
         }
-        return RuneSearchResult.of(rune);
+
+        return RuneSearchResult.of(rune, names);
     }
 
     private static boolean matchObeliskBase(BlockView world, BlockPos origin, int coreWidth) {
@@ -428,12 +454,12 @@ public class RunestoneBlockEntity extends BlockEntity {
         return true;
     }
 
-    record RuneSearchResult(boolean valid, @Nullable ObeliskRune rune) {
-        static final RuneSearchResult FAILED = new RuneSearchResult(false, null);
-        static final RuneSearchResult INERT = new RuneSearchResult(true, null);
+    record RuneSearchResult(boolean valid, @Nullable ObeliskRune rune, Set<Text> names) {
+        static final RuneSearchResult FAILED = new RuneSearchResult(false, null, Set.of());
+        static final RuneSearchResult INERT = new RuneSearchResult(true, null, Set.of());
 
-        static RuneSearchResult of(@Nullable ObeliskRune rune) {
-            return rune == null ? INERT : new RuneSearchResult(true, rune);
+        static RuneSearchResult of(@Nullable ObeliskRune rune, Set<Text> names) {
+            return rune == null && names.isEmpty() ? INERT : new RuneSearchResult(true, rune, names);
         }
     }
 

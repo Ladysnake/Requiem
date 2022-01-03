@@ -37,21 +37,17 @@ package ladysnake.requiem.common.screen;
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.dialogue.CutsceneDialogue;
 import ladysnake.requiem.common.dialogue.DialogueStateMachine;
+import ladysnake.requiem.common.util.ObeliskDescriptor;
 import net.fabricmc.fabric.api.screenhandler.v1.ScreenHandlerRegistry;
 import net.minecraft.screen.ScreenHandlerType;
-import net.minecraft.util.math.BlockPos;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
 
 public final class RequiemScreenHandlers {
     public static final ScreenHandlerType<RiftScreenHandler> RIFT_SCREEN_HANDLER = ScreenHandlerRegistry.registerExtended(Requiem.id("rift"), (syncId, inventory, buf) -> {
-        BlockPos source = buf.readBlockPos();
-        int size = buf.readVarInt();
-        Set<BlockPos> obeliskPositions = new LinkedHashSet<>();
-        for (int i = 0; i < size; i++) {
-            obeliskPositions.add(buf.readBlockPos());
-        }
+        ObeliskDescriptor source = buf.decode(ObeliskDescriptor.CODEC);
+        Set<ObeliskDescriptor> obeliskPositions = buf.readCollection(LinkedHashSet::new, b -> b.decode(ObeliskDescriptor.CODEC));
         return new RiftScreenHandler(syncId, source, obeliskPositions);
     });
 

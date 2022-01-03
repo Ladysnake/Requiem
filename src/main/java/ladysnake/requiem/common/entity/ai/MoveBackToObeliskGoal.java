@@ -35,9 +35,9 @@
 package ladysnake.requiem.common.entity.ai;
 
 import ladysnake.requiem.common.entity.MorticianEntity;
+import ladysnake.requiem.common.util.ObeliskDescriptor;
 import net.minecraft.entity.ai.NoPenaltyTargeting;
 import net.minecraft.entity.ai.goal.WanderAroundGoal;
-import net.minecraft.util.dynamic.GlobalPos;
 import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.Nullable;
 
@@ -51,13 +51,13 @@ public class MoveBackToObeliskGoal extends WanderAroundGoal {
 
 	@Override
 	public boolean canStart() {
-        GlobalPos home = ((MorticianEntity) this.mob).getHome();
-        return home != null && home.getDimension() == this.mob.getWorld().getRegistryKey() && !this.mob.getBlockPos().isWithinDistance(home.getPos(), 16) && super.canStart();
+        @Nullable ObeliskDescriptor home = ((MorticianEntity) this.mob).getHome();
+        return home != null && home.dimension() == this.mob.getWorld().getRegistryKey() && !this.mob.getBlockPos().isWithinDistance(home.pos(), 16) && super.canStart();
 	}
 
 	@Override
 	protected @Nullable Vec3d getWanderTarget() {
-        @Nullable GlobalPos home = ((MorticianEntity) this.mob).getHome();
-		return home == null ? null : NoPenaltyTargeting.findTo(this.mob, HORIZONTAL_RANGE, VERTICAL_RANGE, Vec3d.ofCenter(home.getPos()), (float) (Math.PI / 2));
+        @Nullable ObeliskDescriptor home = ((MorticianEntity) this.mob).getHome();
+		return home == null ? null : NoPenaltyTargeting.findTo(this.mob, HORIZONTAL_RANGE, VERTICAL_RANGE, Vec3d.ofCenter(home.pos()), (float) (Math.PI / 2));
 	}
 }

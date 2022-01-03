@@ -38,6 +38,7 @@ import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.common.block.RequiemBlocks;
 import ladysnake.requiem.common.block.RiftRunestoneBlock;
 import ladysnake.requiem.common.entity.effect.AttritionStatusEffect;
+import ladysnake.requiem.common.util.ObeliskDescriptor;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerType;
@@ -52,26 +53,26 @@ import java.util.Set;
 import java.util.function.Predicate;
 
 public class RiftScreenHandler extends ScreenHandler {
-    private final BlockPos source;
+    private final ObeliskDescriptor source;
     private final Predicate<PlayerEntity> canBeUsedBy;
-    private final Set<BlockPos> obeliskPositions;
+    private final Set<ObeliskDescriptor> obelisks;
 
-    public RiftScreenHandler(int syncId, BlockPos source, Set<BlockPos> obeliskPositions) {
+    public RiftScreenHandler(int syncId, ObeliskDescriptor source, Set<ObeliskDescriptor> obeliskPositions) {
         this(RequiemScreenHandlers.RIFT_SCREEN_HANDLER, syncId, source, p -> true, obeliskPositions);
     }
 
-    public RiftScreenHandler(@Nullable ScreenHandlerType<?> type, int syncId, BlockPos source, Predicate<PlayerEntity> canBeUsedBy, Set<BlockPos> obeliskPositions) {
+    public RiftScreenHandler(@Nullable ScreenHandlerType<?> type, int syncId, ObeliskDescriptor source, Predicate<PlayerEntity> canBeUsedBy, Set<ObeliskDescriptor> obeliskPositions) {
         super(type, syncId);
         this.source = source;
         this.canBeUsedBy = canBeUsedBy;
-        this.obeliskPositions = obeliskPositions;
+        this.obelisks = obeliskPositions;
     }
 
-    public Collection<BlockPos> getObeliskPositions() {
-        return obeliskPositions;
+    public Collection<ObeliskDescriptor> getObelisks() {
+        return obelisks;
     }
 
-    public BlockPos getSource() {
+    public ObeliskDescriptor getSource() {
         return source;
     }
 
@@ -80,21 +81,21 @@ public class RiftScreenHandler extends ScreenHandler {
         return RemnantComponent.isIncorporeal(player) && canBeUsedBy.test(player) && RequiemBlocks.RIFT_RUNE.canBeUsedByVagrant(player);
     }
 
-    public void useRift(ServerPlayerEntity player, BlockPos target) {
-        if (this.obeliskPositions.contains(target) && !this.source.equals(target)) {
-            RiftRunestoneBlock.findRespawnPosition(player.getType(), player.world, target).ifPresent(respawnPosition -> {
-                Vec3d towardsObelisk = Vec3d.ofBottomCenter(target).subtract(respawnPosition).normalize();
+    public void useRift(ServerPlayerEntity player, ObeliskDescriptor target) {
+        if (this.obelisks.contains(target) && !this.source.equals(target)) {
+            RiftRunestoneBlock.findRespawnPosition(player.getType(), player.world, target.pos()).ifPresent(respawnPosition -> {
+                Vec3d towardsObelisk = target.center().subtract(respawnPosition).normalize();
                 float yaw = (float) MathHelper.wrapDegrees(MathHelper.atan2(towardsObelisk.z, towardsObelisk.x) * 180.0F / (float)Math.PI - 90.0);
                 player.teleport(respawnPosition.x, respawnPosition.y, respawnPosition.z, true);
                 player.setYaw(yaw);
-                AttritionStatusEffect.apply(player, 1, getAttritionLength(target));
+                AttritionStatusEffect.apply(player, 1, getAttritionLength(target.pos()));
                 player.closeHandledScreen();
             });
         }
     }
 
     private int getAttritionLength(BlockPos target) {
-        double distanceTraveled = Math.sqrt(this.source.getSquaredDistance(target));
+        double distanceTraveled = Math.sqrt(this.source.pos().getSquaredDistance(target));
         // Base penalty is 15mn of attrition
         int minLength = 20*60*15;
         double logBase = Math.log(Math.pow(10, 0.003));

@@ -53,10 +53,22 @@ import ladysnake.requiem.common.network.RequiemNetworking;
 import ladysnake.requiem.common.particle.RequiemParticleTypes;
 import ladysnake.requiem.common.remnant.RemnantTypes;
 import ladysnake.requiem.common.sound.RequiemSoundEvents;
+import ladysnake.requiem.common.util.ObeliskDescriptor;
 import ladysnake.requiem.core.record.EntityPositionClerk;
 import net.minecraft.enchantment.EnchantmentLevelEntry;
-import net.minecraft.entity.*;
-import net.minecraft.entity.ai.goal.*;
+import net.minecraft.entity.EntityGroup;
+import net.minecraft.entity.EntityStatuses;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.ExperienceOrbEntity;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.ai.goal.ActiveTargetGoal;
+import net.minecraft.entity.ai.goal.GoToWalkTargetGoal;
+import net.minecraft.entity.ai.goal.LookAtCustomerGoal;
+import net.minecraft.entity.ai.goal.LookAtEntityGoal;
+import net.minecraft.entity.ai.goal.RevengeGoal;
+import net.minecraft.entity.ai.goal.StopAndLookAtEntityGoal;
+import net.minecraft.entity.ai.goal.StopFollowingCustomerGoal;
+import net.minecraft.entity.ai.goal.WanderAroundFarGoal;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
@@ -82,7 +94,6 @@ import net.minecraft.tag.BlockTags;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TimeHelper;
-import net.minecraft.util.dynamic.GlobalPos;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.intprovider.UniformIntProvider;
@@ -93,7 +104,11 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 public class MorticianEntity extends MerchantEntity implements Angerable {
     public static final int MAX_LINK_DISTANCE = 20;
@@ -293,10 +308,10 @@ public class MorticianEntity extends MerchantEntity implements Angerable {
             // Attempt to link to a new obelisk, otherwise despawn
             MorticianSpawner.streamSpawnableObelisks(sw.getServer())
                 .filter(r -> r.get(RequiemRecordTypes.OBELISK_REF)
-                    .filter(gpos -> gpos.getDimension() == this.world.getRegistryKey())
-                    .filter(gpos -> gpos.getPos().isWithinDistance(this.getBlockPos(), MAX_LINK_DISTANCE))
+                    .filter(obelisk -> obelisk.dimension() == this.world.getRegistryKey())
+                    .filter(obelisk -> obelisk.pos().isWithinDistance(this.getBlockPos(), MAX_LINK_DISTANCE))
                     .isPresent())
-                .min(Comparator.comparing(r -> r.get(RequiemRecordTypes.OBELISK_REF).orElseThrow().getPos().getSquaredDistance(this.getBlockPos())))
+                .min(Comparator.comparing(r -> r.get(RequiemRecordTypes.OBELISK_REF).orElseThrow().pos().getSquaredDistance(this.getBlockPos())))
                 .ifPresentOrElse(
                     r -> {
                         this.setFadingTicks(0);
@@ -361,8 +376,8 @@ public class MorticianEntity extends MerchantEntity implements Angerable {
     }
 
     public void linkWith(GlobalRecord r) {
-        Optional<GlobalPos> obeliskPos = r.get(RequiemRecordTypes.OBELISK_REF);
-        Preconditions.checkArgument(obeliskPos.isPresent());
+        Optional<ObeliskDescriptor> obelisk = r.get(RequiemRecordTypes.OBELISK_REF);
+        Preconditions.checkState(obelisk.isPresent());
         EntityPositionClerk.get(this).linkWith(r, RequiemRecordTypes.MORTICIAN_REF);
         this.linkedObelisk = r.getUuid();
         this.setObeliskProjection(true);
@@ -373,7 +388,7 @@ public class MorticianEntity extends MerchantEntity implements Angerable {
         this.fillRecipesFromPool(this.getOffers(), TRADES, 7);
     }
 
-    public @Nullable GlobalPos getHome() {
+    public @Nullable ObeliskDescriptor getHome() {
         if (this.linkedObelisk == null) return null;
         return GlobalRecordKeeper.get(this.world).getRecord(this.linkedObelisk).flatMap(r -> r.get(RequiemRecordTypes.OBELISK_REF)).orElse(null);
     }

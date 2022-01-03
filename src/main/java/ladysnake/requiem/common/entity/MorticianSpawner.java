@@ -64,13 +64,13 @@ public class MorticianSpawner implements ServerTickEvents.EndTick {
             if (this.ticksUntilNextSpawn <= 0) {
                 this.ticksUntilNextSpawn = SPAWN_COOLDOWN;
                 streamSpawnableObelisks(server)
-                    .forEach(r -> r.get(RequiemRecordTypes.OBELISK_REF).ifPresent(gpos -> {
-                        ServerWorld world = server.getWorld(gpos.getDimension());
-                        if (world == null || !world.isRegionLoaded(gpos.getPos().getX() - 10, gpos.getPos().getZ() - 10, gpos.getPos().getZ() + 10, gpos.getPos().getZ() + 10)) return;
-                        RiftRunestoneBlock.findRespawnPosition(RequiemEntities.MORTICIAN, world, gpos.getPos()).ifPresent(spawnPos -> {
+                    .forEach(r -> r.get(RequiemRecordTypes.OBELISK_REF).ifPresent(obelisk -> {
+                        ServerWorld world = server.getWorld(obelisk.dimension());
+                        if (world == null || !world.isRegionLoaded(obelisk.pos().getX() - 10, obelisk.pos().getZ() - 10, obelisk.pos().getZ() + 10, obelisk.pos().getZ() + 10)) return;
+                        RiftRunestoneBlock.findRespawnPosition(RequiemEntities.MORTICIAN, world, obelisk.pos()).ifPresent(spawnPos -> {
                             MorticianEntity mortician = RequiemEntities.MORTICIAN.spawn(world, null, null, null, new BlockPos(spawnPos), SpawnReason.STRUCTURE, false, false);
                             if (mortician != null) {
-                                Vec3d towardsObelisk = Vec3d.ofBottomCenter(gpos.getPos()).subtract(spawnPos).normalize();
+                                Vec3d towardsObelisk = obelisk.center().subtract(spawnPos).normalize();
                                 mortician.setYaw((float) MathHelper.wrapDegrees(MathHelper.atan2(towardsObelisk.z, towardsObelisk.x) * 180.0F / (float)Math.PI - 90.0));
                                 mortician.linkWith(r);
                             }

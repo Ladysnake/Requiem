@@ -40,6 +40,7 @@ import ladysnake.requiem.api.v1.remnant.RemnantType;
 import ladysnake.requiem.api.v1.util.SubDataManager;
 import ladysnake.requiem.api.v1.util.SubDataManagerHelper;
 import ladysnake.requiem.common.remnant.RemnantTypes;
+import ladysnake.requiem.common.util.ObeliskDescriptor;
 import ladysnake.requiem.core.RequiemCoreNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
@@ -51,7 +52,6 @@ import net.minecraft.network.packet.c2s.play.CustomPayloadC2SPacket;
 import net.minecraft.network.packet.s2c.play.CustomPayloadS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.BlockPos;
 import org.jetbrains.annotations.Contract;
 
 import java.util.List;
@@ -127,9 +127,9 @@ public final class RequiemNetworking {
         sendToServer(new CustomPayloadC2SPacket(DIALOGUE_ACTION, buf));
     }
 
-    public static void sendRiftUseMessage(BlockPos target) {
+    public static void sendRiftUseMessage(ObeliskDescriptor target) {
         PacketByteBuf buf = PacketByteBufs.create();
-        buf.writeBlockPos(target);
+        buf.encode(ObeliskDescriptor.CODEC, target);
         sendToServer(USE_RIFT, buf);
     }
 

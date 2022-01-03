@@ -42,12 +42,12 @@ import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.common.screen.DialogueScreenHandler;
 import ladysnake.requiem.common.screen.RiftScreenHandler;
 import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
+import ladysnake.requiem.common.util.ObeliskDescriptor;
 import ladysnake.requiem.core.RequiemCoreNetworking;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.util.math.BlockPos;
 
 import static ladysnake.requiem.common.network.RequiemNetworking.*;
 
@@ -97,7 +97,7 @@ public final class ServerMessageHandling {
             }
         }));
         ServerPlayNetworking.registerGlobalReceiver(USE_RIFT, (server, player, handler, buf, responseSender) -> {
-            BlockPos target = buf.readBlockPos();
+            ObeliskDescriptor target = buf.decode(ObeliskDescriptor.CODEC);
 
             server.execute(() -> {
                 if (player.currentScreenHandler instanceof RiftScreenHandler riftScreenHandler) {

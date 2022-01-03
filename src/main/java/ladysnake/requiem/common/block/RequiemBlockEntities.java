@@ -47,10 +47,15 @@ public final class RequiemBlockEntities {
         RequiemBlocks.RUNIC_TACHYLITE_PENANCE,
         RequiemBlocks.RUNIC_TACHYLITE_RECLAMATION,
         RequiemBlocks.RIFT_RUNE
-    ).build(null);
+    ).build();
+
+    public static final BlockEntityType<InertRunestoneBlockEntity> INERT_RUNIC_OBSIDIAN = FabricBlockEntityTypeBuilder.create(InertRunestoneBlockEntity::new,
+        RequiemBlocks.RIFT_RUNE
+    ).build();
 
     public static void init() {
         register("runic_obsidian", RUNIC_OBSIDIAN);
+        register("inert_runic_obsidian", INERT_RUNIC_OBSIDIAN);
     }
 
     private static void register(String id, BlockEntityType<?> type) {

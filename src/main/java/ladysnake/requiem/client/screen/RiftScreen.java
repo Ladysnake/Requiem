@@ -38,14 +38,13 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.common.network.RequiemNetworking;
 import ladysnake.requiem.common.screen.RiftScreenHandler;
+import ladysnake.requiem.common.util.ObeliskDescriptor;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.math.Vec3d;
@@ -61,7 +60,7 @@ public class RiftScreen extends HandledScreen<RiftScreenHandler> {
     private static final Identifier RIFT_ICONS = Requiem.id("textures/gui/soul_rift.png");
 
     private @Nullable Matrix4f projectionViewMatrix;
-    private @Nullable BlockPos currentMouseOver;
+    private @Nullable ObeliskDescriptor currentMouseOver;
     private int selectionIndex = 0;
     private int overlappingSelections = 1;
 
@@ -92,11 +91,11 @@ public class RiftScreen extends HandledScreen<RiftScreenHandler> {
             int centerX = this.width / 2;
             int centerY = this.height / 2;
             this.currentMouseOver = null;
-            List<BlockPos> selected = new ArrayList<>();
+            List<ObeliskDescriptor> selected = new ArrayList<>();
             RenderSystem.setShaderTexture(0, RIFT_ICONS);
 
-            for (BlockPos pos : this.handler.getObeliskPositions()) {
-                Vec3f projected = worldToScreenSpace(this.projectionViewMatrix, pos);
+            for (ObeliskDescriptor obelisk : this.handler.getObelisks()) {
+                Vec3f projected = worldToScreenSpace(this.projectionViewMatrix, obelisk.center());
                 int x, y;
 
                 if (projected.getZ() > 0
@@ -147,11 +146,11 @@ public class RiftScreen extends HandledScreen<RiftScreenHandler> {
                 y = MathHelper.clamp(y, 0, height);
 
                 int v;
-                if (pos.equals(this.getScreenHandler().getSource())) {
+                if (obelisk.equals(this.getScreenHandler().getSource())) {
                     v = sourceObeliskV;
                 } else if (x > (centerX - iconHalfSize) && x < (centerX + iconHalfSize) && y > (centerY - iconHalfSize) && y < (centerY + iconHalfSize)) {
                     v = selectedObeliskV;
-                    selected.add(pos);
+                    selected.add(obelisk);
                 } else {
                     v = obeliskV;
                 }
@@ -165,17 +164,17 @@ public class RiftScreen extends HandledScreen<RiftScreenHandler> {
                 List<Text> lines = new ArrayList<>(selected.size());
 
                 for (int i = 0; i < selected.size(); i++) {
-                    BlockPos pos = selected.get(i);
+                    ObeliskDescriptor obelisk = selected.get(i);
                     Formatting formatting;
 
                     if (i == selectedIndex) {
-                        this.currentMouseOver = pos;
+                        this.currentMouseOver = obelisk;
                         formatting = Formatting.LIGHT_PURPLE;
                     } else {
                         formatting = Formatting.GRAY;
                     }
 
-                    lines.add(new LiteralText(pos.toShortString()).formatted(formatting));
+                    lines.add(obelisk.resolveName().shallowCopy().formatted(formatting));
                 }
 
                 this.renderTooltip(matrices, lines, centerX, centerY);
@@ -197,7 +196,7 @@ public class RiftScreen extends HandledScreen<RiftScreenHandler> {
         super.render(matrices, mouseX, mouseY, delta);
     }
 
-    private Vec3f worldToScreenSpace(Matrix4f projectionViewMatrix, BlockPos worldPos) {
+    private Vec3f worldToScreenSpace(Matrix4f projectionViewMatrix, Vec3d worldPos) {
         Vec3d cameraPos = Objects.requireNonNull(client).gameRenderer.getCamera().getPos();
         Vector4f clipSpacePos = worldToClipSpace(projectionViewMatrix, worldPos, cameraPos, 0);
 
@@ -221,7 +220,7 @@ public class RiftScreen extends HandledScreen<RiftScreenHandler> {
         );
     }
 
-    private Vector4f worldToClipSpace(Matrix4f projectionViewMatrix, BlockPos worldPos, Vec3d cameraPos, float nudge) {
+    private Vector4f worldToClipSpace(Matrix4f projectionViewMatrix, Vec3d worldPos, Vec3d cameraPos, float nudge) {
         Vector4f clipSpacePos = new Vector4f(
             (float) (worldPos.getX() + 0.5F - cameraPos.getX() + nudge),
             (float) (worldPos.getY() + 0.5F - cameraPos.getY() + nudge),

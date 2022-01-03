@@ -38,20 +38,24 @@ import com.google.common.base.Preconditions;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import ladysnake.requiem.api.v1.block.ObeliskRune;
+import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 public final class ObeliskMatch {
+    private final BlockPos origin;
     private final int coreWidth;
     private final int coreHeight;
     private final List<RunestoneBlockEntity.RuneSearchResult> layers;
-    private final BlockPos origin;
+    private final Set<Text> names;
 
-    ObeliskMatch(BlockPos origin, int coreWidth, int coreHeight, List<RunestoneBlockEntity.RuneSearchResult> coreLayers) {
+    ObeliskMatch(BlockPos origin, int coreWidth, int coreHeight, List<RunestoneBlockEntity.RuneSearchResult> coreLayers, Set<Text> names) {
+        this.names = names;
         Preconditions.checkArgument(coreHeight == coreLayers.size());
         this.origin = origin;
         this.coreWidth = coreWidth;
@@ -64,6 +68,10 @@ public final class ObeliskMatch {
             .filter(height -> layers.get(height).rune() != null)
             .mapToObj(height -> RunestoneBlockEntity.iterateCoreBlocks(this.origin, this.coreWidth, height))
             .flatMap(positions -> StreamSupport.stream(positions.spliterator(), false));
+    }
+
+    public Set<Text> names() {
+        return names;
     }
 
     public BlockPos origin() {

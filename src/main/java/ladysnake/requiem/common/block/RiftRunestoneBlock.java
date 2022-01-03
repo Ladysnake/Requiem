@@ -46,17 +46,16 @@ import ladysnake.requiem.common.entity.effect.RequiemStatusEffects;
 import ladysnake.requiem.common.screen.RiftScreenHandlerFactory;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.RespawnAnchorBlock;
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.dynamic.GlobalPos;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
@@ -79,7 +78,7 @@ public class RiftRunestoneBlock extends InertRunestoneBlock implements ObeliskRu
 
     @Override
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-        if (!state.get(ACTIVATED) || !RemnantComponent.isIncorporeal(player)) {
+        if (!state.get(ACTIVATED) || !RemnantComponent.isIncorporeal(player) || !this.canBeUsedByVagrant(player)) {
             return ActionResult.PASS;
         } else if (!(world instanceof ServerWorld sw)) {
             return ActionResult.SUCCESS;
@@ -100,17 +99,21 @@ public class RiftRunestoneBlock extends InertRunestoneBlock implements ObeliskRu
     public @Nullable NamedScreenHandlerFactory createScreenHandlerFactory(BlockState state, World world, BlockPos pos) {
         if (world.getBlockEntity(pos) instanceof RunestoneBlockEntity controller) {
             return new RiftScreenHandlerFactory(
-                controller.getCustomName().orElseGet(() -> new TranslatableText("requiem:container.obelisk_rift")),
-                pos,
+                controller.getDescriptor().orElseThrow(),
                 GlobalRecordKeeper.get(world).getRecords().stream()
                     .filter(r -> r.get(RequiemRecordTypes.RIFT_OBELISK).isPresent())
                     .flatMap(r -> r.get(RequiemRecordTypes.OBELISK_REF).stream())
-                    .filter(p -> p.getDimension() == world.getRegistryKey())
-                    .map(GlobalPos::getPos)
+                    .filter(p -> p.dimension() == world.getRegistryKey())
                     .collect(Collectors.toSet()),
                 controller::canBeUsedBy);
         }
         return null;
+    }
+
+    @Override
+    public @Nullable BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
+        BlockEntity be = super.createBlockEntity(pos, state);
+        return be == null ? new InertRunestoneBlockEntity(pos, state) : be;
     }
 
     @Override

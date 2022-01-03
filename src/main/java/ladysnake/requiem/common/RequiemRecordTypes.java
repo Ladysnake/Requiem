@@ -39,7 +39,7 @@ import com.mojang.serialization.Codec;
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.record.EntityPointer;
 import ladysnake.requiem.api.v1.record.RecordType;
-import net.minecraft.util.dynamic.GlobalPos;
+import ladysnake.requiem.common.util.ObeliskDescriptor;
 
 public final class RequiemRecordTypes {
     public static final RecordType<Unit> RELEASED_SOUL = register("released_soul", Codec.unit(Unit.INSTANCE));
@@ -47,7 +47,7 @@ public final class RequiemRecordTypes {
     public static final RecordType<EntityPointer> BODY_REF = RecordType.register(Requiem.id("body_ref"), EntityPointer.CODEC, EntityPointer::world, true);
     public static final RecordType<EntityPointer> SOUL_OWNER_REF = RecordType.register(Requiem.id("soul_owner_ref"), EntityPointer.CODEC, EntityPointer::world, false);
     public static final RecordType<EntityPointer> MORTICIAN_REF = RecordType.register(Requiem.id("mortician_ref"), EntityPointer.CODEC, EntityPointer::world, false);
-    public static final RecordType<GlobalPos> OBELISK_REF = RecordType.register(Requiem.id("obelisk_ref"), GlobalPos.CODEC, GlobalPos::getDimension, false);
+    public static final RecordType<ObeliskDescriptor> OBELISK_REF = RecordType.register(Requiem.id("obelisk_ref"), ObeliskDescriptor.CODEC, ObeliskDescriptor::dimension, false);
 
     public static void init() {
         // NO-OP

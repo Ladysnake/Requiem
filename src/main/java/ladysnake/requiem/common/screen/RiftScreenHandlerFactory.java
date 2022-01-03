@@ -34,6 +34,7 @@
  */
 package ladysnake.requiem.common.screen;
 
+import ladysnake.requiem.common.util.ObeliskDescriptor;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -41,19 +42,17 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.text.TranslatableText;
 
 import java.util.Set;
 import java.util.function.Predicate;
 
 public final class RiftScreenHandlerFactory implements ExtendedScreenHandlerFactory {
-    private final BlockPos source;
-    private final Set<BlockPos> obeliskPositions;
-    private final Text displayName;
+    private final ObeliskDescriptor source;
+    private final Set<ObeliskDescriptor> obeliskPositions;
     private final Predicate<PlayerEntity> useCheck;
 
-    public RiftScreenHandlerFactory(Text displayName, BlockPos source, Set<BlockPos> obeliskPositions, Predicate<PlayerEntity> useCheck) {
-        this.displayName = displayName;
+    public RiftScreenHandlerFactory(ObeliskDescriptor source, Set<ObeliskDescriptor> obeliskPositions, Predicate<PlayerEntity> useCheck) {
         this.source = source;
         this.obeliskPositions = obeliskPositions;
         this.useCheck = useCheck;
@@ -61,16 +60,13 @@ public final class RiftScreenHandlerFactory implements ExtendedScreenHandlerFact
 
     @Override
     public void writeScreenOpeningData(ServerPlayerEntity player, PacketByteBuf buf) {
-        buf.writeBlockPos(this.source);
-        buf.writeVarInt(obeliskPositions.size());
-        for (BlockPos obeliskPosition : obeliskPositions) {
-            buf.writeBlockPos(obeliskPosition);
-        }
+        buf.encode(ObeliskDescriptor.CODEC, this.source);
+        buf.writeCollection(this.obeliskPositions, (b, o) -> b.encode(ObeliskDescriptor.CODEC, o));
     }
 
     @Override
     public Text getDisplayName() {
-        return this.displayName;
+        return new TranslatableText("requiem:container.obelisk_rift");
     }
 
     @Override
