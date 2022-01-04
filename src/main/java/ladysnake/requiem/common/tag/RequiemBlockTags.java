@@ -35,14 +35,15 @@
 package ladysnake.requiem.common.tag;
 
 import ladysnake.requiem.Requiem;
-import net.fabricmc.fabric.api.tag.TagRegistry;
+import net.fabricmc.fabric.api.tag.TagFactory;
 import net.minecraft.block.Block;
 import net.minecraft.tag.Tag;
 
 public final class RequiemBlockTags {
-    public static final Tag<Block> SOUL_IMPERMEABLE = TagRegistry.block(Requiem.id("soul_impermeable"));
-    public static final Tag<Block> SOUL_INTERACTABLE = TagRegistry.block(Requiem.id("soul_interactable"));
+    public static final Tag<Block> SOUL_IMPERMEABLE = TagFactory.BLOCK.create(Requiem.id("soul_impermeable"));
+    public static final Tag<Block> SOUL_INTERACTABLE = TagFactory.BLOCK.create(Requiem.id("soul_interactable"));
+    public static final Tag<Block> WANDERING_SOUL_TRAVERSABLE = TagFactory.BLOCK.create(Requiem.id("wandering_soul_traversable"));
 
-    public static final Tag<Block> OBELISK_FRAME = TagRegistry.block(Requiem.id("obelisk/frame"));
-    public static final Tag<Block> OBELISK_CORE = TagRegistry.block(Requiem.id("obelisk/core"));
+    public static final Tag<Block> OBELISK_FRAME = TagFactory.BLOCK.create(Requiem.id("obelisk/frame"));
+    public static final Tag<Block> OBELISK_CORE = TagFactory.BLOCK.create(Requiem.id("obelisk/core"));
 }

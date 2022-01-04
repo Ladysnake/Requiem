@@ -36,6 +36,7 @@ package ladysnake.requiem.common.entity;
 
 import ladysnake.requiem.common.particle.WispTrailParticleEffect;
 import ladysnake.requiem.common.sound.RequiemSoundEvents;
+import ladysnake.requiem.common.tag.RequiemBlockTags;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -52,7 +53,6 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -164,7 +164,7 @@ public class SoulEntity extends Entity {
     }
 
     protected void spawnTrailParticle() {
-        if (this.getBlockStateAtPos().isIn(BlockTags.SOUL_FIRE_BASE_BLOCKS)) {
+        if (this.getBlockStateAtPos().isIn(RequiemBlockTags.WANDERING_SOUL_TRAVERSABLE)) {
             this.world.addParticle(ParticleTypes.SOUL, this.getX() + random.nextGaussian() / 10, this.getY() + random.nextGaussian() / 10, this.getZ() + random.nextGaussian() / 10, random.nextGaussian() / 20, random.nextGaussian() / 20, random.nextGaussian() / 20);
         } else {
             this.world.addParticle(new WispTrailParticleEffect(1.0f, 1.0f, 1.0f, -0.1f, -0.01f, 0.0f), this.getX() + random.nextGaussian() / 15, this.getY() + random.nextGaussian() / 15, this.getZ() + random.nextGaussian() / 15, 0, 0.2d, 0);
@@ -213,7 +213,7 @@ public class SoulEntity extends Entity {
         this.setTarget(newTarget);
 
         BlockPos targetPos = new BlockPos(newTarget);
-        if (this.world.getBlockState(targetPos).isFullCube(world, targetPos) && !this.world.getBlockState(targetPos).isIn(BlockTags.SOUL_FIRE_BASE_BLOCKS)) {
+        if (this.world.getBlockState(targetPos).isFullCube(world, targetPos) && !this.world.getBlockState(targetPos).isIn(RequiemBlockTags.WANDERING_SOUL_TRAVERSABLE)) {
             this.targetChangeCooldown = 0;
             return;
         }

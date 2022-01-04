@@ -162,6 +162,7 @@ public interface RemnantComponent extends AutoSyncedComponent, ServerTickingComp
      *
      * @return {@code true} if this player can currently split into a player shell and a vagrant form
      * @param forced if {@code true}, external factors like status effects will be ignored
+     * @since 2.0.0
      */
     boolean canSplitPlayer(boolean forced);
 
