@@ -44,11 +44,7 @@ import net.minecraft.client.particle.BillboardParticle;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleFactory;
 import net.minecraft.client.particle.ParticleTextureSheet;
-import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.GameRenderer;
-import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.render.VertexFormat;
-import net.minecraft.client.render.VertexFormats;
+import net.minecraft.client.render.*;
 import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.world.ClientWorld;
@@ -79,10 +75,10 @@ public class EntityDustParticle extends BillboardParticle {
         this.sheet = TextureSheet.get(getTexture(src));
         this.target = target;
         this.gravityStrength = 1.0F;
-        this.colorRed = 0.6F;
-        this.colorGreen = 0.6F;
-        this.colorBlue = 0.6F;
-        this.colorAlpha = this.random.nextFloat() * 0.3F + 0.3F;
+        this.red = 0.6F;
+        this.green = 0.6F;
+        this.blue = 0.6F;
+        this.alpha = this.random.nextFloat() * 0.3F + 0.3F;
 
         this.scale /= 2.0F;
         this.sampleU = this.random.nextFloat() * 31.0F;
