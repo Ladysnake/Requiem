@@ -84,8 +84,8 @@ public class RequiemTestSuite implements FabricGameTest {
         Direction dispenserFacing = Direction.EAST;
         ctx.setBlockState(dispenserPos, Blocks.DISPENSER.getDefaultState().with(DispenserBlock.FACING, dispenserFacing));
         ((DispenserBlockEntity) Objects.requireNonNull(ctx.getBlockEntity(dispenserPos))).addToFirstFreeSlot(FilledSoulVesselItem.forEntityType(EntityType.GLOW_SQUID));
-        ctx.setBlockState(1, 1, 2, Blocks.REDSTONE_TORCH);
-        ctx.waitAndRun(1, () -> {
+        ctx.setBlockState(1, 1, 2, Blocks.REDSTONE_BLOCK);
+        ctx.waitAndRun(7, () -> {   // wait until redstone tick gets processed
             ctx.expectEntityAt(RequiemEntities.RELEASED_SOUL, dispenserPos.offset(dispenserFacing));
             ctx.expectContainerWith(dispenserPos, RequiemItems.EMPTY_SOUL_VESSEL);
             ctx.complete();
