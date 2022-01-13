@@ -261,88 +261,76 @@ dependencies {
     testmodImplementation 'org.mockito:mockito-core:3.+'
 
     // Required dependencies
-    modApi "io.github.ladysnake:satin:${satin_version}"
-    include "io.github.ladysnake:satin:${satin_version}"
-    modImplementation "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-base:${cca_version}"
-    include "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-base:${cca_version}"
-    modImplementation "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-entity:${cca_version}"
-    include "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-entity:${cca_version}"
-    modImplementation "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-scoreboard:${cca_version}"
-    include "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-scoreboard:${cca_version}"
+    modApi include("io.github.ladysnake:satin:${satin_version}")
+    modImplementation include("io.github.onyxstudios.Cardinal-Components-API:cardinal-components-base:${cca_version}")
+    modImplementation include("io.github.onyxstudios.Cardinal-Components-API:cardinal-components-entity:${cca_version}")
+    modImplementation include("io.github.onyxstudios.Cardinal-Components-API:cardinal-components-scoreboard:${cca_version}")
     // Required by automatone but nothing else
     include "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-world:${cca_version}"
-    modImplementation "io.github.ladysnake:PlayerAbilityLib:${pal_version}"
-    include "io.github.ladysnake:PlayerAbilityLib:${pal_version}"
-    modImplementation ("io.github.ladysnake:locki:${locki_version}")
-    include "io.github.ladysnake:locki:${locki_version}"
-    modImplementation "io.github.ladysnake:impersonate:${impersonate_version}"
-    include "io.github.ladysnake:impersonate:${impersonate_version}"
-    modImplementation "io.github.ladysnake:automatone:${automatone_version}"
-    include "io.github.ladysnake:automatone:${automatone_version}"
+    modImplementation include("io.github.ladysnake:PlayerAbilityLib:${pal_version}")
+    modImplementation include("io.github.ladysnake:locki:${locki_version}")
+    modImplementation include("io.github.ladysnake:impersonate:${impersonate_version}")
+    modImplementation include("io.github.ladysnake:automatone:${automatone_version}")
     modImplementation include("io.github.ladysnake:blabber:${blabber_version}")
     modImplementation include("dev.emi.chime:chime:${chime_version}")
-    modImplementation "com.jamieswhiteshirt:reach-entity-attributes:${reach_version}"
-    include "com.jamieswhiteshirt:reach-entity-attributes:${reach_version}"
+    modImplementation include ("com.jamieswhiteshirt:reach-entity-attributes:${reach_version}")
     // Fiber is technically not a mod and could use implementation, however that leaves it out of the generated pom.xml
-    modImplementation "me.zeroeightsix:fiber:${fiber_version}"
-    include "me.zeroeightsix:fiber:${fiber_version}"
-    modImplementation "me.lucko:fabric-permissions-api:${fpa_version}"
-    include "me.lucko:fabric-permissions-api:${fpa_version}"
+    modImplementation include("me.zeroeightsix:fiber:${fiber_version}")
+    modImplementation include("me.lucko:fabric-permissions-api:${fpa_version}")
     // Test dependencies
-    modCompileOnly "io.github.ladysnake:elmendorf:${elmendorf_version}"
-    modLocalRuntime "io.github.ladysnake:elmendorf:${elmendorf_version}"
+    modCompileOnly modLocalRuntime("io.github.ladysnake:elmendorf:${elmendorf_version}")
     testmodImplementation sourceSets.main.output
 
     // Optional dependencies
     modCompileOnly ("com.terraformersmc:modmenu:${modmenu_version}") { transitive = false }
-    modRuntimeOnly ("com.terraformersmc:modmenu:${modmenu_version}") { transitive = false }
+    modLocalRuntime ("com.terraformersmc:modmenu:${modmenu_version}") { transitive = false }
     modCompileOnly ("me.shedaniel.cloth:cloth-config-fabric:${cloth_version}") {
         exclude(group: "net.fabricmc.fabric-api")
     }
-    modRuntimeOnly ("me.shedaniel.cloth:cloth-config-fabric:${cloth_version}") {
+    modLocalRuntime ("me.shedaniel.cloth:cloth-config-fabric:${cloth_version}") {
         exclude(group: "net.fabricmc.fabric-api")
     }
     modCompileOnly ("com.github.pyrofab:fibertocloth:${f2c_version}") { transitive = false }
-    modRuntimeOnly ("com.github.pyrofab:fibertocloth:${f2c_version}") { transitive = false }
+    modLocalRuntime ("com.github.pyrofab:fibertocloth:${f2c_version}") { transitive = false }
     include ("com.github.pyrofab:fibertocloth:${f2c_version}") { transitive = false }
 
     // Extra compatibility dependencies
-//    modRuntimeOnly curse.resolve('immersive-portals-mod', 2845123)
-//    modRuntimeOnly "curse.maven:mobz:2965825"
+//    modLocalRuntime curse.resolve('immersive-portals-mod', 2845123)
+//    modLocalRuntime "curse.maven:mobz:2965825"
     modCompileOnly("curse.maven:Health-Overlay-Fabric-313219:3403605")
-//    modRuntimeOnly("curse.maven:Health-Overlay-Fabric-313219:3403605")
+//    modLocalRuntime("curse.maven:Health-Overlay-Fabric-313219:3403605")
     modCompileOnly("io.github.CerulanLumina:better-graves:${better_graves_version}") { transitive = false }
-//    modRuntimeOnly("io.github.CerulanLumina:better-graves:${better_graves_version}")
+//    modLocalRuntime("io.github.CerulanLumina:better-graves:${better_graves_version}")
     modCompileOnly("io.github.Lemonszz:Biome-Makeover:${biome_makeover_version}")
-//    modRuntimeOnly("io.github.Lemonszz:Biome-Makeover:${biome_makeover_version}")
+//    modLocalRuntime("io.github.Lemonszz:Biome-Makeover:${biome_makeover_version}")
 
-    modRuntimeOnly "com.jamieswhiteshirt:reach-entity-attributes:${reach_version}"
-//    modRuntimeOnly "net.adriantodt.fabricmc:fallflyinglib:${fallflyinglib_version}"
+    modLocalRuntime "com.jamieswhiteshirt:reach-entity-attributes:${reach_version}"
+//    modLocalRuntime "net.adriantodt.fabricmc:fallflyinglib:${fallflyinglib_version}"
     modCompileOnly "dev.emi:trinkets:${trinkets_version}"
     modCompileOnly("curse.maven:Pehkui-319596:${pehkui_version}") { transitive = false }
-//    modRuntimeOnly("curse.maven:Pehkui-319596:${pehkui_version}") { transitive = false }
+//    modLocalRuntime("curse.maven:Pehkui-319596:${pehkui_version}") { transitive = false }
     modCompileOnly("curse.maven:Snow-Mercy-429949:${snowmercy_version}") { transitive = false }
-//    modRuntimeOnly("curse.maven:Snow-Mercy-429949:${snowmercy_version}") { transitive = false }
+//    modLocalRuntime("curse.maven:Snow-Mercy-429949:${snowmercy_version}") { transitive = false }
     modCompileOnly("com.github.apace100:apoli:${apoli_version}") { transitive = false }
-    modRuntimeOnly("com.github.apace100:apoli:${apoli_version}") { transitive = false }
+    modLocalRuntime("com.github.apace100:apoli:${apoli_version}") { transitive = false }
     modCompileOnly("com.github.apace100:calio:${calio_version}") { transitive = false }
-    modRuntimeOnly("com.github.apace100:calio:${calio_version}") { transitive = false }
+    modLocalRuntime("com.github.apace100:calio:${calio_version}") { transitive = false }
     modCompileOnly("com.github.apace100:origins-fabric:${origins_version}") { transitive = false }
-    modRuntimeOnly("com.github.apace100:origins-fabric:${origins_version}") { transitive = false }
+    modLocalRuntime("com.github.apace100:origins-fabric:${origins_version}") { transitive = false }
 
     modCompileOnly("io.github.HyperPigeon:Eldritch-Mobs:${eldritch_mobs_version}") { transitive = false }
-//    modRuntimeOnly "io.github.cottonmc:LibGui:${libgui_version}"
+//    modLocalRuntime "io.github.cottonmc:LibGui:${libgui_version}"
     modCompileOnly("curse.maven:haema-391257:${haema_version}")
-//    modRuntimeOnly("curse.maven:haema-391257:${haema_version}")
-//    modRuntimeOnly("top.theillusivec4.somnus:somnus-fabric:${somnus_version}")
-//    modRuntimeOnly("vazkii.patchouli:Patchouli:${project.patchouli_version}")
-//    modRuntimeOnly("net.fabricmc:fabric-language-kotlin:${flk_version}")
-//    modRuntimeOnly("io.github.onyxstudios.Cardinal-Components-API:cardinal-components-world:${rootProject.cca_version}")
+//    modLocalRuntime("curse.maven:haema-391257:${haema_version}")
+//    modLocalRuntime("top.theillusivec4.somnus:somnus-fabric:${somnus_version}")
+//    modLocalRuntime("vazkii.patchouli:Patchouli:${project.patchouli_version}")
+//    modLocalRuntime("net.fabricmc:fabric-language-kotlin:${flk_version}")
+//    modLocalRuntime("io.github.onyxstudios.Cardinal-Components-API:cardinal-components-world:${rootProject.cca_version}")
     modCompileOnly("curse.maven:golems-galore-387197:${golems_galore_version}")
-//    modRuntimeOnly("curse.maven:golems-galore-387197:${golems_galore_version}")
-//    modRuntimeOnly 'com.github.Draylar:structurized:1.3.0-21w20a'
+//    modLocalRuntime("curse.maven:golems-galore-387197:${golems_galore_version}")
+//    modLocalRuntime 'com.github.Draylar:structurized:1.3.0-21w20a'
     modCompileOnly("curse.maven:the-bumblezone-fabric-363949:${bumblezone_version}")
-//    modRuntimeOnly("curse.maven:the-bumblezone-fabric-363949:${bumblezone_version}")
+//    modLocalRuntime("curse.maven:the-bumblezone-fabric-363949:${bumblezone_version}")
     modCompileOnly "curse.maven:bewitchment-394915:${bewitchment_version}"
 }
 

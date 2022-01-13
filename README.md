@@ -30,11 +30,18 @@ repositories {
         content {
             includeGroup 'io.github.ladysnake'
             includeGroupByRegex 'io\\.github\\.onyxstudios.*'
+            includeGroupByRegex 'dev\\.emi.*'
         }
     }
     maven {
         name = 'Nexus OSS Repository'
         url = 'https://oss.sonatype.org/content/repositories/snapshots'
+    }
+    maven {
+        url = 'https://maven.jamieswhiteshirt.com/libs-release/'
+        content {
+            includeGroup 'com.jamieswhiteshirt'
+        }
     }
 }
 
@@ -47,6 +54,6 @@ dependencies {
 You can then add the mod version to your `gradle.properties` file :
 ```properties
 # Requiem mod
-requiem_version = 1.x.y
+requiem_version = 2.x.y
 ```
 
