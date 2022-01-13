@@ -40,7 +40,7 @@ repositories {
 
 dependencies {
     modImplementation "io.github.ladysnake:requiem-api:${requiem_version}"
-    modRuntime "io.github.ladysnake:requiem:${requiem_version}"
+    modRuntimeOnly "io.github.ladysnake:requiem:${requiem_version}"
 }
 ```
 
