@@ -67,7 +67,6 @@
   "requiem:opus.remnant_sentence": "Ad Vitam Aeternam",
   "requiem:opus.wanderer_sentence": "Ad Vitam Vagrate",
 
-  "requiem:dialogue.instructions": "Hover or press [%s]/[%s] to select a choice, then click or press [%s] to confirm it",
   "requiem:dialogue.first_contact.introduction.text": "You hear a voice talking to you, but you can't quite put your finger on where it's coming from.",
   "requiem:dialogue.first_contact.introduction.explain": "What is going on?",
   "requiem:dialogue.first_contact.introduction.yes": "Make me a demon already.",

@@ -38,11 +38,8 @@ import ladysnake.pandemonium.common.PandemoniumConfig;
 import ladysnake.pandemonium.common.remnant.PandemoniumRemnantTypes;
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.RequiemPlugin;
-import ladysnake.requiem.api.v1.dialogue.DialogueRegistry;
 import ladysnake.requiem.api.v1.event.requiem.PossessionStartCallback;
 import ladysnake.requiem.api.v1.remnant.RemnantType;
-import ladysnake.requiem.common.VanillaRequiemPlugin;
-import ladysnake.requiem.common.dialogue.PlayerDialogueTracker;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
@@ -55,11 +52,6 @@ public class PandemoniumRequiemPlugin implements RequiemPlugin {
             PossessionStartCallback.EVENT.unregister(new Identifier(Requiem.MOD_ID, "enderman"));
             PossessionStartCallback.EVENT.register(Pandemonium.id("allow_everything"), (target, possessor, simulate) -> PossessionStartCallback.Result.ALLOW);
         }
-    }
-
-    @Override
-    public void registerDialogueActions(DialogueRegistry registry) {
-        registry.registerAction(PlayerDialogueTracker.BECOME_WANDERING_SPIRIT, p -> VanillaRequiemPlugin.handleRemnantChoiceAction(p, PandemoniumRemnantTypes.WANDERING_SPIRIT));
     }
 
     @Override

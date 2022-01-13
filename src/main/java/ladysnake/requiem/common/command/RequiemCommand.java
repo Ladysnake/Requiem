@@ -55,7 +55,6 @@ public final class RequiemCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         dispatcher.register(literal(REQUIEM_ROOT_COMMAND)
             .requires(RequiemCommand::checkPermissions)
-            .then(RequiemDialogueCommand.dialogueSubcommand())
             .then(RequiemEtherealCommand.etherealSubcommand())
             .then(RequiemPossessionCommand.possessionSubcommand())
             .then(RequiemRemnantCommand.remnantSubcommand())

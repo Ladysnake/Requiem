@@ -1,4 +1,5 @@
 {
+  "$schema": "https://ladysnake.github.io/wiki/blabber/dialogue.schema.json",
   "start_at": "introduction",
   "unskippable": true,
   "states": {
@@ -120,11 +121,17 @@
     },
     "accept": {
       "type": "end_dialogue",
-      "action": "requiem:become_remnant"
+      "action": {
+        "type": "requiem:remnant_choice",
+        "value": "requiem:remnant"
+      }
     },
     "refuse": {
       "type": "end_dialogue",
-      "action": "requiem:stay_mortal"
+      "action": {
+        "type": "requiem:remnant_choice",
+        "value": "requiem:mortal"
+      }
     }
   }
 }

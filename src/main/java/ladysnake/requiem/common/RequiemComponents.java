@@ -39,7 +39,6 @@ import dev.onyxstudios.cca.api.v3.entity.EntityComponentInitializer;
 import dev.onyxstudios.cca.api.v3.entity.RespawnCopyStrategy;
 import dev.onyxstudios.cca.api.v3.scoreboard.ScoreboardComponentFactoryRegistry;
 import dev.onyxstudios.cca.api.v3.scoreboard.ScoreboardComponentInitializer;
-import ladysnake.requiem.api.v1.dialogue.DialogueTracker;
 import ladysnake.requiem.api.v1.entity.CurableEntityComponent;
 import ladysnake.requiem.api.v1.entity.MovementAlterer;
 import ladysnake.requiem.api.v1.entity.ability.MobAbilityController;
@@ -51,7 +50,6 @@ import ladysnake.requiem.api.v1.remnant.AttritionFocus;
 import ladysnake.requiem.api.v1.remnant.DeathSuspender;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.client.ClientRecordKeeper;
-import ladysnake.requiem.common.dialogue.PlayerDialogueTracker;
 import ladysnake.requiem.common.entity.CoolPlayerMovementAlterer;
 import ladysnake.requiem.common.entity.SkeletonBoneComponent;
 import ladysnake.requiem.common.entity.WololoComponent;
@@ -92,7 +90,6 @@ public final class RequiemComponents implements EntityComponentInitializer, Scor
         // order does not matter for the other components
         registry.registerForPlayers(MovementAlterer.KEY, CoolPlayerMovementAlterer::new, RespawnCopyStrategy.LOSSLESS_ONLY);
         registry.registerForPlayers(DeathSuspender.KEY, RevivingDeathSuspender::new, RespawnCopyStrategy.LOSSLESS_ONLY);
-        registry.registerForPlayers(DialogueTracker.KEY, PlayerDialogueTracker::new, RespawnCopyStrategy.LOSSLESS_ONLY);
         registry.registerFor(EndermanEntity.class, WololoComponent.KEY, WololoComponent::create);
         registry.registerFor(MobEntity.class, PossessedData.KEY, LootingPossessedData::new);
         registry.registerFor(MobEntity.class, MobAbilityController.KEY, e -> new ImmutableMobAbilityController<>());

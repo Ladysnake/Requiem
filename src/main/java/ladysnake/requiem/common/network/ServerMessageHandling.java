@@ -39,7 +39,6 @@ import ladysnake.requiem.api.v1.entity.ability.AbilityType;
 import ladysnake.requiem.api.v1.entity.ability.MobAbilityController;
 import ladysnake.requiem.api.v1.event.requiem.InitiateFractureCallback;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
-import ladysnake.requiem.common.screen.DialogueScreenHandler;
 import ladysnake.requiem.common.screen.RiftScreenHandler;
 import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
 import ladysnake.requiem.common.util.ObeliskDescriptor;
@@ -76,14 +75,6 @@ public final class ServerMessageHandling {
         });
         ServerPlayNetworking.registerGlobalReceiver(ETHEREAL_FRACTURE, (server, player, handler, buf, responseSender) -> server.execute(() ->
             InitiateFractureCallback.EVENT.invoker().performFracture(player)));
-        ServerPlayNetworking.registerGlobalReceiver(DIALOGUE_ACTION, (server, player, handler, buf, responseSender) -> {
-            int choice = buf.readByte();
-            server.execute(() -> {
-                if (player.currentScreenHandler instanceof DialogueScreenHandler dialogueHandler) {
-                    dialogueHandler.makeChoice(player, choice);
-                }
-            });
-        });
         ServerPlayNetworking.registerGlobalReceiver(RequiemCoreNetworking.HUGGING_WALL, (server, player, handler, buf, responseSender) -> {
             boolean yes = buf.readBoolean();
             // Possible failure points: the player may not actually be against a block, or it may not have the right movement

@@ -34,8 +34,8 @@
  */
 package ladysnake.requiem;
 
+import io.github.ladysnake.blabber.Blabber;
 import ladysnake.requiem.api.v1.RequiemPlugin;
-import ladysnake.requiem.api.v1.dialogue.DialogueRegistry;
 import ladysnake.requiem.api.v1.entity.ability.MobAbilityRegistry;
 import ladysnake.requiem.api.v1.event.minecraft.SyncServerResourcesCallback;
 import ladysnake.requiem.api.v1.remnant.SoulbindingRegistry;
@@ -50,6 +50,7 @@ import ladysnake.requiem.common.block.RequiemBlockEntities;
 import ladysnake.requiem.common.block.RequiemBlocks;
 import ladysnake.requiem.common.command.RemnantArgumentType;
 import ladysnake.requiem.common.command.RequiemCommand;
+import ladysnake.requiem.common.dialogue.RemnantChoiceDialogueAction;
 import ladysnake.requiem.common.enchantment.RequiemEnchantments;
 import ladysnake.requiem.common.entity.RequiemEntities;
 import ladysnake.requiem.common.entity.RequiemEntityAttributes;
@@ -109,6 +110,7 @@ public final class Requiem implements ModInitializer {
         RequiemStructures.init();
         ServerMessageHandling.init();
         ApiInitializer.discoverEntryPoints();
+        Blabber.registerAction(id("remnant_choice"), RemnantChoiceDialogueAction.CODEC);
         CommandRegistrationCallback.EVENT.register((dispatcher, dedicated) -> RequiemCommand.register(dispatcher));
         ArgumentTypes.register("requiem:remnant", RemnantArgumentType.class, new ConstantArgumentSerializer<>(RemnantArgumentType::remnantType));
         ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(ResurrectionDataLoader.INSTANCE);
@@ -123,7 +125,6 @@ public final class Requiem implements ModInitializer {
         plugin.registerMobAbilities(MobAbilityRegistry.instance());
         plugin.registerSoulBindings(SoulbindingRegistry.instance());
         plugin.registerVagrantInteractions(VagrantInteractionRegistryImpl.INSTANCE);
-        plugin.registerDialogueActions(DialogueRegistry.get());
         plugin.registerPossessionItemActions(RequiemRegistries.MOB_ACTIONS);
     }
 }

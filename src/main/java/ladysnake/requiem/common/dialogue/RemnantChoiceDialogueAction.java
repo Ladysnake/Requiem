@@ -34,40 +34,36 @@
  */
 package ladysnake.requiem.common.dialogue;
 
-import ladysnake.requiem.Requiem;
-import ladysnake.requiem.api.v1.dialogue.CutsceneDialogue;
-import ladysnake.requiem.api.v1.dialogue.DialogueAction;
-import ladysnake.requiem.api.v1.dialogue.DialogueRegistry;
+import com.mojang.serialization.Codec;
+import io.github.ladysnake.blabber.DialogueAction;
+import ladysnake.requiem.api.v1.remnant.DeathSuspender;
+import ladysnake.requiem.api.v1.remnant.RemnantComponent;
+import ladysnake.requiem.api.v1.remnant.RemnantType;
 import ladysnake.requiem.common.RequiemRegistries;
-import net.minecraft.util.Identifier;
-import net.minecraft.world.World;
+import ladysnake.requiem.common.network.RequiemNetworking;
+import ladysnake.requiem.common.sound.RequiemSoundEvents;
+import net.minecraft.server.network.ServerPlayerEntity;
 
-import java.util.HashMap;
-import java.util.Map;
+public record RemnantChoiceDialogueAction(RemnantType chosenType) implements DialogueAction {
+    public static final Codec<RemnantChoiceDialogueAction> CODEC = RequiemRegistries.REMNANT_STATES.getCodec().xmap(RemnantChoiceDialogueAction::new, RemnantChoiceDialogueAction::chosenType);
 
-public final class DialogueRegistryImpl implements DialogueRegistry {
-    private final Map<Identifier, DialogueAction> actions = new HashMap<>();
-
-    @Override
-    public CutsceneDialogue startDialogue(World world, Identifier id) {
-        return new DialogueStateMachine(
-            world.getRegistryManager().get(RequiemRegistries.DIALOGUES).getOrEmpty(id)
-                .orElseThrow(() -> new IllegalArgumentException("Unknown dialogue " + id)),
-            id
-        );
-    }
-
-    @Override
-    public void registerAction(Identifier actionId, DialogueAction action) {
-        this.actions.put(actionId, action);
-    }
-
-    @Override
-    public DialogueAction getAction(Identifier actionId) {
-        if (!this.actions.containsKey(actionId)) {
-            Requiem.LOGGER.warn("[Requiem] Unknown dialogue action {}", actionId);
-            return DialogueAction.NONE;
+    public static void makeRemnantChoice(ServerPlayerEntity player, RemnantType chosenType) {
+        RemnantComponent remnantComponent = RemnantComponent.get(player);
+        RemnantType currentType = remnantComponent.getRemnantType();
+        if (chosenType != currentType) {
+            remnantComponent.become(chosenType, true);
+            player.world.playSound(null, player.getX(), player.getY(), player.getZ(), RequiemSoundEvents.EFFECT_BECOME_REMNANT, player.getSoundCategory(), 1.4F, 0.1F);
+            RequiemNetworking.sendTo(player, RequiemNetworking.createOpusUsePacket(chosenType, false));
         }
-        return this.actions.get(actionId);
+    }
+
+    @Override
+    public void handle(ServerPlayerEntity player) {
+        makeRemnantChoice(player, chosenType);
+
+        DeathSuspender deathSuspender = DeathSuspender.get(player);
+        if (deathSuspender.isLifeTransient()) {
+            deathSuspender.resumeDeath();
+        }
     }
 }

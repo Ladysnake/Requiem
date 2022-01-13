@@ -35,8 +35,6 @@
 package ladysnake.requiem.common.screen;
 
 import ladysnake.requiem.Requiem;
-import ladysnake.requiem.api.v1.dialogue.CutsceneDialogue;
-import ladysnake.requiem.common.dialogue.DialogueStateMachine;
 import ladysnake.requiem.common.util.ObeliskDescriptor;
 import net.fabricmc.fabric.api.screenhandler.v1.ScreenHandlerRegistry;
 import net.minecraft.screen.ScreenHandlerType;
@@ -49,10 +47,5 @@ public final class RequiemScreenHandlers {
         ObeliskDescriptor source = buf.decode(ObeliskDescriptor.CODEC);
         Set<ObeliskDescriptor> obeliskPositions = buf.readCollection(LinkedHashSet::new, b -> b.decode(ObeliskDescriptor.CODEC));
         return new RiftScreenHandler(syncId, source, obeliskPositions);
-    });
-
-    public static final ScreenHandlerType<DialogueScreenHandler> DIALOGUE_SCREEN_HANDLER = ScreenHandlerRegistry.registerExtended(Requiem.id("dialogue"), (syncId, inventory, buf) -> {
-        CutsceneDialogue dialogue = DialogueStateMachine.fromPacket(inventory.player.world, buf);
-        return new DialogueScreenHandler(syncId, dialogue);
     });
 }

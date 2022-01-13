@@ -37,7 +37,6 @@ package ladysnake.requiem.common;
 import io.github.ladysnake.locki.Locki;
 import ladysnake.requiem.api.v1.RequiemApi;
 import ladysnake.requiem.api.v1.RequiemPlugin;
-import ladysnake.requiem.api.v1.dialogue.DialogueRegistry;
 import ladysnake.requiem.api.v1.entity.InventoryLimiter;
 import ladysnake.requiem.api.v1.entity.ability.MobAbilityConfig;
 import ladysnake.requiem.api.v1.entity.ability.MobAbilityRegistry;
@@ -45,7 +44,6 @@ import ladysnake.requiem.api.v1.internal.ApiInternals;
 import ladysnake.requiem.api.v1.remnant.SoulbindingRegistry;
 import ladysnake.requiem.api.v1.util.SubDataManager;
 import ladysnake.requiem.api.v1.util.SubDataManagerHelper;
-import ladysnake.requiem.common.dialogue.DialogueRegistryImpl;
 import ladysnake.requiem.core.RequiemCore;
 import ladysnake.requiem.core.ability.DefaultedMobAbilityRegistry;
 import ladysnake.requiem.core.ability.ImmutableMobAbilityConfig;
@@ -80,8 +78,6 @@ public final class ApiInitializer {
                 new CommonSubDataManagerHelper());
             ReflectionHelper.<InventoryLimiter>setField(ApiInternals.class.getDeclaredField("inventoryLimiter"),
                 new PlayerInventoryLimiter(Locki.registerLock(RequiemCore.id("inventory_limiter"), false)));
-            ReflectionHelper.<DialogueRegistry>setField(ApiInternals.class.getDeclaredField("dialogueRegistry"),
-                new DialogueRegistryImpl());
             ReflectionHelper.<MobAbilityRegistry>setField(ApiInternals.class.getDeclaredField("mobAbilityRegistry"),
                 new DefaultedMobAbilityRegistry(ImmutableMobAbilityConfig.DEFAULT));
             ReflectionHelper.<SoulbindingRegistry>setField(ApiInternals.class.getDeclaredField("soulbindingRegistry"),

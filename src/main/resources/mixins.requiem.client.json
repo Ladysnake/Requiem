@@ -33,6 +33,7 @@
     "possession.render.GuardianEntityRendererMixin",
     "possession.render.ShulkerEntityModelMixin",
     "possession.riding.ClientPlayerEntityMixin",
+    "remnant.BlabberDialogueScreenMixin",
     "remnant.ClientPlayerEntityMixin",
     "remnant.ClientPlayerInteractionManagerMixin",
     "remnant.GameRendererMixin",

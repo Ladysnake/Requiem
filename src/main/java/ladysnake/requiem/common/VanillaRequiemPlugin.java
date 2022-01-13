@@ -40,7 +40,6 @@ import io.github.ladysnake.locki.DefaultInventoryNodes;
 import io.github.ladysnake.locki.ModdedInventoryNodes;
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.RequiemPlugin;
-import ladysnake.requiem.api.v1.dialogue.DialogueRegistry;
 import ladysnake.requiem.api.v1.entity.CurableEntityComponent;
 import ladysnake.requiem.api.v1.entity.InventoryLimiter;
 import ladysnake.requiem.api.v1.entity.ability.AbilityType;
@@ -71,7 +70,6 @@ import ladysnake.requiem.api.v1.remnant.RemnantType;
 import ladysnake.requiem.api.v1.remnant.SoulbindingRegistry;
 import ladysnake.requiem.api.v1.remnant.VagrantInteractionRegistry;
 import ladysnake.requiem.common.advancement.criterion.RequiemCriteria;
-import ladysnake.requiem.common.dialogue.PlayerDialogueTracker;
 import ladysnake.requiem.common.enchantment.RequiemEnchantments;
 import ladysnake.requiem.common.entity.PlayerShellEntity;
 import ladysnake.requiem.common.entity.RequiemEntities;
@@ -86,7 +84,6 @@ import ladysnake.requiem.common.possession.MobRidingType;
 import ladysnake.requiem.common.remnant.BasePossessionHandlers;
 import ladysnake.requiem.common.remnant.PlayerSplitter;
 import ladysnake.requiem.common.remnant.RemnantTypes;
-import ladysnake.requiem.common.sound.RequiemSoundEvents;
 import ladysnake.requiem.common.tag.RequiemBlockTags;
 import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
 import ladysnake.requiem.core.ability.PlayerAbilityController;
@@ -134,8 +131,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-
-import static ladysnake.requiem.common.remnant.RemnantTypes.MORTAL;
 
 public final class VanillaRequiemPlugin implements RequiemPlugin {
 
@@ -450,31 +445,6 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
             (mob, player) -> PossessionComponent.get(player).startPossessing(mob, true),
             (mob, player) -> PossessionComponent.get(player).startPossessing(mob)
         );
-    }
-
-    @Override
-    public void registerDialogueActions(DialogueRegistry registry) {
-        registry.registerAction(PlayerDialogueTracker.BECOME_REMNANT, p -> handleRemnantChoiceAction(p, RemnantTypes.REMNANT));
-        registry.registerAction(PlayerDialogueTracker.STAY_MORTAL, p -> handleRemnantChoiceAction(p, MORTAL));
-    }
-
-    public static void handleRemnantChoiceAction(ServerPlayerEntity player, RemnantType chosenType) {
-        makeRemnantChoice(player, chosenType);
-
-        DeathSuspender deathSuspender = DeathSuspender.get(player);
-        if (deathSuspender.isLifeTransient()) {
-            deathSuspender.resumeDeath();
-        }
-    }
-
-    public static void makeRemnantChoice(ServerPlayerEntity player, RemnantType chosenType) {
-        RemnantComponent remnantComponent = RemnantComponent.get(player);
-        RemnantType currentType = remnantComponent.getRemnantType();
-        if (chosenType != currentType) {
-            remnantComponent.become(chosenType, true);
-            player.world.playSound(null, player.getX(), player.getY(), player.getZ(), RequiemSoundEvents.EFFECT_BECOME_REMNANT, player.getSoundCategory(), 1.4F, 0.1F);
-            RequiemNetworking.sendTo(player, RequiemNetworking.createOpusUsePacket(chosenType, false));
-        }
     }
 
     @Override

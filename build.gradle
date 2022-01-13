@@ -279,8 +279,8 @@ dependencies {
     include "io.github.ladysnake:impersonate:${impersonate_version}"
     modImplementation "io.github.ladysnake:automatone:${automatone_version}"
     include "io.github.ladysnake:automatone:${automatone_version}"
-    modImplementation "dev.emi.chime:chime:${chime_version}"
-    include "dev.emi.chime:chime:${chime_version}"
+    modImplementation include("io.github.ladysnake:blabber:${blabber_version}")
+    modImplementation include("dev.emi.chime:chime:${chime_version}")
     modImplementation "com.jamieswhiteshirt:reach-entity-attributes:${reach_version}"
     include "com.jamieswhiteshirt:reach-entity-attributes:${reach_version}"
     // Fiber is technically not a mod and could use implementation, however that leaves it out of the generated pom.xml
@@ -290,7 +290,7 @@ dependencies {
     include "me.lucko:fabric-permissions-api:${fpa_version}"
     // Test dependencies
     modCompileOnly "io.github.ladysnake:elmendorf:${elmendorf_version}"
-    modRuntimeOnly "io.github.ladysnake:elmendorf:${elmendorf_version}"
+    modLocalRuntime "io.github.ladysnake:elmendorf:${elmendorf_version}"
     testmodImplementation sourceSets.main.output
 
     // Optional dependencies

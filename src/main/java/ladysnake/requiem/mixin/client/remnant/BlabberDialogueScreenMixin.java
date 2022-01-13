@@ -32,41 +32,22 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.requiem.common.screen;
+package ladysnake.requiem.mixin.client.remnant;
 
-import ladysnake.requiem.api.v1.dialogue.CutsceneDialogue;
-import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.screen.ScreenHandler;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.Text;
-import org.jetbrains.annotations.Nullable;
+import io.github.ladysnake.blabber.impl.client.BlabberDialogueScreen;
+import ladysnake.requiem.client.RequiemClient;
+import net.minecraft.client.util.math.MatrixStack;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-public class DialogueScreenHandlerFactory implements ExtendedScreenHandlerFactory {
-    private final CutsceneDialogue dialogue;
-    private final Text displayName;
-
-    public DialogueScreenHandlerFactory(CutsceneDialogue dialogue, Text displayName) {
-        this.dialogue = dialogue;
-        this.displayName = displayName;
-    }
-
-    @Override
-    public void writeScreenOpeningData(ServerPlayerEntity player, PacketByteBuf buf) {
-        buf.writeIdentifier(this.dialogue.getId());
-        buf.writeString(this.dialogue.getCurrentStateKey());
-    }
-
-    @Override
-    public Text getDisplayName() {
-        return this.displayName;
-    }
-
-    @Nullable
-    @Override
-    public ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
-        return new DialogueScreenHandler(RequiemScreenHandlers.DIALOGUE_SCREEN_HANDLER, syncId, this.dialogue);
+@Mixin(BlabberDialogueScreen.class)
+public class BlabberDialogueScreenMixin {
+    @Inject(method = "render", at = @At("HEAD"), cancellable = true)
+    private void cancelRender(MatrixStack matrices, int mouseX, int mouseY, float tickDelta, CallbackInfo ci) {
+        if (!RequiemClient.instance().worldFreezeFxRenderer().hasFinishedAnimation()) {
+            ci.cancel();
+        }
     }
 }

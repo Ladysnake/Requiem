@@ -60,7 +60,6 @@
   "requiem:opus.remnant_sentence": "成为恶魔",
   "requiem:opus.wanderer_sentence": "成为Vagrate",
 
-  "requiem:dialogue.instructions": "按[%s]/[%s]去选择选项, 然后按下[%s]去确认",
   "requiem:dialogue.first_contact.introduction.text": "你听见一个声音正对你说话,但你不知道它来自哪里.",
   "requiem:dialogue.first_contact.introduction.explain": "这是怎么回事？",
   "requiem:dialogue.first_contact.introduction.yes": "使我成为恶魔",

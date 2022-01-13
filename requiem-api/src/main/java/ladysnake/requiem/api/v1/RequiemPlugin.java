@@ -17,9 +17,6 @@
  */
 package ladysnake.requiem.api.v1;
 
-import ladysnake.requiem.api.v1.dialogue.CutsceneDialogue;
-import ladysnake.requiem.api.v1.dialogue.DialogueAction;
-import ladysnake.requiem.api.v1.dialogue.DialogueRegistry;
 import ladysnake.requiem.api.v1.entity.ability.MobAbility;
 import ladysnake.requiem.api.v1.entity.ability.MobAbilityRegistry;
 import ladysnake.requiem.api.v1.possession.item.PossessionItemAction;
@@ -64,17 +61,6 @@ public interface RequiemPlugin {
      * @param registry Requiem's remnant type registry
      */
     default void registerRemnantStates(Registry<RemnantType> registry) {}
-
-    /**
-     * Register {@link DialogueAction} to handle dialogue choices.
-     *
-     * <p> This method is called before {@link CutsceneDialogue dialogues themselves}
-     * are registered.
-     *
-     * @param registry Requiem's dialogue registry
-     * @see DialogueRegistry#get()
-     */
-    default void registerDialogueActions(DialogueRegistry registry) {}
 
     /**
      * Register soulbound objects that get carried over when players leave their body.

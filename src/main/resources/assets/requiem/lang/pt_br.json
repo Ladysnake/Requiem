@@ -17,8 +17,8 @@
   "requiem:commands.remnant.set.target": "O seu estado de remanescente foi atualizado para %s",
   "requiem:ethereal": "Etéreo",
   "requiem:not_ethereal": "Corpóreo",
-  "requiem:remnant": "Remanescente",
-  "requiem:not_remnant": "Mortal",
+  "requiem:remnant_type.requiem.remnant.name": "Remanescente",
+  "requiem:remnant_type.requiem.mortal.name": "Mortal",
   "requiem:commands.possession.start.fail.not_mob": "%s não pode ser possuído porque não é um mob",
   "requiem:commands.possession.start.fail.not_incorporeal": "%s não é incorpóreo",
   "requiem:commands.possession.start.fail": "Falha ao possuir %s",
@@ -30,7 +30,6 @@
   "requiem:opus.mortal_sentence": "Ad Vitam Mortale",
   "requiem:opus.remnant_sentence": "Ad Vitam Aeternam",
 
-  "requiem:dialogue.instructions": "Selecione ou pressione [%s]/[%s] para escolher uma opção, depois clique ou pressione [%s] para confirmar",
   "requiem:dialogue.first_contact.introduction.text": "Você ouve uma voz falando com você, mas você não consegue saber de onde está vindo.",
   "requiem:dialogue.first_contact.introduction.explain": "O que está acontecendo?",
   "requiem:dialogue.first_contact.introduction.yes": "Faça eu ser um demônio logo.",
@@ -50,7 +49,6 @@
   "requiem:subtitles.effect.become.remnant": "Adquirindo um demônio",
   "requiem:subtitles.effect.possession.attempt": "Tentativa de Possessão",
   "requiem:subtitles.effect.time.stop": "ZA WARUDO! TOKI WO TOMARE",
-  "requiem:subtitles.item.opus.use": "Opus Daemonium Ativo",
 
   "requiem:tooltip.bony_prosthesis": "Prótese Óssea",
   "requiem:tooltip.calcium_bucket": "Balde de Cálcio",
@@ -68,10 +66,5 @@
 
   "enchantment.requiem.humanity": "Humanidade",
 
-  "item.requiem.human_flesh": "Carne Humana",
-  "item.requiem.opus_daemonium": "Opus Daemonium",
-  "item.requiem.opus_daemonium_cure": "Opus Daemonium",
-  "item.requiem.opus_daemonium_curse": "Opus Daemonium",
-  "requiem:opus_daemonium.curse": "Maldição",
-  "requiem:opus_daemonium.cure": "Cura"
+  "item.requiem.opus_daemonium": "Opus Daemonium"
 }

@@ -20,7 +20,6 @@ package ladysnake.requiem.api.v1.internal;
 import com.google.common.collect.ImmutableSet;
 import ladysnake.requiem.api.v1.RequiemPlugin;
 import ladysnake.requiem.api.v1.annotation.AccessedThroughReflection;
-import ladysnake.requiem.api.v1.dialogue.DialogueRegistry;
 import ladysnake.requiem.api.v1.entity.InventoryLimiter;
 import ladysnake.requiem.api.v1.entity.MovementRegistry;
 import ladysnake.requiem.api.v1.entity.ability.MobAbilityConfig;
@@ -72,8 +71,6 @@ public final class ApiInternals {
     @AccessedThroughReflection
     private static SubDataManagerHelper serverSubDataManagerHelper;
     @AccessedThroughReflection
-    private static DialogueRegistry dialogueRegistry;
-    @AccessedThroughReflection
     private static InventoryLimiter inventoryLimiter;
     @AccessedThroughReflection
     private static MobAbilityRegistry mobAbilityRegistry;
@@ -81,8 +78,6 @@ public final class ApiInternals {
     private static SoulbindingRegistry soulbindingRegistry;
     @AccessedThroughReflection
     private static Function<@Nullable World, MovementRegistry> movementRegistryGetter;
-    @AccessedThroughReflection
-    private static Function<@Nullable World, ?> mobItemRegistryGetter;
 
     @SuppressWarnings("unchecked")
     public static <T extends LivingEntity> MobAbilityConfig.Builder<T> mobAbilityConfig$builderImpl() {
@@ -128,11 +123,6 @@ public final class ApiInternals {
     public static SoulbindingRegistry getSoulbindingRegistry() {
         if (soulbindingRegistry == null) throw new UninitializedApiException("SoulboundRegistry is not available");
         return soulbindingRegistry;
-    }
-
-    public static DialogueRegistry getDialogueRegistry() {
-        if (dialogueRegistry == null) throw new UninitializedApiException("DialogueRegistry is not available");
-        return dialogueRegistry;
     }
 
     public static MovementRegistry getMovementRegistry(@Nullable World world) {
