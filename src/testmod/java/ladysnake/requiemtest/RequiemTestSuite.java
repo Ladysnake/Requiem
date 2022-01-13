@@ -37,14 +37,24 @@ package ladysnake.requiemtest;
 import dev.onyxstudios.cca.internal.entity.CardinalComponentsEntity;
 import io.github.ladysnake.elmendorf.GameTestUtil;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
+import ladysnake.requiem.common.entity.RequiemEntities;
+import ladysnake.requiem.common.item.FilledSoulVesselItem;
 import ladysnake.requiem.common.item.RequiemItems;
 import ladysnake.requiem.common.network.RequiemNetworking;
 import ladysnake.requiem.common.remnant.RemnantTypes;
 import net.fabricmc.fabric.api.gametest.v1.FabricGameTest;
+import net.minecraft.block.Blocks;
+import net.minecraft.block.DispenserBlock;
+import net.minecraft.block.entity.DispenserBlockEntity;
+import net.minecraft.entity.EntityType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.test.GameTest;
 import net.minecraft.test.TestContext;
 import net.minecraft.util.Hand;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
+
+import java.util.Objects;
 
 import static io.github.ladysnake.elmendorf.ByteBufChecker.any;
 
@@ -66,5 +76,19 @@ public class RequiemTestSuite implements FabricGameTest {
         );
         GameTestUtil.verifyConnection(player).sent(RequiemNetworking.OPUS_USE);
         ctx.complete();
+    }
+
+    @GameTest(structureName = EMPTY_STRUCTURE)
+    public void filledVesselDispensingWorks(TestContext ctx) {
+        BlockPos dispenserPos = new BlockPos(1, 1, 1);
+        Direction dispenserFacing = Direction.EAST;
+        ctx.setBlockState(dispenserPos, Blocks.DISPENSER.getDefaultState().with(DispenserBlock.FACING, dispenserFacing));
+        ((DispenserBlockEntity) Objects.requireNonNull(ctx.getBlockEntity(dispenserPos))).addToFirstFreeSlot(FilledSoulVesselItem.forEntityType(EntityType.GLOW_SQUID));
+        ctx.setBlockState(1, 1, 2, Blocks.REDSTONE_TORCH);
+        ctx.waitAndRun(1, () -> {
+            ctx.expectEntityAt(RequiemEntities.RELEASED_SOUL, dispenserPos.offset(dispenserFacing));
+            ctx.expectContainerWith(dispenserPos, RequiemItems.EMPTY_SOUL_VESSEL);
+            ctx.complete();
+        });
     }
 }
