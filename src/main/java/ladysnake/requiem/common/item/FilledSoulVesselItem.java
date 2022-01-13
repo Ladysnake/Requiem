@@ -98,11 +98,14 @@ public class FilledSoulVesselItem extends Item {
                 .filter(data -> data.containsUuid("uuid"))
                 .map(data -> data.getUuid("uuid"))
                 .orElse(null));
-            ItemStack result = new ItemStack(this.emptySoulVessel);
-            return TypedActionResult.success(ItemUsage.exchangeStack(stack, user, result));
+            return TypedActionResult.success(ItemUsage.exchangeStack(stack, user, this.getEmptiedStack()));
         }
         user.playSound(RequiemSoundEvents.ITEM_FILLED_VESSEL_USE, 3f, 0.6F + user.getRandom().nextFloat() * 0.4F);
         return TypedActionResult.success(stack);
+    }
+
+    public ItemStack getEmptiedStack() {
+        return new ItemStack(this.emptySoulVessel);
     }
 
     public static void releaseSoul(LivingEntity user, @Nullable UUID ownerRecord) {

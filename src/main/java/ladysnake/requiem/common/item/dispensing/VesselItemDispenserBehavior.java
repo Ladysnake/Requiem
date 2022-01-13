@@ -32,7 +32,7 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.requiem.common.item;
+package ladysnake.requiem.common.item.dispensing;
 
 import com.mojang.datafixers.util.Function3;
 import net.minecraft.block.DispenserBlock;
@@ -45,46 +45,37 @@ import net.minecraft.util.math.BlockPointer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public final class RequiemDispenserBehaviors {
-    static void registerDispenserBehaviors() {
-        DispenserBlock.registerBehavior(RequiemItems.EMPTY_SOUL_VESSEL, new VesselItemDispenserBehavior(EmptySoulVesselItem::useOnBlock));
-        for (var ichorVessel : RequiemItems.vesselsByEffect.values()) {
-            DispenserBlock.registerBehavior(ichorVessel, new VesselItemDispenserBehavior(ichorVessel::useOnBlock));
+public class VesselItemDispenserBehavior extends FallibleItemDispenserBehavior {
+    private final ItemDispenserBehavior fallbackBehavior = new ItemDispenserBehavior();
+    private final Function3<World, BlockPos, ItemStack, TypedActionResult<ItemStack>> action;
+
+    public VesselItemDispenserBehavior(Function3<World, BlockPos, ItemStack, TypedActionResult<ItemStack>> action) {
+        this.action = action;
+    }
+
+    public ItemStack tryPutStack(BlockPointer pointer, ItemStack inputStack, ItemStack outputStack) {
+        inputStack.decrement(1);
+        if (inputStack.isEmpty()) {
+            return outputStack.copy();
+        } else {
+            if (pointer.<DispenserBlockEntity>getBlockEntity().addToFirstFreeSlot(outputStack.copy()) < 0) {
+                fallbackBehavior.dispense(pointer, outputStack.copy());
+            }
+
+            return inputStack;
         }
     }
 
-    static class VesselItemDispenserBehavior extends FallibleItemDispenserBehavior {
-        private final ItemDispenserBehavior fallbackBehavior = new ItemDispenserBehavior();
-        private final Function3<World, BlockPos, ItemStack, TypedActionResult<ItemStack>> action;
-
-        VesselItemDispenserBehavior(Function3<World, BlockPos, ItemStack, TypedActionResult<ItemStack>> action) {
-            this.action = action;
-        }
-
-        public ItemStack tryPutStack(BlockPointer pointer, ItemStack inputStack, ItemStack outputStack) {
-            inputStack.decrement(1);
-            if (inputStack.isEmpty()) {
-                return outputStack.copy();
-            } else {
-                if (pointer.<DispenserBlockEntity>getBlockEntity().addToFirstFreeSlot(outputStack.copy()) < 0) {
-                    fallbackBehavior.dispense(pointer, outputStack.copy());
-                }
-
-                return inputStack;
-            }
-        }
-
-        @Override
-        public ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {
-            this.setSuccess(false);
-            BlockPos targetPos = pointer.getPos().offset(pointer.getBlockState().get(DispenserBlock.FACING));
-            TypedActionResult<ItemStack> result = action.apply(pointer.getWorld(), targetPos, stack);
-            if (result.getResult().isAccepted()) {
-                this.setSuccess(true);
-                return this.tryPutStack(pointer, stack, result.getValue());
-            } else {
-                return super.dispenseSilently(pointer, stack);
-            }
+    @Override
+    public ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {
+        this.setSuccess(false);
+        BlockPos targetPos = pointer.getPos().offset(pointer.getBlockState().get(DispenserBlock.FACING));
+        TypedActionResult<ItemStack> result = action.apply(pointer.getWorld(), targetPos, stack);
+        if (result.getResult().isAccepted()) {
+            this.setSuccess(true);
+            return this.tryPutStack(pointer, stack, result.getValue());
+        } else {
+            return super.dispenseSilently(pointer, stack);
         }
     }
 }

@@ -37,6 +37,7 @@ package ladysnake.requiem.common.item;
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.common.entity.RequiemEntities;
 import ladysnake.requiem.common.entity.effect.RequiemStatusEffects;
+import ladysnake.requiem.common.item.dispensing.RequiemDispenserBehaviors;
 import ladysnake.requiem.common.remnant.RemnantTypes;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
