@@ -50,8 +50,9 @@ public record RemnantChoiceDialogueAction(RemnantType chosenType) implements Dia
     public static void makeRemnantChoice(ServerPlayerEntity player, RemnantType chosenType) {
         RemnantComponent remnantComponent = RemnantComponent.get(player);
         RemnantType currentType = remnantComponent.getRemnantType();
+        remnantComponent.become(chosenType, true);
+
         if (chosenType != currentType) {
-            remnantComponent.become(chosenType, true);
             player.world.playSound(null, player.getX(), player.getY(), player.getZ(), RequiemSoundEvents.EFFECT_BECOME_REMNANT, player.getSoundCategory(), 1.4F, 0.1F);
             RequiemNetworking.sendTo(player, RequiemNetworking.createOpusUsePacket(chosenType, false));
         }
