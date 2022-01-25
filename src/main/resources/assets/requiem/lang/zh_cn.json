@@ -51,6 +51,12 @@
   "requiem:commands.shell.split.fail.mortal": "在%s是凡人时无法分离",
   "requiem:commands.shell.split.fail.vagrant": "在%s是流浪状态时无法分离",
   "requiem:commands.shell.fail.not_shell": "%s不是玩家躯体",
+  "requiem:commands.soul.query.has_soul": "%s目前拥有灵魂",
+  "requiem:commands.soul.query.no_soul": "%s目前没有灵魂",
+  "requiem:commands.soul.set.fail.not_living": "%s不是一个活生生的实体",
+  "requiem:commands.soul.set.fail.permanently_soulless": "%s不能有自己的灵魂",
+  "requiem:commands.soul.remove.success": "成功移除了%s的灵魂",
+  "requiem:commands.soul.restore.success": "成功给%s装填了灵魂",
 
   "requiem:container.obelisk_rift": "裂谷",
 
