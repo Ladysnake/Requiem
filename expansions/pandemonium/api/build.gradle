@@ -7,12 +7,12 @@ repositories {
         url = 'https://ladysnake.jfrog.io/artifactory/mods'
         content {
             includeGroup 'io.github.ladysnake'
-            includeGroupByRegex 'io\\.github\\.onyxstudios.*'
+            includeGroupByRegex '(dev|io\\.github)\\.onyxstudios.*'
         }
     }
 }
 
 dependencies {
     api project(path: ":requiem-api", configuration: "namedElements")
-    modApi ("io.github.onyxstudios.Cardinal-Components-API:cardinal-components-base:${rootProject.cca_version}")
+    modApi ("dev.onyxstudios.cardinal-components-api:cardinal-components-base:${rootProject.cca_version}")
 }

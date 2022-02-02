@@ -56,8 +56,6 @@ import net.minecraft.util.math.Direction;
 
 import java.util.Objects;
 
-import static io.github.ladysnake.elmendorf.ByteBufChecker.any;
-
 public class RequiemTestSuite implements FabricGameTest {
     @GameTest(structureName = EMPTY_STRUCTURE)
     public void sealedVesselWorks(TestContext ctx) {
@@ -68,7 +66,7 @@ public class RequiemTestSuite implements FabricGameTest {
         GameTestUtil.assertTrue("Sealed vessel should convert to remnant", RemnantComponent.get(player).getRemnantType() == RemnantTypes.REMNANT);
         GameTestUtil.verifyConnection(player).sent(
             CardinalComponentsEntity.PACKET_ID,
-            c -> c.checkInt(any())
+            c -> c.checkInt(player.getId())
                 .checkIdentifier(RemnantComponent.KEY.getId())
                 .checkVarInt(RemnantTypes.getRawId(RemnantTypes.REMNANT))
                 .checkBoolean(false)

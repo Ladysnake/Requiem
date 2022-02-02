@@ -2,13 +2,12 @@ archivesBaseName = "requiem-core"
 group = rootProject.group
 
 repositories {
-    mavenLocal()
     maven {
         name = "Ladysnake Libs"
         url = 'https://ladysnake.jfrog.io/artifactory/mods'
         content {
             includeGroup 'io.github.ladysnake'
-            includeGroupByRegex "io\\.github\\.onyxstudios.*"
+            includeGroupByRegex "(dev|io\\.github)\\.onyxstudios.*"
         }
     }
     maven {
@@ -37,9 +36,10 @@ dependencies {
     api project(path: ":requiem-api", configuration: "namedElements")
     modImplementation "io.github.ladysnake:PlayerAbilityLib:${pal_version}"
     modImplementation "io.github.ladysnake:locki:${locki_version}"
+    modImplementation ("dev.onyxstudios.cardinal-components-api:cardinal-components-base:${cca_version}")
     modImplementation "io.github.ladysnake:blabber:${blabber_version}"
     modImplementation "me.lucko:fabric-permissions-api:${fpa_version}"
-    modImplementation "com.jamieswhiteshirt:reach-entity-attributes:${rootProject.reach_version}"
+    modImplementation "com.jamieswhiteshirt:reach-entity-attributes:${reach_version}"
 }
 
 remapJar.dependsOn(project(":requiem-api").tasks.remapJar)

@@ -7,7 +7,7 @@ repositories {
         url = 'https://ladysnake.jfrog.io/artifactory/mods'
         content {
             includeGroup "io.github.ladysnake"
-            includeGroupByRegex "io\\.github\\.onyxstudios.*"
+            includeGroupByRegex "(dev|io\\.github)\\.onyxstudios.*"
         }
     }
     maven {
@@ -28,5 +28,5 @@ repositories {
 
 dependencies {
     modApi ("io.github.ladysnake:locki:${locki_version}")
-    modApi ("io.github.onyxstudios.Cardinal-Components-API:cardinal-components-base:${cca_version}")
+    modApi ("dev.onyxstudios.cardinal-components-api:cardinal-components-base:${cca_version}")
 }

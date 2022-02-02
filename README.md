@@ -29,7 +29,7 @@ repositories {
         url = 'https://ladysnake.jfrog.io/artifactory/mods'
         content {
             includeGroup 'io.github.ladysnake'
-            includeGroupByRegex 'io\\.github\\.onyxstudios.*'
+            includeGroupByRegex '(dev|io\\.github)\\.onyxstudios.*'
             includeGroupByRegex 'dev\\.emi.*'
         }
     }

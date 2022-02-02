@@ -8,7 +8,7 @@ repositories {
         url = 'https://ladysnake.jfrog.io/artifactory/mods'
         content {
             includeGroup 'io.github.ladysnake'
-            includeGroupByRegex 'io\\.github\\.onyxstudios.*'
+            includeGroupByRegex '(dev|io\\.github)\\.onyxstudios.*'
         }
     }
     maven {
@@ -69,10 +69,10 @@ dependencies {
     implementation project(path: ":pandemonium-api", configuration: "namedElements")
     include project(":pandemonium-api")
     modImplementation "io.github.ladysnake:satin:${satin_version}"
-    modImplementation ("io.github.onyxstudios.Cardinal-Components-API:cardinal-components-entity:${rootProject.cca_version}")
-    modImplementation ("io.github.onyxstudios.Cardinal-Components-API:cardinal-components-world:${rootProject.cca_version}")
-    include ("io.github.onyxstudios.Cardinal-Components-API:cardinal-components-world:${rootProject.cca_version}")
-    modImplementation ("io.github.onyxstudios.Cardinal-Components-API:cardinal-components-scoreboard:${cca_version}")
+    modImplementation ("dev.onyxstudios.cardinal-components-api:cardinal-components-entity:${rootProject.cca_version}")
+    modImplementation ("dev.onyxstudios.cardinal-components-api:cardinal-components-world:${rootProject.cca_version}")
+    include ("dev.onyxstudios.cardinal-components-api:cardinal-components-world:${rootProject.cca_version}")
+    modImplementation ("dev.onyxstudios.cardinal-components-api:cardinal-components-scoreboard:${cca_version}")
     modImplementation "me.lucko:fabric-permissions-api:${fpa_version}"
     modImplementation ("io.github.ladysnake:PlayerAbilityLib:${pal_version}")
     modImplementation ("io.github.ladysnake:locki:${locki_version}")
