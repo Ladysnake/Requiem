@@ -1,93 +1,17 @@
 archivesBaseName = "${rootProject.archivesBaseName}-${project.name.toLowerCase(Locale.ROOT)}"
 group = "${rootProject.group}.${rootProject.archivesBaseName}"
 
-repositories {
-    mavenLocal()
-    maven {
-        name = 'Ladysnake Mods'
-        url = 'https://ladysnake.jfrog.io/artifactory/mods'
-        content {
-            includeGroup 'io.github.ladysnake'
-            includeGroupByRegex '(dev|io\\.github)\\.onyxstudios.*'
-        }
-    }
-    maven {
-        url = 'https://maven.jamieswhiteshirt.com/libs-release/'
-        content {
-            includeGroup 'com.jamieswhiteshirt'
-        }
-    }
-    maven {
-        url "https://www.cursemaven.com"
-        content {
-            includeGroup "curse.maven"
-        }
-    }
-    maven {
-        url = "https://maven.shedaniel.me/"
-        content {
-            includeGroupByRegex 'me\\.shedaniel\\..*'
-            includeGroup 'me.sargunvohra.mcmods'
-        }
-    }
-    maven {
-        url = 'https://oss.sonatype.org/content/repositories/snapshots'
-        content {
-            includeGroup 'me.lucko'
-        }
-    }
-    maven {
-        url = "https://maven.theillusivec4.top"
-        content {
-            includeGroupByRegex 'top\\.theillusivec4\\..*'
-        }
-    }
-    maven {
-        name = "TerraformersMC"
-        url = "https://maven.terraformersmc.com/releases"
-        content {
-            includeGroup 'com.terraformersmc'
-            includeGroup 'dev.emi'
-        }
-    }
-    maven {
-        url = 'https://api.modrinth.com/maven'
-        content {
-            includeGroup 'maven.modrinth'
-        }
-    }
-    maven {
-        name = 'JitPack'
-        url = 'https://jitpack.io'
-    }
-}
-
 dependencies {
     implementation project(path: ":requiem-api", configuration: "namedElements")
     implementation project(path: ":requiem-core", configuration: "namedElements")
     implementation project(path: ":", configuration: "namedElements")
     implementation project(path: ":pandemonium-api", configuration: "namedElements")
     include project(":pandemonium-api")
-    modImplementation "io.github.ladysnake:satin:${satin_version}"
-    modImplementation ("dev.onyxstudios.cardinal-components-api:cardinal-components-entity:${rootProject.cca_version}")
-    modImplementation ("dev.onyxstudios.cardinal-components-api:cardinal-components-world:${rootProject.cca_version}")
-    include ("dev.onyxstudios.cardinal-components-api:cardinal-components-world:${rootProject.cca_version}")
-    modImplementation ("dev.onyxstudios.cardinal-components-api:cardinal-components-scoreboard:${cca_version}")
-    modImplementation "me.lucko:fabric-permissions-api:${fpa_version}"
-    modImplementation ("io.github.ladysnake:PlayerAbilityLib:${pal_version}")
-    modImplementation ("io.github.ladysnake:locki:${locki_version}")
-    modImplementation ("io.github.ladysnake:impersonate:${impersonate_version}") { transitive = false }
-    modImplementation "io.github.ladysnake:automatone:${automatone_version}"
-    implementation "me.zeroeightsix:fiber:${rootProject.fiber_version}"
-//    modCompileOnly ("io.github.shedaniel:FiberToCloth:0907730") { transitive = false }
-    modCompileOnly ("com.terraformersmc:modmenu:${modmenu_version}") { transitive = false }
-    modCompileOnly ("me.shedaniel.cloth:cloth-config-fabric:${rootProject.cloth_version}") {
-        exclude(group: "net.fabricmc.fabric-api")
-    }
-    modImplementation "com.jamieswhiteshirt:reach-entity-attributes:${rootProject.reach_version}"
-    modImplementation("top.theillusivec4.somnus:somnus-fabric:${somnus_version}")
-    modCompileOnly("com.github.apace100:origins-fabric:${rootProject.origins_version}") { transitive = false }
-    modCompileOnly("curse.maven:haema-391257:${rootProject.haema_version}")
+    modImplementation libs.bundles.requiredLibraries
+    modCompileOnly libs.modmenu
+    modCompileOnly libs.bundles.cloth
+    modCompileOnly compatLibs.origins
+    modCompileOnly compatLibs.haema
 }
 
 jar {

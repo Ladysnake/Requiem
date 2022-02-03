@@ -41,15 +41,16 @@ import net.minecraft.entity.player.PlayerEntity;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Pseudo;
 import org.spongepowered.asm.mixin.Shadow;
-import party.lemons.biomemakeover.entity.EntityPart;
-import party.lemons.biomemakeover.entity.MultiPartEntity;
 
-@Mixin(EntityPart.class)
-public abstract class EntityPartMixin<T extends LivingEntity & MultiPartEntity<?>> implements ProtoPossessable {
+// Currently package is mispelled "mutipart", assume it may be fixed one day
+@Pseudo
+@Mixin(targets = {"party.lemons.biomemakeover.entity.mutipart.EntityPart", "party.lemons.biomemakeover.entity.multipart.EntityPart"})
+public abstract class EntityPartMixin implements ProtoPossessable {
     @Shadow(remap = false)
     @Final
-    public T owner;
+    public LivingEntity owner;
 
     @Nullable
     @Override

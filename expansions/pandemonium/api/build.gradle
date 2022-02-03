@@ -1,18 +1,7 @@
 archivesBaseName = "${rootProject.archivesBaseName}-${project.name.toLowerCase(Locale.ROOT)}"
 group = "${rootProject.group}.${rootProject.archivesBaseName}"
 
-repositories {
-    maven {
-        name = 'Ladysnake Mods'
-        url = 'https://ladysnake.jfrog.io/artifactory/mods'
-        content {
-            includeGroup 'io.github.ladysnake'
-            includeGroupByRegex '(dev|io\\.github)\\.onyxstudios.*'
-        }
-    }
-}
-
 dependencies {
     api project(path: ":requiem-api", configuration: "namedElements")
-    modApi ("dev.onyxstudios.cardinal-components-api:cardinal-components-base:${rootProject.cca_version}")
+    modApi libs.cca.base
 }

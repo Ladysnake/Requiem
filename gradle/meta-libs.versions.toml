@@ -1,0 +1,14 @@
+[versions]
+jsr305 = "3.0.2"
+jbAnnotations = "19.0.0"
+apiGuardian = "1.0.0"
+mcAnnotations = "1.0"
+
+[libraries]
+jsr305 = { module = "com.google.code.findbugs:jsr305", version.ref = "jsr305" }
+jbAnnotations = { module = "org.jetbrains:annotations", version.ref = "jbAnnotations" }
+apiGuardian = { module = "org.apiguardian:apiguardian-api", version.ref = "apiGuardian" }
+mcAnnotations = { module = "com.demonwav.mcdev:annotations", version.ref = "mcAnnotations" }
+
+[bundles]
+devAnnotations = ["jsr305", "jbAnnotations", "apiGuardian", "mcAnnotations"]

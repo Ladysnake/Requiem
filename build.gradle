@@ -6,7 +6,7 @@ import com.modrinth.minotaur.TaskModrinthUpload
 import java.time.Year
 
 plugins {
-    id 'fabric-loom' version '0.11-SNAPSHOT'
+    alias(libs.plugins.loom)
     id 'org.quiltmc.quilt-mappings-on-loom' version "3.1.1"
     id 'io.github.juuxel.loom-quiltflower' version "1.6.0"
     id 'org.cadixdev.licenser' version '0.6.1'
@@ -39,8 +39,93 @@ allprojects {
     version = project.mod_version
 
     repositories {
+        maven {
+            name = 'Ladysnake Mods'
+            url = 'https://ladysnake.jfrog.io/artifactory/mods'
+            content {
+                includeGroup 'io.github.ladysnake'
+                includeGroupByRegex 'dev\\.emi.*'
+                includeGroupByRegex '(dev|io\\.github)\\.onyxstudios.*'
+            }
+        }
+        maven {
+            url = 'https://maven.cafeteria.dev'
+            content {
+                includeGroup 'net.adriantodt.fabricmc'
+            }
+        }
+        maven {
+            name = 'CottonMC'
+            url = 'https://server.bbkr.space/artifactory/libs-release'
+            content {
+                includeGroup 'io.github.cottonmc'
+            }
+        }
+        maven {
+            url = 'https://maven.jamieswhiteshirt.com/libs-release/'
+            content {
+                includeGroup 'com.jamieswhiteshirt'
+            }
+        }
+        maven {
+            url = 'https://www.cursemaven.com'
+            content {
+                includeGroup 'curse.maven'
+            }
+        }
+        maven {
+            url 'https://maven.blamejared.com'
+            content {
+                includeGroupByRegex 'vazkii\\..*'
+            }
+        }
+        maven {
+            url = "https://maven.shedaniel.me/"
+            content {
+                includeGroupByRegex 'me\\.shedaniel\\..*'
+                includeGroup 'me.sargunvohra.mcmods'
+            }
+        }
+        maven {
+            url = "https://maven.theillusivec4.top"
+            content {
+                includeGroupByRegex 'top\\.theillusivec4\\..*'
+            }
+        }
+        maven {
+            url = 'https://oss.sonatype.org/content/repositories/snapshots'
+            content {
+                includeGroup 'me.lucko'
+            }
+        }
+        maven {
+            name = "TerraformersMC"
+            url = "https://maven.terraformersmc.com/releases"
+            content {
+                includeGroup 'com.terraformersmc'
+                includeGroup 'dev.emi'
+            }
+        }
+        maven {
+            url = "https://maven.siphalor.de"
+            content {
+                includeGroup 'de.siphalor'
+            }
+        }
+        maven {
+            url = 'https://api.modrinth.com/maven'
+            content {
+                includeGroup 'maven.modrinth'
+            }
+        }
+        maven {
+            name = 'JitPack'
+            url = 'https://jitpack.io'
+            content {
+                includeGroupByRegex '(io|com)\\.github\\..*'
+            }
+        }
         mavenLocal()
-        mavenCentral()
     }
 
     processResources {
@@ -73,10 +158,7 @@ allprojects {
         // Fabric API. This is technically optional, but you probably want it anyway.
         modApi "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
-        compileOnly "com.google.code.findbugs:jsr305:3.0.2"
-        compileOnly "org.jetbrains:annotations:${jb_annotations_version}"
-        compileOnly "org.apiguardian:apiguardian-api:${apiguardian_version}"
-        compileOnly "com.demonwav.mcdev:annotations:1.0"
+        compileOnly metaLibs.bundles.devAnnotations
     }
 
     license {
@@ -151,181 +233,55 @@ loom {
 }
 check.dependsOn runGametest
 
-repositories {
-    maven {
-        name = 'Ladysnake Mods'
-        url = 'https://ladysnake.jfrog.io/artifactory/mods'
-        content {
-            includeGroup 'io.github.ladysnake'
-            includeGroupByRegex 'dev\\.emi.*'
-            includeGroupByRegex '(dev|io\\.github)\\.onyxstudios.*'
-        }
-    }
-    maven {
-        url = 'https://maven.cafeteria.dev'
-        content {
-            includeGroup 'net.adriantodt.fabricmc'
-        }
-    }
-    maven {
-        name = 'CottonMC'
-        url = 'https://server.bbkr.space/artifactory/libs-release'
-        content {
-            includeGroup 'io.github.cottonmc'
-        }
-    }
-    maven {
-        url = 'https://maven.jamieswhiteshirt.com/libs-release/'
-        content {
-            includeGroup 'com.jamieswhiteshirt'
-        }
-    }
-    maven {
-        url = 'https://www.cursemaven.com'
-        content {
-            includeGroup 'curse.maven'
-        }
-    }
-    maven {
-        url 'https://maven.blamejared.com'
-        content {
-            includeGroupByRegex 'vazkii\\..*'
-        }
-    }
-    maven {
-        url = "https://maven.shedaniel.me/"
-        content {
-            includeGroupByRegex 'me\\.shedaniel\\..*'
-            includeGroup 'me.sargunvohra.mcmods'
-        }
-    }
-    maven {
-        url = "https://maven.theillusivec4.top"
-        content {
-            includeGroupByRegex 'top\\.theillusivec4\\..*'
-        }
-    }
-    maven {
-        url = 'https://oss.sonatype.org/content/repositories/snapshots'
-        content {
-            includeGroup 'me.lucko'
-        }
-    }
-    maven {
-        name = "TerraformersMC"
-        url = "https://maven.terraformersmc.com/releases"
-        content {
-            includeGroup 'com.terraformersmc'
-            includeGroup 'dev.emi'
-        }
-    }
-    maven {
-        url = "https://maven.siphalor.de"
-        content {
-            includeGroup 'de.siphalor'
-        }
-    }
-    maven {
-        url = 'https://api.modrinth.com/maven'
-        content {
-            includeGroup 'maven.modrinth'
-        }
-    }
-    maven {
-        name = 'JitPack'
-        url = 'https://jitpack.io'
-        content {
-            includeGroupByRegex '(io|com)\\.github\\..*'
-        }
-    }
-    mavenLocal()
-}
-
 dependencies {
-    api (project(path: ":requiem-api", configuration: "namedElements")) { transitive = false }
-    api (project(path: ":requiem-core", configuration: "namedElements")) { transitive = false }
-    // including too early causes a circular dependency somehow
-    afterEvaluate {
-        include project(":requiem-api")
-        include project(":requiem-core")
-    }
-
-    testImplementation 'junit:junit:4.13'
-    testImplementation 'org.mockito:mockito-core:3.+'
-    testmodImplementation 'org.mockito:mockito-core:3.+'
+    // Looking for version definitions? see https://docs.gradle.org/7.4-rc-1/userguide/platforms.html
 
     // Required dependencies
-    modApi include("io.github.ladysnake:satin:${satin_version}")
-    modImplementation include("dev.onyxstudios.cardinal-components-api:cardinal-components-base:${cca_version}")
-    modImplementation include("dev.onyxstudios.cardinal-components-api:cardinal-components-entity:${cca_version}")
-    modImplementation include("dev.onyxstudios.cardinal-components-api:cardinal-components-scoreboard:${cca_version}")
-    // Required by automatone but nothing else
-    include "dev.onyxstudios.cardinal-components-api:cardinal-components-world:${cca_version}"
-    modImplementation include("io.github.ladysnake:PlayerAbilityLib:${pal_version}")
-    modImplementation include("io.github.ladysnake:locki:${locki_version}")
-    modImplementation include("io.github.ladysnake:impersonate:${impersonate_version}")
-    modImplementation include("io.github.ladysnake:automatone:${automatone_version}")
-    modImplementation include("io.github.ladysnake:blabber:${blabber_version}")
-    modImplementation include("dev.emi.chime:chime:${chime_version}")
-    modImplementation include ("com.jamieswhiteshirt:reach-entity-attributes:${reach_version}")
-    // Fiber is technically not a mod and could use implementation, however that leaves it out of the generated pom.xml
-    modImplementation include("me.zeroeightsix:fiber:${fiber_version}")
-    modImplementation include("me.lucko:fabric-permissions-api:${fpa_version}")
+    api include(project(path: ":requiem-api", configuration: "namedElements")) { transitive = false }
+    api include(project(path: ":requiem-core", configuration: "namedElements")) { transitive = false }
+    modImplementation libs.bundles.requiredLibraries
+    include libs.bundles.requiredLibraries
+
     // Test dependencies
-    modCompileOnly modLocalRuntime("io.github.ladysnake:elmendorf:${elmendorf_version}")
+    testImplementation testLibs.junit
+    testImplementation testLibs.mockito
+    testmodImplementation testLibs.mockito
+    modCompileOnly testLibs.elmendorf
+    modLocalRuntime testLibs.elmendorf
     testmodImplementation sourceSets.main.output
 
     // Optional dependencies
-    modCompileOnly ("com.terraformersmc:modmenu:${modmenu_version}") { transitive = false }
-    modLocalRuntime ("com.terraformersmc:modmenu:${modmenu_version}") { transitive = false }
-    modCompileOnly ("me.shedaniel.cloth:cloth-config-fabric:${cloth_version}") {
-        exclude(group: "net.fabricmc.fabric-api")
-    }
-    modLocalRuntime ("me.shedaniel.cloth:cloth-config-fabric:${cloth_version}") {
-        exclude(group: "net.fabricmc.fabric-api")
-    }
-    modCompileOnly ("com.github.pyrofab:fibertocloth:${f2c_version}") { transitive = false }
-    modLocalRuntime ("com.github.pyrofab:fibertocloth:${f2c_version}") { transitive = false }
-    include ("com.github.pyrofab:fibertocloth:${f2c_version}") { transitive = false }
+    modCompileOnly libs.modmenu
+    modLocalRuntime libs.modmenu
+    modCompileOnly libs.bundles.cloth
+    modLocalRuntime libs.bundles.cloth
+    include libs.fiberToCloth
 
     // Extra compatibility dependencies
-//    modLocalRuntime curse.resolve('immersive-portals-mod', 2845123)
-//    modLocalRuntime "curse.maven:mobz:2965825"
-    modCompileOnly("curse.maven:Health-Overlay-Fabric-313219:3403605")
-//    modLocalRuntime("curse.maven:Health-Overlay-Fabric-313219:3403605")
-    modCompileOnly("io.github.CerulanLumina:better-graves:${better_graves_version}") { transitive = false }
-//    modLocalRuntime("io.github.CerulanLumina:better-graves:${better_graves_version}")
-    modCompileOnly("io.github.Lemonszz:Biome-Makeover:${biome_makeover_version}")
-//    modLocalRuntime("io.github.Lemonszz:Biome-Makeover:${biome_makeover_version}")
+//    modLocalRuntime compatLibs.mobz
+    modCompileOnly (compatLibs.betterGraves) { transitive = false }
+//    modLocalRuntime compatLibs.betterGraves
+//    modCompileOnly compatLibs.biomeMakeover
+//    modLocalRuntime compatLibs.biomeMakeover
+    modCompileOnly (compatLibs.trinkets) { transitive = false }
+//    modLocalRuntime compatLibs.trinkets
+    modCompileOnly (compatLibs.pehkui) { transitive = false }
+//    modLocalRuntime compatLibs.pehkui
+    modCompileOnly (compatLibs.snowmercy) { transitive = false }
+//    modLocalRuntime compatLibs.snowmercy
+    modCompileOnly (compatLibs.bundles.origins) { transitive = false }
+    modLocalRuntime (compatLibs.bundles.origins) { transitive = false }
 
-    modLocalRuntime "com.jamieswhiteshirt:reach-entity-attributes:${reach_version}"
-//    modLocalRuntime "net.adriantodt.fabricmc:fallflyinglib:${fallflyinglib_version}"
-    modCompileOnly "dev.emi:trinkets:${trinkets_version}"
-    modCompileOnly("curse.maven:Pehkui-319596:${pehkui_version}") { transitive = false }
-//    modLocalRuntime("curse.maven:Pehkui-319596:${pehkui_version}") { transitive = false }
-    modCompileOnly("curse.maven:Snow-Mercy-429949:${snowmercy_version}") { transitive = false }
-//    modLocalRuntime("curse.maven:Snow-Mercy-429949:${snowmercy_version}") { transitive = false }
-    modCompileOnly("com.github.apace100:apoli:${apoli_version}") { transitive = false }
-    modLocalRuntime("com.github.apace100:apoli:${apoli_version}") { transitive = false }
-    modCompileOnly("com.github.apace100:calio:${calio_version}") { transitive = false }
-    modLocalRuntime("com.github.apace100:calio:${calio_version}") { transitive = false }
-    modCompileOnly("com.github.apace100:origins-fabric:${origins_version}") { transitive = false }
-    modLocalRuntime("com.github.apace100:origins-fabric:${origins_version}") { transitive = false }
-
-    modCompileOnly("io.github.HyperPigeon:Eldritch-Mobs:${eldritch_mobs_version}") { transitive = false }
-//    modLocalRuntime "io.github.cottonmc:LibGui:${libgui_version}"
-    modCompileOnly("curse.maven:haema-391257:${haema_version}")
-//    modLocalRuntime("curse.maven:haema-391257:${haema_version}")
-//    modLocalRuntime("top.theillusivec4.somnus:somnus-fabric:${somnus_version}")
-//    modLocalRuntime("vazkii.patchouli:Patchouli:${project.patchouli_version}")
-//    modLocalRuntime("net.fabricmc:fabric-language-kotlin:${flk_version}")
-//    modLocalRuntime("dev.onyxstudios.cardinal-components-api:cardinal-components-world:${rootProject.cca_version}")
-    modCompileOnly("curse.maven:golems-galore-387197:${golems_galore_version}")
-//    modLocalRuntime("curse.maven:golems-galore-387197:${golems_galore_version}")
-//    modLocalRuntime 'com.github.Draylar:structurized:1.3.0-21w20a'
-    modCompileOnly("curse.maven:the-bumblezone-fabric-363949:${bumblezone_version}")
-//    modLocalRuntime("curse.maven:the-bumblezone-fabric-363949:${bumblezone_version}")
-    modCompileOnly "curse.maven:bewitchment-394915:${bewitchment_version}"
+    modCompileOnly (compatLibs.eldritchMobs) { transitive = false }
+//    modLocalRuntime compatLibs.eldritchMobs
+    modCompileOnly (compatLibs.haema) { transitive = false }
+//    modLocalRuntime compatLibs.bundles.haema
+    modCompileOnly (compatLibs.golemsGalore) { transitive = false }
+//    modLocalRuntime compatLibs.bundles.golemsGalore
+    modCompileOnly (compatLibs.bumblezone) { transitive = false }
+//    modLocalRuntime compatLibs.bumblezone
+    modCompileOnly (compatLibs.bewitchment) { transitive = false }
+//    modLocalRuntime compatLibs.bewitchment
 }
 
 remapJar.dependsOn(project(":requiem-core").tasks.remapJar)

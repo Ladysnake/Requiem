@@ -1,0 +1,56 @@
+[versions]
+automatone = "0.5.0"
+blabber = "0.1.2"
+cca = "4.1.1"
+chime = "1.2.0-SNAPSHOT"
+cloth = "6.0.42"
+fiberToCloth = "v3-SNAPSHOT"
+fiber = "0.23.0-2"
+fpa = "0.1-SNAPSHOT"
+impersonate = "2.4.1"
+locki = "0.7.0"
+modmenu = "3.0.1"
+pal = "1.5.0"
+rea = "2.1.1"
+satin = "1.7.2"
+
+[libraries]
+automatone = { group = "io.github.ladysnake", name = "automatone", version.ref = "automatone" }
+blabber = { group = "io.github.ladysnake", name = "blabber", version.ref = "blabber" }
+cca-base = { group = "dev.onyxstudios.cardinal-components-api", name="cardinal-components-base", version.ref = "cca" }
+cca-entity = { group = "dev.onyxstudios.cardinal-components-api", name="cardinal-components-entity", version.ref = "cca" }
+cca-scoreboard = { group = "dev.onyxstudios.cardinal-components-api", name="cardinal-components-scoreboard", version.ref = "cca" }
+cca-world = { group = "dev.onyxstudios.cardinal-components-api", name="cardinal-components-world", version.ref = "cca" }
+chime = { group = "dev.emi.chime", name = "chime", version.ref = "chime" }
+clothConfig = { group = "me.shedaniel.cloth", name = "cloth-config-fabric", version.ref = "cloth" }
+fabricPermissionsApi = { group = "me.lucko", name = "fabric-permissions-api", version.ref = "fpa" }
+fiber = { group = "me.zeroeightsix", name = "fiber", version.ref = "fiber" }
+fiberToCloth = { group = "com.github.pyrofab", name = "fibertocloth", version.ref = "fiberToCloth" }
+impersonate = { group = "io.github.ladysnake", name = "impersonate", version.ref = "impersonate" }
+locki = { group = "io.github.ladysnake", name = "locki", version.ref = "locki" }
+modmenu = { group = "com.terraformersmc", name = "modmenu", version.ref = "modmenu" }
+playerAbilityLib = { group = "io.github.ladysnake", name = "PlayerAbilityLib", version.ref = "pal" }
+reachEntityAttributes = { group = "com.jamieswhiteshirt", name = "reach-entity-attributes", version.ref = "rea" }
+satin = { group = "io.github.ladysnake", name = "satin", version.ref = "satin" }
+
+[bundles]
+requiredLibraries = [
+    "automatone",
+    "blabber",
+    "chime",
+    "cca-base",
+    "cca-entity",
+    "cca-scoreboard",
+    "cca-world",
+    "fabricPermissionsApi",
+    "fiber",
+    "impersonate",
+    "locki",
+    "playerAbilityLib",
+    "reachEntityAttributes",
+    "satin",
+]
+cloth = ["clothConfig", "fiberToCloth"]
+
+[plugins]
+loom = { id = "fabric-loom", version = "0.11-SNAPSHOT" }

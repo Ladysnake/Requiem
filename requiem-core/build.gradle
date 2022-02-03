@@ -1,45 +1,14 @@
 archivesBaseName = "requiem-core"
 group = rootProject.group
 
-repositories {
-    maven {
-        name = "Ladysnake Libs"
-        url = 'https://ladysnake.jfrog.io/artifactory/mods'
-        content {
-            includeGroup 'io.github.ladysnake'
-            includeGroupByRegex "(dev|io\\.github)\\.onyxstudios.*"
-        }
-    }
-    maven {
-        url = 'https://oss.sonatype.org/content/repositories/snapshots'
-        content {
-            includeGroup 'me.lucko'
-        }
-    }
-    maven {
-        url = 'https://maven.jamieswhiteshirt.com/libs-release/'
-        content {
-            includeGroup 'com.jamieswhiteshirt'
-        }
-    }
-    maven {
-        name = "TerraformersMC"
-        url = "https://maven.terraformersmc.com/releases"
-        content {
-            includeGroup 'com.terraformersmc'
-            includeGroup 'dev.emi'
-        }
-    }
-}
-
 dependencies {
     api project(path: ":requiem-api", configuration: "namedElements")
-    modImplementation "io.github.ladysnake:PlayerAbilityLib:${pal_version}"
-    modImplementation "io.github.ladysnake:locki:${locki_version}"
-    modImplementation ("dev.onyxstudios.cardinal-components-api:cardinal-components-base:${cca_version}")
-    modImplementation "io.github.ladysnake:blabber:${blabber_version}"
-    modImplementation "me.lucko:fabric-permissions-api:${fpa_version}"
-    modImplementation "com.jamieswhiteshirt:reach-entity-attributes:${reach_version}"
+    modImplementation libs.playerAbilityLib
+    modImplementation libs.locki
+    modImplementation libs.cca.base
+    modImplementation libs.blabber
+    modImplementation libs.fabricPermissionsApi
+    modImplementation libs.reachEntityAttributes
 }
 
 remapJar.dependsOn(project(":requiem-api").tasks.remapJar)

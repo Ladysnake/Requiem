@@ -27,3 +27,17 @@ include "requiem-core"
     project(":$it").projectDir = file("expansions/$it")
     project(":${it}-api").projectDir = file("expansions/$it/api")
 }
+
+dependencyResolutionManagement {
+    versionCatalogs {
+        compatLibs {
+            from(files('gradle/compat-libs.versions.toml'))
+        }
+        metaLibs {
+            from(files('gradle/meta-libs.versions.toml'))
+        }
+        testLibs {
+            from(files('gradle/test-libs.versions.toml'))
+        }
+    }
+}

@@ -1,32 +1,7 @@
 archivesBaseName = "Requiem-API"
 group = rootProject.group
 
-repositories {
-    maven {
-        name = "Ladysnake Libs"
-        url = 'https://ladysnake.jfrog.io/artifactory/mods'
-        content {
-            includeGroup "io.github.ladysnake"
-            includeGroupByRegex "(dev|io\\.github)\\.onyxstudios.*"
-        }
-    }
-    maven {
-        name = "TerraformersMC"
-        url = "https://maven.terraformersmc.com/releases"
-        content {
-            includeGroup 'com.terraformersmc'
-            includeGroup 'dev.emi'
-        }
-    }
-    maven {
-        url = 'https://oss.sonatype.org/content/repositories/snapshots'
-        content {
-            includeGroup 'me.lucko'
-        }
-    }
-}
-
 dependencies {
-    modApi ("io.github.ladysnake:locki:${locki_version}")
-    modApi ("dev.onyxstudios.cardinal-components-api:cardinal-components-base:${cca_version}")
+    modApi libs.cca.base
+    modApi libs.locki
 }
