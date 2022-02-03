@@ -3,6 +3,9 @@ Version 2.0.0
 ------------------------------------------------------
 **Warning: future betas may still break compatibility with worlds started with this version. Don't start using those versions on any world you care about.**
 
+### Changes in Beta 7
+- Fixed the remnant choice dialogue not letting you choose mortal
+
 ### Changes in Beta 6
 - Added a block tag for blocks traversable by souls
 - Dispensers can now release souls from filled soul vessels
