@@ -1,4 +1,4 @@
-task checkGitStatus() {
+task checkGitStatus(dependsOn: check, group: 'verification') {
     group = 'publishing'
     description = 'Checks that the git repository is in a state suitable for release'
     doLast {
@@ -32,8 +32,7 @@ githubRelease {
     targetCommitish = { grgit.branch.current().name }
     body = { project.getChangelogText() }
 
-    FilenameFilter filter = { dir, filename -> filename.contains(project.version) && !filename.contains('-dev.jar') }
-    releaseAssets = { jar.destinationDirectory.asFile.get().listFiles filter }
+    releaseAssets = { remapJar }
 }
 tasks.githubRelease.dependsOn(checkGitStatus)
 
