@@ -18,10 +18,16 @@
   "entrypoints": {
     "fabric-gametest": [
       "ladysnake.requiemtest.RequiemTestSuite",
-      "ladysnake.requiem.common.item.EmptySoulVesselItemTest"
+      "ladysnake.requiem.common.item.EmptySoulVesselItemTest",
+      "ladysnake.requiemtest.PlayerShellsTests"
     ]
   },
   "depends": {
     "fabric": "*"
-  }
+  },
+  "mixins": [
+    {
+      "config": "mixins.requiem-test.json"
+    }
+  ]
 }

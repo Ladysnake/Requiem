@@ -152,7 +152,7 @@ public abstract class PossessorPlayerEntityMixin extends PossessorLivingEntityMi
     protected void requiem$delegateBreath(CallbackInfoReturnable<Integer> cir) {
         @SuppressWarnings("ConstantConditions") Entity self = (Entity) (Object) this;
         // This method can be called in the constructor
-        if (ComponentProvider.fromEntity(self).getComponentContainer() != null) {
+        if (self.getComponentContainer() != null) {
             Entity possessedEntity = PossessionComponent.getHost(self);
             if (possessedEntity != null) {
                 cir.setReturnValue(possessedEntity.getAir());

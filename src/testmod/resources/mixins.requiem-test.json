@@ -1,0 +1,11 @@
+{
+  "required": true,
+  "package": "ladysnake.requiemtest.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "minVersion": "0.7.11-SNAPSHOT",
+  "mixins": [
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
