@@ -102,7 +102,7 @@ allprojects {
             name = "TerraformersMC"
             url = "https://maven.terraformersmc.com/releases"
             content {
-                includeGroup 'com.terraformersmc'
+                includeGroupByRegex 'com.terraformersmc.*'
                 includeGroup 'dev.emi'
             }
         }
@@ -186,14 +186,7 @@ allprojects {
     publishing {
         publications {
             mavenJava(MavenPublication) {
-                artifact(remapJar)
-                artifact(sourcesJar) {
-                    builtBy(remapSourcesJar)
-                }
-
-                if (project.tasks.findByName('javadocJar')) {
-                    artifact project.tasks.getByName('javadocJar')
-                }
+                from components.java
             }
         }
     }
@@ -281,7 +274,7 @@ dependencies {
     modCompileOnly (compatLibs.bumblezone) { transitive = false }
 //    modLocalRuntime compatLibs.bumblezone
     modCompileOnly (compatLibs.bewitchment) { transitive = false }
-//    modLocalRuntime compatLibs.bewitchment
+//    modLocalRuntime compatLibs.bundles.bewitchment
 }
 
 remapJar.dependsOn(project(":requiem-core").tasks.remapJar)
