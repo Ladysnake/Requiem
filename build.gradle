@@ -6,71 +6,40 @@ import com.modrinth.minotaur.TaskModrinthUpload
 import java.time.Year
 
 plugins {
-    alias(libs.plugins.loom)
+    alias(libs.plugins.chenille)
     id 'org.quiltmc.quilt-mappings-on-loom' version "3.1.1"
     id 'io.github.juuxel.loom-quiltflower' version "1.6.0"
-    id 'org.cadixdev.licenser' version '0.6.1'
-    id 'com.matthewprenger.cursegradle' version '1.4.0'
-    id 'com.jfrog.artifactory' version '4.21.0'
-    id 'org.ajoberstar.grgit' version '3.1.1'
-    id 'com.github.breadmoirai.github-release' version '2.2.12'
-    id 'com.modrinth.minotaur' version '1.2.1'
-    id 'maven-publish'
-    id 'java-library'
 }
 
 group = rootProject.maven_group
 archivesBaseName = rootProject.name
 
-subprojects {
+allprojects {
     apply plugin: 'fabric-loom'
     apply plugin: 'com.matthewprenger.cursegradle'
     apply plugin: 'maven-publish'
     apply plugin: 'org.cadixdev.licenser'
     apply plugin: 'com.jfrog.artifactory'
     apply plugin: 'java-library'
-}
-
-allprojects {
-
-    sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
+    apply plugin: 'io.github.ladysnake.chenille'
 
     version = project.mod_version
 
     repositories {
-        maven {
-            name = 'Ladysnake Mods'
-            url = 'https://ladysnake.jfrog.io/artifactory/mods'
-            content {
-                includeGroup 'io.github.ladysnake'
-                includeGroupByRegex 'dev\\.emi.*'
-                includeGroupByRegex '(dev|io\\.github)\\.onyxstudios.*'
-            }
+        chenille.repositories {
+            ladysnake()
+            cotton()
+            jamieswhiteshirt()
+            cursemaven()
+            shedaniel()
+            lucko()
+            modrinth()
+            jitpack()
         }
         maven {
             url = 'https://maven.cafeteria.dev'
             content {
                 includeGroup 'net.adriantodt.fabricmc'
-            }
-        }
-        maven {
-            name = 'CottonMC'
-            url = 'https://server.bbkr.space/artifactory/libs-release'
-            content {
-                includeGroup 'io.github.cottonmc'
-            }
-        }
-        maven {
-            url = 'https://maven.jamieswhiteshirt.com/libs-release/'
-            content {
-                includeGroup 'com.jamieswhiteshirt'
-            }
-        }
-        maven {
-            url = 'https://www.cursemaven.com'
-            content {
-                includeGroup 'curse.maven'
             }
         }
         maven {
@@ -80,30 +49,9 @@ allprojects {
             }
         }
         maven {
-            url = "https://maven.shedaniel.me/"
-            content {
-                includeGroupByRegex 'me\\.shedaniel\\..*'
-                includeGroup 'me.sargunvohra.mcmods'
-            }
-        }
-        maven {
             url = "https://maven.theillusivec4.top"
             content {
                 includeGroupByRegex 'top\\.theillusivec4\\..*'
-            }
-        }
-        maven {
-            url = 'https://oss.sonatype.org/content/repositories/snapshots'
-            content {
-                includeGroup 'me.lucko'
-            }
-        }
-        maven {
-            name = "TerraformersMC"
-            url = "https://maven.terraformersmc.com/releases"
-            content {
-                includeGroupByRegex 'com.terraformersmc.*'
-                includeGroup 'dev.emi'
             }
         }
         maven {
@@ -113,16 +61,11 @@ allprojects {
             }
         }
         maven {
-            url = 'https://api.modrinth.com/maven'
+            name = "TerraformersMC"
+            url = "https://maven.terraformersmc.com/releases"
             content {
-                includeGroup 'maven.modrinth'
-            }
-        }
-        maven {
-            name = 'JitPack'
-            url = 'https://jitpack.io'
-            content {
-                includeGroupByRegex '(io|com)\\.github\\..*'
+                includeGroupByRegex 'com.terraformersmc.*'
+                includeGroup 'dev.emi'
             }
         }
         mavenLocal()
@@ -136,18 +79,9 @@ allprojects {
         }
     }
 
-    // ensure that the encoding is set to UTF-8, no matter what the system default is
-    // this fixes some edge cases with special characters not displaying correctly
-    // see http://yodaconditions.net/blog/fix-for-java-file-encoding-problems-with-gradle.html
-    tasks.withType(JavaCompile) {
-        options.encoding = 'UTF-8'
-    }
-
     java {
         withSourcesJar()
     }
-
-    apply from: rootProject.file('utilities.gradle')
 
     dependencies {
         //to change the versions see the gradle.properties file
@@ -162,25 +96,13 @@ allprojects {
     }
 
     license {
-        header = rootProject.file("code_quality/${project.license_header}_HEADER.txt")
-
         matching('ladysnake/**/api/**') {
-            header = rootProject.file("code_quality/${project.api_license_header}_HEADER.txt")
+            header.set(chenille.licenseHeader(project.api_license_header))
         }
 
         include '**/*.java'
         exclude '**/package-info.java'
         exclude '**/model/lib/**.java'
-
-        //export variables
-        ext {
-            year = Year.now()
-            projectDisplayName = rootProject.display_name
-            projectOwners = rootProject.owners
-            gplVersion = rootProject.gpl_version
-        }
-
-        newLine = false // Disables the empty line between the header and package name
     }
 
     publishing {
@@ -192,39 +114,9 @@ allprojects {
     }
 }
 
-sourceSets {
-    testmod {
-        compileClasspath += main.compileClasspath
-        runtimeClasspath += main.runtimeClasspath
-    }
+chenille {
+    configureTestmod()
 }
-
-loom {
-    runs {
-        gametest {
-            server()
-            ideConfigGenerated true
-            source sourceSets.testmod
-
-            name "Requiem Game Test"
-
-            // Enable the gametest runner
-            vmArg "-Dfabric-api.gametest"
-            vmArg "-Dfabric-api.gametest.report-file=${project.buildDir}/junit.xml"
-            runDir "build/gametest"
-        }
-        autoTestServer {
-            server()
-            ideConfigGenerated true
-            source sourceSets.testmod
-
-            name "Auto Test Server"
-
-            vmArg "-Dfabric.autoTest"
-        }
-    }
-}
-check.dependsOn runGametest
 
 dependencies {
     // Looking for version definitions? see https://docs.gradle.org/7.4-rc-1/userguide/platforms.html
@@ -239,9 +131,7 @@ dependencies {
     testImplementation testLibs.junit
     testImplementation testLibs.mockito
     testmodImplementation testLibs.mockito
-    modCompileOnly testLibs.elmendorf
-    modLocalRuntime testLibs.elmendorf
-    testmodImplementation sourceSets.main.output
+    modOptionalImplementation testLibs.elmendorf
 
     // Optional dependencies
     modCompileOnly libs.modmenu
@@ -287,10 +177,3 @@ jar {
 license {
     exclude '**/RayHelper.java'
 }
-
-ext {
-    // no idea how else to import TaskModrinthUpload from release.gradle
-    ModrinthUpload = TaskModrinthUpload
-}
-
-apply from: 'release.gradle'

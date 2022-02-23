@@ -12,6 +12,7 @@ pluginManagement {
             name = 'Cotton'
             url = 'https://server.bbkr.space/artifactory/libs-release/'
         }
+        mavenLocal()
         gradlePluginPortal()
     }
 }
