@@ -8,6 +8,7 @@ Version 2.0.0
 - Updated Automatone
   - Fixes advancements being broadcasted by shells
   - Fixes shells preventing players from sleeping
+- Updated the Chinese localization (thanks Ice_BingQI !)
 
 ### Changes in Beta 7
 - Fixed the remnant choice dialogue not letting you choose mortal
