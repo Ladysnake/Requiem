@@ -3,6 +3,12 @@ Version 2.0.0
 ------------------------------------------------------
 **Warning: future betas may still break compatibility with worlds started with this version. Don't start using those versions on any world you care about.**
 
+### Changes in Beta 8
+- Fixed the pure vessel's model
+- Updated Automatone
+  - Fixes advancements being broadcasted by shells
+  - Fixes shells preventing players from sleeping
+
 ### Changes in Beta 7
 - Fixed the remnant choice dialogue not letting you choose mortal
 
