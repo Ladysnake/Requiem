@@ -5,3 +5,7 @@ dependencies {
     modApi libs.cca.base
     modApi libs.locki
 }
+
+chenille {
+    license = 'LGPL'
+}

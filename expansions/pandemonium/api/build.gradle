@@ -5,3 +5,7 @@ dependencies {
     api project(path: ":requiem-api", configuration: "namedElements")
     modApi libs.cca.base
 }
+
+chenille {
+    license = 'LGPL'
+}

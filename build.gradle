@@ -20,6 +20,16 @@ allprojects {
 
     version = project.mod_version
 
+    chenille {
+        license = 'GPL_WITH_MC_EXCEPTION'
+        displayName = 'Requiem'
+        owners = 'Ladysnake'
+    }
+
+    license {
+        exclude '**/package-info.java'
+    }
+
     repositories {
         chenille.repositories {
             ladysnake()
@@ -90,16 +100,6 @@ allprojects {
         compileOnly metaLibs.bundles.devAnnotations
     }
 
-    license {
-        matching('ladysnake/**/api/**') {
-            header.set(chenille.licenseHeader(project.api_license_header))
-        }
-
-        include '**/*.java'
-        exclude '**/package-info.java'
-        exclude '**/model/lib/**.java'
-    }
-
     publishing {
         publications {
             mavenJava(MavenPublication) {
@@ -117,6 +117,11 @@ chenille {
         withGithubRelease()
         withModrinthRelease()
     }
+}
+
+license {
+    exclude '**/model/lib/**.java'
+    exclude '**/RayHelper.java'
 }
 
 dependencies {
@@ -173,8 +178,4 @@ remapJar.dependsOn(project(":requiem-core").tasks.remapJar)
 jar {
     from 'LICENSE-CODE'
     from 'LICENSE-ART'
-}
-
-license {
-    exclude '**/RayHelper.java'
 }
