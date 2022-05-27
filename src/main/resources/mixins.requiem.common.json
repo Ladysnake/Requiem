@@ -13,6 +13,7 @@
     "access.ProjectileEntityAccessor",
     "access.RamImpactTaskAccessor",
     "access.ShulkerEntityAccessor",
+    "access.StructureFeatureAccessor",
     "attrition.EffectCommandMixin",
     "attrition.LivingEntityMixin",
     "attrition.ServerPlayerEntityMixin",

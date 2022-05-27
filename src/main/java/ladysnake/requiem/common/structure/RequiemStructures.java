@@ -35,37 +35,15 @@
 package ladysnake.requiem.common.structure;
 
 import ladysnake.requiem.Requiem;
-import net.fabricmc.fabric.api.biome.v1.BiomeModifications;
-import net.fabricmc.fabric.api.biome.v1.BiomeSelectors;
-import net.fabricmc.fabric.api.biome.v1.ModificationPhase;
-import net.fabricmc.fabric.api.structure.v1.FabricStructureBuilder;
-import net.fabricmc.fabric.api.tag.TagFactory;
-import net.minecraft.tag.Tag;
-import net.minecraft.util.registry.BuiltinRegistries;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.world.biome.Biome;
+import ladysnake.requiem.mixin.common.access.StructureFeatureAccessor;
 import net.minecraft.world.gen.GenerationStep;
-import net.minecraft.world.gen.chunk.StructureConfig;
-import net.minecraft.world.gen.feature.ConfiguredStructureFeature;
 import net.minecraft.world.gen.feature.DefaultFeatureConfig;
 import net.minecraft.world.gen.feature.StructureFeature;
 
 public final class RequiemStructures {
-    public static final Tag<Biome> SOUL_SAND_VALLEYS = TagFactory.BIOME.create(Requiem.id("derelict_obelisk_locations"));
     public static final StructureFeature<DefaultFeatureConfig> DERELICT_OBELISK = new DerelictObeliskFeature(DefaultFeatureConfig.CODEC);
-    public static final ConfiguredStructureFeature<?, ?> CONFIGURED_DERELICT_OBELISK = DERELICT_OBELISK.configure(DefaultFeatureConfig.INSTANCE);
 
     public static void init() {
-        FabricStructureBuilder.create(Requiem.id("derelict_obelisk"), DERELICT_OBELISK)
-            .step(GenerationStep.Feature.SURFACE_STRUCTURES)
-            .defaultConfig(new StructureConfig(10, 5, 82692722))
-            .register();
-        Registry.register(BuiltinRegistries.CONFIGURED_STRUCTURE_FEATURE, Requiem.id("configured_derelict_obelisk"), CONFIGURED_DERELICT_OBELISK);
-        BiomeModifications.create(Requiem.id("derelict_obelisk_addition"))
-            .add(
-                ModificationPhase.ADDITIONS,
-                BiomeSelectors.tag(SOUL_SAND_VALLEYS),
-                context -> context.getGenerationSettings().addBuiltInStructure(CONFIGURED_DERELICT_OBELISK)
-            );
+        StructureFeatureAccessor.callRegister(Requiem.MOD_ID + ":derelict_obelisk", DERELICT_OBELISK, GenerationStep.Feature.SURFACE_STRUCTURES);
     }
 }

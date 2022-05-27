@@ -1,0 +1,14 @@
+{
+  "structures": [
+    {
+      "structure": "requiem:code_structure_derelict_obelisk",
+      "weight": 1
+    }
+  ],
+  "placement": {
+    "salt": 82692722,
+    "spacing": 10,
+    "separation": 5,
+    "type": "minecraft:random_spread"
+  }
+}

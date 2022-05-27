@@ -54,6 +54,7 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
@@ -87,13 +88,15 @@ public class DerelictObeliskFeature extends StructureFeature<DefaultFeatureConfi
 
         BlockPos.Mutable centerPos = new BlockPos.Mutable(x, 0, z);
 
-        StructurePoolFeatureConfig structureSettingsAndStartPool = new StructurePoolFeatureConfig(
-            () -> context.registryManager().get(Registry.STRUCTURE_POOL_KEY).get(Requiem.id("derelict_obelisk")), 1
-        );
-
-        return Optional.of((structurePieces, ctx) -> {
+        return context.registryManager().get(
+            Registry.STRUCTURE_POOL_KEY
+        ).getEntry(
+            RegistryKey.of(Registry.STRUCTURE_POOL_KEY, Requiem.id("code_feature_derelict_obelisk"))
+        ).map(structurePool ->
+            new StructurePoolFeatureConfig(structurePool, 1)
+        ).map(structureSettingsAndStartPool -> ((structurePieces, ctx) -> {
             ChunkRandom chunkRandom = ctx.random();
-            StructurePoolElement spawnedStructure = structureSettingsAndStartPool.getStartPool().get().getRandomElement(chunkRandom);
+            StructurePoolElement spawnedStructure = structureSettingsAndStartPool.getStartPool().value().getRandomElement(chunkRandom);
 
             if (spawnedStructure != EmptyPoolElement.INSTANCE) {
                 BlockRotation rotation = Util.getRandom(BlockRotation.values(), chunkRandom);
@@ -128,7 +131,7 @@ public class DerelictObeliskFeature extends StructureFeature<DefaultFeatureConfi
                     structurePiece.translate(xOffset, 0, zOffset);
                 }
             }
-        });
+        }));
     }
 
     /**
