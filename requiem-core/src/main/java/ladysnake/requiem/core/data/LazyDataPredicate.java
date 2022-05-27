@@ -35,7 +35,6 @@
 package ladysnake.requiem.core.data;
 
 import com.google.gson.JsonElement;
-import net.minecraft.tag.ServerTagManagerHolder;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -49,8 +48,6 @@ public abstract class LazyDataPredicate<T> {
 
     public T get(World world) {
         if (this.predicate == null) {
-            // fromJson references the server tag manager singleton, which is not set on the client
-            if (world.isClient) ServerTagManagerHolder.setTagManager(world.getTagManager());
             this.initNow();
         }
         return this.predicate;

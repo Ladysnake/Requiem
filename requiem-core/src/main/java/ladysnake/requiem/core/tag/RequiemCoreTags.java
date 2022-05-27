@@ -35,30 +35,30 @@
 package ladysnake.requiem.core.tag;
 
 import ladysnake.requiem.core.RequiemCore;
-import net.fabricmc.fabric.api.tag.TagRegistry;
 import net.minecraft.entity.EntityType;
-import net.minecraft.tag.Tag;
+import net.minecraft.tag.TagKey;
+import net.minecraft.util.registry.Registry;
 
 public final class RequiemCoreTags {
     public static final class Entity {
-        public static final Tag<EntityType<?>> FRICTIONLESS_HOSTS = register("possession/frictionless_hosts");
-        public static final Tag<EntityType<?>> POSSESSION_BLACKLIST = register("possession/possession_blacklist");
-        public static final Tag<EntityType<?>> SOUL_CAPTURE_BLACKLIST = register("possession/soul_capture_blacklist");
-        public static final Tag<EntityType<?>> GOLEMS = register("golems");
-        public static final Tag<EntityType<?>> ITEM_USERS = register("inventory/item_users");
-        public static final Tag<EntityType<?>> INVENTORY_CARRIERS = register("inventory/inventory_carriers");
-        public static final Tag<EntityType<?>> EATERS = register("behavior/regular_eaters");
-        public static final Tag<EntityType<?>> SLEEPERS = register("behavior/regular_sleepers");
-        public static final Tag<EntityType<?>> IMMOVABLE = register("behavior/immovable");
-        public static final Tag<EntityType<?>> ARMOR_BANNED = register("inventory/armor_banned");
-        public static final Tag<EntityType<?>> SOULLESS = register("possession/soulless");
+        public static final TagKey<EntityType<?>> FRICTIONLESS_HOSTS = register("possession/frictionless_hosts");
+        public static final TagKey<EntityType<?>> POSSESSION_BLACKLIST = register("possession/possession_blacklist");
+        public static final TagKey<EntityType<?>> SOUL_CAPTURE_BLACKLIST = register("possession/soul_capture_blacklist");
+        public static final TagKey<EntityType<?>> GOLEMS = register("golems");
+        public static final TagKey<EntityType<?>> ITEM_USERS = register("inventory/item_users");
+        public static final TagKey<EntityType<?>> INVENTORY_CARRIERS = register("inventory/inventory_carriers");
+        public static final TagKey<EntityType<?>> EATERS = register("behavior/regular_eaters");
+        public static final TagKey<EntityType<?>> SLEEPERS = register("behavior/regular_sleepers");
+        public static final TagKey<EntityType<?>> IMMOVABLE = register("behavior/immovable");
+        public static final TagKey<EntityType<?>> ARMOR_BANNED = register("inventory/armor_banned");
+        public static final TagKey<EntityType<?>> SOULLESS = register("possession/soulless");
 
-        private static Tag<EntityType<?>> register(String name) {
-            return TagRegistry.entityType(RequiemCore.id(name));
+        private static TagKey<EntityType<?>> register(String name) {
+            return TagKey.of(Registry.ENTITY_TYPE_KEY, RequiemCore.id(name));
         }
     }
 
     public static final class Item {
-        public static final Tag<net.minecraft.item.Item> UNDEAD_CURES = TagRegistry.item(RequiemCore.id("undead_cures"));
+        public static final TagKey<net.minecraft.item.Item> UNDEAD_CURES = TagKey.of(Registry.ITEM_KEY, RequiemCore.id("undead_cures"));
     }
 }

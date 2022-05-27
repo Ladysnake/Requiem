@@ -83,7 +83,7 @@ allprojects {
             url = "https://maven.terraformersmc.com/releases"
             content {
                 includeGroupByRegex 'com.terraformersmc.*'
-                includeGroup 'dev.emi'
+                includeGroupByRegex 'dev.emi.*'
             }
         }
         mavenLocal()

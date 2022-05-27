@@ -48,6 +48,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(MinecraftClient.class)
 public abstract class MinecraftClientMixin {
@@ -57,7 +58,7 @@ public abstract class MinecraftClientMixin {
     @Shadow public ClientPlayerInteractionManager interactionManager;
 
     @Inject(method = "doAttack", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/hit/HitResult;getType()Lnet/minecraft/util/hit/HitResult$Type;"), cancellable = true)
-    private void tryUseDirectAttackAbility(CallbackInfo ci) {
+    private void tryUseDirectAttackAbility(CallbackInfoReturnable<Boolean> ci) {
         ActionResult result = PlayerAbilityController.get(this.player).useDirectAbility(AbilityType.ATTACK);
         if (result.isAccepted()) {
             if (result.shouldSwingHand()) {
@@ -74,7 +75,7 @@ public abstract class MinecraftClientMixin {
                     target = "Lnet/minecraft/client/network/ClientPlayerEntity;resetLastAttackedTicks()V"
             )
     )
-    private void onShakeFistAtAir(CallbackInfo info) {
+    private void onShakeFistAtAir(CallbackInfoReturnable<Boolean> info) {
         if (MobAbilityController.get(player).useIndirect(AbilityType.ATTACK)) {
             RequiemNetworking.sendIndirectAbilityUseMessage(AbilityType.ATTACK);
         }
