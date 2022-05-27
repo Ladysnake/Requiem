@@ -142,7 +142,7 @@ dependencies {
     // Optional dependencies
     modCompileOnly libs.modmenu
     modLocalRuntime libs.modmenu
-    modCompileOnly libs.bundles.cloth
+    modCompileOnly (libs.bundles.cloth) { transitive = false }
     modLocalRuntime libs.bundles.cloth
     include libs.fiberToCloth
 

@@ -1,5 +1,5 @@
 [versions]
-elmendorf = "0.4.0"
+elmendorf = "0.5.2"
 junit = "4.13.2"
 mockito = "4.2.0"
 
