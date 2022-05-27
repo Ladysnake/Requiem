@@ -81,7 +81,7 @@ public final class RequiemSoulCommand {
                 throw new CommandException(new TranslatableText("requiem:commands.soul.set.fail.not_living", target.getDisplayName()));
             }
 
-            if (RequiemCoreTags.Entity.SOULLESS.contains(target.getType())) {
+            if (target.getType().isIn(RequiemCoreTags.Entity.SOULLESS)) {
                 throw new CommandException(new TranslatableText("requiem:commands.soul.set.fail.permanently_soulless"));
             }
 

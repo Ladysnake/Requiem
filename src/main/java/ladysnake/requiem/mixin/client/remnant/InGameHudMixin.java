@@ -49,7 +49,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluid;
-import net.minecraft.tag.Tag;
+import net.minecraft.tag.TagKey;
 import net.minecraft.util.math.MathHelper;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -191,9 +191,9 @@ public abstract class InGameHudMixin extends DrawableHelper {
     @ModifyArg(
         method = "renderStatusBars",
         slice = @Slice(from = @At(value = "CONSTANT", args = "stringValue=air")),
-        at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerEntity;isSubmergedIn(Lnet/minecraft/tag/Tag;)Z")
+        at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerEntity;isSubmergedIn(Lnet/minecraft/tag/TagKey;)Z")
     )
-    private Tag<Fluid> preventAirRender(Tag<Fluid> fluid) {
+    private TagKey<Fluid> preventAirRender(TagKey<Fluid> fluid) {
         PlayerEntity playerEntity = this.getCameraPlayer();
 
         if (RemnantComponent.get(playerEntity).isVagrant()) {

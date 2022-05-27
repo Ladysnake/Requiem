@@ -34,7 +34,7 @@
  */
 package ladysnake.requiem.compat.mixin.haema;
 
-import com.williambl.haema.blood.injector.VampireBloodInjectorItem;
+import com.williambl.haema.blood.VampireBloodInjectorItem;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;

@@ -118,10 +118,10 @@ public final class PossessionComponentImpl implements PossessionComponent {
         possessable.setPossessor(null);
         // Transfer inventory and mount
         if (!player.world.isClient) {
-            if (RequiemCoreTags.Entity.INVENTORY_CARRIERS.contains(host.getType())) {
+            if (host.getType().isIn(RequiemCoreTags.Entity.INVENTORY_CARRIERS)) {
                 PossessedData.KEY.get(host).moveItems(player.getInventory(), false);
             }
-            if (RequiemCoreTags.Entity.ITEM_USERS.contains(host.getType())) {
+            if (host.getType().isIn(RequiemCoreTags.Entity.ITEM_USERS)) {
                 InventoryHelper.transferEquipment(host, player);
             }
             for (StatusEffectInstance effect : player.getStatusEffects()) {
@@ -137,7 +137,7 @@ public final class PossessionComponentImpl implements PossessionComponent {
                 ((MobEntity) possessable).stopRiding();
                 player.startRiding(ridden);
             }
-            if (RequiemCoreTags.Entity.EATERS.contains(host.getType())) {
+            if (host.getType().isIn(RequiemCoreTags.Entity.EATERS)) {
                 player.getHungerManager().readNbt(PossessedData.KEY.get(host).getHungerData());
             }
 
@@ -191,7 +191,7 @@ public final class PossessionComponentImpl implements PossessionComponent {
                     dropEquipment(host, serverPlayer);
                 }
 
-                if (RequiemCoreTags.Entity.EATERS.contains(host.getType())) {
+                if (host.getType().isIn(RequiemCoreTags.Entity.EATERS)) {
                     player.getHungerManager().writeNbt(PossessedData.KEY.get(host).getHungerData());
                 }
 
@@ -211,10 +211,10 @@ public final class PossessionComponentImpl implements PossessionComponent {
 
     public static void dropEquipment(LivingEntity possessed, ServerPlayerEntity player) {
         if (PossessionEvents.INVENTORY_TRANSFER_CHECK.invoker().shouldTransfer(player, possessed).get()) {
-            if (RequiemCoreTags.Entity.ITEM_USERS.contains(possessed.getType())) {
+            if (possessed.getType().isIn(RequiemCoreTags.Entity.ITEM_USERS)) {
                 InventoryHelper.transferEquipment(player, possessed);
             }
-            if (RequiemCoreTags.Entity.INVENTORY_CARRIERS.contains(possessed.getType())) {
+            if (possessed.getType().isIn(RequiemCoreTags.Entity.INVENTORY_CARRIERS)) {
                 PossessedData.KEY.get(possessed).moveItems(player.getInventory(), true);
             }
             ((LivingEntityAccessor) player).requiem$invokeDropInventory();
@@ -300,7 +300,7 @@ public final class PossessionComponentImpl implements PossessionComponent {
     public boolean canBeCured(ItemStack cure) {
         MobEntity possessedEntity = this.getHost();
         return possessedEntity != null
-            && RequiemCoreTags.Item.UNDEAD_CURES.contains(cure.getItem())
+            && cure.isIn(RequiemCoreTags.Item.UNDEAD_CURES)
             && possessedEntity.hasStatusEffect(StatusEffects.WEAKNESS)
             && RemnantComponent.get(this.player).canCurePossessed(possessedEntity);
     }

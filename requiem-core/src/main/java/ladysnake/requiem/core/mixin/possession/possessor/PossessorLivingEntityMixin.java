@@ -45,7 +45,7 @@ import net.minecraft.entity.MovementType;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.fluid.Fluid;
+import net.minecraft.fluid.FluidState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.Nullable;
@@ -117,7 +117,7 @@ public abstract class PossessorLivingEntityMixin extends PossessorEntityMixin {
     }
 
     @Inject(method = "canWalkOnFluid", at = @At("HEAD"), cancellable = true)
-    protected void requiem$canWalkOnFluid(Fluid fluid, CallbackInfoReturnable<Boolean> cir) {
+    protected void requiem$canWalkOnFluid(FluidState fluid, CallbackInfoReturnable<Boolean> cir) {
         // overridden by PossessorPlayerEntityMixin
     }
 
@@ -178,7 +178,7 @@ public abstract class PossessorLivingEntityMixin extends PossessorEntityMixin {
     @Inject(method = "sleep", at = @At("RETURN"))
     private void makeHostSleep(BlockPos pos, CallbackInfo ci) {
         LivingEntity host = PossessionComponent.getHost((Entity) (Object) this);
-        if (host != null && RequiemCoreTags.Entity.SLEEPERS.contains(host.getType())) {
+        if (host != null && host.getType().isIn(RequiemCoreTags.Entity.SLEEPERS)) {
             host.sleep(pos);
         }
     }
@@ -186,7 +186,7 @@ public abstract class PossessorLivingEntityMixin extends PossessorEntityMixin {
     @Inject(method = "wakeUp", at = @At("RETURN"))
     private void makeHostWakeUp(CallbackInfo ci) {
         LivingEntity host = PossessionComponent.getHost((Entity) (Object) this);
-        if (host != null && RequiemCoreTags.Entity.SLEEPERS.contains(host.getType())) {
+        if (host != null && host.getType().isIn(RequiemCoreTags.Entity.SLEEPERS)) {
             host.wakeUp();
         }
     }

@@ -64,7 +64,7 @@ public final class DamageHelper {
         Entity attacker = source.getAttacker() instanceof PlayerEntity ? PossessionComponent.getHost(source.getAttacker()) : source.getAttacker();
 
         // check that the attacker is being possessed, and that it can use its equipment
-        if (attacker instanceof Possessable && ((Possessable) attacker).isBeingPossessed() && RequiemCoreTags.Entity.ITEM_USERS.contains(attacker.getType())) {
+        if (attacker instanceof Possessable && ((Possessable) attacker).isBeingPossessed() && attacker.getType().isIn(RequiemCoreTags.Entity.ITEM_USERS)) {
             return (LivingEntity) attacker;
         }
 

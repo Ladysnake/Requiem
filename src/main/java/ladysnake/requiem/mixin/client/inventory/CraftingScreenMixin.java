@@ -65,7 +65,7 @@ public abstract class CraftingScreenMixin extends HandledScreen<CraftingScreenHa
     @Inject(method = "init", at = @At("RETURN"))
     private void addSupercrafterButton(CallbackInfo ci) {
         MobEntity possessedEntity = PossessionComponent.get(this.client.player).getHost();
-        if (possessedEntity != null && RequiemEntityTypeTags.SUPERCRAFTERS.contains(possessedEntity.getType())) {
+        if (possessedEntity != null && possessedEntity.getType().isIn(RequiemEntityTypeTags.SUPERCRAFTERS)) {
             this.supercrafterButton = this.addDrawableChild(new TexturedButtonWidget(
                 this.x + 5,
                 this.height / 2 - 30,
@@ -77,7 +77,7 @@ public abstract class CraftingScreenMixin extends HandledScreen<CraftingScreenHa
                 RequiemClient.CRAFTING_BUTTON_TEXTURE,
                 (buttonWidget) -> {
                     assert this.client != null;
-                    this.onClose();
+                    this.close();
                     this.client.setScreen(new InventoryScreen(this.client.player));
                 })
             );

@@ -53,7 +53,7 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.HungerManager;
 import net.minecraft.entity.player.ItemCooldownManager;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.fluid.Fluid;
+import net.minecraft.fluid.FluidState;
 import net.minecraft.network.packet.s2c.play.PlayerPositionLookS2CPacket;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -221,7 +221,7 @@ public abstract class PossessorPlayerEntityMixin extends PossessorLivingEntityMi
     }
 
     @Override
-    protected void requiem$canWalkOnFluid(Fluid fluid, CallbackInfoReturnable<Boolean> cir) {
+    protected void requiem$canWalkOnFluid(FluidState fluid, CallbackInfoReturnable<Boolean> cir) {
         MobEntity possessedEntity = PossessionComponent.KEY.get(this).getHost();
         if (possessedEntity != null) {
             cir.setReturnValue(possessedEntity.canWalkOnFluid(fluid));

@@ -63,19 +63,19 @@ public abstract class PandaEntityMixin extends AnimalEntity implements Possessab
     protected abstract boolean canEat(ItemStack stack);
 
     @Shadow
-    public abstract void setScared(boolean scared);
+    public abstract void setSitting(boolean scared);
 
     @Shadow
     public abstract boolean isEating();
 
     @Shadow
-    public abstract boolean isScared();
+    public abstract boolean isSitting();
 
     @Shadow
-    private float scaredAnimationProgress;
+    private float sittingAnimationProgress;
 
     @Shadow
-    private float lastScaredAnimationProgress;
+    private float lastSittingAnimationProgress;
 
     @Shadow
     public abstract void setLyingOnBack(boolean lyingOnBack);
@@ -93,17 +93,17 @@ public abstract class PandaEntityMixin extends AnimalEntity implements Possessab
         this.setLyingOnBack(false);
     }
 
-    @Inject(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/passive/PandaEntity;updateScaredAnimation()V"))
+    @Inject(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/passive/PandaEntity;updateSittingAnimation()V"))
     private void scareIfSneaking(CallbackInfo ci) {
         PlayerEntity possessor = this.getPossessor();
         if (possessor != null) {
-            this.setScared(possessor.isSneaking());
+            this.setSitting(possessor.isSneaking());
         }
     }
 
-    @Inject(method = "updateScaredAnimation", at = @At("RETURN"))
+    @Inject(method = "updateSittingAnimation", at = @At("RETURN"))
     private void recalculateDimensions(CallbackInfo ci) {
-        if (this.lastScaredAnimationProgress != this.scaredAnimationProgress) {
+        if (this.lastSittingAnimationProgress != this.sittingAnimationProgress) {
             this.calculateDimensions();
         }
     }
@@ -111,6 +111,6 @@ public abstract class PandaEntityMixin extends AnimalEntity implements Possessab
     @Intrinsic  // If someone else redefines this method, just let them do whatever
     @Override
     public EntityDimensions getDimensions(EntityPose pose) {
-        return super.getDimensions(pose).scaled(1, 1 + this.scaredAnimationProgress * 0.85f);
+        return super.getDimensions(pose).scaled(1, 1 + this.sittingAnimationProgress * 0.85f);
     }
 }

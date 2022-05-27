@@ -54,7 +54,7 @@ public abstract class MilkBucketItemMixin {
     @Inject(method = "finishUsing", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;clearStatusEffects()Z", shift = AFTER))
     private void regenSkeletons(ItemStack stack, World world, LivingEntity user, CallbackInfoReturnable<ItemStack> cir) {
         LivingEntity possessed = PossessionComponent.getHost(user);
-        if (possessed != null && RequiemEntityTypeTags.SKELETONS.contains(possessed.getType())) {
+        if (possessed != null && possessed.getType().isIn(RequiemEntityTypeTags.SKELETONS)) {
             possessed.addStatusEffect(new StatusEffectInstance(StatusEffects.RESISTANCE, 30*20));
         }
     }

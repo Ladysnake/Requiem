@@ -112,7 +112,7 @@ public abstract class MutableRemnantState implements RemnantState {
 
     @Override
     public boolean canDissociateFrom(MobEntity possessed) {
-        return RequiemCoreTags.Entity.FRICTIONLESS_HOSTS.contains(possessed.getType());
+        return possessed.getType().isIn(RequiemCoreTags.Entity.FRICTIONLESS_HOSTS);
     }
 
     @Override

@@ -44,7 +44,11 @@ import net.minecraft.client.particle.BillboardParticle;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleFactory;
 import net.minecraft.client.particle.ParticleTextureSheet;
-import net.minecraft.client.render.*;
+import net.minecraft.client.render.BufferBuilder;
+import net.minecraft.client.render.GameRenderer;
+import net.minecraft.client.render.Tessellator;
+import net.minecraft.client.render.VertexFormat;
+import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.world.ClientWorld;
@@ -157,7 +161,7 @@ public class EntityDustParticle extends BillboardParticle {
             MathHelper.floor(this.z) + 1
         )) {
             if (!this.exploredBlocks.contains(candidate) && !this.world.getBlockState(candidate).isFullCube(this.world, candidate)) {
-                double candidateDistance = candidate.getSquaredDistance(eyePos.x, eyePos.y, eyePos.z, false);
+                double candidateDistance = candidate.getSquaredDistance(eyePos.x, eyePos.y, eyePos.z);
                 if (candidateDistance < bestDistance) {
                     bestDistance = candidateDistance;
                     best = candidate.toImmutable();

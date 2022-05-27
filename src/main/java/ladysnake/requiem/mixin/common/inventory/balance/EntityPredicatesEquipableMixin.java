@@ -46,7 +46,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public class EntityPredicatesEquipableMixin {
     @Inject(method = "test", at = @At("RETURN"), cancellable = true)
     private void requiem$noArmorForYou(Entity entity, CallbackInfoReturnable<Boolean> cir) {
-        if (cir.getReturnValueZ() && RequiemCoreTags.Entity.ARMOR_BANNED.contains(entity.getType())) {
+        if (cir.getReturnValueZ() && entity.getType().isIn(RequiemCoreTags.Entity.ARMOR_BANNED)) {
             cir.setReturnValue(false);
         }
     }

@@ -87,9 +87,9 @@ import static org.spongepowered.asm.mixin.injection.At.Shift.AFTER;
 @Mixin(LivingEntity.class)
 public abstract class PossessableLivingEntityMixin extends Entity implements Possessable, VariableMobilityEntity {
     @Unique
-    private final boolean requiem_immovable = RequiemCoreTags.Entity.IMMOVABLE.contains(this.getType());
+    private final boolean requiem_immovable = this.getType().isIn(RequiemCoreTags.Entity.IMMOVABLE);
     @Unique
-    private final boolean requiem_regularEater = RequiemCoreTags.Entity.EATERS.contains(this.getType());
+    private final boolean requiem_regularEater = this.getType().isIn(RequiemCoreTags.Entity.EATERS);
     @Nullable
     private UUID requiem$previousPossessorUuid;
 
@@ -295,14 +295,6 @@ public abstract class PossessableLivingEntityMixin extends Entity implements Pos
             } else {
                 possessionComponent.stopPossessing();
             }
-        }
-    }
-
-    @Inject(method = "scheduleVelocityUpdate", at = @At("RETURN"))
-    private void scheduleVelocityUpdate(CallbackInfo ci) {
-        PlayerEntity player = this.getPossessor();
-        if (!world.isClient && this.velocityModified && player != null) {
-            player.velocityModified = true;
         }
     }
 

@@ -34,7 +34,6 @@
  */
 package ladysnake.requiem.common.remnant;
 
-import dev.onyxstudios.cca.api.v3.component.ComponentProvider;
 import dev.onyxstudios.cca.api.v3.entity.TrackingStartCallback;
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.event.minecraft.JumpingMountEvents;
@@ -75,7 +74,7 @@ public final class BasePossessionHandlers {
                 // Synchronize possessed entities with their possessor / other players
                 PlayerEntity possessor = ((Possessable) tracked).getPossessor();
                 if (possessor != null) {
-                    PossessionComponent.KEY.syncWith(player, ComponentProvider.fromEntity(possessor));
+                    PossessionComponent.KEY.syncWith(player, possessor);
                 }
             }
         });
@@ -90,14 +89,14 @@ public final class BasePossessionHandlers {
             }
         });
         PossessionStartCallback.EVENT.register(Requiem.id("blacklist"), (target, possessor, simulate) -> {
-            if (RequiemCoreTags.Entity.POSSESSION_BLACKLIST.contains(target.getType())) {
+            if (target.getType().isIn(RequiemCoreTags.Entity.POSSESSION_BLACKLIST)) {
                 return PossessionStartCallback.Result.DENY;
             }
             return PossessionStartCallback.Result.PASS;
         });
         PossessionEvents.POST_RESURRECTION.register(RequiemCriteria.PLAYER_RESURRECTED_AS_ENTITY::handle);
         PossessionStartCallback.EVENT.register(Requiem.id("base_mobs"), (target, possessor, simulate) -> {
-            if (RequiemEntityTypeTags.POSSESSABLES.contains(target.getType())) {
+            if (target.getType().isIn(RequiemEntityTypeTags.POSSESSABLES)) {
                 return PossessionStartCallback.Result.ALLOW;
             }
             return PossessionStartCallback.Result.PASS;

@@ -103,7 +103,6 @@ public final class Requiem implements ModInitializer {
         RequiemLootTables.init();
         RequiemParticleTypes.init();
         RequiemRecordTypes.init();
-        RequiemRegistries.init();
         RequiemSoundEvents.init();
         RequiemStats.init();
         RequiemStatusEffects.init();

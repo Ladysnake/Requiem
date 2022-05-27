@@ -35,35 +35,35 @@
 package ladysnake.requiem.common.tag;
 
 import ladysnake.requiem.Requiem;
-import net.fabricmc.fabric.api.tag.TagRegistry;
 import net.minecraft.entity.EntityType;
-import net.minecraft.tag.Tag;
+import net.minecraft.tag.TagKey;
+import net.minecraft.util.registry.Registry;
 
 public final class RequiemEntityTypeTags {
-    public static final Tag<EntityType<?>> DICHROMATS = register("vision/dichromats");
-    public static final Tag<EntityType<?>> HEMERALOPES = register("vision/hemeralopes");
-    public static final Tag<EntityType<?>> NIGHT_EYED = register("vision/night_eyed");
-    public static final Tag<EntityType<?>> TETRACHROMATS = register("vision/tetrachromats");
+    public static final TagKey<EntityType<?>> DICHROMATS = register("vision/dichromats");
+    public static final TagKey<EntityType<?>> HEMERALOPES = register("vision/hemeralopes");
+    public static final TagKey<EntityType<?>> NIGHT_EYED = register("vision/night_eyed");
+    public static final TagKey<EntityType<?>> TETRACHROMATS = register("vision/tetrachromats");
 
-    public static final Tag<EntityType<?>> POSSESSABLES = register("possession/possessables");
+    public static final TagKey<EntityType<?>> POSSESSABLES = register("possession/possessables");
 
-    public static final Tag<EntityType<?>> ARMOR_USERS = register("inventory/armor_users");
-    public static final Tag<EntityType<?>> HOTBAR_CARRIERS = register("inventory/hotbar_carriers");
-    public static final Tag<EntityType<?>> SUPERCRAFTERS = register("inventory/supercrafters");
+    public static final TagKey<EntityType<?>> ARMOR_USERS = register("inventory/armor_users");
+    public static final TagKey<EntityType<?>> HOTBAR_CARRIERS = register("inventory/hotbar_carriers");
+    public static final TagKey<EntityType<?>> SUPERCRAFTERS = register("inventory/supercrafters");
 
-    public static final Tag<EntityType<?>> ARROW_GENERATORS = register("behavior/arrow_generators");
+    public static final TagKey<EntityType<?>> ARROW_GENERATORS = register("behavior/arrow_generators");
 
-    public static final Tag<EntityType<?>> REPLACEABLE_SKELETONS = register("transformation/replaceable_skeletons");
+    public static final TagKey<EntityType<?>> REPLACEABLE_SKELETONS = register("transformation/replaceable_skeletons");
 
-    public static final Tag<EntityType<?>> SKELETONS = register("skeletons");
-    public static final Tag<EntityType<?>> ZOMBIES = register("zombies");
-    public static final Tag<EntityType<?>> PIGLINS = register("piglins");
+    public static final TagKey<EntityType<?>> SKELETONS = register("skeletons");
+    public static final TagKey<EntityType<?>> ZOMBIES = register("zombies");
+    public static final TagKey<EntityType<?>> PIGLINS = register("piglins");
 
     public static void init() {
         // NO-OP
     }
 
-    public static Tag<EntityType<?>> register(String name) {
-        return TagRegistry.entityType(Requiem.id(name));
+    public static TagKey<EntityType<?>> register(String name) {
+        return TagKey.of(Registry.ENTITY_TYPE_KEY, Requiem.id(name));
     }
 }

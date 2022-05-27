@@ -77,11 +77,11 @@ public final class RequiemEntityShaderPicker implements PickEntityShaderCallback
         if (possessed != null) {
             MinecraftClient.getInstance().gameRenderer.onCameraEntitySet(possessed);
         } else if (appliedShaderGetter.get() == null) {
-            if (RequiemEntityTypeTags.DICHROMATS.contains(camera.getType())) {
+            if (camera.getType().isIn(RequiemEntityTypeTags.DICHROMATS)) {
                 loadShaderFunc.accept(DICHROMATIC_SHADER_ID);
-            } else if (RequiemEntityTypeTags.TETRACHROMATS.contains(camera.getType())) {
+            } else if (camera.getType().isIn(RequiemEntityTypeTags.TETRACHROMATS)) {
                 loadShaderFunc.accept(TETRACHROMATIC_SHADER_ID);
-            } else if (haemaAvailable && RequiemEntityTypeTags.HEMERALOPES.contains(camera.getType())) {
+            } else if (haemaAvailable && camera.getType().isIn(RequiemEntityTypeTags.HEMERALOPES)) {
                 loadShaderFunc.accept(VAMPIRE_SHADER_ID);
             } else if (camera instanceof BeeEntity) {
                 loadShaderFunc.accept(BEE_SHADER_ID);

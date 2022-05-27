@@ -36,7 +36,6 @@ package ladysnake.requiem.common.remnant;
 
 import com.mojang.authlib.GameProfile;
 import dev.onyxstudios.cca.api.v3.component.ComponentKey;
-import dev.onyxstudios.cca.api.v3.component.ComponentProvider;
 import dev.onyxstudios.cca.api.v3.entity.RespawnCopyStrategy;
 import dev.onyxstudios.cca.internal.base.AbstractComponentContainer;
 import dev.onyxstudios.cca.internal.entity.SwitchablePlayerEntity;
@@ -174,7 +173,7 @@ public final class PlayerSplitter {
         //Player keeps everything that goes through death
         NbtCompound templateNbt = template.writeNbt(new NbtCompound());
         deduplicateVanillaData(templateNbt);
-        deduplicateComponents(templateNbt, Objects.requireNonNull(ComponentProvider.fromEntity(template).getComponentContainer()).keys());
+        deduplicateComponents(templateNbt, template.getComponentContainer().keys());
         return templateNbt;
     }
 

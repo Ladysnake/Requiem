@@ -70,7 +70,7 @@ public final class DynamicRegistryRegistrationHelperImpl implements DynamicRegis
         if (!BuiltinRegistries.REGISTRIES.containsId(ref.getValue())) {
             ((MutableRegistry) BuiltinRegistries.REGISTRIES).add(
                 ref,
-                new SimpleRegistry<>(RequiemRegistries.MOB_ITEM_OVERRIDE_KEY, Lifecycle.stable()),
+                new SimpleRegistry<>(RequiemRegistries.MOB_ITEM_OVERRIDE_KEY, Lifecycle.stable(), null),
                 Lifecycle.stable()
             );
         }

@@ -59,7 +59,7 @@ public abstract class MerchantInventoryMixin {
 
     @Inject(method = "updateOffers", at = @At("RETURN"))
     private void updateOffers(CallbackInfo ci) {
-        if (this.merchant.getCurrentCustomer() == MinecraftClient.getInstance().player
+        if (this.merchant.getCustomer() == MinecraftClient.getInstance().player
             && MinecraftClient.getInstance().currentScreen instanceof MerchantScreenExtensions merchantScreen) {
             merchantScreen.requiem$setExorcising(this.tradeOffer instanceof RemnantTradeOffer offer && offer.isExorcism());
         }

@@ -51,7 +51,7 @@ public class SoulHolderComponent implements AutoSyncedComponent {
     public static final Identifier SOUL_CAPTURE_MECHANISM_ID = RequiemCore.id("soul_capture");
 
     public static boolean isSoulless(LivingEntity target) {
-        return RequiemCoreTags.Entity.SOULLESS.contains(target.getType()) || get(target).removedSoul;
+        return target.getType().isIn(RequiemCoreTags.Entity.SOULLESS) || get(target).removedSoul;
     }
 
     public static void onMobConverted(LivingEntity original, LivingEntity converted) {
@@ -81,7 +81,7 @@ public class SoulHolderComponent implements AutoSyncedComponent {
     private void setSoulRemoved(boolean removed) {
         if (this.removedSoul != removed) {
             this.removedSoul = removed;
-            EntityAiToggle.get(this.owner).toggleAi(SoulHolderComponent.SOUL_CAPTURE_MECHANISM_ID, !RequiemCoreTags.Entity.SOULLESS.contains(this.owner.getType()) && removed, false);
+            EntityAiToggle.get(this.owner).toggleAi(SoulHolderComponent.SOUL_CAPTURE_MECHANISM_ID, !this.owner.getType().isIn(RequiemCoreTags.Entity.SOULLESS) && removed, false);
             KEY.sync(this.owner);
         }
     }

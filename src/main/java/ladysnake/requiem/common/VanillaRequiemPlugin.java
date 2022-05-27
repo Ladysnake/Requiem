@@ -294,7 +294,7 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
         });
         UseItemCallback.EVENT.register((player, world, hand) -> {
             LivingEntity possessed = PossessionComponent.getHost(player);
-            if (possessed != null && !RequiemCoreTags.Entity.ITEM_USERS.contains(possessed.getType()) && !player.isCreative()) {
+            if (possessed != null && !possessed.getType().isIn(RequiemCoreTags.Entity.ITEM_USERS) && !player.isCreative()) {
                 return new TypedActionResult<>(ActionResult.FAIL, player.getStackInHand(hand));
             }
             return new TypedActionResult<>(ActionResult.PASS, player.getStackInHand(hand));
@@ -315,7 +315,7 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
                     PlayerAbilityController.get(player).usePossessedAbilities(possessed);
 
                     if (!player.world.isClient) {
-                        if (RequiemCoreTags.Entity.INVENTORY_CARRIERS.contains(possessed.getType())) {
+                        if (possessed.getType().isIn(RequiemCoreTags.Entity.INVENTORY_CARRIERS)) {
                             inventoryLimiter.unlock(player, DefaultInventoryNodes.MAIN_INVENTORY);
                         }
                         if (canUseItems(possessed)) {
@@ -336,7 +336,7 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
         );
         EntitySleepEvents.ALLOW_SLEEPING.register((player, pos) -> {
             MobEntity host = PossessionComponent.getHost(player);
-            if (host != null && !RequiemCoreTags.Entity.SLEEPERS.contains(host.getType())) {
+            if (host != null && !host.getType().isIn(RequiemCoreTags.Entity.SLEEPERS)) {
                 player.sendMessage(new TranslatableText("requiem:block.minecraft.bed.invalid_body"), true);
                 return PlayerEntity.SleepFailureReason.OTHER_PROBLEM;
             }
@@ -359,21 +359,21 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
     }
 
     private static boolean canUseItems(MobEntity possessed) {
-        if (RequiemCoreTags.Entity.ITEM_USERS.contains(possessed.getType())) {
+        if (possessed.getType().isIn(RequiemCoreTags.Entity.ITEM_USERS)) {
             return true;
         }
         return possessed.canPickUpLoot();
     }
 
     private static boolean canCarryHotbar(MobEntity possessed) {
-        return RequiemEntityTypeTags.HOTBAR_CARRIERS.contains(possessed.getType());
+        return possessed.getType().isIn(RequiemEntityTypeTags.HOTBAR_CARRIERS);
     }
 
     private static boolean canWearArmor(MobEntity possessed) {
-        if (RequiemCoreTags.Entity.ARMOR_BANNED.contains(possessed.getType())) {
+        if (possessed.getType().isIn(RequiemCoreTags.Entity.ARMOR_BANNED)) {
             return false;
         }
-        if (RequiemEntityTypeTags.ARMOR_USERS.contains(possessed.getType())) {
+        if (possessed.getType().isIn(RequiemEntityTypeTags.ARMOR_USERS)) {
             return true;
         }
         return !possessed.getEquippedStack(EquipmentSlot.HEAD).isEmpty() || possessed.canEquip(new ItemStack(Items.LEATHER_HELMET));

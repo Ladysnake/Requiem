@@ -34,7 +34,6 @@
  */
 package ladysnake.requiem.client;
 
-import dev.onyxstudios.cca.api.v3.component.ComponentProvider;
 import ladysnake.requiem.api.v1.event.minecraft.client.ApplyCameraTransformsCallback;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import net.minecraft.client.render.Camera;
@@ -57,7 +56,7 @@ public class HeadDownTransformHandler implements ApplyCameraTransformsCallback {
     public void applyCameraTransformations(Camera camera, MatrixStack matrices, float tickDelta) {
         if (!camera.isThirdPerson()) {
             Entity focusedEntity = camera.getFocusedEntity();
-            if (focusedEntity != null && ComponentProvider.fromEntity(focusedEntity).getComponentContainer() != null) {
+            if (focusedEntity != null && focusedEntity.getComponentContainer() != null) {
                 Entity possessed = PossessionComponent.getHost(focusedEntity);
                 if (isUpsideDown(possessed)) {
                     matrices.multiply(QUATERNION_180_X);

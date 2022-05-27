@@ -39,7 +39,7 @@ import ladysnake.requiem.common.util.ExtendedShapeContext;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.ShapeContext;
-import net.minecraft.tag.Tag;
+import net.minecraft.tag.TagKey;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
@@ -56,7 +56,7 @@ public abstract class AbstractBlockStateMixin {
     public abstract Block getBlock();
 
     @Shadow
-    public abstract boolean isIn(Tag<Block> tag);
+    public abstract boolean isIn(TagKey<Block> tag);
 
     @Inject(
         at = @At("HEAD"),

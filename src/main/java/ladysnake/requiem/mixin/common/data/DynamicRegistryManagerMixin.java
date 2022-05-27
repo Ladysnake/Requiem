@@ -37,6 +37,7 @@ package ladysnake.requiem.mixin.common.data;
 import com.google.common.collect.ImmutableMap;
 import com.mojang.serialization.Codec;
 import ladysnake.requiem.api.v1.event.minecraft.DynamicRegistryRegistrationCallback;
+import ladysnake.requiem.common.RequiemRegistries;
 import ladysnake.requiem.common.util.data.DynamicRegistryRegistrationHelperImpl;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
@@ -50,7 +51,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 @Mixin(DynamicRegistryManager.class)
-public abstract class DynamicRegistryManagerMixin {
+public interface DynamicRegistryManagerMixin {
     @Shadow
     private static void register(ImmutableMap.Builder<RegistryKey<? extends Registry<?>>, ?> infosBuilder, RegistryKey<? extends Registry<?>> registryRef, Codec<?> entryCodec) {
         throw new IllegalStateException("Mixin not transformed");
@@ -62,6 +63,7 @@ public abstract class DynamicRegistryManagerMixin {
     @Dynamic("Lambda for INFOS initialization through Util#make")
     @Inject(method = "method_30531", at = @At(value = "INVOKE", target = "Lcom/google/common/collect/ImmutableMap$Builder;build()Lcom/google/common/collect/ImmutableMap;"), locals = LocalCapture.CAPTURE_FAILHARD)
     private static void buildDynamicRegistries(CallbackInfoReturnable<ImmutableMap<RegistryKey<? extends Registry<?>>, ?>> cir, ImmutableMap.Builder<RegistryKey<? extends Registry<?>>, ?> builder) {
+        RequiemRegistries.init();
         DynamicRegistryRegistrationCallback.EVENT.invoker().registerDynamicRegistries(new DynamicRegistryRegistrationHelperImpl(
             (registryKey, codec) -> register(builder, registryKey, codec),
             (registryKey, codec, codec2) -> register(builder, registryKey, codec, codec2))

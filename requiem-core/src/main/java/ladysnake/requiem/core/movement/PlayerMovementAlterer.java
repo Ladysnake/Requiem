@@ -233,7 +233,7 @@ public abstract class PlayerMovementAlterer implements MovementAlterer {
             MovementConfig::getWaterSpeedModifier,
             player.isTouchingWater()
         );
-        MovementAlterer.super.serverTick();
+        this.tick();
     }
 
     @Override
@@ -366,7 +366,7 @@ public abstract class PlayerMovementAlterer implements MovementAlterer {
     private static boolean shouldActuallySinkInWater(MovementConfig config, Entity entity) {
         if (config.shouldSinkInWater() == TriState.DEFAULT) {
             EntityType<?> type = entity.getType();
-            return RequiemCoreTags.Entity.GOLEMS.contains(type) || entity instanceof LivingEntity && ((LivingEntity) entity).isUndead();
+            return type.isIn(RequiemCoreTags.Entity.GOLEMS) || entity instanceof LivingEntity && ((LivingEntity) entity).isUndead();
         }
         return config.shouldSinkInWater().get();
     }

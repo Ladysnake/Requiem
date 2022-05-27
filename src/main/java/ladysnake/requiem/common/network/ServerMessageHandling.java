@@ -83,7 +83,7 @@ public final class ServerMessageHandling {
         });
         ServerPlayNetworking.registerGlobalReceiver(OPEN_CRAFTING_MENU, (server, player, handler, buf, responseSender) -> server.execute(() -> {
             MobEntity possessed = PossessionComponent.get(player).getHost();
-            if (possessed != null && RequiemEntityTypeTags.SUPERCRAFTERS.contains(possessed.getType())) {
+            if (possessed != null && possessed.getType().isIn(RequiemEntityTypeTags.SUPERCRAFTERS)) {
                 player.openHandledScreen(Blocks.CRAFTING_TABLE.getDefaultState().createScreenHandlerFactory(player.world, player.getBlockPos()));
             }
         }));

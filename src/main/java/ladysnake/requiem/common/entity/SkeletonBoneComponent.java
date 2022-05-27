@@ -88,7 +88,7 @@ public final class SkeletonBoneComponent implements Component {
             }
             if (this.owner instanceof WitherSkeletonEntity
                 && replacement.getEquippedStack(EquipmentSlot.HEAD).isEmpty()
-                && !RequiemCoreTags.Entity.ARMOR_BANNED.contains(replacement.getType())) {
+                && !replacement.getType().isIn(RequiemCoreTags.Entity.ARMOR_BANNED)) {
                 if (this.owner.getRandom().nextInt(5) == 0) {
                     replacement.equipStack(EquipmentSlot.HEAD, new ItemStack(Items.WITHER_SKELETON_SKULL));
                 }
@@ -97,7 +97,7 @@ public final class SkeletonBoneComponent implements Component {
     }
 
     private boolean shouldBeReplaced() {
-        if (RequiemEntityTypeTags.REPLACEABLE_SKELETONS.contains(this.owner.getType())) {
+        if (this.owner.getType().isIn(RequiemEntityTypeTags.REPLACEABLE_SKELETONS)) {
             return switch (this.owner.world.getDifficulty()) {
                 case PEACEFUL -> false; // what is this skeleton doing in peaceful anyway....?
                 case EASY -> this.replacedBones > 8;

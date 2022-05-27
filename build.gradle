@@ -42,6 +42,19 @@ allprojects {
             jitpack()
         }
         maven {
+            url = 'https://maven.willbl.dev/releases'
+            content {
+                includeGroupByRegex 'com\\.williambl.*'
+            }
+        }
+        maven {
+            name = "Appleskin"
+            url = "https://maven.ryanliptak.com/"
+            content {
+                includeGroup 'squeek.appleskin'
+            }
+        }
+        maven {
             url = 'https://maven.cafeteria.dev'
             content {
                 includeGroup 'net.adriantodt.fabricmc'
@@ -143,7 +156,7 @@ dependencies {
     modCompileOnly libs.modmenu
     modLocalRuntime libs.modmenu
     modCompileOnly (libs.bundles.cloth) { transitive = false }
-    modLocalRuntime libs.bundles.cloth
+    modLocalRuntime (libs.bundles.cloth) { transitive = false }
     include libs.fiberToCloth
 
     // Extra compatibility dependencies
@@ -159,7 +172,7 @@ dependencies {
     modCompileOnly (compatLibs.snowmercy) { transitive = false }
 //    modLocalRuntime compatLibs.snowmercy
     modCompileOnly (compatLibs.bundles.origins) { transitive = false }
-    modLocalRuntime (compatLibs.bundles.origins) { transitive = false }
+    modLocalRuntime (compatLibs.bundles.origins)
 
     modCompileOnly (compatLibs.eldritchMobs) { transitive = false }
 //    modLocalRuntime compatLibs.eldritchMobs

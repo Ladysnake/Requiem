@@ -41,7 +41,7 @@ import net.minecraft.util.registry.MutableRegistry;
 import net.minecraft.util.registry.SimpleRegistry;
 
 public final class RequiemBuiltinRegistries {
-    public static final SimpleRegistry<PossessionItemOverrideWrapper> MOB_ACTIONS = new SimpleRegistry<>(RequiemRegistries.MOB_ITEM_OVERRIDE_KEY, Lifecycle.stable());
+    public static final SimpleRegistry<PossessionItemOverrideWrapper> MOB_ACTIONS = new SimpleRegistry<>(RequiemRegistries.MOB_ITEM_OVERRIDE_KEY, Lifecycle.stable(), null);
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     public static void init() {

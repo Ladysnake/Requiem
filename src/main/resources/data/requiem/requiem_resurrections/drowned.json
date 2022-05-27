@@ -6,7 +6,7 @@
   },
   "player": {
     "location": {
-      "requiem:biome_category": "ocean",
+      "requiem:biome_tag": "c:ocean",
       "light": {
         "light": {
           "max": 10

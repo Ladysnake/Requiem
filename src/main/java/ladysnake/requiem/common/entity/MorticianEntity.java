@@ -357,7 +357,7 @@ public class MorticianEntity extends MerchantEntity implements Angerable {
 
             if (!this.world.isClient && !this.getOffers().isEmpty()) {
                 this.prepareOffersFor(customer);
-                this.setCurrentCustomer(customer);
+                this.setCustomer(customer);
                 this.sendOffers(customer, this.getDisplayName(), 1);
             }
 
@@ -445,7 +445,7 @@ public class MorticianEntity extends MerchantEntity implements Angerable {
 
     @Override
     protected void afterUsing(TradeOffer offer) {
-        if (offer instanceof RemnantTradeOffer demonTradeOffer && demonTradeOffer.demonCustomer && this.getCurrentCustomer() instanceof ServerPlayerEntity player) {
+        if (offer instanceof RemnantTradeOffer demonTradeOffer && demonTradeOffer.demonCustomer && this.getCustomer() instanceof ServerPlayerEntity player) {
             RemnantComponent.get(player).become(RemnantTypes.MORTAL, true);
             player.world.playSound(null, player.getX(), player.getY(), player.getZ(), RequiemSoundEvents.ITEM_OPUS_USE, player.getSoundCategory(), 1.4F, 0.1F);
             RequiemNetworking.sendTo(player, RequiemNetworking.createOpusUsePacket(RemnantTypes.MORTAL, false));

@@ -141,7 +141,7 @@ public class EmptySoulVesselItem extends Item {
 
     public static boolean canAttemptCapture(LivingEntity user, LivingEntity entity) {
         return entity instanceof MobEntity
-            && !RequiemCoreTags.Entity.SOUL_CAPTURE_BLACKLIST.contains(entity.getType())
+            && !entity.getType().isIn(RequiemCoreTags.Entity.SOUL_CAPTURE_BLACKLIST)
             && SoulCaptureEvents.BEFORE_ATTEMPT.invoker().canAttemptCapturing(user, entity);
     }
 

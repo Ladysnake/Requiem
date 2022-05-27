@@ -111,9 +111,9 @@ public final class RequiemClientListener implements
         ItemTooltipCallback.EVENT.register(this);
         PossessionStateChangeCallback.EVENT.register((possessor, target) -> {
             if (possessor.world.isClient && target != null) {
-                if (RequiemCoreTags.Entity.IMMOVABLE.contains(target.getType())) {
-                    this.mc.inGameHud.setOverlayMessage(new TranslatableText("requiem:shulker.onboard", mc.options.keySneak.getBoundKeyLocalizedText(), FractureKeyBinding.etherealFractureKey.getBoundKeyLocalizedText()), false);
-                } else if (RequiemCoreTags.Entity.FRICTIONLESS_HOSTS.contains(target.getType())) {
+                if (target.getType().isIn(RequiemCoreTags.Entity.IMMOVABLE)) {
+                    this.mc.inGameHud.setOverlayMessage(new TranslatableText("requiem:shulker.onboard", mc.options.sneakKey.getBoundKeyLocalizedText(), FractureKeyBinding.etherealFractureKey.getBoundKeyLocalizedText()), false);
+                } else if (target.getType().isIn(RequiemCoreTags.Entity.FRICTIONLESS_HOSTS)) {
                     this.mc.inGameHud.setOverlayMessage(new TranslatableText("requiem:dissociate_hint", FractureKeyBinding.etherealFractureKey.getBoundKeyLocalizedText()), false);
                 }
             }

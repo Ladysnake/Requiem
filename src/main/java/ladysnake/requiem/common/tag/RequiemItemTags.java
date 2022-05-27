@@ -35,15 +35,15 @@
 package ladysnake.requiem.common.tag;
 
 import ladysnake.requiem.Requiem;
-import net.fabricmc.fabric.api.tag.TagRegistry;
 import net.minecraft.item.Item;
-import net.minecraft.tag.Tag;
+import net.minecraft.tag.TagKey;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.registry.Registry;
 
 public final class RequiemItemTags {
-    public static final Tag<Item> BONES = TagRegistry.item(Requiem.id("bones"));
-    public static final Tag<Item> RAW_MEATS = TagRegistry.item(Requiem.id("raw_meats"));
-    public static final Tag<Item> RAW_FISHES = TagRegistry.item(Requiem.id("raw_fishes"));
-    public static final Tag<Item> WATER_BUCKETS = TagRegistry.item(new Identifier("c", "water_buckets"));
-    public static final Tag<Item> SHIELDS = TagRegistry.item(new Identifier("c", "shields"));
+    public static final TagKey<Item> BONES = TagKey.of(Registry.ITEM_KEY, Requiem.id("bones"));
+    public static final TagKey<Item> RAW_MEATS = TagKey.of(Registry.ITEM_KEY, Requiem.id("raw_meats"));
+    public static final TagKey<Item> RAW_FISHES = TagKey.of(Registry.ITEM_KEY, Requiem.id("raw_fishes"));
+    public static final TagKey<Item> WATER_BUCKETS = TagKey.of(Registry.ITEM_KEY, new Identifier("c", "water_buckets"));
+    public static final TagKey<Item> SHIELDS = TagKey.of(Registry.ITEM_KEY, new Identifier("c", "shields"));
 }

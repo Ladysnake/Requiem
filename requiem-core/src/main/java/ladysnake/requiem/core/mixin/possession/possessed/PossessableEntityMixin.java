@@ -39,7 +39,9 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -47,6 +49,20 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(Entity.class)
 public abstract class PossessableEntityMixin implements ProtoPossessable {
+
+    @Shadow
+    public World world;
+
+    @Shadow
+    public boolean velocityModified;
+
+    @Inject(method = "scheduleVelocityUpdate", at = @At("RETURN"))
+    private void scheduleVelocityUpdate(CallbackInfo ci) {
+        PlayerEntity player = this.getPossessor();
+        if (player != null && !world.isClient && this.velocityModified) {
+            player.velocityModified = true;
+        }
+    }
 
     @Inject(method = "isInvulnerableTo", at = @At("HEAD"), cancellable = true)
     private void isInvulnerableTo(DamageSource source, CallbackInfoReturnable<Boolean> cir) {

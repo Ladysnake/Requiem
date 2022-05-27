@@ -88,7 +88,7 @@ public abstract class InventoryScreenMixin extends AbstractInventoryScreen<Playe
     @Inject(method = "init", at = @At("RETURN"))
     private void addSupercrafterButton(CallbackInfo ci) {
         MobEntity possessedEntity = PossessionComponent.getHost(this.requiem$player);
-        if (possessedEntity != null && RequiemEntityTypeTags.SUPERCRAFTERS.contains(possessedEntity.getType())) {
+        if (possessedEntity != null && possessedEntity.getType().isIn(RequiemEntityTypeTags.SUPERCRAFTERS)) {
             this.supercrafterButton = this.addDrawableChild(new TexturedButtonWidget(
                 this.x + 131,
                 this.height / 2 - 22,

@@ -80,7 +80,7 @@ public record ResurrectionData(
     private static final Map<String, BiPredicate<ServerPlayerEntity, DamageSource>> SPECIAL_PREDICATES = Util.make(new HashMap<>(), m -> {
         m.put("head_in_sand", (lazarus, killingBlow) -> {
             float eyeHeight = lazarus.getEyeHeight(lazarus.getPose());
-            return BlockTags.SAND.contains(lazarus.world.getBlockState(lazarus.getBlockPos().add(0, eyeHeight, 0)).getBlock());
+            return lazarus.world.getBlockState(lazarus.getBlockPos().add(0, eyeHeight, 0)).isIn(BlockTags.SAND);
         });
     });
 

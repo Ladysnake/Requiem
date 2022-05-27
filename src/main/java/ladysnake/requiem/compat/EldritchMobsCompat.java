@@ -34,7 +34,6 @@
  */
 package ladysnake.requiem.compat;
 
-import dev.onyxstudios.cca.api.v3.component.ComponentProvider;
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.annotation.CalledThroughReflection;
 import ladysnake.requiem.api.v1.event.requiem.PossessionStartCallback;
@@ -51,8 +50,7 @@ public final class EldritchMobsCompat implements PossessionStartCallback {
 
     @Override
     public Result onPossessionAttempted(MobEntity target, PlayerEntity possessor, boolean simulate) {
-        ComponentProvider t = ComponentProvider.fromEntity(target);
-        if (EldritchMobsMod.isEldritch(t) || EldritchMobsMod.isElite(t) || EldritchMobsMod.isUltra(t)) {
+        if (EldritchMobsMod.isEldritch(target) || EldritchMobsMod.isElite(target) || EldritchMobsMod.isUltra(target)) {
             if (!possessor.world.isClient) possessor.sendMessage(new TranslatableText("requiem:possess.incompatible_body"), true);
             return Result.DENY;
         }

@@ -80,7 +80,7 @@ public class SimpleCurableEntityComponent implements CurableEntityComponent {
 
     @Override
     public boolean canBeAssimilated() {
-        return this.entity.isUndead() && RequiemCoreTags.Entity.ITEM_USERS.contains(this.entity.getType());
+        return this.entity.isUndead() && this.entity.getType().isIn(RequiemCoreTags.Entity.ITEM_USERS);
     }
 
     @Override

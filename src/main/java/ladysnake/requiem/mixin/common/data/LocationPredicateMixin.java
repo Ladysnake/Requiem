@@ -40,7 +40,9 @@ import com.mojang.serialization.JsonOps;
 import ladysnake.requiem.Requiem;
 import net.minecraft.predicate.entity.LocationPredicate;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.tag.TagKey;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
@@ -51,7 +53,7 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 @Mixin(LocationPredicate.class)
 public abstract class LocationPredicateMixin {
-    private @Nullable Biome.Category requiem$biomeCategory;
+    private @Nullable TagKey<Biome> requiem$biomeTag;
 
     /**
      * For... reasons, we run tests on clients with a null server world. This does not work well with {@code LocationPredicate}s, so we skip all the world checks.
@@ -63,11 +65,10 @@ public abstract class LocationPredicateMixin {
 
     @Inject(method = "test", at = @At("RETURN"), cancellable = true)
     private void test(ServerWorld world, double x, double y, double z, CallbackInfoReturnable<Boolean> cir) {
-        if (cir.getReturnValueZ() && this.requiem$biomeCategory != null) {
+        if (cir.getReturnValueZ() && this.requiem$biomeTag != null) {
             BlockPos blockPos = new BlockPos(x, y, z);
-            Biome biome = world.getBiome(blockPos);
 
-            if (this.requiem$biomeCategory != biome.getCategory()) {
+            if (!world.getBiome(blockPos).isIn(this.requiem$biomeTag)) {
                 cir.setReturnValue(false);
             }
         }
@@ -77,14 +78,17 @@ public abstract class LocationPredicateMixin {
     @Inject(method = "fromJson", at = @At(value = "RETURN", ordinal = 1), locals = LocalCapture.CAPTURE_FAILSOFT)
     private static void fromJson(JsonElement json, CallbackInfoReturnable<LocationPredicate> cir, JsonObject locationData) {
         JsonElement biomeCategory;
-        if (locationData.has("requiem:biome_category")) {
-            biomeCategory = locationData.get("requiem:biome_category");
-        } else if (locationData.has("requiem$biome_category")) {
-            biomeCategory = locationData.get("requiem$biome_category");
-        } else return;
+        if (locationData.has("requiem:biome_tag")) {
+            biomeCategory = locationData.get("requiem:biome_tag");
+        } else {
+            if (locationData.has("requiem$biome_category") || locationData.has("requiem:biome_category")) {
+                Requiem.LOGGER.error("[Requiem] Unsupported biome category extension on LocationPredicate, please switch to requiem:biome_tag");
+            }
+            return;
+        }
         //noinspection ConstantConditions
-        ((LocationPredicateMixin) (Object) cir.getReturnValue()).requiem$biomeCategory
-            = Biome.Category.CODEC.parse(JsonOps.INSTANCE, biomeCategory)
-            .getOrThrow(false, msg -> Requiem.LOGGER.error("[Requiem] Failed to parse biome_category extension to LocationPredicate: {}", msg));
+        ((LocationPredicateMixin) (Object) cir.getReturnValue()).requiem$biomeTag
+            = TagKey.identifierCodec(Registry.BIOME_KEY).parse(JsonOps.INSTANCE, biomeCategory)
+            .getOrThrow(false, msg -> Requiem.LOGGER.error("[Requiem] Failed to parse biome_tag extension to LocationPredicate: {}", msg));
     }
 }
