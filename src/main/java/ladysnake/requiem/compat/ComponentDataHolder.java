@@ -42,6 +42,8 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Util;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Optional;
+
 public class ComponentDataHolder<C extends Component> implements Component {
 
     protected final ComponentKey<C> dataKey;
@@ -53,31 +55,44 @@ public class ComponentDataHolder<C extends Component> implements Component {
         this.selfKey = selfKey;
     }
 
-    public void storeData(PlayerEntity player) {
-        if (!player.world.isClient && this.data == null) {
-            try {
-                NbtCompound originData = new NbtCompound();
-                this.dataKey.get(player).writeToNbt(originData);
-                this.data = originData;
-            } catch (RuntimeException e) {
-                Requiem.LOGGER.error("[Requiem] Failed to serialize data from " + this.dataKey.getId(), e);
-            }
+    public void copyDataBetween(PlayerEntity from, PlayerEntity to) {
+        writePlayerDataToNbt(from).ifPresent(nbt -> readPlayerDataFromNbt(to, nbt));
+    }
+
+    public void storeDataFrom(PlayerEntity player, boolean override) {
+        if (!player.world.isClient && (this.data == null || override)) {
+            writePlayerDataToNbt(player).ifPresent(d -> this.data = d);
         }
     }
 
-    public void restoreData(PlayerEntity player, boolean clear) {
-        if (!player.world.isClient && this.data != null) {
-            C component = this.dataKey.get(player);
-            NbtCompound backup = Util.make(new NbtCompound(), component::writeToNbt);
-            try {
-                component.readFromNbt(this.data);
-            } catch (RuntimeException e) {
-                Requiem.LOGGER.error("[Requiem] Failed to deserialize data from " + this.dataKey.getId(), e);
-                component.readFromNbt(backup);
-            }
-            if (clear) this.data = null;
-            this.dataKey.sync(player);
+    private Optional<NbtCompound> writePlayerDataToNbt(PlayerEntity player) {
+        try {
+            NbtCompound originData = new NbtCompound();
+            this.dataKey.get(player).writeToNbt(originData);
+            return Optional.of(originData);
+        } catch (RuntimeException e) {
+            Requiem.LOGGER.error("[Requiem] Failed to serialize data from " + this.dataKey.getId(), e);
+            return Optional.empty();
         }
+    }
+
+    public void restoreDataToPlayer(PlayerEntity player, boolean clear) {
+        if (!player.world.isClient && this.data != null) {
+            readPlayerDataFromNbt(player, this.data);
+            if (clear) this.data = null;
+        }
+    }
+
+    private void readPlayerDataFromNbt(PlayerEntity player, NbtCompound data) {
+        C component = this.dataKey.get(player);
+        NbtCompound backup = Util.make(new NbtCompound(), component::writeToNbt);
+        try {
+            component.readFromNbt(data);
+        } catch (RuntimeException e) {
+            Requiem.LOGGER.error("[Requiem] Failed to deserialize data from " + this.dataKey.getId(), e);
+            component.readFromNbt(backup);
+        }
+        this.dataKey.sync(player);
     }
 
     @Override

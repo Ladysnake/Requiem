@@ -18,20 +18,41 @@
 package ladysnake.requiem.api.v1.event.requiem;
 
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
+import ladysnake.requiem.api.v1.remnant.RemnantType;
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
 import net.minecraft.entity.player.PlayerEntity;
 
 public interface RemnantStateChangeCallback {
-    void onRemnantStateChange(PlayerEntity player, RemnantComponent state);
+    void onRemnantStateChange(PlayerEntity player, RemnantComponent state, Cause cause);
 
     /**
      * Fired after a player becomes or stops being {@link RemnantComponent#isVagrant() vagrant}.
      */
     Event<RemnantStateChangeCallback> EVENT = EventFactory.createArrayBacked(RemnantStateChangeCallback.class,
-        (callbacks) -> (player, remnant) -> {
+        (callbacks) -> (player, remnant, cause) -> {
             for (RemnantStateChangeCallback callback : callbacks) {
-                callback.onRemnantStateChange(player, remnant);
+                callback.onRemnantStateChange(player, remnant, cause);
             }
         });
+
+    enum Cause {
+        /**
+         * The remnant state changed because the player {@linkplain RemnantComponent#become(RemnantType) became something else}
+         */
+        TYPE_UPDATE,
+        /**
+         * The remnant state changed because the player dissociated from its previous body
+         */
+        DISSOCIATION,
+        /**
+         * The remnant state changed because the player merged with another body
+         */
+        MERGE,
+        OTHER;
+
+        public boolean isCharacterSwitch() {
+            return this == DISSOCIATION || this == MERGE;
+        }
+    }
 }

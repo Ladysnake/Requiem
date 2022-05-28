@@ -17,6 +17,7 @@
  */
 package ladysnake.requiem.api.v1.remnant;
 
+import baritone.api.fakeplayer.FakeServerPlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 
 /**
@@ -25,6 +26,6 @@ import net.minecraft.server.network.ServerPlayerEntity;
  * @param soul  the vagrant form of the split player, controlled by the client
  * @param shell the physical shell left behind, implemented as a fake player
  */
-public record PlayerSplitResult(ServerPlayerEntity soul, ServerPlayerEntity shell) {
+public record PlayerSplitResult(ServerPlayerEntity soul, FakeServerPlayerEntity shell) {
 
 }

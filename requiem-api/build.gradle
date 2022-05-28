@@ -4,6 +4,7 @@ group = rootProject.group
 dependencies {
     modApi libs.cca.base
     modApi libs.locki
+    modApi libs.automatone
 }
 
 chenille {

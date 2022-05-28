@@ -111,15 +111,11 @@ public final class RequiemCompatibilityManager {
 
     public static <C extends Component> void registerShellDataCallbacks(ComponentKey<? extends ComponentDataHolder<C>> holderKey) {
         PlayerShellEvents.DATA_TRANSFER.register((from, to, merge) -> {
-            // First, store a backup of the player's actual origin
-            if (merge) holderKey.get(to).storeData(to);
-
             if (RemnantComponent.isVagrant(from)) {    // can happen with /requiem shell create
-                holderKey.get(from).restoreData(to, false);
+                holderKey.get(from).restoreDataToPlayer(to, false);
             } else {
-                ComponentDataHolder<C> holder = holderKey.get(merge ? from : to);
-                holder.storeData(from);
-                holder.restoreData(to, true);
+                ComponentDataHolder<C> holder = holderKey.get(from); // who we get it from does not really matter
+                holder.copyDataBetween(from, to);
             }
         });
     }

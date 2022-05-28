@@ -99,14 +99,14 @@ public final class RequiemShellCommand {
 
     private static void merge(ServerPlayerEntity player, Entity entity) {
         if (!(entity instanceof PlayerShellEntity shell)) {
-            throw new CommandException(new TranslatableText("pandemonium.commands.shell.fail.not_shell"));
+            throw new CommandException(new TranslatableText("requiem:commands.shell.fail.not_shell"));
         }
-        PlayerSplitter.merge(shell, player);
+        RemnantComponent.get(player).merge(shell);
     }
 
     private static void setIdentity(Entity shell, GameProfile profile) {
         if (!(shell instanceof PlayerShellEntity)) {
-            throw new CommandException(new TranslatableText("pandemonium.commands.shell.fail.not_shell"));
+            throw new CommandException(new TranslatableText("requiem:commands.shell.fail.not_shell"));
         }
         ((PlayerShellEntity) shell).setDisplayProfile(profile);
     }

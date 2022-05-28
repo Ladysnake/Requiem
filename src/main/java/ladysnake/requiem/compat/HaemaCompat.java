@@ -50,15 +50,15 @@ public final class HaemaCompat {
 
     @CalledThroughReflection
     public static void init() {
-        RemnantStateChangeCallback.EVENT.register((player, state) -> {
+        RemnantStateChangeCallback.EVENT.register((player, state, cause) -> {
             if (!player.world.isClient) {
                 if (state.isVagrant()) {
-                    HOLDER_KEY.get(player).storeData(player);
+                    HOLDER_KEY.get(player).storeDataFrom(player, !cause.isCharacterSwitch());
                     VampireComponent vampireComponent = VAMPIRE_KEY.get(player);
                     vampireComponent.setPermanentVampire(false);
                     vampireComponent.setVampire(false);
-                } else {
-                    HOLDER_KEY.get(player).restoreData(player, true);
+                } else if (!cause.isCharacterSwitch()) {
+                    HOLDER_KEY.get(player).restoreDataToPlayer(player, true);
                 }
 
                 VAMPIRE_KEY.sync(player);

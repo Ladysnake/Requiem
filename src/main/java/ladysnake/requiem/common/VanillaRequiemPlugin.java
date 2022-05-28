@@ -175,9 +175,9 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
                 success = true;
             } else if (host != null) {
                 Entity targetedEntity = RayHelper.getTargetedEntity(player);
-                if (targetedEntity instanceof PlayerShellEntity && Objects.equals(player.getUuid(), ((PlayerShellEntity) targetedEntity).getOwnerUuid())) {
+                if (targetedEntity instanceof PlayerShellEntity shell && Objects.equals(player.getUuid(), ((PlayerShellEntity) targetedEntity).getOwnerUuid())) {
                     possessionComponent.stopPossessing();
-                    PlayerSplitter.merge((PlayerShellEntity) targetedEntity, player);
+                    remnantComponent.merge(shell);
                     RequiemNetworking.sendBodyCureMessage(player);
                     success = true;
                 } else if (remnantComponent.canDissociateFrom(host)) {
@@ -240,7 +240,7 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
             // Fix for MC-108707: when you respawn while a player (or a shell) is watching you, you don't get data tracker updates
             player.networkHandler.sendPacket(new EntityTrackerUpdateS2CPacket(player.getId(), player.getDataTracker(), true));
         }));
-        RemnantStateChangeCallback.EVENT.register((player, remnant) -> {
+        RemnantStateChangeCallback.EVENT.register((player, remnant, cause) -> {
             if (!remnant.isVagrant()) {
                 PossessionComponent.get(player).stopPossessing(false);
                 InventoryLimiter.instance().disable(player);
@@ -257,7 +257,7 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
         PlayerRespawnCallback.EVENT.register((player, returnFromEnd) -> {
             if (!returnFromEnd) Impersonate.IMPERSONATION.get(player).stopImpersonation(PlayerSplitter.BODY_IMPERSONATION);
         });
-        RemnantStateChangeCallback.EVENT.register((player, state) -> {
+        RemnantStateChangeCallback.EVENT.register((player, state, cause) -> {
             if (state.isVagrant()) Impersonate.IMPERSONATION.get(player).stopImpersonation(PlayerSplitter.BODY_IMPERSONATION);
         });
     }
@@ -435,7 +435,7 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
         registry.registerPossessionInteraction(PlayerEntity.class,
             (target, possessor) -> target.getType() == RequiemEntities.PLAYER_SHELL && target instanceof AutomatoneFakePlayer shell && PlayerShellEvents.PRE_MERGE.invoker().canMerge(possessor, target, shell.getDisplayProfile()),
             (target, possessor) -> {
-                if (target instanceof PlayerShellEntity && !PlayerSplitter.merge((PlayerShellEntity) target, (ServerPlayerEntity) possessor)) {
+                if (target instanceof PlayerShellEntity shell && !RemnantComponent.get(possessor).merge(shell)) {
                     possessor.sendMessage(new TranslatableText("requiem:possess.incompatible_body"), true);
                 }
             }

@@ -48,6 +48,7 @@ import io.github.apace100.origins.component.OriginComponent;
 import io.github.apace100.origins.integration.OriginDataLoadedCallback;
 import io.github.apace100.origins.origin.Origin;
 import io.github.apace100.origins.origin.OriginLayer;
+import io.github.apace100.origins.origin.OriginLayers;
 import io.github.apace100.origins.origin.OriginRegistry;
 import io.github.apace100.origins.registry.ModComponents;
 import ladysnake.requiem.Requiem;
@@ -63,7 +64,6 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 
 public final class OriginsCompat {
@@ -110,8 +110,8 @@ public final class OriginsCompat {
     private static void applyVagrantOrigin(PlayerEntity player) {
         if (vagrant != null) {
             OriginComponent originComponent = ModComponents.ORIGIN.get(player);
-            for (OriginLayer originLayer : new HashSet<>(originComponent.getOrigins().keySet())) {
-                if (!SOUL_TYPE_LAYER_ID.equals(originLayer.getIdentifier())) {
+            for (OriginLayer originLayer : OriginLayers.getLayers()) {
+                if (originLayer.isEnabled() && !SOUL_TYPE_LAYER_ID.equals(originLayer.getIdentifier())) {
                     originComponent.setOrigin(originLayer, vagrant);
                 }
             }
@@ -123,15 +123,16 @@ public final class OriginsCompat {
     public static void init() {
         Registry.register(ApoliRegistries.POWER_FACTORY, FACTORY_ID, REMNANT_POWER_FACTORY);
         Registry.register(ApoliRegistries.ENTITY_CONDITION, GAMERULE_CONDITION_ID, GAMERULE_CONDITION_FACTORY);
-        RemnantStateChangeCallback.EVENT.register((player, state) -> {
+        RemnantStateChangeCallback.EVENT.register((player, state, cause) -> {
             if (!player.world.isClient) {
+                boolean transferData = !cause.isCharacterSwitch();
                 if (state.isVagrant()) {
-                    ORIGIN_HOLDER_KEY.get(player).storeData(player);
-                    APOLI_HOLDER_KEY.get(player).storeData(player);
+                    ORIGIN_HOLDER_KEY.get(player).storeDataFrom(player, transferData);
+                    APOLI_HOLDER_KEY.get(player).storeDataFrom(player, transferData);
                     applyVagrantOrigin(player);
-                } else {
-                    APOLI_HOLDER_KEY.get(player).restoreData(player, true);
-                    ORIGIN_HOLDER_KEY.get(player).restoreData(player, true);
+                } else if (transferData) {
+                    APOLI_HOLDER_KEY.get(player).restoreDataToPlayer(player, true);
+                    ORIGIN_HOLDER_KEY.get(player).restoreDataToPlayer(player, true);
                 }
             }
         });
@@ -141,6 +142,7 @@ public final class OriginsCompat {
             vagrant.setSpecial();
         });
         RequiemCompatibilityManager.registerShellDataCallbacks(OriginsCompat.ORIGIN_HOLDER_KEY);
+        RequiemCompatibilityManager.registerShellDataCallbacks(OriginsCompat.APOLI_HOLDER_KEY);
     }
 
     public static class OriginDataHolder extends ComponentDataHolder<OriginComponent> {

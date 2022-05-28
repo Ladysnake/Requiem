@@ -38,7 +38,6 @@ import com.mojang.authlib.GameProfile;
 import dev.onyxstudios.cca.api.v3.component.ComponentKey;
 import dev.onyxstudios.cca.api.v3.entity.RespawnCopyStrategy;
 import dev.onyxstudios.cca.internal.base.AbstractComponentContainer;
-import dev.onyxstudios.cca.internal.entity.SwitchablePlayerEntity;
 import io.github.ladysnake.impersonate.Impersonator;
 import ladysnake.requiem.api.v1.entity.InventoryLimiter;
 import ladysnake.requiem.api.v1.event.requiem.PlayerShellEvents;
@@ -114,15 +113,7 @@ public final class PlayerSplitter {
         return shell;
     }
 
-    public static boolean merge(PlayerShellEntity shell, ServerPlayerEntity soul) {
-        if (PlayerShellEvents.PRE_MERGE.invoker().canMerge(soul, shell, shell.getDisplayProfile()) && RemnantComponent.get(soul).setVagrant(false)) {
-            doMerge(shell, soul);
-            return true;
-        }
-        return false;
-    }
-
-    private static void doMerge(PlayerShellEntity shell, ServerPlayerEntity soul) {
+    public static void doMerge(PlayerShellEntity shell, ServerPlayerEntity soul) {
         Entity mount = shell.getVehicle();
         shell.stopRiding();
         soul.getInventory().dropAll();
@@ -157,7 +148,7 @@ public final class PlayerSplitter {
 
         try {
             keepInventory.set(false, player.getServer());
-            ((SwitchablePlayerEntity) player).cca$markAsSwitchingCharacter();
+//            ((SwitchablePlayerEntity) player).cca$markAsSwitchingCharacter();
 
             ServerPlayerEntity clone = player.getWorld().getServer().getPlayerManager().respawnPlayer(player, false);
             clone.setSpawnPoint(dimension, blockPos, angle, spawnPointSet, false);

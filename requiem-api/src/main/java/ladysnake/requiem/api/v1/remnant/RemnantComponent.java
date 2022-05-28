@@ -17,6 +17,7 @@
  */
 package ladysnake.requiem.api.v1.remnant;
 
+import baritone.api.fakeplayer.FakeServerPlayerEntity;
 import dev.onyxstudios.cca.api.v3.component.ComponentKey;
 import dev.onyxstudios.cca.api.v3.component.ComponentRegistry;
 import dev.onyxstudios.cca.api.v3.component.sync.AutoSyncedComponent;
@@ -171,13 +172,24 @@ public interface RemnantComponent extends AutoSyncedComponent, ServerTickingComp
      *
      * <p>This operation fails if the player is currently {@linkplain #isVagrant() vagrant}.
      *
+     * @param forced if {@code true}, the player will be split regardless of external factors like status effects
      * @return an {@link Optional} describing the spawned player shell, or {@link Optional#empty()} if
      * the operation failed.
-     * @param forced if {@code true}, the player will be split regardless of external factors like status effects
      * @since 2.0.0
      */
     @API(status = API.Status.EXPERIMENTAL)
     Optional<PlayerSplitResult> splitPlayer(boolean forced);
+
+    /**
+     * Attempts to merge a player with an inert shell.
+     *
+     * <p>This operation fails if the player is not currently {@linkplain #isVagrant() vagrant}.
+     *
+     * @param shell the shell with which this player should be merged
+     * @return {@code true} if the operation succeeded, {@code false} otherwise
+     */
+    @API(status = API.Status.EXPERIMENTAL)
+    boolean merge(FakeServerPlayerEntity shell);
 
     /**
      * Called when this remnant state's player is cloned

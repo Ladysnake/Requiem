@@ -34,6 +34,7 @@
  */
 package ladysnake.requiem.common.remnant;
 
+import baritone.api.fakeplayer.FakeServerPlayerEntity;
 import com.google.common.base.Preconditions;
 import ladysnake.requiem.api.v1.event.requiem.PlayerShellEvents;
 import ladysnake.requiem.api.v1.event.requiem.RemnantStateChangeCallback;
@@ -42,6 +43,7 @@ import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.api.v1.remnant.RemnantState;
 import ladysnake.requiem.api.v1.remnant.RemnantType;
 import ladysnake.requiem.common.advancement.criterion.RequiemCriteria;
+import ladysnake.requiem.common.entity.PlayerShellEntity;
 import ladysnake.requiem.common.gamerule.RequiemGamerules;
 import ladysnake.requiem.core.remnant.NullRemnantState;
 import net.minecraft.entity.LivingEntity;
@@ -61,6 +63,7 @@ public final class RemnantComponentImpl implements RemnantComponent {
 
     private RemnantState state = NullRemnantState.INSTANCE;
     private RemnantType remnantType = RemnantTypes.MORTAL;
+    private boolean splitting;
 
     public RemnantComponentImpl(PlayerEntity player) {
         this.player = player;
@@ -89,7 +92,7 @@ public final class RemnantComponentImpl implements RemnantComponent {
         this.remnantType = type;
         this.state.setup(oldHandler);
         RemnantComponent.KEY.sync(this.player);
-        this.fireRemnantStateChange(wasSoul);
+        this.fireRemnantStateChange(wasSoul, RemnantStateChangeCallback.Cause.TYPE_UPDATE);
     }
 
     @Override
@@ -109,11 +112,15 @@ public final class RemnantComponentImpl implements RemnantComponent {
 
     @Override
     public boolean setVagrant(boolean vagrant) {
+        return setVagrant(vagrant, RemnantStateChangeCallback.Cause.OTHER);
+    }
+
+    private boolean setVagrant(boolean vagrant, RemnantStateChangeCallback.Cause cause) {
         boolean soul = this.isVagrant();
 
         if (soul != vagrant) {
             if (this.state.setVagrant(vagrant)) {
-                this.fireRemnantStateChange(soul);
+                this.fireRemnantStateChange(soul, cause);
                 return true;
             }
             return false;
@@ -121,11 +128,17 @@ public final class RemnantComponentImpl implements RemnantComponent {
         return true;
     }
 
-    private void fireRemnantStateChange(boolean wasSoul) {
+    private void fireRemnantStateChange(boolean wasSoul, RemnantStateChangeCallback.Cause cause) {
         boolean nowSoul = this.isVagrant();
 
         if (wasSoul != nowSoul) {
-            RemnantStateChangeCallback.EVENT.invoker().onRemnantStateChange(this.player, this);
+            RemnantStateChangeCallback.EVENT.invoker().onRemnantStateChange(
+                this.player,
+                this,
+                cause == RemnantStateChangeCallback.Cause.OTHER && splitting
+                    ? RemnantStateChangeCallback.Cause.DISSOCIATION
+                    : cause
+            );
         }
     }
 
@@ -163,15 +176,42 @@ public final class RemnantComponentImpl implements RemnantComponent {
     @Override
     public Optional<PlayerSplitResult> splitPlayer(boolean forced) {
         if (this.player instanceof ServerPlayerEntity player && this.canSplitPlayer(forced)) {
-            return Optional.of(PlayerSplitter.doSplit(player));
+            try {
+                this.splitting = true;
+                return Optional.of(PlayerSplitter.doSplit(player));
+            } finally {
+                this.splitting = false;
+            }
         }
 
         return Optional.empty();
     }
 
     @Override
+    public boolean merge(FakeServerPlayerEntity shell) {
+        if (PlayerShellEvents.PRE_MERGE.invoker().canMerge(
+            this.player,
+            shell,
+            shell.getDisplayProfile()
+        ) && this.setVagrant(
+            false,
+            RemnantStateChangeCallback.Cause.MERGE
+        )) {
+            // if we got a FakeServerPlayerEntity here, we must have a ServerPlayerEntity too
+            PlayerSplitter.doMerge((PlayerShellEntity) shell, (ServerPlayerEntity) this.player);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
     public void prepareRespawn(ServerPlayerEntity original, boolean lossless) {
-        this.state.prepareRespawn(original, lossless);
+        try {
+            this.splitting = ((RemnantComponentImpl) RemnantComponent.get(original)).splitting;
+            this.state.prepareRespawn(original, lossless);
+        } finally {
+            this.splitting = false;
+        }
     }
 
     @Override
