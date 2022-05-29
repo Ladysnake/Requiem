@@ -38,21 +38,12 @@ import com.google.common.collect.ImmutableList;
 import com.mojang.serialization.Codec;
 import ladysnake.requiem.Requiem;
 import net.minecraft.block.BlockState;
-import net.minecraft.structure.PoolStructurePiece;
-import net.minecraft.structure.PostPlacementProcessor;
-import net.minecraft.structure.StructureGeneratorFactory;
-import net.minecraft.structure.StructureManager;
-import net.minecraft.structure.StructurePiece;
-import net.minecraft.structure.StructurePiecesGenerator;
+import net.minecraft.structure.*;
 import net.minecraft.structure.pool.EmptyPoolElement;
 import net.minecraft.structure.pool.StructurePoolElement;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Util;
-import net.minecraft.util.math.BlockBox;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3i;
+import net.minecraft.util.math.*;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.HeightLimitView;
@@ -91,7 +82,7 @@ public class DerelictObeliskFeature extends StructureFeature<DefaultFeatureConfi
         return context.registryManager().get(
             Registry.STRUCTURE_POOL_KEY
         ).getEntry(
-            RegistryKey.of(Registry.STRUCTURE_POOL_KEY, Requiem.id("code_feature_derelict_obelisk"))
+            RegistryKey.of(Registry.STRUCTURE_POOL_KEY, Requiem.id("derelict_obelisk"))
         ).map(structurePool ->
             new StructurePoolFeatureConfig(structurePool, 1)
         ).map(structureSettingsAndStartPool -> ((structurePieces, ctx) -> {

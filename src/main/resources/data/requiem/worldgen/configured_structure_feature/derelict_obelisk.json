@@ -6,7 +6,7 @@
     "size": 1
   },
 
-  "biomes": "#requiem:has_structure/code_structure_derelict_obelisk",
+  "biomes": "#requiem:has_structure/derelict_obelisk",
 
   "adapt_noise": true,
 
