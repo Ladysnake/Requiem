@@ -40,13 +40,7 @@ import ladysnake.requiem.api.v1.block.ObeliskRune;
 import ladysnake.requiem.api.v1.block.VagrantTargetableBlock;
 import ladysnake.requiem.common.entity.effect.RequiemStatusEffects;
 import ladysnake.requiem.common.item.RequiemItems;
-import net.minecraft.block.AbstractBlock;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.OreBlock;
-import net.minecraft.block.PillarBlock;
-import net.minecraft.block.SlabBlock;
+import net.minecraft.block.*;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
@@ -112,6 +106,7 @@ public final class RequiemBlocks {
     public static void init() {
         allBlocks.forEach(RequiemBlocks::register);
         InertRunestoneBlock.registerCallbacks();
+        VagrantTargetableBlock.LOOKUP.registerForBlocks((world, pos, state, blockEntity, context) -> state.get(InertRunestoneBlock.ACTIVATED) ? RIFT_RUNE : null, RIFT_RUNE);
     }
 
     public static void register(Block block, String name, ItemGroup itemGroup) {
@@ -130,10 +125,6 @@ public final class RequiemBlocks {
 
         if (block instanceof ObeliskRune rune) {
             ObeliskRune.LOOKUP.registerForBlocks((world, pos, state, blockEntity, context) -> rune, block);
-        }
-
-        if (block instanceof VagrantTargetableBlock targetable) {
-            VagrantTargetableBlock.LOOKUP.registerForBlocks((world, pos, state, blockEntity, context) -> targetable, block);
         }
     }
 

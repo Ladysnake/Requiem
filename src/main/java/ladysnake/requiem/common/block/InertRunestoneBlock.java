@@ -112,7 +112,15 @@ public class InertRunestoneBlock extends BlockWithEntity {
         boolean activated = match != null;
         boolean head = activated && match.origin().equals(runePos);
         if (blockState.get(ACTIVATED) != activated || blockState.get(HEAD) != head) {
+            BlockEntity oldBe = world.getBlockEntity(runePos);
+            if (oldBe instanceof RunestoneBlockEntity runestoneController) runestoneController.onDestroyed();
+            world.removeBlockEntity(runePos);
             world.setBlockState(runePos, blockState.with(ACTIVATED, activated).with(HEAD, head), Block.NOTIFY_LISTENERS | Block.NOTIFY_NEIGHBORS);
+
+            if (oldBe instanceof InertRunestoneBlockEntity runestoneBe && world.getBlockEntity(runePos) instanceof InertRunestoneBlockEntity newRunestoneBe) {
+                newRunestoneBe.setCustomName(runestoneBe.getCustomName().orElse(null));
+            }
+
             return true;
         }
         return false;

@@ -55,6 +55,10 @@ public class InertRunestoneBlockEntity extends BlockEntity {
         super(type, pos, state);
     }
 
+    public void setCustomName(@Nullable Text customName) {
+        this.customName = customName;
+    }
+
     public Optional<Text> getCustomName() {
         return Optional.ofNullable(this.customName);
     }

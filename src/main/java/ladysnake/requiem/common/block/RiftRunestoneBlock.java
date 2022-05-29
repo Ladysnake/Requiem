@@ -48,8 +48,10 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.RespawnAnchorBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -135,5 +137,15 @@ public class RiftRunestoneBlock extends InertRunestoneBlock implements ObeliskRu
     public boolean canBeUsedByVagrant(PlayerEntity player) {
         StatusEffectInstance statusEffect = player.getStatusEffect(RequiemStatusEffects.ATTRITION);
         return statusEffect == null || statusEffect.getAmplifier() < AttritionStatusEffect.MAX_LEVEL;
+    }
+
+    @Override
+    public void onPlaced(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack itemStack) {
+        if (itemStack.hasCustomName()) {
+            BlockEntity blockEntity = world.getBlockEntity(pos);
+            if (blockEntity instanceof InertRunestoneBlockEntity runestone) {
+                runestone.setCustomName(itemStack.getName());
+            }
+        }
     }
 }
