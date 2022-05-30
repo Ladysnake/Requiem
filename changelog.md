@@ -4,6 +4,10 @@ Version 2.0.0
 **Warning: future betas may still break compatibility with worlds started with this version. Don't start using those versions on any world you care about.**
 
 ### Changes in Beta 8
+Updated to 1.18.2
+
+- Fixed origins compatibility
+- Fixed rifts flat out not working
 - Fixed the pure vessel's model
 - Updated Automatone
   - Fixes advancements being broadcasted by shells
