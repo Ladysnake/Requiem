@@ -124,6 +124,7 @@ allprojects {
 chenille {
     configureTestmod()
     configurePublishing {
+        mainArtifact = remapJar.archiveFile
         withArtifactory()
         withCurseforgeRelease()
         withGithubRelease()
