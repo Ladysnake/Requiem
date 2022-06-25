@@ -34,9 +34,7 @@
  */
 package ladysnake.requiem.compat.mixin.the_bumblezone;
 
-import com.telepathicgrunt.bumblezone.modinit.BzCriterias;
-import com.telepathicgrunt.bumblezone.world.dimension.BzDimension;
-import com.telepathicgrunt.bumblezone.world.dimension.BzWorldSavedData;
+import com.telepathicgrunt.the_bumblezone.modcompat.BumblezoneAPI;
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.compat.BumblezoneCompat;
@@ -63,8 +61,8 @@ public abstract class BeehiveBlockMixin {
         try {
             MobEntity possessedEntity = PossessionComponent.getHost(player);
             if (player instanceof ServerPlayerEntity spe && possessedEntity instanceof BeeEntity && player.getWorld().getRegistryKey() != BumblezoneCompat.BZ_WORLD_KEY) {
-                BzCriterias.TELEPORT_TO_BUMBLEZONE_PEARL_TRIGGER.trigger(spe);
-                BzWorldSavedData.queueEntityToTeleport(player, BzDimension.BZ_WORLD_KEY);
+                BumblezoneAPI.triggerEnderPearlAdvancement(spe);
+                BumblezoneAPI.queueEntityForTeleportingToBumblezone(player);
                 cir.setReturnValue(ActionResult.SUCCESS);
             }
         } catch (Throwable t) {

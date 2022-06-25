@@ -34,8 +34,8 @@
  */
 package ladysnake.requiem.compat;
 
-import com.telepathicgrunt.bumblezone.Bumblezone;
-import com.telepathicgrunt.bumblezone.modcompat.BumblezoneAPI;
+import com.telepathicgrunt.the_bumblezone.Bumblezone;
+import com.telepathicgrunt.the_bumblezone.modcompat.BumblezoneAPI;
 import ladysnake.requiem.api.v1.annotation.CalledThroughReflection;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
