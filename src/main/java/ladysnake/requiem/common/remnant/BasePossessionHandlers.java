@@ -107,7 +107,7 @@ public final class BasePossessionHandlers {
             }
             return PossessionStartCallback.Result.PASS;
         });
-        PossessionStartCallback.EVENT.register(Requiem.id("emancipation"), (target, possessor, simulate) -> {
+        PossessionStartCallback.EVENT.register(Requiem.id("soulless"), (target, possessor, simulate) -> {
             if (SoulHolderComponent.isSoulless(target)) {
                 return PossessionStartCallback.Result.ALLOW;
             }
