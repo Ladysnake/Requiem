@@ -3,6 +3,9 @@ Version 2.0.0
 ------------------------------------------------------
 **Warning: future betas may still break compatibility with worlds started with this version. Don't start using those versions on any world you care about.**
 
+### Changes in Beta 9
+- Fixed crash with bumblezone, courtesy of andy-makes
+
 ### Changes in Beta 8
 Updated to 1.18.2
 
