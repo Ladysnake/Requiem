@@ -34,27 +34,53 @@
  */
 package ladysnake.requiem.common.item;
 
+import io.github.ladysnake.elmendorf.GameTestUtil;
 import ladysnake.requiem.Requiem;
+import ladysnake.requiem.api.v1.event.requiem.SoulCaptureEvents;
+import ladysnake.requiem.api.v1.remnant.RemnantComponent;
+import ladysnake.requiem.common.remnant.RemnantTypes;
+import ladysnake.requiem.core.entity.SoulHolderComponent;
 import net.fabricmc.fabric.api.gametest.v1.FabricGameTest;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.boss.WitherEntity;
 import net.minecraft.entity.mob.PiglinBruteEntity;
 import net.minecraft.entity.mob.PillagerEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.test.GameTest;
 import net.minecraft.test.TestContext;
+import net.minecraft.util.Hand;
 
 public class EmptySoulVesselItemTest implements FabricGameTest {
     @GameTest(structureName = EMPTY_STRUCTURE)
     public void computeSoulDefense(TestContext ctx) {
         LivingEntity mob = new PiglinBruteEntity(EntityType.PIGLIN_BRUTE, ctx.getWorld());
+        SoulCaptureEvents.CaptureType captureType = SoulCaptureEvents.CaptureType.NORMAL;
         // "integration testing"
-        Requiem.LOGGER.info(EmptySoulVesselItem.computeSoulDefense(mob));
+        Requiem.LOGGER.info(EmptySoulVesselItem.computeSoulDefense(mob, captureType));
         mob.setHealth(1.0F);
-        Requiem.LOGGER.info(EmptySoulVesselItem.computeSoulDefense(mob));
+        Requiem.LOGGER.info(EmptySoulVesselItem.computeSoulDefense(mob, captureType));
         mob = new PillagerEntity(EntityType.PILLAGER, ctx.getWorld());
-        Requiem.LOGGER.info(EmptySoulVesselItem.computeSoulDefense(mob));
+        Requiem.LOGGER.info(EmptySoulVesselItem.computeSoulDefense(mob, captureType));
         mob.setHealth(3.0F);
-        Requiem.LOGGER.info(EmptySoulVesselItem.computeSoulDefense(mob));
+        Requiem.LOGGER.info(EmptySoulVesselItem.computeSoulDefense(mob, captureType));
+        ctx.complete();
+    }
+
+    @GameTest(structureName = EMPTY_STRUCTURE)
+    public void soulVesselStealsWitherSouls(TestContext ctx) {
+        ServerPlayerEntity player = ctx.spawnServerPlayer(2, 0, 2);
+        RemnantComponent.get(player).become(RemnantTypes.REMNANT);
+        ItemStack soulVessel = new ItemStack(RequiemItems.EMPTY_SOUL_VESSEL);
+        player.setStackInHand(Hand.MAIN_HAND, soulVessel);
+        WitherEntity wither = ctx.spawnMob(EntityType.WITHER, 3, 0, 3);
+        GameTestUtil.assertTrue("Wither should start with full health", wither.getHealth() == wither.getMaxHealth());
+        soulVessel.useOnEntity(player, wither, Hand.MAIN_HAND);
+        ItemStack result = soulVessel.finishUsing(ctx.getWorld(), player);
+        GameTestUtil.assertTrue("Wither should get damaged by soul stealing", wither.getHealth() < wither.getMaxHealth());
+        GameTestUtil.assertTrue("Vessel should get filled with random soul", result.getItem() == RequiemItems.FILLED_SOUL_VESSEL);
+        GameTestUtil.assertFalse("Wither should not lose its soul", SoulHolderComponent.isSoulless(wither));
         ctx.complete();
     }
 }

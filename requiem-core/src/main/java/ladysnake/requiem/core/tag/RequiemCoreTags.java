@@ -43,7 +43,6 @@ public final class RequiemCoreTags {
     public static final class Entity {
         public static final TagKey<EntityType<?>> FRICTIONLESS_HOSTS = register("possession/frictionless_hosts");
         public static final TagKey<EntityType<?>> POSSESSION_BLACKLIST = register("possession/possession_blacklist");
-        public static final TagKey<EntityType<?>> SOUL_CAPTURE_BLACKLIST = register("possession/soul_capture_blacklist");
         public static final TagKey<EntityType<?>> GOLEMS = register("golems");
         public static final TagKey<EntityType<?>> ITEM_USERS = register("inventory/item_users");
         public static final TagKey<EntityType<?>> INVENTORY_CARRIERS = register("inventory/inventory_carriers");

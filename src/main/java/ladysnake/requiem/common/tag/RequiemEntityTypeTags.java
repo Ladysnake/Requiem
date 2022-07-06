@@ -58,6 +58,8 @@ public final class RequiemEntityTypeTags {
     public static final TagKey<EntityType<?>> SKELETONS = register("skeletons");
     public static final TagKey<EntityType<?>> ZOMBIES = register("zombies");
     public static final TagKey<EntityType<?>> PIGLINS = register("piglins");
+    public static final TagKey<EntityType<?>> SOUL_AGGREGATES = register("soul_capture/soul_aggregates");
+    public static final TagKey<EntityType<?>> SOUL_CAPTURE_BLACKLIST = register("soul_capture/soul_capture_blacklist");
 
     public static void init() {
         // NO-OP

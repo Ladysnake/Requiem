@@ -2,6 +2,7 @@
   "replace": false,
   "values": [
     "#c:bosses",
+    "minecraft:warden",
     {"id": "mobz:boss_entity", "required": false},
     {"id": "mobz:bigboss_entity", "required": false},
     {"id": "mobz:test_entity", "required": false},

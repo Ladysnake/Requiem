@@ -23,9 +23,9 @@ import net.minecraft.entity.LivingEntity;
 
 public final class SoulCaptureEvents {
     public static final Event<BeforeAttempt> BEFORE_ATTEMPT = EventFactory.createArrayBacked(BeforeAttempt.class,
-        (callbacks) -> (stealer, target) -> {
+        (callbacks) -> (stealer, target, captureType) -> {
             for (BeforeAttempt callback : callbacks) {
-                if (!callback.canAttemptCapturing(stealer, target)) {
+                if (!callback.canAttemptCapturing(stealer, target, captureType)) {
                     return false;
                 }
             }
@@ -37,12 +37,22 @@ public final class SoulCaptureEvents {
         /**
          * Called before an entity attempts to capture the soul of another.
          *
-         * <p>If this
-         *
          * @param stealer the entity attempting the capture. In the base mod, this can be a player or a mortician.
          * @param target the entity on which the capture is attempted.
          * @return {@code true} if the attempt can proceed, {@code false} otherwise
          */
-        boolean canAttemptCapturing(LivingEntity stealer, LivingEntity target);
+        boolean canAttemptCapturing(LivingEntity stealer, LivingEntity target, CaptureType captureType);
+    }
+
+    public enum CaptureType {
+        /**
+         * A soul capture from a soul aggregate removes a single soul from the whole, dealing damage to the creature
+         * and filling the vessel with a random soul
+         */
+        AGGREGATE,
+        /**
+         * A soul capture from a regular creature removes its soul, rendering it soulless
+         */
+        NORMAL
     }
 }

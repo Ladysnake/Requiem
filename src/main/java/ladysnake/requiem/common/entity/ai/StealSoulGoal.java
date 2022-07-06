@@ -52,7 +52,7 @@ public class StealSoulGoal extends MorticianSpellGoal {
     @Override
     public boolean canStart() {
         if (super.canStart()) {
-            return this.mortician.getTarget() != null && EmptySoulVesselItem.canAttemptCapture(this.mortician, this.mortician.getTarget());
+            return this.mortician.getTarget() != null && EmptySoulVesselItem.checkCapturePreconditions(this.mortician, this.mortician.getTarget()).isPresent();
         }
         return false;
     }
@@ -81,26 +81,32 @@ public class StealSoulGoal extends MorticianSpellGoal {
     @Override
     protected void castSpell() {
         LivingEntity target = this.mortician.getTarget();
-        if (target != null && EmptySoulVesselItem.canAttemptCapture(this.mortician, target)) {
-            if (EmptySoulVesselItem.wins(this.mortician, target)) {
-                this.mortician.addCapturedSoul(EmptySoulVesselItem.setupRecord(target));
-                SoulHolderComponent.get(target).removeSoul();
-            } else {
-                for(int i = 0; i < 7; i++) {
-                    double vx = this.mortician.getRandom().nextGaussian() * 0.02;
-                    double vy = this.mortician.getRandom().nextGaussian() * 0.02;
-                    double vz = this.mortician.getRandom().nextGaussian() * 0.02;
-                    this.mortician.world.addParticle(
-                        ParticleTypes.SMOKE,
-                        this.mortician.getParticleX(1.0),
-                        this.mortician.getRandomBodyY() + 0.5,
-                        this.mortician.getParticleZ(1.0),
-                        vx,
-                        vy,
-                        vz
-                    );
+        if (target != null) {
+            EmptySoulVesselItem.checkCapturePreconditions(this.mortician, target).ifPresent(captureType -> {
+                if (EmptySoulVesselItem.wins(this.mortician, target, captureType)) {
+                    this.mortician.addCapturedSoul(EmptySoulVesselItem.setupRecord(target));
+                    SoulHolderComponent.get(target).removeSoul();
+                } else {
+                    this.spawnFailureParticles();
                 }
-            }
+            });
+        }
+    }
+
+    private void spawnFailureParticles() {
+        for (int i = 0; i < 7; i++) {
+            double vx = this.mortician.getRandom().nextGaussian() * 0.02;
+            double vy = this.mortician.getRandom().nextGaussian() * 0.02;
+            double vz = this.mortician.getRandom().nextGaussian() * 0.02;
+            this.mortician.world.addParticle(
+                ParticleTypes.SMOKE,
+                this.mortician.getParticleX(1.0),
+                this.mortician.getRandomBodyY() + 0.5,
+                this.mortician.getParticleZ(1.0),
+                vx,
+                vy,
+                vz
+            );
         }
     }
 }

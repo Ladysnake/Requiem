@@ -47,14 +47,15 @@ import ladysnake.requiem.common.particle.RequiemEntityParticleEffect;
 import ladysnake.requiem.common.particle.RequiemParticleTypes;
 import ladysnake.requiem.common.remnant.WandererRemnantState;
 import ladysnake.requiem.common.sound.RequiemSoundEvents;
+import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
 import ladysnake.requiem.core.entity.SoulHolderComponent;
 import ladysnake.requiem.core.record.EntityPositionClerk;
-import ladysnake.requiem.core.tag.RequiemCoreTags;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
@@ -71,14 +72,24 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.UseAction;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 
+import java.util.Optional;
 import java.util.UUID;
 
 public class EmptySoulVesselItem extends Item {
 
     public static final String ACTIVE_DATA_TAG = "requiem:soul_capture";
+    /**
+     * The damage inflicted to soul aggregating creatures when stealing one of their souls
+     */
+    public static final int SOUL_AGGREGATE_STEALING_DAMAGE = 20;
+    /**
+     * The delay before a newly filled vessel can be used
+     */
+    public static final int POST_CAPTURE_COOLDOWN = 100;
 
     public EmptySoulVesselItem(Settings settings) {
         super(settings);
@@ -127,28 +138,45 @@ public class EmptySoulVesselItem extends Item {
      */
     @Override
     public ActionResult useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
-        if (canAttemptCapture(user, entity)) {
+        Optional<SoulCaptureEvents.CaptureType> captureType = checkCapturePreconditions(user, entity);
+        if (captureType.isPresent()) {
             NbtCompound activeData = stack.getOrCreateSubNbt(ACTIVE_DATA_TAG);
-            activeData.putInt("use_time", computeCaptureTime(entity, user));
+            activeData.putInt("use_time", computeCaptureTime(entity, user, captureType.get()));
             activeData.putUuid("target", entity.getUuid());
             // will be a copy in creative mode, so need to copy changes too
             user.getStackInHand(hand).getOrCreateSubNbt(ACTIVE_DATA_TAG).copyFrom(activeData);
             user.setCurrentHand(hand);
             return ActionResult.CONSUME;
         }
+
         return super.useOnEntity(stack, user, entity, hand);
     }
 
-    public static boolean canAttemptCapture(LivingEntity user, LivingEntity entity) {
-        return entity instanceof MobEntity
-            && !entity.getType().isIn(RequiemCoreTags.Entity.SOUL_CAPTURE_BLACKLIST)
-            && SoulCaptureEvents.BEFORE_ATTEMPT.invoker().canAttemptCapturing(user, entity);
+    public static Optional<SoulCaptureEvents.CaptureType> checkCapturePreconditions(LivingEntity user, LivingEntity entity) {
+        return Optional.of(entity)
+            .filter(e -> e instanceof MobEntity)
+            .flatMap(EmptySoulVesselItem::getCaptureType)
+            .filter(captureType -> SoulCaptureEvents.BEFORE_ATTEMPT.invoker().canAttemptCapturing(user, entity, captureType));
     }
 
-    private int computeCaptureTime(LivingEntity entity, LivingEntity user) {
-        int targetSoulStrength = computeSoulDefense(entity);
+    private static Optional<SoulCaptureEvents.CaptureType> getCaptureType(LivingEntity entity) {
+        if (entity.getType().isIn(RequiemEntityTypeTags.SOUL_AGGREGATES)) {
+            return Optional.of(SoulCaptureEvents.CaptureType.AGGREGATE);
+        } else if (!entity.getType().isIn(RequiemEntityTypeTags.SOUL_CAPTURE_BLACKLIST)) {
+            return Optional.of(SoulCaptureEvents.CaptureType.NORMAL);
+        }
+
+        return Optional.empty();
+    }
+
+    private int computeCaptureTime(LivingEntity target, LivingEntity user, SoulCaptureEvents.CaptureType captureType) {
+        int targetSoulStrength = computeSoulDefense(target, captureType);
         int playerSoulStrength = computeSoulOffense(user);
-        return Math.round(96.0f * Math.min(3.0f, Math.max(1.0f, (float) targetSoulStrength / playerSoulStrength)));
+        float max = switch (captureType) {
+            case NORMAL -> 3.0f;
+            case AGGREGATE -> 1.5f;
+        };
+        return Math.round(96.0f * MathHelper.clamp((float) targetSoulStrength / playerSoulStrength, 1.0f, max));
     }
 
     @Override
@@ -161,19 +189,25 @@ public class EmptySoulVesselItem extends Item {
         Entity entity = serverWorld.getEntity(activeData.getUuid("target"));
 
         if (!(entity instanceof LivingEntity target)) return stack;
-        if (!(user instanceof ServerPlayerEntity remnant
-            && SoulCaptureEvents.BEFORE_ATTEMPT.invoker().canAttemptCapturing(remnant, target))) {
-            return stack;
-        }
+        if (!(user instanceof ServerPlayerEntity remnant)) return stack;
+        Optional<SoulCaptureEvents.CaptureType> captureType = checkCapturePreconditions(remnant, target);
+        if (captureType.isEmpty()) return stack;
 
         ItemStack result;
         remnant.incrementStat(Stats.USED.getOrCreateStat(this));
 
-        if (wins(remnant, target)) {
+        if (wins(remnant, target, captureType.get())) {
             result = FilledSoulVesselItem.forEntityType(entity.getType());
-            result.getOrCreateSubNbt(FilledSoulVesselItem.SOUL_FRAGMENT_NBT).putUuid("uuid", setupRecord(target));
-            SoulHolderComponent.get(target).removeSoul();
-            remnant.getItemCooldownManager().set(RequiemItems.FILLED_SOUL_VESSEL, 100);
+            UUID recordUuid = switch(captureType.get()) {
+                case NORMAL -> setupRecord(target);
+                case AGGREGATE -> UUID.randomUUID(); // if we are stealing a soul from an aggregate, there is no linked entity
+            };
+            result.getOrCreateSubNbt(FilledSoulVesselItem.SOUL_FRAGMENT_NBT).putUuid("uuid", recordUuid);
+            switch (captureType.get()) {
+                case NORMAL -> SoulHolderComponent.get(target).removeSoul();
+                case AGGREGATE -> target.damage(DamageSource.MAGIC, SOUL_AGGREGATE_STEALING_DAMAGE);
+            }
+            remnant.getItemCooldownManager().set(RequiemItems.FILLED_SOUL_VESSEL, POST_CAPTURE_COOLDOWN);
         } else {
             AttritionStatusEffect.apply(remnant, 1, 20 * 60 * 5);
             WandererRemnantState.spawnAttritionParticles(remnant, remnant);
@@ -226,9 +260,9 @@ public class EmptySoulVesselItem extends Item {
         user.playSound(RequiemSoundEvents.ITEM_EMPTY_VESSEL_USE, 1, 1);
     }
 
-    public static boolean wins(LivingEntity user, LivingEntity target) {
+    public static boolean wins(LivingEntity user, LivingEntity target, SoulCaptureEvents.CaptureType captureType) {
         int soulOffense = computeSoulOffense(user);
-        int soulDefense = computeSoulDefense(target);
+        int soulDefense = computeSoulDefense(target, captureType);
 
         if (soulOffense > soulDefense) {
             return true;
@@ -242,9 +276,12 @@ public class EmptySoulVesselItem extends Item {
         return (int) Math.round(user.getAttributeValue(RequiemEntityAttributes.SOUL_OFFENSE));
     }
 
-    static int computeSoulDefense(LivingEntity entity) {
+    static int computeSoulDefense(LivingEntity entity, SoulCaptureEvents.CaptureType captureType) {
         double base = entity.getAttributeValue(RequiemEntityAttributes.SOUL_DEFENSE);
-        double maxHealth = entity.getMaxHealth();
+        double maxHealth = switch (captureType) {
+            case NORMAL -> entity.getMaxHealth();
+            case AGGREGATE -> 1;
+        };
         double intrinsicArmor = getAttributeBaseValue(entity, EntityAttributes.GENERIC_ARMOR);
         double intrinsicArmorToughness = getAttributeBaseValue(entity, EntityAttributes.GENERIC_ARMOR_TOUGHNESS);
         double intrinsicStrength = getAttributeBaseValue(entity, EntityAttributes.GENERIC_ATTACK_DAMAGE);
