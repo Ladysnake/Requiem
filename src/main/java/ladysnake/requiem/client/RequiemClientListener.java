@@ -51,7 +51,6 @@ import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
 import ladysnake.requiem.core.tag.RequiemCoreTags;
 import ladysnake.requiem.core.util.ItemUtil;
 import ladysnake.satin.api.event.ShaderEffectRenderCallback;
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.item.TooltipContext;
@@ -71,21 +70,20 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.MilkBucketItem;
 import net.minecraft.item.RangedWeaponItem;
 import net.minecraft.item.TridentItem;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.world.World;
 import org.apache.commons.lang3.mutable.MutableBoolean;
+import org.quiltmc.qsl.lifecycle.api.client.event.ClientTickEvents;
 
 import javax.annotation.Nullable;
 import java.util.List;
 
 public final class RequiemClientListener implements
-    ClientTickEvents.EndTick,
+    ClientTickEvents.End,
     ItemTooltipCallback {
 
-    private static boolean skipNextGuardian =  false;
+    private static boolean skipNextGuardian = false;
 
     public static boolean shouldSkipNextGuardian() {
         if (skipNextGuardian) {
@@ -97,14 +95,13 @@ public final class RequiemClientListener implements
 
     private final RequiemClient rc;
     private final MinecraftClient mc = MinecraftClient.getInstance();
-    private int timeBeforeDialogueGui;
 
     public RequiemClientListener(RequiemClient requiemClient) {
         this.rc = requiemClient;
     }
 
     void registerCallbacks() {
-        ClientTickEvents.END_CLIENT_TICK.register(this);
+        ClientTickEvents.END.register(this);
         // Make the crosshair purple when able to teleport to the Overworld using an enderman
         CrosshairRenderCallback.EVENT.register(Requiem.id("enderman_color"), this::drawEnderCrosshair);
         // Add custom tooltips to items when the player is possessing certain entities
@@ -112,9 +109,9 @@ public final class RequiemClientListener implements
         PossessionStateChangeCallback.EVENT.register((possessor, target) -> {
             if (possessor.world.isClient && target != null) {
                 if (target.getType().isIn(RequiemCoreTags.Entity.IMMOVABLE)) {
-                    this.mc.inGameHud.setOverlayMessage(new TranslatableText("requiem:shulker.onboard", mc.options.sneakKey.getBoundKeyLocalizedText(), FractureKeyBinding.etherealFractureKey.getBoundKeyLocalizedText()), false);
+                    this.mc.inGameHud.setOverlayMessage(Text.translatable("requiem:shulker.onboard", mc.options.sneakKey.getKeyName(), FractureKeyBinding.etherealFractureKey.getKeyName()), false);
                 } else if (target.getType().isIn(RequiemCoreTags.Entity.FRICTIONLESS_HOSTS)) {
-                    this.mc.inGameHud.setOverlayMessage(new TranslatableText("requiem:dissociate_hint", FractureKeyBinding.etherealFractureKey.getBoundKeyLocalizedText()), false);
+                    this.mc.inGameHud.setOverlayMessage(Text.translatable("requiem:dissociate_hint", FractureKeyBinding.etherealFractureKey.getKeyName()), false);
                 }
             }
         });
@@ -129,14 +126,19 @@ public final class RequiemClientListener implements
         });
         ShaderEffectRenderCallback.EVENT.register(GhostParticle::draw);
         MutableBoolean wasLookingAtShell = new MutableBoolean();
-        ClientTickEvents.START_CLIENT_TICK.register(client -> {
-            if (client.player != null && client.targetedEntity instanceof FakeClientPlayerEntity fp && fp.getType() == RequiemEntities.PLAYER_SHELL) {
-                if (PossessionComponent.getHost(client.player) != null && client.player.getUuid().equals(fp.getOwnerUuid())) {
-                    client.inGameHud.setOverlayMessage(new TranslatableText("requiem:merge_hint", FractureKeyBinding.etherealFractureKey.getBoundKeyLocalizedText()), false);
+        ClientTickEvents.START.register(client -> {
+            if (client.player != null && client.targetedEntity instanceof FakeClientPlayerEntity fp
+                && fp.getType() == RequiemEntities.PLAYER_SHELL) {
+                if (PossessionComponent.getHost(client.player) != null
+                    && client.player.getUuid().equals(fp.getOwnerUuid())) {
+                    client.inGameHud.setOverlayMessage(Text.translatable(
+                        "requiem:merge_hint",
+                        FractureKeyBinding.etherealFractureKey.getKeyName()
+                    ), false);
                     wasLookingAtShell.setTrue();
                 }
             } else if (wasLookingAtShell.booleanValue()) {
-                client.inGameHud.setOverlayMessage(LiteralText.EMPTY, false);
+                client.inGameHud.setOverlayMessage(Text.empty(), false);
                 wasLookingAtShell.setFalse();
             }
         });
@@ -148,7 +150,7 @@ public final class RequiemClientListener implements
     }
 
     @Override
-    public void onEndTick(MinecraftClient client) {
+    public void endClientTick(MinecraftClient client) {
         if (client.player != null) {
             MobEntity possessedEntity = PossessionComponent.get(client.player).getHost();
 
@@ -194,7 +196,7 @@ public final class RequiemClientListener implements
             } else {
                 return;
             }
-            lines.add(new TranslatableText(key).styled(style -> style.withColor(Formatting.DARK_GRAY)));
+            lines.add(Text.translatable(key).styled(style -> style.withColor(Formatting.DARK_GRAY)));
         }
     }
 

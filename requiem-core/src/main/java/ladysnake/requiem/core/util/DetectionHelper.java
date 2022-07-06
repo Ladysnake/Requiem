@@ -37,7 +37,7 @@ package ladysnake.requiem.core.util;
 import ladysnake.requiem.api.v1.event.requiem.PossessionEvents;
 import ladysnake.requiem.api.v1.possession.Possessable;
 import ladysnake.requiem.core.mixin.access.MobEntityAccessor;
-import ladysnake.requiem.core.mixin.possession.FollowTargetGoalAccessor;
+import ladysnake.requiem.core.mixin.possession.TargetGoalAccessor;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.goal.PrioritizedGoal;
@@ -76,7 +76,7 @@ public final class DetectionHelper {
      */
     public static void inciteMob(MobEntity host, MobEntity hostile) {
         for (PrioritizedGoal goal : ((MobEntityAccessor) hostile).getTargetSelector().getGoals()) {
-            if (goal.getGoal() instanceof FollowTargetGoalAccessor g && g.getTargetClass().isAssignableFrom(ServerPlayerEntity.class)) {
+            if (goal.getGoal() instanceof TargetGoalAccessor g && g.getTargetClass().isAssignableFrom(ServerPlayerEntity.class)) {
                 g.setTargetEntity(host);
                 goal.start();
             }

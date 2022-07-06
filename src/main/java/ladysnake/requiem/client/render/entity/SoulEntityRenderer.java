@@ -34,11 +34,11 @@
  */
 package ladysnake.requiem.client.render.entity;
 
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.client.render.entity.model.WillOWispModel;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.render.entity.EntityRendererFactory;

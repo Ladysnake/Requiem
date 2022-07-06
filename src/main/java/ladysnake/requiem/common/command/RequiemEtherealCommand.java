@@ -42,8 +42,6 @@ import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
-import net.minecraft.util.Util;
 import net.minecraft.world.GameRules;
 
 import java.util.Collection;
@@ -82,8 +80,8 @@ public final class RequiemEtherealCommand {
 
     private static int queryEthereal(ServerCommandSource source, ServerPlayerEntity player) {
         boolean remnant = RemnantComponent.get(player).isVagrant();
-        Text remnantState = new TranslatableText("requiem:" + (remnant ? "ethereal" : "not_ethereal"));
-        source.sendFeedback(new TranslatableText("requiem:commands.query.success." + (source.getEntity() == player ? "self" : "other"), remnantState), true);
+        Text remnantState = Text.translatable("requiem:" + (remnant ? "ethereal" : "not_ethereal"));
+        source.sendFeedback(Text.translatable("requiem:commands.query.success." + (source.getEntity() == player ? "self" : "other"), remnantState), true);
         return remnant ? 1 : 0;
     }
 
@@ -92,10 +90,10 @@ public final class RequiemEtherealCommand {
         for (ServerPlayerEntity player : players) {
             if (RemnantComponent.get(player).isVagrant() != ethereal) {
                 if (!isRemnant(player)) {
-                    throw new CommandException(new TranslatableText("requiem:commands.ethereal.set.fail.mortal", player.getDisplayName()));
+                    throw new CommandException(Text.translatable("requiem:commands.ethereal.set.fail.mortal", player.getDisplayName()));
                 }
                 if (!RemnantComponent.get(player).setVagrant(ethereal)) {
-                    throw new CommandException(new TranslatableText("requiem:commands.ethereal.set.fail", player.getDisplayName()));
+                    throw new CommandException(Text.translatable("requiem:commands.ethereal.set.fail", player.getDisplayName()));
                 }
                 sendSetEtherealFeedback(source, player, ethereal);
                 ++count;
@@ -105,15 +103,15 @@ public final class RequiemEtherealCommand {
     }
 
     private static void sendSetEtherealFeedback(ServerCommandSource source, ServerPlayerEntity player, boolean ethereal) {
-        Text name = new TranslatableText("requiem:" + (ethereal ? "ethereal" : "not_ethereal"));
+        Text name = Text.translatable("requiem:" + (ethereal ? "ethereal" : "not_ethereal"));
         if (source.getEntity() == player) {
-            source.sendFeedback(new TranslatableText("requiem:commands.ethereal.set.success.self", name), true);
+            source.sendFeedback(Text.translatable("requiem:commands.ethereal.set.success.self", name), true);
         } else {
             if (source.getWorld().getGameRules().getBoolean(GameRules.SEND_COMMAND_FEEDBACK)) {
-                player.sendSystemMessage(new TranslatableText("requiem:commands.ethereal.set.target", name), Util.NIL_UUID);
+                player.sendSystemMessage(Text.translatable("requiem:commands.ethereal.set.target", name));
             }
 
-            source.sendFeedback(new TranslatableText("requiem:commands.ethereal.set.success.other", player.getDisplayName(), name), true);
+            source.sendFeedback(Text.translatable("requiem:commands.ethereal.set.success.other", player.getDisplayName(), name), true);
         }
     }
 

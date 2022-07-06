@@ -48,7 +48,6 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsage;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
@@ -87,7 +86,7 @@ public class FilledSoulVesselItem extends Item {
     public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
         Optional.ofNullable(stack.getSubNbt(SOUL_FRAGMENT_NBT))
             .flatMap(fragmentData -> EntityType.get(fragmentData.getString("type")))
-            .ifPresent(contained -> tooltip.add(new TranslatableText("requiem:tooltip.filled_vessel", contained.getName()).formatted(Formatting.GRAY)));
+            .ifPresent(contained -> tooltip.add(Text.translatable("requiem:tooltip.filled_vessel", contained.getName()).formatted(Formatting.GRAY)));
     }
 
     @Override

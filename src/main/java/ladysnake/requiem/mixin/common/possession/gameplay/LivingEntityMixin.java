@@ -81,8 +81,8 @@ public abstract class LivingEntityMixin extends Entity implements Possessable {
     @Shadow
     public abstract void updateLimbs(LivingEntity livingEntity, boolean bl);
 
-    @Accessor("airStrafingSpeed")
-    protected abstract void requiem$setAirStrafingSpeed(float speed);
+    @Accessor("flyingSpeed")
+    protected abstract void requiem$setFlyingSpeed(float speed);
 
     public LivingEntityMixin(EntityType<?> type, World world) {
         super(type, world);

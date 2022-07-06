@@ -68,10 +68,10 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.random.RandomGenerator;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
-import java.util.Random;
 import java.util.UUID;
 
 public final class PossessionComponentImpl implements PossessionComponent {
@@ -308,7 +308,7 @@ public final class PossessionComponentImpl implements PossessionComponent {
     @Override
     public void startCuring() {
         if (!this.player.world.isClient) {
-            Random rand = this.player.getRandom();
+            RandomGenerator rand = this.player.getRandom();
             this.conversionTimer = rand.nextInt(1201) + 2400;  // a bit shorter than villager
             this.player.removeStatusEffect(StatusEffects.WEAKNESS);
             this.player.addStatusEffect(new StatusEffectInstance(StatusEffects.STRENGTH, conversionTimer, 0));

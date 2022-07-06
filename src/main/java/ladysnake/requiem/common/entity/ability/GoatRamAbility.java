@@ -90,7 +90,7 @@ public class GoatRamAbility<O extends PathAwareEntity> extends DirectAbilityBase
                         cooldownFactory = prepareRamTask.getCooldownFactory();
                         speed = prepareRamTask.getSpeed();
                         maxRange = prepareRamTask.getMaxRamDistance();
-                    } else if (task instanceof RamImpactTask<?>) {
+                    } else if (task instanceof RamImpactTask) {
                         @SuppressWarnings("unchecked") var impactTask = (RamImpactTaskAccessor<? super O>) task;
                         ramImpactTask = impactTask;
                     }

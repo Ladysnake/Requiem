@@ -9,12 +9,7 @@ group = rootProject.maven_group
 archivesBaseName = rootProject.name
 
 allprojects {
-    apply plugin: 'fabric-loom'
-    apply plugin: 'com.matthewprenger.cursegradle'
     apply plugin: 'maven-publish'
-    apply plugin: 'org.cadixdev.licenser'
-    apply plugin: 'com.jfrog.artifactory'
-    apply plugin: 'java-library'
     apply plugin: 'io.github.ladysnake.chenille'
 
     version = project.mod_version
@@ -91,7 +86,7 @@ allprojects {
     processResources {
         inputs.property "version", project.version
 
-        filesMatching("fabric.mod.json") {
+        filesMatching("quilt.mod.json") {
             expand "version": project.version
         }
     }
@@ -103,11 +98,12 @@ allprojects {
     dependencies {
         //to change the versions see the gradle.properties file
         minecraft "com.mojang:minecraft:${project.minecraft_version}"
-        mappings("net.fabricmc:yarn:${yarn_mappings}:v2")
-        modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
-
-        // Fabric API. This is technically optional, but you probably want it anyway.
-        modApi "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+        mappings(loom.layered {
+            addLayer(quiltMappings.mappings("org.quiltmc:quilt-mappings:${minecraft_version}+build.${quilt_mappings}:v2"))
+        })
+        modImplementation "org.quiltmc:quilt-loader:${project.loader_version}"
+        modImplementation "org.quiltmc:qsl:${qsl_version}+${minecraft_version}"
+        modImplementation "org.quiltmc.quilted-fabric-api:quilted-fabric-api:${quilted_fabric_api_version}-${minecraft_version}"
 
         compileOnly metaLibs.bundles.devAnnotations
     }

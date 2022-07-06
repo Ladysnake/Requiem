@@ -34,6 +34,7 @@
  */
 package ladysnake.requiem.client;
 
+import com.mojang.blaze3d.platform.InputUtil;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.common.network.RequiemNetworking;
 import ladysnake.requiem.core.tag.RequiemCoreTags;
@@ -41,8 +42,7 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.client.option.KeyBinding;
-import net.minecraft.client.util.InputUtil;
+import net.minecraft.client.option.KeyBind;
 import net.minecraft.entity.mob.MobEntity;
 import org.lwjgl.glfw.GLFW;
 
@@ -53,7 +53,7 @@ public final class FractureKeyBinding {
 
     public static final String ETHEREAL_FRACTURE = "key.requiem.dissociation";
 
-    public static final KeyBinding etherealFractureKey = new KeyBinding(
+    public static final KeyBind etherealFractureKey = new KeyBind(
             ETHEREAL_FRACTURE,
             InputUtil.Type.KEYSYM,
             GLFW.GLFW_KEY_COMMA,  // '<'

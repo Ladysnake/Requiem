@@ -39,7 +39,6 @@ import net.minecraft.command.EntitySelectorOptions;
 import net.minecraft.command.EntitySelectorReader;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -72,11 +71,11 @@ public abstract class EntitySelectorOptionsMixin {
                     return false;
                 } else {
                     PlayerEntity possessor = ((Possessable) entity).getPossessor();
-                    String possessorName = possessor == null ? "" : possessor.getName().asString();
+                    String possessorName = possessor == null ? "" : possessor.getName().getString();
                     return possessorName.equals(expectedName) != negated;
                 }
             });
-        }, (reader) -> true, new TranslatableText("requiem:argument.entity.options.possessor.description"));
+        }, (reader) -> true, Text.translatable("requiem:argument.entity.options.possessor.description"));
     }
 
     @ModifyArg(

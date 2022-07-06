@@ -80,7 +80,7 @@ public abstract class InGameHudMixin extends DrawableHelper {
     @Shadow
     protected abstract PlayerEntity getCameraPlayer();
 
-    @Inject(method = "renderCrosshair", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/systems/RenderSystem;blendFuncSeparate(Lcom/mojang/blaze3d/platform/GlStateManager$SrcFactor;Lcom/mojang/blaze3d/platform/GlStateManager$DstFactor;Lcom/mojang/blaze3d/platform/GlStateManager$SrcFactor;Lcom/mojang/blaze3d/platform/GlStateManager$DstFactor;)V"))
+    @Inject(method = "renderCrosshair", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/systems/RenderSystem;blendFuncSeparate(Lcom/mojang/blaze3d/platform/GlStateManager$class_4535;Lcom/mojang/blaze3d/platform/GlStateManager$class_4534;Lcom/mojang/blaze3d/platform/GlStateManager$class_4535;Lcom/mojang/blaze3d/platform/GlStateManager$class_4534;)V"))
     private void colorCrosshair(MatrixStack matrices, CallbackInfo ci) {
         CrosshairRenderCallback.EVENT.invoker().onCrosshairRender(matrices, this.scaledWidth, this.scaledHeight);
     }
@@ -109,7 +109,7 @@ public abstract class InGameHudMixin extends DrawableHelper {
             to = @At(value = "INVOKE_ASSIGN", target = "Lnet/minecraft/entity/player/PlayerEntity;getArmor()I", shift = At.Shift.AFTER)
         ),
         at = @At("STORE"),
-        index = 20 // there are too many ints in this method, so we just take the variable index from the bytecode
+        index = 19 // there are too many ints in this method, so we just take the variable index from the bytecode
     )
     private int preventArmorRender(int armor) {
         assert client.player != null;
@@ -145,7 +145,7 @@ public abstract class InGameHudMixin extends DrawableHelper {
         // precise slice makes it more likely to detect errors from wrong variable index
         slice = @Slice(
             from = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerEntity;getAbsorptionAmount()F"),
-            to = @At(value = "INVOKE", target = "Lnet/minecraft/util/math/MathHelper;ceil(F)I", ordinal = 1)
+            to = @At(value = "INVOKE", target = "Lnet/minecraft/util/math/MathHelper;ceil(F)I", ordinal = 2)
         ),
         at = @At(value = "STORE"),
         index = 14 // there are too many ints in this method, so we just take the variable index from the bytecode

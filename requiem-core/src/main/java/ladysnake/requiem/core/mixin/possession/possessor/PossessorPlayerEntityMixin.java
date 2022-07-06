@@ -54,6 +54,7 @@ import net.minecraft.entity.player.HungerManager;
 import net.minecraft.entity.player.ItemCooldownManager;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
+import net.minecraft.network.encryption.PlayerPublicKey;
 import net.minecraft.network.packet.s2c.play.PlayerPositionLookS2CPacket;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -80,7 +81,7 @@ public abstract class PossessorPlayerEntityMixin extends PossessorLivingEntityMi
     public abstract ItemCooldownManager getItemCooldownManager();
 
     @Inject(method = "<init>", at = @At("RETURN"))
-    private void initAttributes(World world, BlockPos pos, float yaw, GameProfile profile, CallbackInfo ci) {
+    private void initAttributes(World world, BlockPos blockPos, float f, GameProfile gameProfile, PlayerPublicKey playerPublicKey, CallbackInfo ci) {
         PossessionDelegatingModifier.replaceAttributes((PlayerEntity) (Object) this);
     }
 
@@ -152,7 +153,8 @@ public abstract class PossessorPlayerEntityMixin extends PossessorLivingEntityMi
     protected void requiem$delegateBreath(CallbackInfoReturnable<Integer> cir) {
         @SuppressWarnings("ConstantConditions") Entity self = (Entity) (Object) this;
         // This method can be called in the constructor
-        if (self.getComponentContainer() != null) {
+        //noinspection ConstantConditions
+        if (self.asComponentProvider().getComponentContainer() != null) {
             Entity possessedEntity = PossessionComponent.getHost(self);
             if (possessedEntity != null) {
                 cir.setReturnValue(possessedEntity.getAir());

@@ -35,41 +35,26 @@
 package ladysnake.requiem.common.item;
 
 import ladysnake.requiem.Requiem;
-import ladysnake.requiem.common.entity.RequiemEntityAttributes;
 import net.fabricmc.fabric.api.gametest.v1.FabricGameTest;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.attribute.AttributeContainer;
-import net.minecraft.entity.attribute.DefaultAttributeContainer;
-import net.minecraft.entity.attribute.EntityAttribute;
-import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.mob.PiglinBruteEntity;
 import net.minecraft.entity.mob.PillagerEntity;
 import net.minecraft.test.GameTest;
 import net.minecraft.test.TestContext;
-import org.mockito.Mockito;
 
 public class EmptySoulVesselItemTest implements FabricGameTest {
     @GameTest(structureName = EMPTY_STRUCTURE)
     public void computeSoulDefense(TestContext ctx) {
-        LivingEntity mob = Mockito.mock(LivingEntity.class);
-        setupMob(mob, PiglinBruteEntity.createPiglinBruteAttributes());
+        LivingEntity mob = new PiglinBruteEntity(EntityType.PIGLIN_BRUTE, ctx.getWorld());
         // "integration testing"
         Requiem.LOGGER.info(EmptySoulVesselItem.computeSoulDefense(mob));
-        Mockito.when(mob.getHealth()).thenReturn(1.0F);
+        mob.setHealth(1.0F);
         Requiem.LOGGER.info(EmptySoulVesselItem.computeSoulDefense(mob));
-        setupMob(mob, PillagerEntity.createPillagerAttributes());
+        mob = new PillagerEntity(EntityType.PILLAGER, ctx.getWorld());
         Requiem.LOGGER.info(EmptySoulVesselItem.computeSoulDefense(mob));
-        Mockito.when(mob.getHealth()).thenReturn(3.0F);
+        mob.setHealth(3.0F);
         Requiem.LOGGER.info(EmptySoulVesselItem.computeSoulDefense(mob));
         ctx.complete();
-    }
-
-    private void setupMob(LivingEntity mob, DefaultAttributeContainer.Builder attributeBuilder) {
-        AttributeContainer attributes = new AttributeContainer(attributeBuilder.build());
-        Mockito.when(mob.getAttributeValue(RequiemEntityAttributes.SOUL_DEFENSE)).thenReturn(0.0);
-        Mockito.when(mob.getAttributeBaseValue(Mockito.any(EntityAttribute.class))).thenCallRealMethod();
-        Mockito.when((double) mob.getMaxHealth()).thenCallRealMethod();
-        Mockito.when(mob.getHealth()).thenReturn((float) attributes.getValue(EntityAttributes.GENERIC_MAX_HEALTH));
-        Mockito.when(mob.getAttributes()).thenReturn(attributes);
     }
 }

@@ -56,7 +56,9 @@ public class HeadDownTransformHandler implements ApplyCameraTransformsCallback {
     public void applyCameraTransformations(Camera camera, MatrixStack matrices, float tickDelta) {
         if (!camera.isThirdPerson()) {
             Entity focusedEntity = camera.getFocusedEntity();
-            if (focusedEntity != null && focusedEntity.getComponentContainer() != null) {
+            // yes the component container can be null at this point
+            //noinspection ConstantConditions
+            if (focusedEntity != null && focusedEntity.asComponentProvider().getComponentContainer() != null) {
                 Entity possessed = PossessionComponent.getHost(focusedEntity);
                 if (isUpsideDown(possessed)) {
                     matrices.multiply(QUATERNION_180_X);

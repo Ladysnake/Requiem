@@ -1,0 +1,95 @@
+{
+  "schema_version": 1,
+  "quilt_loader": {
+    "group": "io.github.ladysnake",
+    "id": "requiem",
+    "version": "${version}",
+    "metadata": {
+      "name": "Requiem",
+      "icon": "assets/requiem/skull_logo.png",
+      "description": "Death revamped and ethereal powers",
+      "contributors": {
+        "Pyrofab": "Owner",
+        "doctor4t": "Owner",
+        "sekoia": "Developer",
+        "UpcraftLP": "Developer",
+        "SciRave": "Developer"
+      },
+      "contact": {
+        "sources": "https://github.com/Ladysnake/Requiem",
+        "issues": "https://github.com/Ladysnake/Requiem/issues",
+        "discord": "ladysnake.glitch.me/discord",
+        "homepage": "https://ladysnake.github.io/wiki/requiem"
+      },
+      "license": [
+        {
+          "name": "All Rights Reserved",
+          "id": "ARR",
+          "url": "https://en.wikipedia.org/wiki/All_rights_reserved",
+          "description": "License for the art in this module"
+        },
+        {
+          "name": "GPL v2.0 with Minecraft exception",
+          "id": "GPL-2.0-or-later",
+          "url": "https://ladysnake.github.io/misc/GPL-v2-with-MC-exception.txt",
+          "description": "License for the code in this module"
+        }
+      ]
+    },
+    "intermediate_mappings": "net.fabricmc:intermediary",
+    "entrypoints": {
+      "init": "ladysnake.requiem.Requiem",
+      "client_init": "ladysnake.requiem.client.RequiemClient::onInitializeClient",
+      "requiem:plugin": "ladysnake.requiem.common.VanillaRequiemPlugin",
+      "cardinal-components": "ladysnake.requiem.common.RequiemComponents",
+      "cardinal-components-entity": "ladysnake.requiem.compat.RequiemCompatibilityManager::registerEntityComponentFactories",
+      "modmenu": "ladysnake.requiem.compat.ModMenuCompat"
+    },
+
+    "depends": [
+      {
+        "id": "minecraft",
+        "versions": ">=1.19"
+      },
+      {
+        "id": "requiem-api",
+        "versions": "${version}"
+      },
+      {
+        "id": "satin",
+        "versions": "^1.8.0"
+      },
+      {
+        "id": "cardinal-components-base",
+        "versions": "^5.0.0"
+      },
+      {
+        "id": "cloth-config2",
+        "optional": true,
+        "reason": "Provides the configuration interface in mod menu",
+        "environment": "client"
+      },
+      "fabric-permissions-api-v0",
+      "locki",
+      "playerabilitylib"
+    ],
+    "breaks": [
+      {
+        "id": "optifabric",
+        "reason": "Crashes at launch"
+      },
+      {
+        "id": "sodium",
+        "unless": "indium"
+      }
+    ]
+  },
+  "minecraft": {
+    "environment": "*"
+  },
+  "mixin": [
+    "mixins.requiem.client.json",
+    "mixins.requiem.common.json",
+    "mixins.requiem.compat.json"
+  ]
+}

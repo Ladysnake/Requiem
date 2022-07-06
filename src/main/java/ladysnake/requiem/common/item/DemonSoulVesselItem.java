@@ -53,15 +53,12 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsage;
 import net.minecraft.item.ItemUsageContext;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.stat.Stats;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
-import net.minecraft.util.StringHelper;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -155,16 +152,7 @@ public class DemonSoulVesselItem extends Item {
     @Environment(EnvType.CLIENT)
     @Override
     public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> lines, TooltipContext ctx) {
-        lines.add(new TranslatableText(tooltip).formatted(this.getTooltipColor()));
-
-        if (stack.hasNbt()) {
-            NbtCompound tag = stack.getNbt();
-            assert tag != null;
-            String author = tag.getString("author");
-            if (!StringHelper.isEmpty(author)) {
-                lines.add((new TranslatableText("book.byAuthor", author)).formatted(Formatting.GRAY));
-            }
-        }
+        lines.add(Text.translatable(tooltip).formatted(this.getTooltipColor()));
     }
 
     @Override

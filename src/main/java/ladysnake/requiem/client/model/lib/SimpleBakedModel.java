@@ -30,12 +30,12 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.random.RandomGenerator;
 import net.minecraft.world.BlockRenderView;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.ref.WeakReference;
 import java.util.List;
-import java.util.Random;
 import java.util.function.Supplier;
 
 public class SimpleBakedModel extends AbstractBakedModel {
@@ -56,7 +56,7 @@ public class SimpleBakedModel extends AbstractBakedModel {
     }
 
     @Override
-    public List<BakedQuad> getQuads(BlockState state, Direction face, Random rand) {
+    public List<BakedQuad> getQuads(BlockState state, Direction face, RandomGenerator rand) {
         List<BakedQuad>[] lists = quadLists == null ? null : quadLists.get();
         if(lists == null) {
             lists = ModelHelper.toQuadLists(mesh);
@@ -67,7 +67,7 @@ public class SimpleBakedModel extends AbstractBakedModel {
     }
 
     @Override
-    public void emitBlockQuads(BlockRenderView blockView, BlockState state, BlockPos pos, Supplier<Random> randomSupplier, RenderContext context) {
+    public void emitBlockQuads(BlockRenderView blockView, BlockState state, BlockPos pos, Supplier<RandomGenerator> randomSupplier, RenderContext context) {
         final MeshTransformer transform = transformerFactory == null ? null : transformerFactory.get().prepare(blockView, state, pos, randomSupplier);
         if(transform != null) {
             context.pushTransform(transform);
@@ -97,7 +97,7 @@ public class SimpleBakedModel extends AbstractBakedModel {
     }
 
     @Override
-    public void emitItemQuads(ItemStack stack, Supplier<Random> randomSupplier, RenderContext context) {
+    public void emitItemQuads(ItemStack stack, Supplier<RandomGenerator> randomSupplier, RenderContext context) {
         final RenderContext.QuadTransform transform = transformerFactory == null ? null : transformerFactory.get().prepare(stack, randomSupplier);
         if(transform != null) {
             context.pushTransform(transform);

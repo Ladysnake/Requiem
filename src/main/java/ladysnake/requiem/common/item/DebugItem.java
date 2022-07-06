@@ -39,7 +39,7 @@ import ladysnake.requiem.common.network.RequiemNetworking;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
@@ -57,7 +57,7 @@ public class DebugItem extends Item {
         if (player.isSneaking()) {
             if (!world.isClient) {
                 debugMode = (debugMode + 1) % 2;
-                player.sendMessage(new TranslatableText("Switched mode to %s", debugMode), true);
+                player.sendMessage(Text.translatable("Switched mode to %s", debugMode), true);
             }
         } else {
             switch (debugMode) {

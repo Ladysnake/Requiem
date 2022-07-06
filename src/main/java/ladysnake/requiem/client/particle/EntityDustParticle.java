@@ -36,6 +36,10 @@ package ladysnake.requiem.client.particle;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.Tessellator;
+import com.mojang.blaze3d.vertex.VertexFormat;
+import com.mojang.blaze3d.vertex.VertexFormats;
 import ladysnake.requiem.common.particle.RequiemEntityParticleEffect;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -44,11 +48,7 @@ import net.minecraft.client.particle.BillboardParticle;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleFactory;
 import net.minecraft.client.particle.ParticleTextureSheet;
-import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.GameRenderer;
-import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.render.VertexFormat;
-import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.world.ClientWorld;
@@ -79,10 +79,10 @@ public class EntityDustParticle extends BillboardParticle {
         this.sheet = TextureSheet.get(getTexture(src));
         this.target = target;
         this.gravityStrength = 1.0F;
-        this.red = 0.6F;
-        this.green = 0.6F;
-        this.blue = 0.6F;
-        this.alpha = this.random.nextFloat() * 0.3F + 0.3F;
+        this.colorRed = 0.6F;
+        this.colorGreen = 0.6F;
+        this.colorBlue = 0.6F;
+        this.colorAlpha = this.random.nextFloat() * 0.3F + 0.3F;
 
         this.scale /= 2.0F;
         this.sampleU = this.random.nextFloat() * 31.0F;
@@ -221,7 +221,7 @@ public class EntityDustParticle extends BillboardParticle {
             RenderSystem.setShader(GameRenderer::getParticleShader);
             RenderSystem.setShaderTexture(0, texture);
             RenderSystem.enableBlend();
-            RenderSystem.blendFunc(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA);
+            RenderSystem.blendFunc(GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE_MINUS_SRC_ALPHA);
             bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR_LIGHT);
         }
 

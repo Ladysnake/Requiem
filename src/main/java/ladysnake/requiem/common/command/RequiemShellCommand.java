@@ -43,7 +43,7 @@ import net.minecraft.command.CommandException;
 import net.minecraft.entity.Entity;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 import net.minecraft.util.math.Vec3d;
 
 import java.util.Collection;
@@ -99,14 +99,14 @@ public final class RequiemShellCommand {
 
     private static void merge(ServerPlayerEntity player, Entity entity) {
         if (!(entity instanceof PlayerShellEntity shell)) {
-            throw new CommandException(new TranslatableText("requiem:commands.shell.fail.not_shell"));
+            throw new CommandException(Text.translatable("requiem:commands.shell.fail.not_shell"));
         }
         RemnantComponent.get(player).merge(shell);
     }
 
     private static void setIdentity(Entity shell, GameProfile profile) {
         if (!(shell instanceof PlayerShellEntity)) {
-            throw new CommandException(new TranslatableText("requiem:commands.shell.fail.not_shell"));
+            throw new CommandException(Text.translatable("requiem:commands.shell.fail.not_shell"));
         }
         ((PlayerShellEntity) shell).setDisplayProfile(profile);
     }
@@ -120,10 +120,10 @@ public final class RequiemShellCommand {
     private static void split(ServerPlayerEntity player) {
         RemnantComponent remnantComponent = RemnantComponent.get(player);
         if (!remnantComponent.getRemnantType().isDemon()) {
-            throw new CommandException(new TranslatableText("pandemonium:commands.shell.split.fail.mortal", player.getDisplayName()));
+            throw new CommandException(Text.translatable("pandemonium:commands.shell.split.fail.mortal", player.getDisplayName()));
         }
         if (remnantComponent.isVagrant()) {
-            throw new CommandException(new TranslatableText("pandemonium:commands.shell.split.fail.vagrant", player.getDisplayName()));
+            throw new CommandException(Text.translatable("pandemonium:commands.shell.split.fail.vagrant", player.getDisplayName()));
         }
         remnantComponent.splitPlayer(true);
     }

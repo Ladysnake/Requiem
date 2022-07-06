@@ -53,8 +53,8 @@ public class MorticianEntityRenderer extends MobEntityRenderer<MorticianEntity, 
 
     public MorticianEntityRenderer(EntityRendererFactory.Context ctx) {
         super(ctx, new MorticianEntityModel<>(ctx.getModelLoader().getModelPart(MorticianEntityModel.MODEL_LAYER)), 0.5F);
-        this.addFeature(new HeadFeatureRenderer<>(this, ctx.getModelLoader()));
-        this.addFeature(new VillagerHeldItemFeatureRenderer<>(this));
+        this.addFeature(new HeadFeatureRenderer<>(this, ctx.getModelLoader(), ctx.getHeldItemRenderer()));
+        this.addFeature(new VillagerHeldItemFeatureRenderer<>(this, ctx.getHeldItemRenderer()));
     }
 
     @Override

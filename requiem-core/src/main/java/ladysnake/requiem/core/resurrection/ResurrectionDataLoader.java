@@ -41,19 +41,18 @@ import com.google.gson.JsonParseException;
 import com.google.gson.reflect.TypeToken;
 import ladysnake.requiem.core.RequiemCore;
 import ladysnake.requiem.core.util.serde.EntityTypeAdapter;
-import net.fabricmc.fabric.api.resource.ResourceReloadListenerKeys;
-import net.fabricmc.fabric.api.resource.SimpleResourceReloadListener;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Pair;
 import net.minecraft.util.profiler.Profiler;
+import org.quiltmc.qsl.resource.loader.api.reloader.ResourceReloaderKeys;
+import org.quiltmc.qsl.resource.loader.api.reloader.SimpleResourceReloader;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
@@ -66,7 +65,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
-public final class ResurrectionDataLoader implements SimpleResourceReloadListener<List<Pair<Identifier, JsonObject>>> {
+public final class ResurrectionDataLoader implements SimpleResourceReloader<List<Pair<Identifier, JsonObject>>> {
     public static final ResurrectionDataLoader INSTANCE = new ResurrectionDataLoader();
 
     public static final Gson GSON = new GsonBuilder()
@@ -99,13 +98,13 @@ public final class ResurrectionDataLoader implements SimpleResourceReloadListene
     public CompletableFuture<List<Pair<Identifier, JsonObject>>> load(ResourceManager manager, Profiler profiler, Executor executor) {
         return CompletableFuture.supplyAsync(() -> {
             List<Pair<Identifier, JsonObject>> resurrectionData = new ArrayList<>();
-            for (Identifier location : manager.findResources("requiem_resurrections", (res) -> res.endsWith(".json"))) {
-                try (Resource res = manager.getResource(location); Reader in = new InputStreamReader(res.getInputStream())) {
+            manager.findResources("requiem_resurrections", (res) -> res.getPath().endsWith(".json")).forEach((location, resource) -> {
+                try (Reader in = new InputStreamReader(resource.open())) {
                     resurrectionData.add(new Pair<>(location, GSON.fromJson(in, JsonObject.class)));
                 } catch (IOException | JsonParseException e) {
                     RequiemCore.LOGGER.error("[Requiem] Could not read resurrection data from {}", location, e);
                 }
-            }
+            });
             return resurrectionData;
         }, executor);
     }
@@ -126,12 +125,12 @@ public final class ResurrectionDataLoader implements SimpleResourceReloadListene
     }
 
     @Override
-    public Collection<Identifier> getFabricDependencies() {
-        return List.of(ResourceReloadListenerKeys.TAGS);
+    public Collection<Identifier> getQuiltDependencies() {
+        return List.of(ResourceReloaderKeys.Server.TAGS);
     }
 
     @Override
-    public Identifier getFabricId() {
+    public Identifier getQuiltId() {
         return RequiemCore.id("resurrection");
     }
 }

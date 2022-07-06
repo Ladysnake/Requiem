@@ -40,8 +40,7 @@ import ladysnake.requiem.api.v1.remnant.RemnantType;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.TranslatableText;
-import net.minecraft.util.Util;
+import net.minecraft.text.Text;
 import net.minecraft.world.GameRules;
 
 import java.util.Collection;
@@ -80,7 +79,7 @@ public final class RequiemRemnantCommand {
 
     private static int queryRemnant(ServerCommandSource source, ServerPlayerEntity player) {
         RemnantType remnantState = RemnantComponent.get(player).getRemnantType();
-        source.sendFeedback(new TranslatableText("requiem:commands.query.success." + (source.getEntity() == player ? "self" : "other"), remnantState.getName(), player.getDisplayName()), true);
+        source.sendFeedback(Text.translatable("requiem:commands.query.success." + (source.getEntity() == player ? "self" : "other"), remnantState.getName(), player.getDisplayName()), true);
         return remnantState.isDemon() ? 1 : 0;
     }
 
@@ -98,13 +97,13 @@ public final class RequiemRemnantCommand {
 
     private static void sendSetRemnantFeedback(ServerCommandSource source, ServerPlayerEntity player, RemnantType type) {
         if (source.getEntity() == player) {
-            source.sendFeedback(new TranslatableText("requiem:commands.remnant.set.success.self", type.getName()), true);
+            source.sendFeedback(Text.translatable("requiem:commands.remnant.set.success.self", type.getName()), true);
         } else {
             if (source.getWorld().getGameRules().getBoolean(GameRules.SEND_COMMAND_FEEDBACK)) {
-                player.sendSystemMessage(new TranslatableText("requiem:commands.remnant.set.target", type.getName()), Util.NIL_UUID);
+                player.sendSystemMessage(Text.translatable("requiem:commands.remnant.set.target", type.getName()));
             }
 
-            source.sendFeedback(new TranslatableText("requiem:commands.remnant.set.success.other", player.getDisplayName(), type.getName()), true);
+            source.sendFeedback(Text.translatable("requiem:commands.remnant.set.success.other", player.getDisplayName(), type.getName()), true);
         }
     }
 }

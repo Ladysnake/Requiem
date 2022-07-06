@@ -47,9 +47,8 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.HoverEvent;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
 import java.util.Collections;
@@ -87,17 +86,17 @@ public final class ModMenuCompat implements ModMenuApi {
         private AbstractConfigScreen appendInfo(AbstractConfigScreen screen) {
             AbstractConfigEntry<?> entry = this.createInfoEntry();
             entry.setScreen(screen);
-            screen.getCategorizedEntries().put(new TranslatableText("config.requiem.more"), Collections.singletonList(entry));
+            screen.getCategorizedEntries().put(Text.translatable("config.requiem.more"), Collections.singletonList(entry));
             return screen;
         }
 
         private AbstractConfigEntry<?> createInfoEntry() {
             return ConfigEntryBuilder.create()
-                .startTextDescription(new TranslatableText(
+                .startTextDescription(Text.translatable(
                     "config.requiem.more_info",
-                    makeUrlText(new TranslatableText("config.requiem.more_info.datapacks"), getLocalizedDataPackUrl()),
-                    makeUrlText(new TranslatableText("config.requiem.more_info.gamerules"), getLocalizedGameRuleUrl()),
-                    makeUrlText(new TranslatableText("config.requiem.more_info.official_doc"), "https://ladysnake.github.io/wiki/requiem/configuration")
+                    makeUrlText(Text.translatable("config.requiem.more_info.datapacks"), getLocalizedDataPackUrl()),
+                    makeUrlText(Text.translatable("config.requiem.more_info.gamerules"), getLocalizedGameRuleUrl()),
+                    makeUrlText(Text.translatable("config.requiem.more_info.official_doc"), "https://ladysnake.github.io/wiki/requiem/configuration")
                 )).setColor(0xFFFFFFFF).build();
         }
 
@@ -124,7 +123,7 @@ public final class ModMenuCompat implements ModMenuApi {
 
         private MutableText makeUrlText(MutableText text, String url) {
             return text.styled(style -> style
-                .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText(url)))
+                .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.literal(url)))
                 .withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, url))
                 .withColor(Formatting.BLUE)
             );

@@ -1,6 +1,7 @@
 {
   "parent": "mixins.requiem.common.json",
   "package": "ladysnake.requiem.mixin.client",
+  "plugin": "io.github.ladysnake.locki.impl.LockiClientMixinPlugin",
   "mixins": [
     "access.FramebufferAccessor",
     "attrition.AbstractInventoryScreenMixin",

@@ -62,7 +62,7 @@ import net.minecraft.entity.mob.Monster;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
@@ -234,7 +234,7 @@ public abstract class PossessableLivingEntityMixin extends Entity implements Pos
             // Make possessed monsters despawn gracefully
             if (!this.world.isClient) {
                 if (this instanceof Monster && this.world.getDifficulty() == Difficulty.PEACEFUL) {
-                    player.sendMessage(new TranslatableText("requiem.message.peaceful_despawn"), true);
+                    player.sendMessage(Text.translatable("requiem.message.peaceful_despawn"), true);
                 }
                 // Absorption only exists on the server for non-player entities
                 player.setAbsorptionAmount(this.getAbsorptionAmount());

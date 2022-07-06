@@ -37,6 +37,7 @@ package ladysnake.requiem.mixin.common.attrition;
 import com.mojang.authlib.GameProfile;
 import ladysnake.requiem.api.v1.remnant.AttritionFocus;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.network.encryption.PlayerPublicKey;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -48,8 +49,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(ServerPlayerEntity.class)
 public abstract class ServerPlayerEntityMixin extends PlayerEntity {
 
-    public ServerPlayerEntityMixin(World world, BlockPos pos, float yaw, GameProfile profile) {
-        super(world, pos, yaw, profile);
+    public ServerPlayerEntityMixin(World world, BlockPos pos, float yaw, GameProfile profile, PlayerPublicKey key) {
+        super(world, pos, yaw, profile, key);
     }
 
     @Inject(method = "onSpawn()V", at = @At("RETURN"))

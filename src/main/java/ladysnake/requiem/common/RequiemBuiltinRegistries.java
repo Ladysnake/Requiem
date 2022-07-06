@@ -45,6 +45,6 @@ public final class RequiemBuiltinRegistries {
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     public static void init() {
-        ((MutableRegistry) BuiltinRegistries.REGISTRIES).add(RequiemRegistries.MOB_ITEM_OVERRIDE_KEY, MOB_ACTIONS, Lifecycle.stable());
+        ((MutableRegistry) BuiltinRegistries.REGISTRIES).register(RequiemRegistries.MOB_ITEM_OVERRIDE_KEY, MOB_ACTIONS, Lifecycle.stable());
     }
 }

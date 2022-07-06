@@ -48,7 +48,7 @@ import ladysnake.requiem.common.RequiemRegistries;
 import ladysnake.requiem.common.remnant.RemnantTypes;
 import net.minecraft.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.InvalidIdentifierException;
 
@@ -58,8 +58,8 @@ import java.util.concurrent.CompletableFuture;
 
 public class RemnantArgumentType implements ArgumentType<RemnantType> {
     private static final Collection<String> EXAMPLES = Arrays.asList("requiem:mortal", "remnant");
-    private static final SimpleCommandExceptionType BAD_IDENTIFIER = new SimpleCommandExceptionType(new TranslatableText("argument.id.invalid"));
-    public static final DynamicCommandExceptionType NOT_FOUND_EXCEPTION = new DynamicCommandExceptionType(o -> new TranslatableText("requiem:remnant_type.not_found", o));
+    private static final SimpleCommandExceptionType BAD_IDENTIFIER = new SimpleCommandExceptionType(Text.translatable("argument.id.invalid"));
+    public static final DynamicCommandExceptionType NOT_FOUND_EXCEPTION = new DynamicCommandExceptionType(o -> Text.translatable("requiem:remnant_type.not_found", o));
 
     public static RemnantArgumentType remnantType() {
         return new RemnantArgumentType();

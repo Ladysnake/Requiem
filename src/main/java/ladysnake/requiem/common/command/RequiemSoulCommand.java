@@ -42,7 +42,7 @@ import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 
 import java.util.Collection;
 
@@ -78,20 +78,20 @@ public final class RequiemSoulCommand {
         int count = 0;
         for (Entity target : targets) {
             if (!(target instanceof LivingEntity living)) {
-                throw new CommandException(new TranslatableText("requiem:commands.soul.set.fail.not_living", target.getDisplayName()));
+                throw new CommandException(Text.translatable("requiem:commands.soul.set.fail.not_living", target.getDisplayName()));
             }
 
             if (target.getType().isIn(RequiemCoreTags.Entity.SOULLESS)) {
-                throw new CommandException(new TranslatableText("requiem:commands.soul.set.fail.permanently_soulless"));
+                throw new CommandException(Text.translatable("requiem:commands.soul.set.fail.permanently_soulless"));
             }
 
             if (SoulHolderComponent.isSoulless(living) != soulless) {
                 if (soulless) {
                     SoulHolderComponent.get(living).removeSoul();
-                    source.sendFeedback(new TranslatableText("requiem:commands.soul.remove.success", target.getDisplayName()), true);
+                    source.sendFeedback(Text.translatable("requiem:commands.soul.remove.success", target.getDisplayName()), true);
                 } else {
                     SoulHolderComponent.get(living).giveSoulBack();
-                    source.sendFeedback(new TranslatableText("requiem:commands.soul.restore.success", target.getDisplayName()), true);
+                    source.sendFeedback(Text.translatable("requiem:commands.soul.restore.success", target.getDisplayName()), true);
                 }
 
                 ++count;
@@ -103,7 +103,7 @@ public final class RequiemSoulCommand {
     private static int querySoul(ServerCommandSource source, Entity target) {
         boolean hasSoul = target instanceof LivingEntity living && !SoulHolderComponent.isSoulless(living);
         String message = "requiem:commands.soul.query." + (hasSoul ? "has_soul" : "no_soul");
-        source.sendFeedback(new TranslatableText(message, target.getDisplayName()), true);
+        source.sendFeedback(Text.translatable(message, target.getDisplayName()), true);
         return hasSoul ? 1 : 0;
     }
 }

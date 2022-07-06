@@ -43,7 +43,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -80,26 +80,26 @@ public final class RequiemPossessionCommand {
 
     private static int startPossession(ServerCommandSource source, Entity possessed, ServerPlayerEntity player) {
         if (!(possessed instanceof MobEntity)) {
-            throw new CommandException(new TranslatableText("requiem:commands.possession.start.fail.not_mob", possessed.getDisplayName()));
+            throw new CommandException(Text.translatable("requiem:commands.possession.start.fail.not_mob", possessed.getDisplayName()));
         }
 
         if (!RemnantComponent.get(player).isIncorporeal()) {
-            throw new CommandException(new TranslatableText("requiem:commands.possession.start.fail.not_incorporeal", player.getDisplayName()));
+            throw new CommandException(Text.translatable("requiem:commands.possession.start.fail.not_incorporeal", player.getDisplayName()));
         }
 
         boolean success = PossessionComponent.get(player).startPossessing((MobEntity) possessed);
 
         if (!success) {
-            throw new CommandException(new TranslatableText("requiem:commands.possession.start.fail", possessed.getDisplayName()));
+            throw new CommandException(Text.translatable("requiem:commands.possession.start.fail", possessed.getDisplayName()));
         }
 
-        TranslatableText message;
+        Text message;
         String baseKey = "requiem:commands.possession.start.success";
 
         if (source.getEntity() == player) {
-            message = new TranslatableText(baseKey + ".self", possessed.getDisplayName());
+            message = Text.translatable(baseKey + ".self", possessed.getDisplayName());
         } else {
-            message = new TranslatableText(baseKey + ".other", player.getDisplayName(), possessed.getDisplayName());
+            message = Text.translatable(baseKey + ".other", player.getDisplayName(), possessed.getDisplayName());
         }
 
         source.sendFeedback(message, true);
@@ -125,9 +125,9 @@ public final class RequiemPossessionCommand {
 
     private static void sendStopPossessionFeedback(ServerCommandSource source, ServerPlayerEntity player, Entity formerHost) {
         if (source.getEntity() == player) {
-            source.sendFeedback(new TranslatableText("requiem:commands.possession.stop.success.self", formerHost.getDisplayName()), true);
+            source.sendFeedback(Text.translatable("requiem:commands.possession.stop.success.self", formerHost.getDisplayName()), true);
         } else {
-            source.sendFeedback(new TranslatableText("requiem:commands.possession.stop.success.other", player.getDisplayName(), formerHost.getDisplayName()), true);
+            source.sendFeedback(Text.translatable("requiem:commands.possession.stop.success.other", player.getDisplayName(), formerHost.getDisplayName()), true);
         }
     }
 }

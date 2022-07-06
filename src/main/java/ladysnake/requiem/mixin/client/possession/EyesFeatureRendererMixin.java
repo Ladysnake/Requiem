@@ -34,10 +34,10 @@
  */
 package ladysnake.requiem.mixin.client.possession;
 
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import ladysnake.requiem.client.render.entity.ClientWololoComponent;
 import ladysnake.requiem.common.entity.WololoComponent;
 import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.feature.EyesFeatureRenderer;
 import net.minecraft.client.render.entity.model.EntityModel;
@@ -49,6 +49,7 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
 @Mixin(EyesFeatureRenderer.class)
 public abstract class EyesFeatureRendererMixin<T extends Entity, M extends EntityModel<T>> {
+    @SuppressWarnings("InvalidInjectorMethodSignature")
     @ModifyVariable(method = "render", at = @At("STORE"))
     private VertexConsumer changeLayer(VertexConsumer consumer, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, T entity, float limbAngle, float limbDistance, float tickDelta, float animationProgress, float headYaw, float headPitch) {
         WololoComponent wololo = WololoComponent.KEY.getNullable(entity);

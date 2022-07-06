@@ -42,7 +42,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.WritableBookItem;
 import net.minecraft.stat.Stats;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
@@ -73,6 +72,6 @@ public class OpusDemoniumItem extends WritableBookItem {
     }
 
     private void addTooltipLine(List<Text> lines, DemonSoulVesselItem version) {
-        lines.add(new TranslatableText(version.getRemnantType().getConversionBookSentence()).formatted(version.getTooltipColor()));
+        lines.add(Text.translatable(version.getRemnantType().getConversionBookSentence()).formatted(version.getTooltipColor()));
     }
 }

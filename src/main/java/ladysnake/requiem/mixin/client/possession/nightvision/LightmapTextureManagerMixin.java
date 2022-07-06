@@ -62,7 +62,7 @@ public abstract class LightmapTextureManagerMixin {
             to = @At(value = "INVOKE", target = "Lnet/minecraft/util/math/Vec3f;<init>(FFF)V", ordinal = 0)
         ),
         at = @At("STORE"),
-        index = 5
+        index = 8 // there are too many floats in this method, so we just take the variable index from the bytecode
     )
     private float getNightVisionStrength(float base, float tickDelta) {
         ClientPlayerEntity player = this.client.player;

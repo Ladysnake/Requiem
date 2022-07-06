@@ -1,12 +1,10 @@
 {
   "type": "requiem:derelict_obelisk",
 
-  "config": {
-    "start_pool": "requiem:derelict_obelisk",
-    "size": 1
-  },
+  "start_pool": "requiem:derelict_obelisk",
 
   "biomes": "#requiem:has_structure/derelict_obelisk",
+  "step": "surface_structures",
 
   "adapt_noise": true,
 

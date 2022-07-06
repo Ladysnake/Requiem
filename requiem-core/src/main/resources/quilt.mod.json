@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "quilt_loader": {
+    "group": "io.github.ladysnake",
+    "id": "requiem-core",
+    "version": "${version}",
+    "metadata": {
+      "name": "Requiem Core",
+      "icon": "skull_logo.png",
+      "description": "Requiem's core mechanics",
+      "license": "LGPL-3.0-or-later",
+      "contributors": {
+        "Pyrofab": "Owner"
+      },
+      "contact": {
+        "sources": "https://github.com/Ladysnake/Requiem",
+        "issues": "https://github.com/Ladysnake/Requiem/issues",
+        "discord": "ladysnake.glitch.me/discord"
+      }
+    },
+    "intermediate_mappings": "net.fabricmc:intermediary"
+  },
+  "environment": "*",
+  "mixin": [
+    "mixins.requiem-core.client.json",
+    "mixins.requiem-core.common.json"
+  ],
+  "modmenu": {
+    "parent": {
+      "id": "requiem",
+      "name": "Requiem",
+      "description": "Death revamped and ethereal powers",
+      "icon": "skull_logo.png"
+    }
+  }
+}

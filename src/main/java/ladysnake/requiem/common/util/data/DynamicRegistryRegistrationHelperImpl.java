@@ -68,7 +68,7 @@ public final class DynamicRegistryRegistrationHelperImpl implements DynamicRegis
     @SuppressWarnings({"unchecked", "rawtypes"})
     private <E> void registerBuiltinIfNeeded(RegistryKey<? extends Registry<E>> ref) {
         if (!BuiltinRegistries.REGISTRIES.containsId(ref.getValue())) {
-            ((MutableRegistry) BuiltinRegistries.REGISTRIES).add(
+            ((MutableRegistry) BuiltinRegistries.REGISTRIES).register(
                 ref,
                 new SimpleRegistry<>(RequiemRegistries.MOB_ITEM_OVERRIDE_KEY, Lifecycle.stable(), null),
                 Lifecycle.stable()

@@ -63,19 +63,13 @@ public abstract class PandaEntityMixin extends AnimalEntity implements Possessab
     protected abstract boolean canEat(ItemStack stack);
 
     @Shadow
-    public abstract void setSitting(boolean scared);
+    public abstract void setScared(boolean scared);
 
     @Shadow
-    public abstract boolean isEating();
+    private float scaredAnimationProgress;
 
     @Shadow
-    public abstract boolean isSitting();
-
-    @Shadow
-    private float sittingAnimationProgress;
-
-    @Shadow
-    private float lastSittingAnimationProgress;
+    private float lastScaredAnimationProgress;
 
     @Shadow
     public abstract void setLyingOnBack(boolean lyingOnBack);
@@ -93,17 +87,17 @@ public abstract class PandaEntityMixin extends AnimalEntity implements Possessab
         this.setLyingOnBack(false);
     }
 
-    @Inject(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/passive/PandaEntity;updateSittingAnimation()V"))
+    @Inject(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/passive/PandaEntity;updateScaredAnimation()V"))
     private void scareIfSneaking(CallbackInfo ci) {
         PlayerEntity possessor = this.getPossessor();
         if (possessor != null) {
-            this.setSitting(possessor.isSneaking());
+            this.setScared(possessor.isSneaking());
         }
     }
 
-    @Inject(method = "updateSittingAnimation", at = @At("RETURN"))
+    @Inject(method = "updateScaredAnimation", at = @At("RETURN"))
     private void recalculateDimensions(CallbackInfo ci) {
-        if (this.lastSittingAnimationProgress != this.sittingAnimationProgress) {
+        if (this.lastScaredAnimationProgress != this.scaredAnimationProgress) {
             this.calculateDimensions();
         }
     }
@@ -111,6 +105,6 @@ public abstract class PandaEntityMixin extends AnimalEntity implements Possessab
     @Intrinsic  // If someone else redefines this method, just let them do whatever
     @Override
     public EntityDimensions getDimensions(EntityPose pose) {
-        return super.getDimensions(pose).scaled(1, 1 + this.sittingAnimationProgress * 0.85f);
+        return super.getDimensions(pose).scaled(1, 1 + this.scaredAnimationProgress * 0.85f);
     }
 }

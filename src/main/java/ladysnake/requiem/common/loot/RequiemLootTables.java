@@ -37,12 +37,12 @@ package ladysnake.requiem.common.loot;
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.common.enchantment.RequiemEnchantments;
 import ladysnake.requiem.mixin.common.access.LootContextTypesAccessor;
-import net.fabricmc.fabric.api.loot.v1.FabricLootPoolBuilder;
-import net.fabricmc.fabric.api.loot.v1.event.LootTableLoadingCallback;
+import net.fabricmc.fabric.api.loot.v2.LootTableEvents;
 import net.minecraft.enchantment.EnchantmentLevelEntry;
 import net.minecraft.item.EnchantedBookItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.loot.LootPool;
 import net.minecraft.loot.condition.LootConditionType;
 import net.minecraft.loot.condition.RandomChanceLootCondition;
 import net.minecraft.loot.context.LootContext;
@@ -72,11 +72,11 @@ public final class RequiemLootTables {
     public static void init() {
         Registry.register(Registry.LOOT_CONDITION_TYPE, Requiem.id("rift_mortician"), RIFT_MORTICIAN_CONDITION);
 
-        LootTableLoadingCallback.EVENT.register((resourceManager, lootManager, identifier, fabricLootSupplierBuilder, lootTableSetter) -> {
+        LootTableEvents.MODIFY.register((resourceManager, lootManager, identifier, fabricLootSupplierBuilder, lootTableSetter) -> {
             if (NETHER_CHEST.matcher(identifier.getPath()).matches()) {
-                fabricLootSupplierBuilder.withPool(FabricLootPoolBuilder.builder()
+                fabricLootSupplierBuilder.pool(new LootPool.Builder()
                     .rolls(ConstantLootNumberProvider.create(1))
-                    .withEntry(ItemEntry.builder(Items.BOOK).apply(() -> new LootFunction() {
+                    .with(ItemEntry.builder(Items.BOOK).apply(() -> new LootFunction() {
                         @Override
                         public LootFunctionType getType() {
                             throw new UnsupportedOperationException();
@@ -89,7 +89,7 @@ public final class RequiemLootTables {
                             return EnchantedBookItem.forEnchantment(enchantment);
                         }
                     }).build())
-                    .withCondition(RandomChanceLootCondition.builder(HUMANITY_CHANCE).build())
+                    .conditionally(RandomChanceLootCondition.builder(HUMANITY_CHANCE).build())
                     .build()
                 );
             }

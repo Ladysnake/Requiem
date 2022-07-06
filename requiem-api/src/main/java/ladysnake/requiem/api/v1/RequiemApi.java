@@ -28,7 +28,7 @@ public final class RequiemApi {
     private RequiemApi() { throw new AssertionError(); }
 
     /**
-     * The key used to declare a requiem plugin in a <tt>fabric.mod.json</tt> "entrypoints" block.
+     * The key used to declare a requiem plugin in a <tt>quilt.mod.json</tt> "entrypoints" block.
      */
     public static final String ENTRYPOINT_KEY = "requiem:plugin";
 
@@ -36,7 +36,7 @@ public final class RequiemApi {
      * Programmatically registers a new entry point.
      * <p>
      * Calling this method is functionally equivalent to declaring the entry point
-     * in <tt>fabric.mod.json</tt>, with the benefit of letting consumers control the
+     * in <tt>quilt.mod.json</tt>, with the benefit of letting consumers control the
      * time of registration.
      * <p>
      * Plugin instances can be registered at any time during the game's loading process.
@@ -74,7 +74,7 @@ public final class RequiemApi {
      * Return an {@link ImmutableSet}, the elements of which are currently registered Requiem plugins.
      * <p>
      * The elements of the set are {@link RequiemPlugin} objects that have been previously registered,
-     * either by being listed as an adequate entry point in a <tt>fabric.mod.json</tt>, or by being passed
+     * either by being listed as an adequate entry point in a <tt>quilt.mod.json</tt>, or by being passed
      * as an argument to {@link #registerPlugin(RequiemPlugin) registerPlugin()}.
      * <p>
      * The values contained in the source set can evolve over the game initialization
@@ -83,7 +83,7 @@ public final class RequiemApi {
      * <p>
      * Note that while plugins registered programmatically will always be visible after
      * calling {@link #registerPlugin(RequiemPlugin) registerPlugin()}, entry points declared from a
-     * <tt>fabric.mod.json</tt> will only be listed after being processed by an API provider.
+     * <tt>quilt.mod.json</tt> will only be listed after being processed by an API provider.
      * <p>
      * This method can be safely called from any thread.
      *

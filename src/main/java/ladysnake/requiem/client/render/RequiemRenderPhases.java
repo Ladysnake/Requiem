@@ -35,6 +35,8 @@
 package ladysnake.requiem.client.render;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.VertexFormat;
+import com.mojang.blaze3d.vertex.VertexFormats;
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.client.RequiemClient;
 import ladysnake.requiem.core.util.reflection.ReflectionHelper;
@@ -48,8 +50,6 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.RenderPhase;
-import net.minecraft.client.render.VertexFormat;
-import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 
 import java.lang.reflect.InvocationTargetException;

@@ -42,7 +42,6 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 
 import java.util.Set;
 import java.util.function.Predicate;
@@ -66,7 +65,7 @@ public final class RiftScreenHandlerFactory implements ExtendedScreenHandlerFact
 
     @Override
     public Text getDisplayName() {
-        return new TranslatableText("requiem:container.obelisk_rift");
+        return Text.translatable("requiem:container.obelisk_rift");
     }
 
     @Override

@@ -68,7 +68,7 @@ public abstract class LocationPredicateMixin {
         if (cir.getReturnValueZ() && this.requiem$biomeTag != null) {
             BlockPos blockPos = new BlockPos(x, y, z);
 
-            if (!world.getBiome(blockPos).isIn(this.requiem$biomeTag)) {
+            if (!world.getBiome(blockPos).hasTag(this.requiem$biomeTag)) {
                 cir.setReturnValue(false);
             }
         }
@@ -88,7 +88,7 @@ public abstract class LocationPredicateMixin {
         }
         //noinspection ConstantConditions
         ((LocationPredicateMixin) (Object) cir.getReturnValue()).requiem$biomeTag
-            = TagKey.identifierCodec(Registry.BIOME_KEY).parse(JsonOps.INSTANCE, biomeCategory)
+            = TagKey.createCodec(Registry.BIOME_KEY).parse(JsonOps.INSTANCE, biomeCategory)
             .getOrThrow(false, msg -> Requiem.LOGGER.error("[Requiem] Failed to parse biome_tag extension to LocationPredicate: {}", msg));
     }
 }

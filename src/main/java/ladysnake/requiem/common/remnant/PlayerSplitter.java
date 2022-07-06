@@ -142,7 +142,7 @@ public final class PlayerSplitter {
         boolean keepInv = keepInventory.get();
         RegistryKey<World> dimension = player.getSpawnPointDimension();
         BlockPos blockPos = player.getSpawnPointPosition();
-        boolean spawnPointSet = player.isSpawnForced();
+        boolean spawnPointSet = player.isSpawnPointSet();
         float angle = player.getSpawnAngle();
         player.setSpawnPoint(World.OVERWORLD, null, 0, false, false);
 
@@ -164,7 +164,7 @@ public final class PlayerSplitter {
         //Player keeps everything that goes through death
         NbtCompound templateNbt = template.writeNbt(new NbtCompound());
         deduplicateVanillaData(templateNbt);
-        deduplicateComponents(templateNbt, template.getComponentContainer().keys());
+        deduplicateComponents(templateNbt, template.asComponentProvider().getComponentContainer().keys());
         return templateNbt;
     }
 

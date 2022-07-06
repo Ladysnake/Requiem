@@ -36,63 +36,66 @@ package ladysnake.requiem.common.structure;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.serialization.Codec;
-import ladysnake.requiem.Requiem;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.block.BlockState;
-import net.minecraft.structure.*;
+import net.minecraft.structure.StructureTemplateManager;
+import net.minecraft.structure.StructureType;
+import net.minecraft.structure.piece.PoolStructurePiece;
+import net.minecraft.structure.piece.StructurePiece;
 import net.minecraft.structure.pool.EmptyPoolElement;
+import net.minecraft.structure.pool.StructurePool;
 import net.minecraft.structure.pool.StructurePoolElement;
 import net.minecraft.util.BlockRotation;
+import net.minecraft.util.Holder;
 import net.minecraft.util.Util;
-import net.minecraft.util.math.*;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryKey;
+import net.minecraft.util.math.BlockBox;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3i;
+import net.minecraft.util.random.RandomGenerator;
 import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.Heightmap;
+import net.minecraft.world.gen.ChunkRandom;
+import net.minecraft.world.gen.RandomState;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.VerticalBlockSample;
-import net.minecraft.world.gen.feature.DefaultFeatureConfig;
 import net.minecraft.world.gen.feature.StructureFeature;
-import net.minecraft.world.gen.feature.StructurePoolFeatureConfig;
-import net.minecraft.world.gen.random.ChunkRandom;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.OptionalInt;
-import java.util.Random;
 
-public class DerelictObeliskFeature extends StructureFeature<DefaultFeatureConfig> {
+public class DerelictObeliskFeature extends StructureFeature {
+    public static final Codec<DerelictObeliskFeature> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+        settingsCodec(instance),
+        StructurePool.REGISTRY_CODEC.fieldOf("start_pool").forGetter(structure -> structure.startPool)
+    ).apply(instance, DerelictObeliskFeature::new));
 
-    public DerelictObeliskFeature(Codec<DefaultFeatureConfig> codec) {
-        super(codec, DerelictObeliskFeature::createPiecesGenerator, PostPlacementProcessor.EMPTY);
+    private final Holder<StructurePool> startPool;
+
+    public DerelictObeliskFeature(StructureSettings settings, Holder<StructurePool> startPool) {
+        super(settings);
+        this.startPool = startPool;
     }
 
-    private static Optional<StructurePiecesGenerator<DefaultFeatureConfig>> createPiecesGenerator(StructureGeneratorFactory.Context<DefaultFeatureConfig> context) {
+    @Override
+    public Optional<GenerationStub> findGenerationPos(GenerationContext context) {
         // Turns the chunk coordinates into actual coordinates we can use. (Gets center of that chunk)
         ChunkPos chunkPos = context.chunkPos();
         int x = chunkPos.x * 16;
         int z = chunkPos.z * 16;
 
-        // Probably won't work too well with 3D biomes, but works well enough in vanilla nether
-        if (!context.isBiomeValid(Heightmap.Type.OCEAN_FLOOR)) {
-            return Optional.empty();
-        }
-
         BlockPos.Mutable centerPos = new BlockPos.Mutable(x, 0, z);
 
-        return context.registryManager().get(
-            Registry.STRUCTURE_POOL_KEY
-        ).getEntry(
-            RegistryKey.of(Registry.STRUCTURE_POOL_KEY, Requiem.id("derelict_obelisk"))
-        ).map(structurePool ->
-            new StructurePoolFeatureConfig(structurePool, 1)
-        ).map(structureSettingsAndStartPool -> ((structurePieces, ctx) -> {
-            ChunkRandom chunkRandom = ctx.random();
-            StructurePoolElement spawnedStructure = structureSettingsAndStartPool.getStartPool().value().getRandomElement(chunkRandom);
+        return Optional.of(new GenerationStub(centerPos, structurePieces -> {
+            ChunkRandom chunkRandom = context.random();
+            StructurePoolElement spawnedStructure = this.startPool.value().getRandomElement(chunkRandom);
 
             if (spawnedStructure != EmptyPoolElement.INSTANCE) {
                 BlockRotation rotation = Util.getRandom(BlockRotation.values(), chunkRandom);
                 BlockPos startPos = chunkPos.getStartPos();
-                StructureManager structureManager = context.structureManager();
+                StructureTemplateManager structureManager = context.structureTemplateManager();
                 PoolStructurePiece piece = new PoolStructurePiece(
                     structureManager,
                     spawnedStructure,
@@ -102,7 +105,7 @@ public class DerelictObeliskFeature extends StructureFeature<DefaultFeatureConfi
                     spawnedStructure.getBoundingBox(structureManager, startPos, rotation)
                 );
                 BlockBox boundingBox = piece.getBoundingBox();
-                OptionalInt floorY = getFloorHeight(chunkRandom, context.chunkGenerator(), boundingBox, context.world());
+                OptionalInt floorY = getFloorHeight(context.random(), context.randomState(), context.chunkGenerator(), boundingBox, context.world());
 
                 if (floorY.isEmpty()) return;
 
@@ -125,14 +128,19 @@ public class DerelictObeliskFeature extends StructureFeature<DefaultFeatureConfi
         }));
     }
 
+    @Override
+    public StructureType<?> getType() {
+        return RequiemStructures.DERELICT_OBELISK;
+    }
+
     /**
      * Stolen from {@link net.minecraft.world.gen.feature.RuinedPortalFeature}
      */
-    static OptionalInt getFloorHeight(Random random, ChunkGenerator chunkGenerator, BlockBox box, HeightLimitView world) {
+    static OptionalInt getFloorHeight(RandomGenerator random, RandomState randomState, ChunkGenerator chunkGenerator, BlockBox box, HeightLimitView world) {
         int maxY = MathHelper.nextBetween(random, 60, 100);
 
         List<BlockPos> corners = ImmutableList.of(new BlockPos(box.getMinX(), 0, box.getMinZ()), new BlockPos(box.getMaxX(), 0, box.getMinZ()), new BlockPos(box.getMinX(), 0, box.getMaxZ()), new BlockPos(box.getMaxX(), 0, box.getMaxZ()));
-        List<VerticalBlockSample> cornerColumns = corners.stream().map(blockPos -> chunkGenerator.getColumnSample(blockPos.getX(), blockPos.getZ(), world)).toList();
+        List<VerticalBlockSample> cornerColumns = corners.stream().map(blockPos -> chunkGenerator.getColumnSample(blockPos.getX(), blockPos.getZ(), world, randomState)).toList();
         Heightmap.Type heightmapType = Heightmap.Type.OCEAN_FLOOR_WG;
 
         int y;

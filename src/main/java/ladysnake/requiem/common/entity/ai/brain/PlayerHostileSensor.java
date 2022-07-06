@@ -36,13 +36,12 @@ package ladysnake.requiem.common.entity.ai.brain;
 
 import com.google.common.collect.ImmutableSet;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.brain.LivingTargetCache;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
+import net.minecraft.entity.ai.brain.VisibleLivingEntitiesCache;
 import net.minecraft.entity.ai.brain.sensor.Sensor;
+import net.minecraft.entity.ai.brain.task.LookTargetUtil;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.RangedWeaponItem;
 import net.minecraft.server.world.ServerWorld;
 
 import java.util.Comparator;
@@ -75,12 +74,7 @@ public class PlayerHostileSensor extends Sensor<PlayerEntity> {
 
     private boolean isCloseEnoughForDanger(PlayerEntity subject, LivingEntity entity) {
         if (entity instanceof MobEntity mobEntity) {
-            Item item = mobEntity.getMainHandStack().getItem();
-            if (item instanceof RangedWeaponItem && mobEntity.canUseRangedWeapon((RangedWeaponItem) item)) {
-                return mobEntity.isInRange(subject, ((RangedWeaponItem) item).getRange());
-            } else {
-                return mobEntity.isInRange(subject, 6);
-            }
+            return LookTargetUtil.isTargetWithinAttackRange(mobEntity, subject, 0);
         }
         return entity instanceof PlayerEntity;  // players are *always* dangerous if hostile
     }
@@ -89,7 +83,7 @@ public class PlayerHostileSensor extends Sensor<PlayerEntity> {
         return livingEntity instanceof MobEntity && ((MobEntity) livingEntity).getTarget() == subject;
     }
 
-    private Optional<LivingTargetCache> getVisibleMobs(LivingEntity entity) {
+    private Optional<VisibleLivingEntitiesCache> getVisibleMobs(LivingEntity entity) {
         return entity.getBrain().getOptionalMemory(MemoryModuleType.VISIBLE_MOBS);
     }
 }

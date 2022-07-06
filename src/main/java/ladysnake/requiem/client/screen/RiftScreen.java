@@ -45,7 +45,11 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.*;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Matrix4f;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.Vec3f;
+import net.minecraft.util.math.Vector4f;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -65,7 +69,7 @@ public class RiftScreen extends HandledScreen<RiftScreenHandler> {
     }
 
     @Override
-    public boolean shouldPause() {
+    public boolean isPauseScreen() {
         return true;
     }
 
@@ -151,6 +155,8 @@ public class RiftScreen extends HandledScreen<RiftScreenHandler> {
                     v = obeliskV;
                 }
 
+                // actually the parameter names are wrong
+                //noinspection SuspiciousNameCombination
                 drawTexture(matrices, x - iconHalfSize, y - iconHalfSize, this.getZOffset(), 0, v, iconSize, iconSize, textureWidth, textureHeight);
             }
 
@@ -170,7 +176,7 @@ public class RiftScreen extends HandledScreen<RiftScreenHandler> {
                         formatting = Formatting.GRAY;
                     }
 
-                    lines.add(obelisk.resolveName().shallowCopy().formatted(formatting));
+                    lines.add(obelisk.resolveName().copy().formatted(formatting));
                 }
 
                 this.renderTooltip(matrices, lines, centerX, centerY);
@@ -255,6 +261,6 @@ public class RiftScreen extends HandledScreen<RiftScreenHandler> {
 
     public void updateMatrices(MatrixStack modelViewStack, Matrix4f projectionMatrix) {
         this.projectionViewMatrix = projectionMatrix.copy();
-        this.projectionViewMatrix.multiply(modelViewStack.peek().getPositionMatrix());
+        this.projectionViewMatrix.multiply(modelViewStack.peek().getPosition());
     }
 }

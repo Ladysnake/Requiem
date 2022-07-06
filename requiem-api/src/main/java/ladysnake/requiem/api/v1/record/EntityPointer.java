@@ -21,7 +21,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.entity.Entity;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.dynamic.DynamicSerializableUuid;
+import net.minecraft.util.UuidUtil;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
@@ -33,12 +33,12 @@ import java.util.UUID;
  * A pointer containing all the necessary information to locate an entity.
  *
  * @param uuid  {@linkplain Entity#getUuid() the entity's unique serverside identifier}
- * @param world the {@link RegistryKey} describing {@linkplain Entity#getEntityWorld() the entity's current dimension}
+ * @param world the {@link RegistryKey} describing {@linkplain Entity#getWorld() the entity's current dimension}
  * @param pos   the {@link Vec3d} describing {@linkplain Entity#getPos() the entity's last known position}
  */
 public record EntityPointer(UUID uuid, RegistryKey<World> world, Vec3d pos) {
     public static final Codec<EntityPointer> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-        DynamicSerializableUuid.CODEC.fieldOf("uuid").forGetter(EntityPointer::uuid),
+        UuidUtil.CODEC.fieldOf("uuid").forGetter(EntityPointer::uuid),
         World.CODEC.fieldOf("world").forGetter(EntityPointer::world),
         RecordCodecBuilder.<Vec3d>create(instance2 -> instance2.group(
             Codec.DOUBLE.fieldOf("x").forGetter(Vec3d::getX),

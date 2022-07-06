@@ -74,7 +74,7 @@ public final class BasePossessionHandlers {
                 // Synchronize possessed entities with their possessor / other players
                 PlayerEntity possessor = ((Possessable) tracked).getPossessor();
                 if (possessor != null) {
-                    PossessionComponent.KEY.syncWith(player, possessor);
+                    possessor.syncComponent(PossessionComponent.KEY);
                 }
             }
         });

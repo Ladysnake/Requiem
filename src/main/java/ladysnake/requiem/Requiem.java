@@ -68,15 +68,17 @@ import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
 import ladysnake.requiem.compat.RequiemCompatibilityManager;
 import ladysnake.requiem.core.remnant.VagrantInteractionRegistryImpl;
 import ladysnake.requiem.core.resurrection.ResurrectionDataLoader;
-import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
-import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
-import net.minecraft.command.argument.ArgumentTypes;
-import net.minecraft.command.argument.serialize.ConstantArgumentSerializer;
+import net.minecraft.command.argument.IdentifierArgumentType;
+import net.minecraft.command.argument.SingletonArgumentInfo;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.util.Identifier;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.quiltmc.loader.api.ModContainer;
+import org.quiltmc.qsl.base.api.entrypoint.ModInitializer;
+import org.quiltmc.qsl.command.api.CommandRegistrationCallback;
+import org.quiltmc.qsl.command.api.ServerArgumentType;
+import org.quiltmc.qsl.resource.loader.api.ResourceLoader;
 
 public final class Requiem implements ModInitializer {
     public static final String MOD_ID = "requiem";
@@ -87,7 +89,7 @@ public final class Requiem implements ModInitializer {
     }
 
     @Override
-    public void onInitialize() {
+    public void onInitialize(ModContainer mod) {
         RequiemConfig.load();
         ApiInitializer.init();
         RequiemCriteria.init();
@@ -110,9 +112,9 @@ public final class Requiem implements ModInitializer {
         ServerMessageHandling.init();
         ApiInitializer.discoverEntryPoints();
         Blabber.registerAction(id("remnant_choice"), RemnantChoiceDialogueAction.CODEC);
-        CommandRegistrationCallback.EVENT.register((dispatcher, dedicated) -> RequiemCommand.register(dispatcher));
-        ArgumentTypes.register("requiem:remnant", RemnantArgumentType.class, new ConstantArgumentSerializer<>(RemnantArgumentType::remnantType));
-        ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(ResurrectionDataLoader.INSTANCE);
+        CommandRegistrationCallback.EVENT.register((dispatcher, ctx, dedicated) -> RequiemCommand.register(dispatcher));
+        ServerArgumentType.register(Requiem.id("remnant"), RemnantArgumentType.class, SingletonArgumentInfo.contextFree(RemnantArgumentType::remnantType), t -> IdentifierArgumentType.identifier());
+        ResourceLoader.get(ResourceType.SERVER_DATA).registerReloader(ResurrectionDataLoader.INSTANCE);
         SyncServerResourcesCallback.EVENT.register(player -> RequiemNetworking.sendTo(player, RequiemNetworking.createDataSyncMessage(SubDataManagerHelper.getServerHelper())));
         ApiInitializer.setPluginCallback(this::registerPlugin);
         RequiemCompatibilityManager.init();

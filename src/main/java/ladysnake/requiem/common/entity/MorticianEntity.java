@@ -46,7 +46,6 @@ import ladysnake.requiem.common.entity.ai.FreeFromMortailCoilGoal;
 import ladysnake.requiem.common.entity.ai.MorticianLookAtTargetGoal;
 import ladysnake.requiem.common.entity.ai.MoveBackToObeliskGoal;
 import ladysnake.requiem.common.entity.ai.StealSoulGoal;
-import ladysnake.requiem.common.entity.effect.RequiemStatusEffects;
 import ladysnake.requiem.common.item.FilledSoulVesselItem;
 import ladysnake.requiem.common.item.RequiemItems;
 import ladysnake.requiem.common.network.RequiemNetworking;
@@ -61,13 +60,13 @@ import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ExperienceOrbEntity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.goal.ActiveTargetGoal;
 import net.minecraft.entity.ai.goal.GoToWalkTargetGoal;
 import net.minecraft.entity.ai.goal.LookAtCustomerGoal;
 import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.ai.goal.RevengeGoal;
 import net.minecraft.entity.ai.goal.StopAndLookAtEntityGoal;
 import net.minecraft.entity.ai.goal.StopFollowingCustomerGoal;
+import net.minecraft.entity.ai.goal.TargetGoal;
 import net.minecraft.entity.ai.goal.WanderAroundFarGoal;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.damage.DamageSource;
@@ -118,7 +117,7 @@ public class MorticianEntity extends MerchantEntity implements Angerable {
             new TradeOffer(new ItemStack(RequiemItems.EMPTY_SOUL_VESSEL), new ItemStack(Items.NETHERITE_INGOT, 1), new ItemStack(RequiemItems.SEALED_REMNANT_VESSEL), 1, 1, 0.05F), true),
         (entity, random) -> new TradeOffer(new ItemStack(RequiemItems.SHATTERED_SOUL_VESSEL), new ItemStack(Items.GOLD_INGOT), new ItemStack(RequiemItems.EMPTY_SOUL_VESSEL), 10, 1, 0.05F),
         (entity, random) -> new TradeOffer(EnchantedBookItem.forEnchantment(new EnchantmentLevelEntry(RequiemEnchantments.HUMANITY, 1)), new ItemStack(Items.GOLD_INGOT, 20), EnchantedBookItem.forEnchantment(new EnchantmentLevelEntry(RequiemEnchantments.HUMANITY, 2)), 5, 1, 0.05F),
-        (entity, random) -> new TradeOffer(FilledSoulVesselItem.forEntityType(entity.getWorld().getDimension().isUltrawarm() ? EntityType.PIGLIN : EntityType.VILLAGER), new ItemStack(Items.GOLD_INGOT, 5), new ItemStack(RequiemItems.ICHOR_VESSEL_EMANCIPATION), 10, 1, 0.05F),
+        (entity, random) -> new TradeOffer(FilledSoulVesselItem.forEntityType(entity.getWorld().getDimension().ultraWarm() ? EntityType.PIGLIN : EntityType.VILLAGER), new ItemStack(Items.GOLD_INGOT, 5), new ItemStack(RequiemItems.ICHOR_VESSEL_EMANCIPATION), 10, 1, 0.05F),
         (entity, random) -> new TradeOffer(FilledSoulVesselItem.forEntityType(EntityType.AXOLOTL), new ItemStack(Items.GOLD_INGOT, 5), new ItemStack(RequiemItems.ICHOR_VESSEL_RECLAMATION), 10, 1, 0.05F),
         (entity, random) -> new TradeOffer(FilledSoulVesselItem.forEntityType(EntityType.GHAST), new ItemStack(Items.GOLD_INGOT, 5), new ItemStack(RequiemItems.ICHOR_VESSEL_ATTRITION), 10, 1, 0.05F),
         (entity, random) -> new TradeOffer(FilledSoulVesselItem.forEntityType(EntityType.PILLAGER), new ItemStack(Items.GOLD_INGOT, 5), new ItemStack(RequiemItems.ICHOR_VESSEL_PENANCE), 10, 1, 0.05F)
@@ -174,7 +173,7 @@ public class MorticianEntity extends MerchantEntity implements Angerable {
         });
         this.revengeGoal = new RevengeGoal(this);
         this.targetSelector.add(1, revengeGoal);
-        this.targetSelector.add(3, new ActiveTargetGoal<>(this, PlayerEntity.class, 10, true, false, this::shouldAngerAt));
+        this.targetSelector.add(3, new TargetGoal<>(this, PlayerEntity.class, 10, true, false, this::shouldAngerAt));
     }
 
     public void addCapturedSoul(UUID recordId) {
@@ -185,10 +184,6 @@ public class MorticianEntity extends MerchantEntity implements Angerable {
     public void tick() {
         super.tick();
         if (this.world.isClient && this.isSpellcasting()) {
-            int color = RequiemStatusEffects.PENANCE.getColor();
-            double r = (float) (color >> 16 & 0xFF) / 255.0F;
-            double g = (float) (color >> 8 & 0xFF) / 255.0F;
-            double b = (float) (color & 0xFF) / 255.0F;
             float theta = this.bodyYaw * (float) (Math.PI / 180.0) + MathHelper.cos((float) this.age * 0.6662F) * 0.25F;
             float x = MathHelper.cos(theta);
             float z = MathHelper.sin(theta);
@@ -357,7 +352,7 @@ public class MorticianEntity extends MerchantEntity implements Angerable {
 
             if (!this.world.isClient && !this.getOffers().isEmpty()) {
                 this.prepareOffersFor(customer);
-                this.setCustomer(customer);
+                this.setCurrentCustomer(customer);
                 this.sendOffers(customer, this.getDisplayName(), 1);
             }
 
@@ -445,7 +440,7 @@ public class MorticianEntity extends MerchantEntity implements Angerable {
 
     @Override
     protected void afterUsing(TradeOffer offer) {
-        if (offer instanceof RemnantTradeOffer demonTradeOffer && demonTradeOffer.demonCustomer && this.getCustomer() instanceof ServerPlayerEntity player) {
+        if (offer instanceof RemnantTradeOffer demonTradeOffer && demonTradeOffer.demonCustomer && this.getCurrentCustomer() instanceof ServerPlayerEntity player) {
             RemnantComponent.get(player).become(RemnantTypes.MORTAL, true);
             player.world.playSound(null, player.getX(), player.getY(), player.getZ(), RequiemSoundEvents.ITEM_OPUS_USE, player.getSoundCategory(), 1.4F, 0.1F);
             RequiemNetworking.sendTo(player, RequiemNetworking.createOpusUsePacket(RemnantTypes.MORTAL, false));

@@ -46,13 +46,12 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 
 public class PossessionInventoryScreen extends AbstractInventoryScreen<PlayerScreenHandler> {
     private final PlayerEntity player;
 
     public PossessionInventoryScreen(PlayerEntity player) {
-        super(player.playerScreenHandler, player.getInventory(), new TranslatableText("container.crafting"));
+        super(player.playerScreenHandler, player.getInventory(), Text.translatable("container.crafting"));
         this.player = player;
     }
 

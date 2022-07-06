@@ -17,9 +17,9 @@
  */
 package ladysnake.requiem.api.v1.entity;
 
+import com.mojang.blaze3d.glfw.Window;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.util.Window;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 

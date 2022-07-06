@@ -35,15 +35,14 @@
 package ladysnake.requiem.common.structure;
 
 import ladysnake.requiem.Requiem;
-import ladysnake.requiem.mixin.common.access.StructureFeatureAccessor;
-import net.minecraft.world.gen.GenerationStep;
-import net.minecraft.world.gen.feature.DefaultFeatureConfig;
-import net.minecraft.world.gen.feature.StructureFeature;
+import net.minecraft.structure.StructureType;
+import net.minecraft.util.registry.Registry;
 
 public final class RequiemStructures {
-    public static final StructureFeature<DefaultFeatureConfig> DERELICT_OBELISK = new DerelictObeliskFeature(DefaultFeatureConfig.CODEC);
+    public static final StructureType<DerelictObeliskFeature> DERELICT_OBELISK = () -> DerelictObeliskFeature.CODEC;
 
     public static void init() {
-        StructureFeatureAccessor.callRegister(Requiem.MOD_ID + ":derelict_obelisk", DERELICT_OBELISK, GenerationStep.Feature.SURFACE_STRUCTURES);
+        Registry.register(Registry.STRUCTURE_TYPE, Requiem.id("derelict_obelisk"), DERELICT_OBELISK);
     }
 }
+

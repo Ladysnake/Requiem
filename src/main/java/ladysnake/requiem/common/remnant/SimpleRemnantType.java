@@ -34,14 +34,13 @@
  */
 package ladysnake.requiem.common.remnant;
 
+import com.google.common.base.Suppliers;
 import ladysnake.requiem.api.v1.remnant.RemnantState;
 import ladysnake.requiem.api.v1.remnant.RemnantType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
-import net.minecraft.util.Lazy;
 
 import javax.annotation.Nullable;
 import java.util.function.Function;
@@ -52,7 +51,7 @@ public class SimpleRemnantType implements RemnantType {
     protected final String conversionSentence;
     protected final Supplier<Item> conversionBook;
     private final boolean remnant;
-    private final Lazy<TranslatableText> name = new Lazy<>(() -> new TranslatableText(
+    private final Supplier<Text> name = Suppliers.memoize(() -> Text.translatable(
         "requiem:remnant_type." + RemnantTypes.getId(this).toString().replace(':', '.') + ".name"
     ));
 

@@ -61,7 +61,7 @@ public class MorticianLookAtTargetGoal extends Goal {
     @Override
     public void tick() {
         if (this.mortician.getTarget() != null) {
-            this.mortician.getLookControl().lookAt(this.mortician.getTarget(), (float)this.mortician.getMaxLookYawChange(), (float)this.mortician.getMaxLookPitchChange());
+            this.mortician.getLookControl().lookAt(this.mortician.getTarget(), (float)this.mortician.getLookYawSpeed(), (float)this.mortician.getLookPitchSpeed());
         }
     }
 }

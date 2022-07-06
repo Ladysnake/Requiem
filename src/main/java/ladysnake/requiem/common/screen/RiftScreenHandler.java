@@ -40,6 +40,7 @@ import ladysnake.requiem.common.block.RiftRunestoneBlock;
 import ladysnake.requiem.common.entity.effect.AttritionStatusEffect;
 import ladysnake.requiem.common.util.ObeliskDescriptor;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -102,5 +103,10 @@ public class RiftScreenHandler extends ScreenHandler {
         // 1000 blocks <=> 5 minutes of attrition
         int distancePenalty = (int) (Math.log(distanceTraveled) / logBase * 6);
         return minLength + distancePenalty;
+    }
+
+    @Override
+    public ItemStack transferSlot(PlayerEntity player, int index) {
+        return ItemStack.EMPTY;
     }
 }

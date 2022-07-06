@@ -34,14 +34,18 @@
  */
 package ladysnake.requiem.client.particle;
 
+import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import ladysnake.requiem.client.render.RequiemRenderPhases;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.particle.*;
-import net.minecraft.client.render.BufferBuilder;
+import net.minecraft.client.particle.AbstractSlowingParticle;
+import net.minecraft.client.particle.Particle;
+import net.minecraft.client.particle.ParticleFactory;
+import net.minecraft.client.particle.ParticleTextureSheet;
+import net.minecraft.client.particle.SpriteProvider;
 import net.minecraft.client.render.Camera;
-import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.particle.DefaultParticleType;
@@ -119,7 +123,7 @@ public final class GhostParticle extends AbstractSlowingParticle {
         @Override
         public Particle createParticle(DefaultParticleType particleType, ClientWorld world, double x, double y, double z, double vx, double vy, double vz) {
             GhostParticle soulParticle = new GhostParticle(world, x, y, z, vx, vy, vz, this.spriteProvider);
-            soulParticle.setAlpha(1.0F);
+            soulParticle.setColorAlpha(1.0F);
             return soulParticle;
         }
     }

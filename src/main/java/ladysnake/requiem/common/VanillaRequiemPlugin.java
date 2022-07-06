@@ -108,8 +108,8 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffect;
-import net.minecraft.entity.effect.StatusEffectCategory;
 import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.effect.StatusEffectType;
 import net.minecraft.entity.mob.EndermanEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -119,7 +119,7 @@ import net.minecraft.item.Items;
 import net.minecraft.network.packet.s2c.play.EntityStatusEffectS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityTrackerUpdateS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
@@ -337,7 +337,7 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
         EntitySleepEvents.ALLOW_SLEEPING.register((player, pos) -> {
             MobEntity host = PossessionComponent.getHost(player);
             if (host != null && !host.getType().isIn(RequiemCoreTags.Entity.SLEEPERS)) {
-                player.sendMessage(new TranslatableText("requiem:block.minecraft.bed.invalid_body"), true);
+                player.sendMessage(Text.translatable("requiem:block.minecraft.bed.invalid_body"), true);
                 return PlayerEntity.SleepFailureReason.OTHER_PROBLEM;
             }
             return null;
@@ -436,7 +436,7 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
             (target, possessor) -> target.getType() == RequiemEntities.PLAYER_SHELL && target instanceof AutomatoneFakePlayer shell && PlayerShellEvents.PRE_MERGE.invoker().canMerge(possessor, target, shell.getDisplayProfile()),
             (target, possessor) -> {
                 if (target instanceof PlayerShellEntity shell && !RemnantComponent.get(possessor).merge(shell)) {
-                    possessor.sendMessage(new TranslatableText("requiem:possess.incompatible_body"), true);
+                    possessor.sendMessage(Text.translatable("requiem:possess.incompatible_body"), true);
                 }
             }
         );
@@ -499,7 +499,7 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
 
     private static void revertHarmfulEffects(PlayerEntity player, Map<StatusEffect, StatusEffectInstance> before, Map<StatusEffect, StatusEffectInstance> after) {
         for (StatusEffect statusEffect : after.keySet()) {
-            if (statusEffect.getCategory() == StatusEffectCategory.HARMFUL) {
+            if (statusEffect.getType() == StatusEffectType.HARMFUL) {
                 StatusEffectInstance previous = before.get(statusEffect);
                 StatusEffectInstance current = after.get(statusEffect);
                 if (!Objects.equals(previous, current)) {
@@ -512,7 +512,8 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
                             previous.isAmbient(),
                             previous.shouldShowParticles(),
                             previous.shouldShowIcon(),
-                            previous
+                            previous,
+                            statusEffect.getFactorData()
                         ));
                     }
                 }

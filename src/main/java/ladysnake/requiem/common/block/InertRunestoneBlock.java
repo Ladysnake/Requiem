@@ -50,15 +50,14 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
-import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.random.RandomGenerator;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.Random;
 
 public class InertRunestoneBlock extends BlockWithEntity {
     public static final BooleanProperty ACTIVATED = BooleanProperty.of("activated");
@@ -77,7 +76,7 @@ public class InertRunestoneBlock extends BlockWithEntity {
                     if (checkedPos.getManhattanDistance(pos) > 1) {
                         BlockState checkedState = world.getBlockState(checkedPos);
                         if (checkedState.isIn(RequiemBlockTags.OBELISK_CORE)) {
-                            world.createAndScheduleBlockTick(checkedPos, checkedState.getBlock(), 0);
+                            world.scheduleBlockTick(checkedPos, checkedState.getBlock(), 0);
                         }
                     }
                 }
@@ -130,7 +129,7 @@ public class InertRunestoneBlock extends BlockWithEntity {
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         if (player.getStackInHand(hand).getItem() == RequiemItems.DEBUG_ITEM) {
             if (!world.isClient && RunestoneBlockEntity.findObeliskOrigin(world, pos).map(world::getBlockEntity).orElse(null) instanceof RunestoneBlockEntity core) {
-                player.sendMessage(new LiteralText("Width: %d, Height: %d".formatted(core.getRangeLevel(), core.getPowerLevel())), true);
+                player.sendMessage(Text.literal("Width: %d, Height: %d".formatted(core.getRangeLevel(), core.getPowerLevel())), true);
             }
             return ActionResult.SUCCESS;
         }
@@ -140,7 +139,7 @@ public class InertRunestoneBlock extends BlockWithEntity {
     @Override
     public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
         if (!oldState.isIn(RequiemBlockTags.OBELISK_CORE)) {
-            world.createAndScheduleBlockTick(pos, this, 0);
+            world.scheduleBlockTick(pos, this, 0);
         }
     }
 
@@ -155,11 +154,11 @@ public class InertRunestoneBlock extends BlockWithEntity {
 
     @Override
     public void neighborUpdate(BlockState state, World world, BlockPos pos, Block block, BlockPos fromPos, boolean notify) {
-        world.createAndScheduleBlockTick(pos, this, 0);
+        world.scheduleBlockTick(pos, this, 0);
     }
 
     @Override
-    public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+    public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, RandomGenerator random) {
         tryActivateObelisk(world, pos, true);
     }
 

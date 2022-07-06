@@ -58,6 +58,6 @@ public class MoveBackToObeliskGoal extends WanderAroundGoal {
 	@Override
 	protected @Nullable Vec3d getWanderTarget() {
         @Nullable ObeliskDescriptor home = ((MorticianEntity) this.mob).getHome();
-		return home == null ? null : NoPenaltyTargeting.findTo(this.mob, HORIZONTAL_RANGE, VERTICAL_RANGE, Vec3d.ofCenter(home.pos()), (float) (Math.PI / 2));
+		return home == null ? null : NoPenaltyTargeting.find(this.mob, HORIZONTAL_RANGE, VERTICAL_RANGE, Vec3d.ofCenter(home.pos()), (float) (Math.PI / 2));
 	}
 }

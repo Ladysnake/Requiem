@@ -244,7 +244,7 @@ public class RunestoneBlockEntity extends InertRunestoneBlockEntity {
                         this.recordUuid = record.getUuid();
                     }
                 },
-                () -> this.world.createAndScheduleBlockTick(this.pos, state.getBlock(), 0)
+                () -> this.world.scheduleBlockTick(this.pos, state.getBlock(), 0)
             );
     }
 

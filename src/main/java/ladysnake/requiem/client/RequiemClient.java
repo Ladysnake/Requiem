@@ -76,6 +76,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
+import org.quiltmc.loader.api.ModContainer;
 
 public final class RequiemClient {
 
@@ -85,7 +86,7 @@ public final class RequiemClient {
     private static final RequiemClient INSTANCE = new RequiemClient();
 
     @CalledThroughReflection
-    public static void onInitializeClient() {
+    public static void onInitializeClient(ModContainer mod) {
         INSTANCE.init();
     }
 
@@ -180,7 +181,7 @@ public final class RequiemClient {
     }
 
     private String ifExistsOrElse(ResourceManager resources, String attempt, String fallback) {
-        return "requiem:" + (resources.containsResource(Requiem.id("textures/" + attempt + ".png")) ? attempt : fallback);
+        return "requiem:" + (resources.method_14486(Requiem.id("textures/" + attempt + ".png")).isPresent() ? attempt : fallback);
     }
 
     private void registerParticleFactories() {

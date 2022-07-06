@@ -71,7 +71,7 @@ public record OverrideFailure(boolean strikethrough) implements InstancedItemOve
     @Override
     public Optional<Text> tweakTooltip(Text baseTooltip) {
         if (this.strikethrough()) {
-            return Optional.of(baseTooltip.shallowCopy().formatted(Formatting.STRIKETHROUGH));
+            return Optional.of(baseTooltip.copy().formatted(Formatting.STRIKETHROUGH));
         } else {
             return InstancedItemOverride.super.tweakTooltip(baseTooltip);
         }

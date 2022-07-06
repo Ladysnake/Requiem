@@ -47,7 +47,6 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 @Mixin(MobEntity.class)
 public abstract class MobEntityMixin extends LivingEntity {
@@ -55,8 +54,9 @@ public abstract class MobEntityMixin extends LivingEntity {
         super(entityType, world);
     }
 
-    @Inject(method = "interactWithItem", at = @At("RETURN"), locals = LocalCapture.CAPTURE_FAILHARD, cancellable = true)
-    private void interactWithVessel(PlayerEntity player, Hand hand, CallbackInfoReturnable<ActionResult> cir, ItemStack stack) {
+    @Inject(method = "interactWithItem", at = @At("RETURN"), cancellable = true)
+    private void interactWithVessel(PlayerEntity player, Hand hand, CallbackInfoReturnable<ActionResult> cir) {
+        ItemStack stack = player.getStackInHand(hand);
         if (cir.getReturnValue() == ActionResult.PASS && stack.getItem() instanceof EmptySoulVesselItem) {
             ActionResult result = stack.useOnEntity(player, this, hand);
             if (result != ActionResult.PASS) {

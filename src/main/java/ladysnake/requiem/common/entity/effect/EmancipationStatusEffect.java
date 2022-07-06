@@ -38,10 +38,10 @@ import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.api.v1.remnant.StickyStatusEffect;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffect;
-import net.minecraft.entity.effect.StatusEffectCategory;
+import net.minecraft.entity.effect.StatusEffectType;
 
 public class EmancipationStatusEffect extends StatusEffect implements StickyStatusEffect {
-    public EmancipationStatusEffect(StatusEffectCategory type, int color) {
+    public EmancipationStatusEffect(StatusEffectType type, int color) {
         super(type, color);
     }
 
