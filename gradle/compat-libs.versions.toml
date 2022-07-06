@@ -9,6 +9,7 @@ bewitchment = "3637935" # v1.18-9
 biomeMakeover = "3634309" # v1.18.1-1.4.4
 bumblezone = "3646901" # v4.3.1
 calio = "1.7.0"
+collective = "3821256" # 4.27
 eldritchMobs = "734d5fc"
 fallflyinglib = "3.0.0-beta.2"
 flk = "1.6.0+kotlin.1.5.0"
@@ -36,6 +37,7 @@ bewitchment =   { group = "curse.maven",             name = "bewitchment-394915"
 biomeMakeover = { group = "curse.maven",             name = "biome-makeover-412182", version.ref = "biomeMakeover" }
 bumblezone =    { group = "curse.maven",             name = "the-bumblezone-fabric-363949", version.ref = "bumblezone" }
 calio =         { group = "com.github.apace100",     name = "calio", version.ref = "calio" }
+collective =    { group = "curse.maven", name = "collective-fabric-526606", version.ref="collective"}
 eldritchMobs =  { group = "io.github.HyperPigeon",   name = "Eldritch-Mobs", version.ref = "eldritchMobs" }
 flk =           { group = "net.fabricmc",            name = "fabric-language-kotlin", version.ref = "flk" }
 golemsGalore =  { group = "curse.maven",             name = "golems-galore-387197", version.ref = "golemsGalore" }
