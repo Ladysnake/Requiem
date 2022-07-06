@@ -46,8 +46,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import javax.annotation.Nullable;
-
 @Mixin(HorseBaseEntity.class)
 public abstract class HorseBaseEntityMixin extends MobEntity {
 
@@ -55,15 +53,12 @@ public abstract class HorseBaseEntityMixin extends MobEntity {
         super(type, world);
     }
 
-    @Override
-    @Nullable public abstract Entity getPrimaryPassenger();
-
     /**
      * Allows undead-possessing players to ride undead horses without a saddle
      */
     @Inject(method = "isSaddled", at = @At("HEAD"), cancellable = true)
     private void undeadHorsesAutoSaddled(CallbackInfoReturnable<Boolean> cir) {
-        Entity passenger = this.getPrimaryPassenger();
+        Entity passenger = this.getFirstPassenger();
         if (this.isUndead() && passenger != null) {
             LivingEntity possessedEntity = PossessionComponent.getHost(passenger);
             if (possessedEntity != null && possessedEntity.isUndead()) {

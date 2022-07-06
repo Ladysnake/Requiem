@@ -47,7 +47,7 @@ import org.spongepowered.asm.mixin.injection.Coerce;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(targets = "net/minecraft/server/network/ServerPlayNetworkHandler$1")
+@Mixin(targets = "net/minecraft/server/network/ServerPlayNetworkHandler$C_wsexhymd")
 public abstract class ServerPlayNetworkHandler1Mixin implements PlayerInteractEntityC2SPacket.Handler {
     @Shadow(aliases = "field_28963")
     public ServerPlayNetworkHandler networkHandler;
@@ -57,7 +57,7 @@ public abstract class ServerPlayNetworkHandler1Mixin implements PlayerInteractEn
 
     // The qualifier is 100% not unnecessary, refmaps get broken otherwise
     @SuppressWarnings({"InvalidInjectorMethodSignature", "UnnecessaryQualifiedMemberReference"})
-    @Inject(method = "Lnet/minecraft/server/network/ServerPlayNetworkHandler$1;processInteract(Lnet/minecraft/util/Hand;Lnet/minecraft/server/network/ServerPlayNetworkHandler$Interaction;)V", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "Lnet/minecraft/server/network/ServerPlayNetworkHandler$C_wsexhymd;processInteract(Lnet/minecraft/util/Hand;Lnet/minecraft/server/network/ServerPlayNetworkHandler$Interaction;)V", at = @At("HEAD"), cancellable = true)
     private void onPlayerInteractEntity(Hand hand, @Coerce Object action, CallbackInfo ci) {
         ServerWorld world = this.networkHandler.getPlayer().getWorld();
 
