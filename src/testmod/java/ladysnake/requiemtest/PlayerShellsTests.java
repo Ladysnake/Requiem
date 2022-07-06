@@ -34,7 +34,27 @@
  */
 package ladysnake.requiemtest;
 
+import io.github.ladysnake.elmendorf.GameTestUtil;
+import ladysnake.requiem.api.v1.remnant.PlayerSplitResult;
+import ladysnake.requiem.api.v1.remnant.RemnantComponent;
+import ladysnake.requiem.common.remnant.RemnantTypes;
 import net.fabricmc.fabric.api.gametest.v1.FabricGameTest;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.test.GameTest;
+import net.minecraft.test.TestContext;
 
 public class PlayerShellsTests implements FabricGameTest {
+    @GameTest(structureName = EMPTY_STRUCTURE)
+    public void mergingWithShellsShouldMergeXp(TestContext ctx) {
+        ServerPlayerEntity player = ctx.spawnServerPlayer(2, 0, 2);
+        RemnantComponent.get(player).become(RemnantTypes.REMNANT);
+        player.addExperience(200);
+        PlayerSplitResult result = RemnantComponent.get(player).splitPlayer(true).orElseThrow();
+        GameTestUtil.assertTrue("Shell should have no experience", result.shell().totalExperience == 0);
+        GameTestUtil.assertTrue("Soul should keep all the experience", result.soul().totalExperience == 200);
+        result.shell().addExperience(100);
+        RemnantComponent.get(result.soul()).merge(result.shell());
+        GameTestUtil.assertTrue("Soul and body experience should merge", result.soul().totalExperience == 300);
+        ctx.complete();
+    }
 }

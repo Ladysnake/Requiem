@@ -78,7 +78,9 @@ public final class PlayerSplitter {
     public static PlayerSplitResult doSplit(ServerPlayerEntity whole) {
         PlayerShellEntity shell = createShell(whole);
         Entity mount = whole.getVehicle();
+        int experience = whole.totalExperience;
         ServerPlayerEntity soul = performRespawn(whole);
+        soul.addExperience(experience);
         soul.world.spawnEntity(shell);
         if (mount != null) shell.startRiding(mount);
         setupRecord(whole, shell, soul);
@@ -121,6 +123,7 @@ public final class PlayerSplitter {
         soul.networkHandler.requestTeleport(shell.getX(), shell.getY(), shell.getZ(), shell.getYaw(), shell.getPitch(), EnumSet.allOf(PlayerPositionLookS2CPacket.Flag.class));
         // override common data that may have been altered during this shell's existence
         performNbtCopy(computeCopyNbt(shell), soul);
+        soul.addExperience(shell.totalExperience);
         PlayerShellEvents.DATA_TRANSFER.invoker().transferData(shell, soul, true);
 
         soul.networkHandler.sendPacket(new EntityTrackerUpdateS2CPacket(soul.getId(), soul.getDataTracker(), true));
@@ -193,6 +196,9 @@ public final class PlayerSplitter {
         leftoverData.remove("playerGameType");
         leftoverData.remove("previousPlayerGameType");
         leftoverData.remove("seenCredits");
+        leftoverData.remove("XpP");
+        leftoverData.remove("XpLevel");
+        leftoverData.remove("XpTotal");
     }
 
     public static void performNbtCopy(NbtCompound from, Entity to) {
