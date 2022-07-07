@@ -34,7 +34,7 @@
  */
 package ladysnake.requiem.common.entity;
 
-import ladysnake.requiem.common.block.InertRunestoneBlock;
+import ladysnake.requiem.common.block.obelisk.InertRunestoneBlock;
 import ladysnake.requiem.common.particle.WispTrailParticleEffect;
 import ladysnake.requiem.common.sound.RequiemSoundEvents;
 import ladysnake.requiem.core.movement.PlayerMovementAlterer;

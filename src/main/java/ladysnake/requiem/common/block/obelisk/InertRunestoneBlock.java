@@ -32,9 +32,10 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.requiem.common.block;
+package ladysnake.requiem.common.block.obelisk;
 
 import ladysnake.requiem.api.v1.event.minecraft.BlockReplacedCallback;
+import ladysnake.requiem.common.block.RequiemBlockEntities;
 import ladysnake.requiem.common.item.RequiemItems;
 import ladysnake.requiem.common.sound.RequiemSoundEvents;
 import ladysnake.requiem.common.tag.RequiemBlockTags;
@@ -85,7 +86,7 @@ public class InertRunestoneBlock extends BlockWithEntity {
     }
 
     public static void tryActivateObelisk(ServerWorld world, BlockPos pos, boolean firstActivation) {
-        RunestoneBlockEntity.findObeliskOrigin(world, pos).flatMap(origin -> RunestoneBlockEntity.matchObelisk(world, origin).result())
+        ObeliskMatcher.findObeliskOrigin(world, pos).flatMap(origin -> ObeliskMatcher.matchObelisk(world, origin).result())
             .ifPresentOrElse(
                 match -> {
                     if (toggleRune(world, pos, match)) {
@@ -116,7 +117,7 @@ public class InertRunestoneBlock extends BlockWithEntity {
             world.removeBlockEntity(runePos);
             world.setBlockState(runePos, blockState.with(ACTIVATED, activated).with(HEAD, head), Block.NOTIFY_LISTENERS | Block.NOTIFY_NEIGHBORS);
 
-            if (oldBe instanceof InertRunestoneBlockEntity runestoneBe && world.getBlockEntity(runePos) instanceof InertRunestoneBlockEntity newRunestoneBe) {
+            if (oldBe instanceof RunestoneBlockEntity runestoneBe && world.getBlockEntity(runePos) instanceof RunestoneBlockEntity newRunestoneBe) {
                 newRunestoneBe.setCustomName(runestoneBe.getCustomName().orElse(null));
             }
 
@@ -128,7 +129,7 @@ public class InertRunestoneBlock extends BlockWithEntity {
     @Override
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         if (player.getStackInHand(hand).getItem() == RequiemItems.DEBUG_ITEM) {
-            if (!world.isClient && RunestoneBlockEntity.findObeliskOrigin(world, pos).map(world::getBlockEntity).orElse(null) instanceof RunestoneBlockEntity core) {
+            if (!world.isClient && ObeliskMatcher.findObeliskOrigin(world, pos).map(world::getBlockEntity).orElse(null) instanceof RunestoneBlockEntity core) {
                 player.sendMessage(Text.literal("Width: %d, Height: %d".formatted(core.getRangeLevel(), core.getPowerLevel())), true);
             }
             return ActionResult.SUCCESS;
@@ -144,12 +145,16 @@ public class InertRunestoneBlock extends BlockWithEntity {
     }
 
     @Override
-    public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
-        if (state.get(HEAD) && (!(newState.getBlock() instanceof InertRunestoneBlock) || !newState.get(HEAD))) {
+    public void onStateReplaced(BlockState oldState, World world, BlockPos pos, BlockState newState, boolean moved) {
+        if (this.shouldHaveBlockEntity(oldState) && (!(newState.getBlock() instanceof InertRunestoneBlock newRune) || !newRune.shouldHaveBlockEntity(newState))) {
             if (world.getBlockEntity(pos) instanceof RunestoneBlockEntity runestone) {
                 runestone.onDestroyed();
             }
         }
+    }
+
+    protected boolean shouldHaveBlockEntity(BlockState state) {
+        return state.get(ACTIVATED);
     }
 
     @Override
@@ -169,12 +174,12 @@ public class InertRunestoneBlock extends BlockWithEntity {
 
     @Override
     public @Nullable BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
-        return state.get(HEAD) ? new RunestoneBlockEntity(pos, state) : null;
+        return shouldHaveBlockEntity(state) ? new RunestoneBlockEntity(pos, state) : null;
     }
 
     @Override
     public <T extends BlockEntity> @Nullable BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
-        if (world.isClient()) return null;
+        if (world.isClient() || !state.get(HEAD)) return null;
         return checkType(type, RequiemBlockEntities.RUNIC_OBSIDIAN, RunestoneBlockEntity::tick);
     }
 

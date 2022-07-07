@@ -32,7 +32,7 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.requiem.common.block;
+package ladysnake.requiem.common.block.obelisk;
 
 import com.google.common.base.Preconditions;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
@@ -51,10 +51,10 @@ public final class ObeliskMatch {
     private final BlockPos origin;
     private final int coreWidth;
     private final int coreHeight;
-    private final List<RunestoneBlockEntity.RuneSearchResult> layers;
+    private final List<ObeliskMatcher.RuneSearchResult> layers;
     private final Set<Text> names;
 
-    ObeliskMatch(BlockPos origin, int coreWidth, int coreHeight, List<RunestoneBlockEntity.RuneSearchResult> coreLayers, Set<Text> names) {
+    ObeliskMatch(BlockPos origin, int coreWidth, int coreHeight, List<ObeliskMatcher.RuneSearchResult> coreLayers, Set<Text> names) {
         this.names = names;
         Preconditions.checkArgument(coreHeight == coreLayers.size());
         this.origin = origin;
@@ -66,7 +66,7 @@ public final class ObeliskMatch {
     public Stream<BlockPos> runePositions() {
         return IntStream.range(0, this.coreHeight)
             .filter(height -> layers.get(height).rune() != null)
-            .mapToObj(height -> RunestoneBlockEntity.iterateCoreBlocks(this.origin, this.coreWidth, height))
+            .mapToObj(height -> ObeliskMatcher.iterateCoreBlocks(this.origin, this.coreWidth, height))
             .flatMap(positions -> StreamSupport.stream(positions.spliterator(), false));
     }
 
@@ -88,7 +88,7 @@ public final class ObeliskMatch {
 
     public Object2IntMap<ObeliskRune> collectRunes() {
         Object2IntMap<ObeliskRune> levels = new Object2IntOpenHashMap<>();
-        for (RunestoneBlockEntity.RuneSearchResult result : this.layers) {
+        for (ObeliskMatcher.RuneSearchResult result : this.layers) {
             if (result.rune() != null && levels.getInt(result.rune()) < result.rune().getMaxLevel()) {
                 levels.mergeInt(result.rune(), 1, Integer::sum);
             }

@@ -21,6 +21,7 @@
     "entrypoints": {
       "fabric-gametest": [
         "ladysnake.requiemtest.RequiemTestSuite",
+        "ladysnake.requiem.common.block.ObeliskTests",
         "ladysnake.requiem.common.item.EmptySoulVesselItemTest",
         "ladysnake.requiemtest.PlayerShellsTests"
       ]

@@ -34,9 +34,9 @@
  */
 package ladysnake.requiem.common.item;
 
-import ladysnake.requiem.common.block.InertRunestoneBlock;
 import ladysnake.requiem.common.block.RequiemBlocks;
-import ladysnake.requiem.common.block.RunestoneBlock;
+import ladysnake.requiem.common.block.obelisk.InertRunestoneBlock;
+import ladysnake.requiem.common.block.obelisk.RunestoneBlock;
 import ladysnake.requiem.common.sound.RequiemSoundEvents;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.Block;

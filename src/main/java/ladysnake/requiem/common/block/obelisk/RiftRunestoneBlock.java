@@ -32,7 +32,7 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.requiem.common.block;
+package ladysnake.requiem.common.block.obelisk;
 
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.block.ObeliskRune;
@@ -85,7 +85,7 @@ public class RiftRunestoneBlock extends InertRunestoneBlock implements ObeliskRu
         } else if (!(world instanceof ServerWorld sw)) {
             return ActionResult.SUCCESS;
         } else {
-            RunestoneBlockEntity.findObeliskOrigin(world, pos)
+            ObeliskMatcher.findObeliskOrigin(world, pos)
                 .filter(origin -> RunestoneBlockEntity.checkForPower(sw, pos))
                 .ifPresent(origin -> {
                     player.openHandledScreen(state.createScreenHandlerFactory(world, origin));
@@ -113,9 +113,8 @@ public class RiftRunestoneBlock extends InertRunestoneBlock implements ObeliskRu
     }
 
     @Override
-    public @Nullable BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
-        BlockEntity be = super.createBlockEntity(pos, state);
-        return be == null ? new InertRunestoneBlockEntity(pos, state) : be;
+    protected boolean shouldHaveBlockEntity(BlockState state) {
+        return true;    // need to preserve the custom name
     }
 
     @Override
@@ -143,7 +142,7 @@ public class RiftRunestoneBlock extends InertRunestoneBlock implements ObeliskRu
     public void onPlaced(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack itemStack) {
         if (itemStack.hasCustomName()) {
             BlockEntity blockEntity = world.getBlockEntity(pos);
-            if (blockEntity instanceof InertRunestoneBlockEntity runestone) {
+            if (blockEntity instanceof RunestoneBlockEntity runestone) {
                 runestone.setCustomName(itemStack.getName());
             }
         }

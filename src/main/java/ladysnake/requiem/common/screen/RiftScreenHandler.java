@@ -36,7 +36,7 @@ package ladysnake.requiem.common.screen;
 
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.common.block.RequiemBlocks;
-import ladysnake.requiem.common.block.RiftRunestoneBlock;
+import ladysnake.requiem.common.block.obelisk.RiftRunestoneBlock;
 import ladysnake.requiem.common.entity.effect.AttritionStatusEffect;
 import ladysnake.requiem.common.util.ObeliskDescriptor;
 import net.minecraft.entity.player.PlayerEntity;

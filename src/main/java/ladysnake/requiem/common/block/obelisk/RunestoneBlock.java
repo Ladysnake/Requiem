@@ -32,7 +32,7 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.requiem.common.block;
+package ladysnake.requiem.common.block.obelisk;
 
 import ladysnake.requiem.api.v1.block.ObeliskEffectRune;
 import ladysnake.requiem.common.entity.SoulEntity;

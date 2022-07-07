@@ -37,7 +37,7 @@ package ladysnake.requiem.common.entity;
 import ladysnake.requiem.api.v1.record.GlobalRecord;
 import ladysnake.requiem.api.v1.record.GlobalRecordKeeper;
 import ladysnake.requiem.common.RequiemRecordTypes;
-import ladysnake.requiem.common.block.RiftRunestoneBlock;
+import ladysnake.requiem.common.block.obelisk.RiftRunestoneBlock;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.server.MinecraftServer;
