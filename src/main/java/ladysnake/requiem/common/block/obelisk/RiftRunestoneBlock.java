@@ -54,7 +54,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
@@ -82,11 +81,11 @@ public class RiftRunestoneBlock extends InertRunestoneBlock implements ObeliskRu
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         if (!state.get(ACTIVATED) || !RemnantComponent.isIncorporeal(player) || !this.canBeUsedByVagrant(player)) {
             return ActionResult.PASS;
-        } else if (!(world instanceof ServerWorld sw)) {
+        } else if (!world.isClient()) {
             return ActionResult.SUCCESS;
         } else {
             ObeliskMatcher.findObeliskOrigin(world, pos)
-                .filter(origin -> RunestoneBlockEntity.checkForPower(sw, pos))
+                .filter(origin -> world.getBlockEntity(origin) instanceof RunestoneBlockEntity runestone && runestone.isPowered())
                 .ifPresent(origin -> {
                     player.openHandledScreen(state.createScreenHandlerFactory(world, origin));
                     player.incrementStat(RequiemStats.INTERACT_WITH_RIFT);

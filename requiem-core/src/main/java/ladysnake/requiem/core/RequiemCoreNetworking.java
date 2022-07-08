@@ -35,9 +35,6 @@
 package ladysnake.requiem.core;
 
 import ladysnake.requiem.api.v1.entity.ability.AbilityType;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
-import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.Packet;
@@ -46,6 +43,9 @@ import net.minecraft.network.packet.s2c.play.CustomPayloadS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
+import org.quiltmc.qsl.networking.api.PacketByteBufs;
+import org.quiltmc.qsl.networking.api.PlayerLookup;
+import org.quiltmc.qsl.networking.api.client.ClientPlayNetworking;
 
 import static io.netty.buffer.Unpooled.buffer;
 

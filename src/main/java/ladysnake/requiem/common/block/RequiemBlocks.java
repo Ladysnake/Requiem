@@ -54,12 +54,14 @@ import net.minecraft.block.SlabBlock;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.intprovider.UniformIntProvider;
 import net.minecraft.util.registry.Registry;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 public final class RequiemBlocks {
     private static final Map<Block, BlockRegistration> allBlocks = new LinkedHashMap<>();
@@ -117,6 +119,10 @@ public final class RequiemBlocks {
         allBlocks.forEach(RequiemBlocks::register);
         InertRunestoneBlock.registerCallbacks();
         VagrantTargetableBlock.LOOKUP.registerForBlocks((world, pos, state, blockEntity, context) -> state.get(InertRunestoneBlock.ACTIVATED) ? RIFT_RUNE : null, RIFT_RUNE);
+    }
+
+    public static Stream<Map.Entry<Block, Identifier>> streamRunestones() {
+        return allBlocks.entrySet().stream().filter(e -> e.getKey() instanceof InertRunestoneBlock).map(e -> Map.entry(e.getKey(), Requiem.id(e.getValue().name())));
     }
 
     public static void register(Block block, String name, ItemGroup itemGroup) {

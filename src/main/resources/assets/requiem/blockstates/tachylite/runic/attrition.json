@@ -1,10 +1,7 @@
 {
   "variants": {
-    "activated=false": {
+    "": {
       "model": "requiem:block/tachylite/runic/attrition"
-    },
-    "activated=true": {
-      "model": "requiem:block/tachylite/runic/activated/attrition"
     }
   }
 }

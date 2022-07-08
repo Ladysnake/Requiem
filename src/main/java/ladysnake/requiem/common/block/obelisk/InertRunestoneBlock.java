@@ -129,8 +129,8 @@ public class InertRunestoneBlock extends BlockWithEntity {
     @Override
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         if (player.getStackInHand(hand).getItem() == RequiemItems.DEBUG_ITEM) {
-            if (!world.isClient && ObeliskMatcher.findObeliskOrigin(world, pos).map(world::getBlockEntity).orElse(null) instanceof RunestoneBlockEntity core) {
-                player.sendMessage(Text.literal("Width: %d, Height: %d".formatted(core.getRangeLevel(), core.getPowerLevel())), true);
+            if (!world.isClient && ObeliskMatcher.findObeliskOrigin(world, pos).map(world::getBlockEntity).orElse(null) instanceof RunestoneBlockEntity controller) {
+                player.sendMessage(Text.literal("Width: %d, Height: %d".formatted(controller.getCoreWidth(), controller.getCoreHeight())), true);
             }
             return ActionResult.SUCCESS;
         }

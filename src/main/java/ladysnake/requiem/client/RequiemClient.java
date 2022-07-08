@@ -44,6 +44,7 @@ import ladysnake.requiem.client.particle.CureParticle;
 import ladysnake.requiem.client.particle.EntityDustParticle;
 import ladysnake.requiem.client.particle.GhostParticle;
 import ladysnake.requiem.client.particle.wisp.WispTrailParticle;
+import ladysnake.requiem.client.render.block.RunestoneBlockEntityRenderer;
 import ladysnake.requiem.client.render.entity.CuredPiglinEntityRenderer;
 import ladysnake.requiem.client.render.entity.CuredVillagerEntityRenderer;
 import ladysnake.requiem.client.render.entity.MorticianEntityRenderer;
@@ -52,12 +53,15 @@ import ladysnake.requiem.client.render.entity.SoulEntityRenderer;
 import ladysnake.requiem.client.render.entity.model.MorticianEntityModel;
 import ladysnake.requiem.client.render.entity.model.WillOWispModel;
 import ladysnake.requiem.client.screen.RiftScreen;
+import ladysnake.requiem.common.block.RequiemBlockEntities;
+import ladysnake.requiem.common.block.RequiemBlocks;
 import ladysnake.requiem.common.entity.RequiemEntities;
 import ladysnake.requiem.common.entity.effect.RequiemStatusEffects;
 import ladysnake.requiem.common.particle.RequiemParticleTypes;
 import ladysnake.requiem.common.screen.RequiemScreenHandlers;
 import net.fabricmc.fabric.api.client.model.ModelLoadingRegistry;
 import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry;
+import net.fabricmc.fabric.api.client.rendering.v1.BlockEntityRendererRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityModelLayerRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
 import net.fabricmc.fabric.api.client.screenhandler.v1.ScreenRegistry;
@@ -77,6 +81,8 @@ import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
 import org.quiltmc.loader.api.ModContainer;
+
+import java.util.Map;
 
 public final class RequiemClient {
 
@@ -134,6 +140,7 @@ public final class RequiemClient {
     private void init() {
         this.registerBlockModels();
         this.registerEntityModels();
+        this.registerBlockEntityRenderers();
         this.registerEntityRenderers();
         this.registerModelPredicates();
         this.registerParticleFactories();
@@ -148,30 +155,23 @@ public final class RequiemClient {
     }
 
     private void registerBlockModels() {
+        ModelLoadingRegistry.INSTANCE.registerModelProvider((manager, out) ->
+            RequiemBlocks.streamRunestones().map(Map.Entry::getValue).map(RunestoneBlockEntityRenderer::createRuneIdentifier).forEach(out));
         ModelLoadingRegistry.INSTANCE.registerResourceProvider(resourceManager -> (modelId, context) -> {
             if (modelId.getNamespace().equals(Requiem.MOD_ID)) {
-                if (modelId.getPath().startsWith("block/tachylite/runic/activated/")) {
+                if (modelId.getPath().startsWith("tachylite_rune/")) {
                     String effect = modelId.getPath().substring(modelId.getPath().lastIndexOf('/') + 1);
-                    String topRunestoneSpriteId = ifExistsOrElse(resourceManager, "block/%s_runestone_top".formatted(effect), "block/neutral_runestone");
-                    String sideRunestoneSpriteId = ifExistsOrElse(resourceManager, "block/%s_runestone_side".formatted(effect), "block/%s_runestone".formatted(effect));
                     String sideRuneSpriteId = ifExistsOrElse(resourceManager, "block/%s_rune_side".formatted(effect), "block/%s_rune".formatted(effect));
                     String topRuneSpriteId = ifExistsOrElse(resourceManager, "block/%s_rune_top".formatted(effect), "block/neutral_rune");
                     return new SimpleUnbakedModel(mb -> {
-                        Sprite topRunestoneSprite = mb.getSprite(topRunestoneSpriteId);
-                        Sprite sideRunestoneSprite = mb.getSprite(sideRunestoneSpriteId);
                         Sprite sideRuneSprite = mb.getSprite(sideRuneSpriteId);
                         Sprite topRuneSprite = mb.getSprite(topRuneSpriteId);
-                        mb.box(mb.finder().find(),
-                            -1, d -> d.getAxis() == Direction.Axis.Y ? topRunestoneSprite : sideRunestoneSprite,
-                            0, 0, 0, 1, 1, 1);
                         mb.box(mb.finder().emissive(0, true).disableAo(0, true).disableDiffuse(0, true).blendMode(0, BlendMode.CUTOUT).find(),
                             -1, d -> d.getAxis() == Direction.Axis.Y ? topRuneSprite : sideRuneSprite,
-                            0, 0, 0, 1, 1, 1);
-                        return new SimpleBakedModel(mb.builder.build(), ModelHelper.MODEL_TRANSFORM_BLOCK, sideRunestoneSprite, null);
+                            -0.0001f, -0.0001f, -0.0001f, 1.0001f, 1.0001f, 1.0001f);
+                        return new SimpleBakedModel(mb.builder.build(), ModelHelper.MODEL_TRANSFORM_BLOCK, sideRuneSprite, null);
                     }, ImmutableSet.of( // Set.of throws on duplicate elements! (ImmutableSet.of does not)
-                        new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(topRunestoneSpriteId)),
                         new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(topRuneSpriteId)),
-                        new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(sideRunestoneSpriteId)),
                         new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(sideRuneSpriteId))
                     ));
                 }
@@ -206,6 +206,10 @@ public final class RequiemClient {
     private void registerEntityModels() {
         EntityModelLayerRegistry.registerModelLayer(MorticianEntityModel.MODEL_LAYER, MorticianEntityModel::getTexturedModelData);
         EntityModelLayerRegistry.registerModelLayer(WillOWispModel.BASE_MODEL_LAYER, WillOWispModel::getTexturedModelData);
+    }
+
+    private void registerBlockEntityRenderers() {
+        BlockEntityRendererRegistry.register(RequiemBlockEntities.RUNIC_OBSIDIAN, RunestoneBlockEntityRenderer::new);
     }
 
     private void registerEntityRenderers() {

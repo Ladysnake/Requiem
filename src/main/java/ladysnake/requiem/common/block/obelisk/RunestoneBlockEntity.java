@@ -45,14 +45,13 @@ import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.common.RequiemRecordTypes;
 import ladysnake.requiem.common.block.RequiemBlockEntities;
 import ladysnake.requiem.common.block.RequiemBlocks;
+import ladysnake.requiem.common.network.RequiemNetworking;
 import ladysnake.requiem.common.particle.RequiemParticleTypes;
 import ladysnake.requiem.common.sound.RequiemSoundEvents;
 import ladysnake.requiem.common.util.ObeliskDescriptor;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
@@ -70,22 +69,25 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-public class RunestoneBlockEntity extends BlockEntity {
+public class RunestoneBlockEntity extends BaseRunestoneBlockEntity {
     public static final int POWER_ATTEMPTS = 6;
 
     private final Object2IntMap<ObeliskRune> levels = new Object2IntOpenHashMap<>();
     private @Nullable UUID recordUuid;
     private int obeliskCoreWidth = 0;
     private int obeliskCoreHeight = 0;
-    private @Nullable Text customName;
-    private BlockPos controllerPos;
 
     public RunestoneBlockEntity(BlockPos pos, BlockState state) {
         super(RequiemBlockEntities.RUNIC_OBSIDIAN, pos, state);
     }
 
     public static void tick(World world, BlockPos pos, BlockState state, RunestoneBlockEntity be) {
-        if (world.isClient) return;
+        assert !world.isClient();
+
+        if (be.previousPowerRate != be.powerRate) {
+            be.previousPowerRate = be.powerRate;
+            RequiemNetworking.sendObeliskPowerUpdateMessage(be);
+        }
 
         // Salt the time to avoid checking every potential obelisk on the same tick
         if ((world.getTime() + pos.hashCode()) % 80L == 0L) {
@@ -100,7 +102,9 @@ public class RunestoneBlockEntity extends BlockEntity {
             int obeliskWidth = be.obeliskCoreWidth;
             Vec3d obeliskCenter = getObeliskCenter(pos, obeliskWidth);
 
-            if (!be.levels.isEmpty() && findPowerSource((ServerWorld) world, obeliskCenter, getRange(obeliskWidth))) {
+            be.updatePower((ServerWorld) world, obeliskCenter, getRange(obeliskWidth));
+
+            if (!be.levels.isEmpty() && be.isPowered()) {
                 be.applyPlayerEffects(world, pos);
                 world.playSound(null, pos, RequiemSoundEvents.BLOCK_OBELISK_AMBIENT, SoundCategory.BLOCKS, 1.0F, 1.4F);
             }
@@ -137,15 +141,7 @@ public class RunestoneBlockEntity extends BlockEntity {
         }
     }
 
-    public static boolean checkForPower(ServerWorld world, BlockPos origin) {
-        return ObeliskMatcher.matchObelisk(world, origin).result().map(match -> findPowerSource(
-            world,
-            getObeliskCenter(match.origin(), match.coreWidth()),
-            getRange(match.coreWidth()))
-        ).orElse(Boolean.FALSE);
-    }
-
-    private static boolean findPowerSource(ServerWorld world, Vec3d center, double range) {
+    private void updatePower(ServerWorld world, Vec3d center, double range) {
         BlockPos.Mutable checked = new BlockPos.Mutable();
         int successes = 0;
 
@@ -166,8 +162,8 @@ public class RunestoneBlockEntity extends BlockEntity {
             }
         }
 
-        // Require more than half of the attempts to be successful
-        return successes > POWER_ATTEMPTS / 2;
+        this.setPowerRate((float) successes / POWER_ATTEMPTS);
+        RequiemNetworking.sendObeliskPowerUpdateMessage(this);
     }
 
     private static void spawnSoul(ServerWorld world, Vec3d center, Vec3d particleSrc) {
@@ -175,11 +171,11 @@ public class RunestoneBlockEntity extends BlockEntity {
         world.spawnParticles(RequiemParticleTypes.OBELISK_SOUL, particleSrc.x, particleSrc.y, particleSrc.z, 0, toObelisk.x, 1, toObelisk.z, 0.1);
     }
 
-    public int getRangeLevel() {
+    public int getCoreWidth() {
         return this.obeliskCoreWidth;
     }
 
-    public int getPowerLevel() {
+    public int getCoreHeight() {
         return this.obeliskCoreHeight;
     }
 
@@ -238,7 +234,7 @@ public class RunestoneBlockEntity extends BlockEntity {
         if (player.world.getBlockEntity(this.pos) != this) {
             return false;
         } else {
-            return !(player.squaredDistanceTo((double)this.pos.getX() + 0.5, (double)this.pos.getY() + 0.5, (double)this.pos.getZ() + 0.5) > 64.0);
+            return player.squaredDistanceTo((double) this.pos.getX() + 0.5, (double) this.pos.getY() + 0.5, (double) this.pos.getZ() + 0.5) <= 64.0;
         }
     }
 
@@ -257,10 +253,6 @@ public class RunestoneBlockEntity extends BlockEntity {
     public void readNbt(NbtCompound nbt) {
         super.readNbt(nbt);
 
-        if (nbt.contains("custom_name", NbtElement.STRING_TYPE)) {
-            this.customName = Text.Serializer.fromJson(nbt.getString("custom_name"));
-        }
-
         if (nbt.containsUuid("linked_record")) {
             this.recordUuid = nbt.getUuid("linked_record");
         }
@@ -270,20 +262,8 @@ public class RunestoneBlockEntity extends BlockEntity {
     public void writeNbt(NbtCompound nbt) {
         super.writeNbt(nbt);
 
-        if (this.customName != null) {
-            nbt.putString("custom_name", Text.Serializer.toJson(this.customName));
-        }
-
         if (this.recordUuid != null) {
             nbt.putUuid("linked_record", this.recordUuid);
         }
-    }
-
-    public void setCustomName(@Nullable Text customName) {
-        this.customName = customName;
-    }
-
-    public Optional<Text> getCustomName() {
-        return Optional.ofNullable(this.customName);
     }
 }

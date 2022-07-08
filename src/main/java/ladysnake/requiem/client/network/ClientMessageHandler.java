@@ -41,11 +41,11 @@ import ladysnake.requiem.api.v1.util.SubDataManager;
 import ladysnake.requiem.api.v1.util.SubDataManagerHelper;
 import ladysnake.requiem.client.RequiemClient;
 import ladysnake.requiem.client.RequiemFx;
+import ladysnake.requiem.common.block.obelisk.BaseRunestoneBlockEntity;
 import ladysnake.requiem.common.particle.RequiemParticleTypes;
 import ladysnake.requiem.common.remnant.RemnantTypes;
 import ladysnake.requiem.common.sound.RequiemSoundEvents;
 import ladysnake.requiem.core.RequiemCoreNetworking;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
@@ -56,8 +56,10 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.thread.ThreadExecutor;
 import net.minecraft.world.World;
+import org.quiltmc.qsl.networking.api.client.ClientPlayNetworking;
 
 import java.util.Map;
 import java.util.Objects;
@@ -143,6 +145,21 @@ public class ClientMessageHandler {
                     this.rc.fxRenderer().playEtherealPulseAnimation(16, 0.0f, 0.8f, 0.6f);
                 } else {
                     this.rc.fxRenderer().playEtherealPulseAnimation(16, 1.0f, 0.25f, 0.27f);
+                }
+            });
+        });
+        ClientPlayNetworking.registerGlobalReceiver(OBELISK_POWER_UPDATE, (client, handler, buf, responseSender) -> {
+            BlockPos pos1 = buf.readBlockPos();
+            int coreWidth = buf.readVarInt();
+            int coreHeight = buf.readVarInt();
+            BlockPos pos2 = pos1.add(coreWidth - 1, coreHeight - 1, coreWidth - 1);
+            float powerRate = buf.readFloat();
+
+            client.execute(() -> {
+                for (BlockPos pos : BlockPos.iterate(pos1, pos2)) {
+                    if (client.world.getBlockEntity(pos) instanceof BaseRunestoneBlockEntity runestone) {
+                        runestone.setPowerRate(powerRate);
+                    }
                 }
             });
         });
