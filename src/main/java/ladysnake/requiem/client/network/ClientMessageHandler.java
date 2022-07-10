@@ -41,7 +41,7 @@ import ladysnake.requiem.api.v1.util.SubDataManager;
 import ladysnake.requiem.api.v1.util.SubDataManagerHelper;
 import ladysnake.requiem.client.RequiemClient;
 import ladysnake.requiem.client.RequiemFx;
-import ladysnake.requiem.common.block.obelisk.BaseRunestoneBlockEntity;
+import ladysnake.requiem.common.block.obelisk.RunestoneBlockEntity;
 import ladysnake.requiem.common.particle.RequiemParticleTypes;
 import ladysnake.requiem.common.remnant.RemnantTypes;
 import ladysnake.requiem.common.sound.RequiemSoundEvents;
@@ -149,19 +149,12 @@ public class ClientMessageHandler {
             });
         });
         ClientPlayNetworking.registerGlobalReceiver(OBELISK_POWER_UPDATE, (client, handler, buf, responseSender) -> {
-            BlockPos pos1 = buf.readBlockPos();
+            BlockPos controllerPos = buf.readBlockPos();
             int coreWidth = buf.readVarInt();
             int coreHeight = buf.readVarInt();
-            BlockPos pos2 = pos1.add(coreWidth - 1, coreHeight - 1, coreWidth - 1);
             float powerRate = buf.readFloat();
 
-            client.execute(() -> {
-                for (BlockPos pos : BlockPos.iterate(pos1, pos2)) {
-                    if (client.world.getBlockEntity(pos) instanceof BaseRunestoneBlockEntity runestone) {
-                        runestone.setPowerRate(powerRate);
-                    }
-                }
-            });
+            client.execute(() -> RunestoneBlockEntity.updateObeliskPower(client.world, controllerPos, coreWidth, coreHeight, powerRate));
         });
     }
 

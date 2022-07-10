@@ -81,7 +81,7 @@ public class RiftRunestoneBlock extends InertRunestoneBlock implements ObeliskRu
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         if (!state.get(ACTIVATED) || !RemnantComponent.isIncorporeal(player) || !this.canBeUsedByVagrant(player)) {
             return ActionResult.PASS;
-        } else if (!world.isClient()) {
+        } else if (world.isClient()) {
             return ActionResult.SUCCESS;
         } else {
             ObeliskMatcher.findObeliskOrigin(world, pos)

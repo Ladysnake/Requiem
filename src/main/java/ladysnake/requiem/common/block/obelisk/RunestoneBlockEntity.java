@@ -64,6 +64,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.VisibleForTesting;
 
 import java.util.List;
 import java.util.Optional;
@@ -72,7 +73,7 @@ import java.util.UUID;
 public class RunestoneBlockEntity extends BaseRunestoneBlockEntity {
     public static final int POWER_ATTEMPTS = 6;
 
-    private final Object2IntMap<ObeliskRune> levels = new Object2IntOpenHashMap<>();
+    final Object2IntMap<ObeliskRune> levels = new Object2IntOpenHashMap<>();
     private @Nullable UUID recordUuid;
     private int obeliskCoreWidth = 0;
     private int obeliskCoreHeight = 0;
@@ -91,23 +92,25 @@ public class RunestoneBlockEntity extends BaseRunestoneBlockEntity {
 
         // Salt the time to avoid checking every potential obelisk on the same tick
         if ((world.getTime() + pos.hashCode()) % 80L == 0L) {
-            if (!state.get(InertRunestoneBlock.HEAD)) {
-                world.removeBlockEntity(pos);
-                be.onDestroyed();
-                return;
-            }
+            be.update((ServerWorld) world);
+        }
+    }
 
-            be.refreshStructure(state);
+    @VisibleForTesting
+    void update(ServerWorld world) {
+        BlockState state = this.getCachedState();
+        if (!state.get(InertRunestoneBlock.HEAD)) {
+            world.removeBlockEntity(pos);
+            this.onDestroyed();
+            return;
+        }
 
-            int obeliskWidth = be.obeliskCoreWidth;
-            Vec3d obeliskCenter = getObeliskCenter(pos, obeliskWidth);
+        this.refreshStructure(state);
+        this.updatePower(world);
 
-            be.updatePower((ServerWorld) world, obeliskCenter, getRange(obeliskWidth));
-
-            if (!be.levels.isEmpty() && be.isPowered()) {
-                be.applyPlayerEffects(world, pos);
-                world.playSound(null, pos, RequiemSoundEvents.BLOCK_OBELISK_AMBIENT, SoundCategory.BLOCKS, 1.0F, 1.4F);
-            }
+        if (!this.levels.isEmpty() && this.isPowered()) {
+            this.applyPlayerEffects(world, pos);
+            world.playSound(null, pos, RequiemSoundEvents.BLOCK_OBELISK_AMBIENT, SoundCategory.BLOCKS, 1.0F, 1.4F);
         }
     }
 
@@ -121,6 +124,15 @@ public class RunestoneBlockEntity extends BaseRunestoneBlockEntity {
             origin.getY() - 2,
             MathHelper.lerp(0.5, origin.getZ(), origin.getZ() + coreWidth - 1)
         );
+    }
+
+    public static void updateObeliskPower(World world, BlockPos controllerPos, int coreWidth, int coreHeight, float powerRate) {
+        BlockPos pos2 = controllerPos.add(coreWidth - 1, coreHeight - 1, coreWidth - 1);
+        for (BlockPos pos : BlockPos.iterate(controllerPos, pos2)) {
+            if (world.getBlockEntity(pos) instanceof BaseRunestoneBlockEntity runestone) {
+                runestone.setPowerRate(powerRate);
+            }
+        }
     }
 
     private void applyPlayerEffects(World world, BlockPos pos) {
@@ -141,7 +153,9 @@ public class RunestoneBlockEntity extends BaseRunestoneBlockEntity {
         }
     }
 
-    private void updatePower(ServerWorld world, Vec3d center, double range) {
+    private void updatePower(ServerWorld world) {
+        Vec3d center = getObeliskCenter(pos, this.obeliskCoreWidth);
+        double range = getRange(this.obeliskCoreWidth);
         BlockPos.Mutable checked = new BlockPos.Mutable();
         int successes = 0;
 
@@ -162,7 +176,7 @@ public class RunestoneBlockEntity extends BaseRunestoneBlockEntity {
             }
         }
 
-        this.setPowerRate((float) successes / POWER_ATTEMPTS);
+        updateObeliskPower(world, this.getPos(), this.obeliskCoreWidth, this.obeliskCoreHeight, (float) successes / POWER_ATTEMPTS);
         RequiemNetworking.sendObeliskPowerUpdateMessage(this);
     }
 

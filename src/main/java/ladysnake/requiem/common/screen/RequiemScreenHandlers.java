@@ -36,16 +36,21 @@ package ladysnake.requiem.common.screen;
 
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.common.util.ObeliskDescriptor;
-import net.fabricmc.fabric.api.screenhandler.v1.ScreenHandlerRegistry;
+import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerType;
 import net.minecraft.screen.ScreenHandlerType;
+import net.minecraft.util.registry.Registry;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
 
 public final class RequiemScreenHandlers {
-    public static final ScreenHandlerType<RiftScreenHandler> RIFT_SCREEN_HANDLER = ScreenHandlerRegistry.registerExtended(Requiem.id("rift"), (syncId, inventory, buf) -> {
+    public static final ScreenHandlerType<RiftScreenHandler> RIFT_SCREEN_HANDLER = new ExtendedScreenHandlerType<>((syncId, inventory, buf) -> {
         ObeliskDescriptor source = buf.decode(ObeliskDescriptor.CODEC);
         Set<ObeliskDescriptor> obeliskPositions = buf.readCollection(LinkedHashSet::new, b -> b.decode(ObeliskDescriptor.CODEC));
         return new RiftScreenHandler(syncId, source, obeliskPositions);
     });
+
+    public static void init() {
+        Registry.register(Registry.SCREEN_HANDLER, Requiem.id("rift"), RIFT_SCREEN_HANDLER);
+    }
 }
