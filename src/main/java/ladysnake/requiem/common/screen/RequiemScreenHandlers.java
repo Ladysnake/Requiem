@@ -35,7 +35,7 @@
 package ladysnake.requiem.common.screen;
 
 import ladysnake.requiem.Requiem;
-import ladysnake.requiem.common.util.ObeliskDescriptor;
+import ladysnake.requiem.api.v1.block.ObeliskDescriptor;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerType;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.util.registry.Registry;

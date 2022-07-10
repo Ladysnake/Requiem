@@ -60,6 +60,7 @@
   "requiem:commands.soul.restore.success": "Successfully restored its soul to %s",
 
   "requiem:container.obelisk_rift": "Rift",
+  "requiem:toast.rift_witnessed": "Rift Witnessed!",
 
   "requiem:block.minecraft.bed.invalid_body": "This form does not sleep",
 

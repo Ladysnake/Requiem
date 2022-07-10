@@ -38,6 +38,7 @@ import com.google.common.base.Preconditions;
 import com.mojang.datafixers.util.Unit;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import ladysnake.requiem.api.v1.block.ObeliskDescriptor;
 import ladysnake.requiem.api.v1.block.ObeliskRune;
 import ladysnake.requiem.api.v1.record.GlobalRecord;
 import ladysnake.requiem.api.v1.record.GlobalRecordKeeper;
@@ -48,7 +49,6 @@ import ladysnake.requiem.common.block.RequiemBlocks;
 import ladysnake.requiem.common.network.RequiemNetworking;
 import ladysnake.requiem.common.particle.RequiemParticleTypes;
 import ladysnake.requiem.common.sound.RequiemSoundEvents;
-import ladysnake.requiem.common.util.ObeliskDescriptor;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
@@ -193,9 +193,14 @@ public class RunestoneBlockEntity extends BaseRunestoneBlockEntity {
         return this.obeliskCoreHeight;
     }
 
+    public Optional<GlobalRecord> getDescriptorRecord() {
+        if (this.world == null) return Optional.empty();
+        return Optional.ofNullable(recordUuid).flatMap(GlobalRecordKeeper.get(this.world)::getRecord);
+    }
+
     public Optional<ObeliskDescriptor> getDescriptor() {
         if (this.world != null && this.recordUuid != null) {
-            return GlobalRecordKeeper.get(this.world).getRecord(this.recordUuid).flatMap(r -> r.get(RequiemRecordTypes.OBELISK_REF));
+            return this.getDescriptorRecord().flatMap(r -> r.get(RequiemRecordTypes.OBELISK_REF));
         }
 
         return Optional.empty();

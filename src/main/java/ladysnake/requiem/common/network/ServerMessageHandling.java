@@ -34,6 +34,7 @@
  */
 package ladysnake.requiem.common.network;
 
+import ladysnake.requiem.api.v1.block.ObeliskDescriptor;
 import ladysnake.requiem.api.v1.entity.MovementAlterer;
 import ladysnake.requiem.api.v1.entity.ability.AbilityType;
 import ladysnake.requiem.api.v1.entity.ability.MobAbilityController;
@@ -41,12 +42,11 @@ import ladysnake.requiem.api.v1.event.requiem.InitiateFractureCallback;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.common.screen.RiftScreenHandler;
 import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
-import ladysnake.requiem.common.util.ObeliskDescriptor;
 import ladysnake.requiem.core.RequiemCoreNetworking;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.mob.MobEntity;
+import org.quiltmc.qsl.networking.api.ServerPlayNetworking;
 
 import static ladysnake.requiem.common.network.RequiemNetworking.*;
 

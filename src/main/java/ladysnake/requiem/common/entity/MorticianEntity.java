@@ -35,6 +35,7 @@
 package ladysnake.requiem.common.entity;
 
 import com.google.common.base.Preconditions;
+import ladysnake.requiem.api.v1.block.ObeliskDescriptor;
 import ladysnake.requiem.api.v1.possession.Possessable;
 import ladysnake.requiem.api.v1.record.GlobalRecord;
 import ladysnake.requiem.api.v1.record.GlobalRecordKeeper;
@@ -52,7 +53,6 @@ import ladysnake.requiem.common.network.RequiemNetworking;
 import ladysnake.requiem.common.particle.RequiemParticleTypes;
 import ladysnake.requiem.common.remnant.RemnantTypes;
 import ladysnake.requiem.common.sound.RequiemSoundEvents;
-import ladysnake.requiem.common.util.ObeliskDescriptor;
 import ladysnake.requiem.core.record.EntityPositionClerk;
 import net.minecraft.enchantment.EnchantmentLevelEntry;
 import net.minecraft.entity.EntityGroup;

@@ -41,6 +41,7 @@ import ladysnake.requiem.api.v1.util.SubDataManager;
 import ladysnake.requiem.api.v1.util.SubDataManagerHelper;
 import ladysnake.requiem.client.RequiemClient;
 import ladysnake.requiem.client.RequiemFx;
+import ladysnake.requiem.client.gui.RiftWitnessedToast;
 import ladysnake.requiem.common.block.obelisk.RunestoneBlockEntity;
 import ladysnake.requiem.common.particle.RequiemParticleTypes;
 import ladysnake.requiem.common.remnant.RemnantTypes;
@@ -55,6 +56,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.thread.ThreadExecutor;
@@ -155,6 +157,11 @@ public class ClientMessageHandler {
             float powerRate = buf.readFloat();
 
             client.execute(() -> RunestoneBlockEntity.updateObeliskPower(client.world, controllerPos, coreWidth, coreHeight, powerRate));
+        });
+        ClientPlayNetworking.registerGlobalReceiver(RIFT_WITNESSED, (client, handler, buf, responseSender) -> {
+            Text riftName = buf.readText();
+
+            client.execute(() -> client.getToastManager().add(new RiftWitnessedToast(riftName)));
         });
     }
 

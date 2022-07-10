@@ -37,9 +37,9 @@ package ladysnake.requiem.common.block.obelisk;
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.block.ObeliskRune;
 import ladysnake.requiem.api.v1.block.VagrantTargetableBlock;
-import ladysnake.requiem.api.v1.record.GlobalRecordKeeper;
+import ladysnake.requiem.api.v1.record.GlobalRecord;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
-import ladysnake.requiem.common.RequiemRecordTypes;
+import ladysnake.requiem.api.v1.remnant.RiftTracker;
 import ladysnake.requiem.common.advancement.RequiemStats;
 import ladysnake.requiem.common.entity.effect.AttritionStatusEffect;
 import ladysnake.requiem.common.entity.effect.RequiemStatusEffects;
@@ -64,7 +64,6 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 public class RiftRunestoneBlock extends InertRunestoneBlock implements ObeliskRune, VagrantTargetableBlock {
     public static final Identifier RIFT_ICON_ID = Requiem.id("textures/gui/rift_icon.png");
@@ -79,34 +78,33 @@ public class RiftRunestoneBlock extends InertRunestoneBlock implements ObeliskRu
 
     @Override
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-        if (!state.get(ACTIVATED) || !RemnantComponent.isIncorporeal(player) || !this.canBeUsedByVagrant(player)) {
+        if (!state.get(ACTIVATED) || !RemnantComponent.get(player).getRemnantType().isDemon()) {
             return ActionResult.PASS;
-        } else if (world.isClient()) {
-            return ActionResult.SUCCESS;
+        }
+        if (!(ObeliskMatcher.findObeliskOrigin(world, pos).map(world::getBlockEntity).orElse(null) instanceof RunestoneBlockEntity controller)) return ActionResult.PASS;
+
+        controller.getDescriptorRecord().map(GlobalRecord::getUuid).ifPresent(player.getComponent(RiftTracker.KEY)::addRift);
+
+        if (!RemnantComponent.isIncorporeal(player) || !this.canBeUsedByVagrant(player)) {
+            return ActionResult.PASS;
         } else {
-            ObeliskMatcher.findObeliskOrigin(world, pos)
-                .filter(origin -> world.getBlockEntity(origin) instanceof RunestoneBlockEntity runestone && runestone.isPowered())
-                .ifPresent(origin -> {
-                    player.openHandledScreen(state.createScreenHandlerFactory(world, origin));
+            if (world.isClient()) {
+                return ActionResult.SUCCESS;
+            } else {
+                if (controller.isPowered()) {
+                    player.openHandledScreen(state.createScreenHandlerFactory(world, controller.getPos()));
                     player.incrementStat(RequiemStats.INTERACT_WITH_RIFT);
                 }
-            );
 
-            return ActionResult.CONSUME;
+                return ActionResult.CONSUME;
+            }
         }
     }
 
     @Override
     public @Nullable NamedScreenHandlerFactory createScreenHandlerFactory(BlockState state, World world, BlockPos pos) {
         if (world.getBlockEntity(pos) instanceof RunestoneBlockEntity controller) {
-            return new RiftScreenHandlerFactory(
-                controller.getDescriptor().orElseThrow(),
-                GlobalRecordKeeper.get(world).getRecords().stream()
-                    .filter(r -> r.get(RequiemRecordTypes.RIFT_OBELISK).isPresent())
-                    .flatMap(r -> r.get(RequiemRecordTypes.OBELISK_REF).stream())
-                    .filter(p -> p.dimension() == world.getRegistryKey())
-                    .collect(Collectors.toSet()),
-                controller::canBeUsedBy);
+            return new RiftScreenHandlerFactory(controller.getDescriptor().orElseThrow(), controller::canBeUsedBy);
         }
         return null;
     }

@@ -49,6 +49,7 @@ import ladysnake.requiem.api.v1.record.GlobalRecordKeeper;
 import ladysnake.requiem.api.v1.remnant.AttritionFocus;
 import ladysnake.requiem.api.v1.remnant.DeathSuspender;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
+import ladysnake.requiem.api.v1.remnant.RiftTracker;
 import ladysnake.requiem.client.ClientRecordKeeper;
 import ladysnake.requiem.common.entity.CoolPlayerMovementAlterer;
 import ladysnake.requiem.common.entity.SkeletonBoneComponent;
@@ -63,6 +64,7 @@ import ladysnake.requiem.common.possession.DummyGoatJumpingMount;
 import ladysnake.requiem.common.possession.LootingPossessedData;
 import ladysnake.requiem.common.remnant.GlobalAttritionFocus;
 import ladysnake.requiem.common.remnant.PlayerBodyTracker;
+import ladysnake.requiem.common.remnant.PlayerRiftTracker;
 import ladysnake.requiem.common.remnant.RemnantComponentImpl;
 import ladysnake.requiem.common.remnant.SimpleAttritionFocus;
 import ladysnake.requiem.core.ability.ImmutableMobAbilityController;
@@ -106,6 +108,7 @@ public final class RequiemComponents implements EntityComponentInitializer, Scor
         registry.registerForPlayers(PenanceComponent.KEY, PenanceComponent::new, RespawnCopyStrategy.LOSSLESS_ONLY);
         registry.registerFor(LivingEntity.class, SoulHolderComponent.KEY, SoulHolderComponent::new);
         registry.registerFor(GoatEntity.class, DummyGoatJumpingMount.KEY, DummyGoatJumpingMount::new);
+        registry.registerForPlayers(RiftTracker.KEY, PlayerRiftTracker::new, RespawnCopyStrategy.ALWAYS_COPY);
     }
 
     @Override

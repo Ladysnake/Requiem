@@ -36,9 +36,9 @@ package ladysnake.requiem.client.screen;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import ladysnake.requiem.Requiem;
+import ladysnake.requiem.api.v1.block.ObeliskDescriptor;
 import ladysnake.requiem.common.network.RequiemNetworking;
 import ladysnake.requiem.common.screen.RiftScreenHandler;
-import ladysnake.requiem.common.util.ObeliskDescriptor;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerInventory;

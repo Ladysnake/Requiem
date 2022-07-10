@@ -64,9 +64,9 @@ import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.BlockEntityRendererRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityModelLayerRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
-import net.fabricmc.fabric.api.client.screenhandler.v1.ScreenRegistry;
 import net.fabricmc.fabric.api.renderer.v1.material.BlendMode;
 import net.fabricmc.fabric.api.renderer.v1.model.ModelHelper;
+import net.minecraft.client.gui.screen.ingame.HandledScreens;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.particle.PortalParticle;
 import net.minecraft.client.particle.SoulParticle;
@@ -151,7 +151,7 @@ public final class RequiemClient {
     }
 
     private void registerScreens() {
-        ScreenRegistry.register(RequiemScreenHandlers.RIFT_SCREEN_HANDLER, RiftScreen::new);
+        HandledScreens.register(RequiemScreenHandlers.RIFT_SCREEN_HANDLER, RiftScreen::new);
     }
 
     private void registerBlockModels() {
@@ -181,7 +181,7 @@ public final class RequiemClient {
     }
 
     private String ifExistsOrElse(ResourceManager resources, String attempt, String fallback) {
-        return "requiem:" + (resources.method_14486(Requiem.id("textures/" + attempt + ".png")).isPresent() ? attempt : fallback);
+        return "requiem:" + (resources.getResource(Requiem.id("textures/" + attempt + ".png")).isPresent() ? attempt : fallback);
     }
 
     private void registerParticleFactories() {

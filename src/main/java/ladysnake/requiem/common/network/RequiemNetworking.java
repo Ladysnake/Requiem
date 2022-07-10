@@ -35,13 +35,13 @@
 package ladysnake.requiem.common.network;
 
 import ladysnake.requiem.Requiem;
+import ladysnake.requiem.api.v1.block.ObeliskDescriptor;
 import ladysnake.requiem.api.v1.entity.ability.AbilityType;
 import ladysnake.requiem.api.v1.remnant.RemnantType;
 import ladysnake.requiem.api.v1.util.SubDataManager;
 import ladysnake.requiem.api.v1.util.SubDataManagerHelper;
 import ladysnake.requiem.common.block.obelisk.RunestoneBlockEntity;
 import ladysnake.requiem.common.remnant.RemnantTypes;
-import ladysnake.requiem.common.util.ObeliskDescriptor;
 import ladysnake.requiem.core.RequiemCoreNetworking;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.LivingEntity;
@@ -50,6 +50,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.c2s.play.CustomPayloadC2SPacket;
 import net.minecraft.network.packet.s2c.play.CustomPayloadS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Contract;
 import org.quiltmc.qsl.networking.api.PacketByteBufs;
@@ -68,6 +69,7 @@ public final class RequiemNetworking {
     public static final Identifier ETHEREAL_ANIMATION = Requiem.id("ethereal_animation");
     public static final Identifier BODY_CURE = Requiem.id("body_cure");
     public static final Identifier OBELISK_POWER_UPDATE = Requiem.id("obelisk_power_update");
+    public static final Identifier RIFT_WITNESSED = Requiem.id("rift_witnessed");
 
     // Client -> Server
     public static final Identifier DIALOGUE_ACTION = Requiem.id("dialogue_action");
@@ -169,5 +171,11 @@ public final class RequiemNetworking {
         buf.writeVarInt(runestone.getCoreHeight());
         buf.writeFloat(runestone.getPowerRate());
         ServerPlayNetworking.send(PlayerLookup.tracking(runestone), OBELISK_POWER_UPDATE, buf);
+    }
+
+    public static void sendRiftWitnessedMessage(ServerPlayerEntity player, Text obeliskName) {
+        PacketByteBuf buf = PacketByteBufs.create();
+        buf.writeText(obeliskName);
+        ServerPlayNetworking.send(player, RIFT_WITNESSED, buf);
     }
 }

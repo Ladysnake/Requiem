@@ -34,8 +34,8 @@
  */
 package ladysnake.requiem.common.entity.ai;
 
+import ladysnake.requiem.api.v1.block.ObeliskDescriptor;
 import ladysnake.requiem.common.entity.MorticianEntity;
-import ladysnake.requiem.common.util.ObeliskDescriptor;
 import net.minecraft.entity.ai.NoPenaltyTargeting;
 import net.minecraft.entity.ai.goal.WanderAroundGoal;
 import net.minecraft.util.math.Vec3d;

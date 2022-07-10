@@ -37,9 +37,9 @@ package ladysnake.requiem.common;
 import com.mojang.datafixers.util.Unit;
 import com.mojang.serialization.Codec;
 import ladysnake.requiem.Requiem;
+import ladysnake.requiem.api.v1.block.ObeliskDescriptor;
 import ladysnake.requiem.api.v1.record.EntityPointer;
 import ladysnake.requiem.api.v1.record.RecordType;
-import ladysnake.requiem.common.util.ObeliskDescriptor;
 
 public final class RequiemRecordTypes {
     public static final RecordType<Unit> RELEASED_SOUL = register("released_soul", Codec.unit(Unit.INSTANCE));

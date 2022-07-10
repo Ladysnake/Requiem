@@ -34,7 +34,8 @@
  */
 package ladysnake.requiem.common.screen;
 
-import ladysnake.requiem.common.util.ObeliskDescriptor;
+import ladysnake.requiem.api.v1.block.ObeliskDescriptor;
+import ladysnake.requiem.api.v1.remnant.RiftTracker;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -43,24 +44,21 @@ import net.minecraft.screen.ScreenHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 
-import java.util.Set;
 import java.util.function.Predicate;
 
 public final class RiftScreenHandlerFactory implements ExtendedScreenHandlerFactory {
     private final ObeliskDescriptor source;
-    private final Set<ObeliskDescriptor> obeliskPositions;
     private final Predicate<PlayerEntity> useCheck;
 
-    public RiftScreenHandlerFactory(ObeliskDescriptor source, Set<ObeliskDescriptor> obeliskPositions, Predicate<PlayerEntity> useCheck) {
+    public RiftScreenHandlerFactory(ObeliskDescriptor source, Predicate<PlayerEntity> useCheck) {
         this.source = source;
-        this.obeliskPositions = obeliskPositions;
         this.useCheck = useCheck;
     }
 
     @Override
     public void writeScreenOpeningData(ServerPlayerEntity player, PacketByteBuf buf) {
         buf.encode(ObeliskDescriptor.CODEC, this.source);
-        buf.writeCollection(this.obeliskPositions, (b, o) -> b.encode(ObeliskDescriptor.CODEC, o));
+        buf.writeCollection(player.getComponent(RiftTracker.KEY).fetchKnownObelisks(), (b, o) -> b.encode(ObeliskDescriptor.CODEC, o));
     }
 
     @Override
@@ -70,6 +68,6 @@ public final class RiftScreenHandlerFactory implements ExtendedScreenHandlerFact
 
     @Override
     public ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
-        return new RiftScreenHandler(RequiemScreenHandlers.RIFT_SCREEN_HANDLER, syncId, source, this.useCheck, this.obeliskPositions);
+        return new RiftScreenHandler(RequiemScreenHandlers.RIFT_SCREEN_HANDLER, syncId, source, this.useCheck, player.getComponent(RiftTracker.KEY).fetchKnownObelisks());
     }
 }

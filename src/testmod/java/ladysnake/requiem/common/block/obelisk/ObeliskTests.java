@@ -35,13 +35,13 @@
 package ladysnake.requiem.common.block.obelisk;
 
 import io.github.ladysnake.elmendorf.GameTestUtil;
+import ladysnake.requiem.api.v1.block.ObeliskDescriptor;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
+import ladysnake.requiem.api.v1.remnant.RiftTracker;
 import ladysnake.requiem.common.block.RequiemBlocks;
 import ladysnake.requiem.common.entity.effect.RequiemStatusEffects;
 import ladysnake.requiem.common.remnant.RemnantTypes;
-import ladysnake.requiem.common.screen.RequiemScreenHandlers;
 import ladysnake.requiem.common.screen.RiftScreenHandler;
-import ladysnake.requiem.common.util.ObeliskDescriptor;
 import ladysnake.requiemtest.mixin.WorldAccessor;
 import net.fabricmc.fabric.api.gametest.v1.FabricGameTest;
 import net.minecraft.block.BlockState;
@@ -56,7 +56,6 @@ import net.minecraft.util.math.Vec3d;
 
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 
 public class ObeliskTests implements FabricGameTest {
@@ -119,14 +118,16 @@ public class ObeliskTests implements FabricGameTest {
             GameTestUtil.assertTrue("Obelisk should have 1 rift rune", controller.levels.getInt(RequiemBlocks.RIFT_RUNE) == 1);
             GameTestUtil.assertTrue("Obelisks with enough soul sand should be powered", controller.isPowered());
             BlockHitResult hitResult = new BlockHitResult(Vec3d.ofCenter(absoluteControllerPos.up()), Direction.EAST, absoluteControllerPos.up(), false);
+            ObeliskDescriptor obeliskDescriptor = controller.getDescriptor().orElseThrow();
+            GameTestUtil.assertTrue("Obelisk should have appropriate descriptor", controller.getDescriptor().filter(obeliskDescriptor::equals).isPresent());
+            GameTestUtil.assertFalse("Player should not know about the rift before interacting", player.getComponent(RiftTracker.KEY).fetchKnownObelisks().contains(obeliskDescriptor));
             ctx.getBlockState(controllerPos.up()).onUse(ctx.getWorld(), player, Hand.MAIN_HAND, hitResult);
+            GameTestUtil.assertTrue("Player should know about the rift after interacting", player.getComponent(RiftTracker.KEY).fetchKnownObelisks().contains(obeliskDescriptor));
             GameTestUtil.assertTrue("Corporeal player should not open the rift GUI", player.currentScreenHandler == player.playerScreenHandler);
             RemnantComponent.get(player).setVagrant(true);
             ctx.getBlockState(controllerPos.up()).onUse(ctx.getWorld(), player, Hand.MAIN_HAND, hitResult);
-            GameTestUtil.assertTrue("Incorporeal player should open the rift GUI", player.currentScreenHandler.getType() == RequiemScreenHandlers.RIFT_SCREEN_HANDLER);
-            GameTestUtil.assertTrue("Player should get opened rift in GUI", ((RiftScreenHandler) player.currentScreenHandler).getObelisks().equals(Set.of(new ObeliskDescriptor(
-                ctx.getWorld().getRegistryKey(), absoluteControllerPos, 1, 2, Optional.empty()
-            ))));
+            GameTestUtil.assertTrue("Incorporeal player should open the rift GUI", player.currentScreenHandler instanceof RiftScreenHandler);
+            GameTestUtil.assertTrue("Player should get opened rift in GUI", ((RiftScreenHandler) player.currentScreenHandler).getObelisks().equals(Set.of(obeliskDescriptor)));
             ctx.complete();
         });
     }
