@@ -41,15 +41,18 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 
 public abstract class BaseRunestoneBlockEntity extends BlockEntity {
+    private static final int POWER_TRANSITION_TIME = 10;
     @Nullable
     protected Text customName;
-    protected float previousPowerRate;
-    protected float powerRate;
+    private long lastPowerUpdateTime;
+    private float previousPowerRate;
+    private float powerRate;
 
     public BaseRunestoneBlockEntity(BlockEntityType<?> blockEntityType, BlockPos blockPos, BlockState blockState) {
         super(blockEntityType, blockPos, blockState);
@@ -63,8 +66,9 @@ public abstract class BaseRunestoneBlockEntity extends BlockEntity {
         return Optional.ofNullable(this.customName);
     }
 
-    public float getPreviousPowerRate() {
-        return previousPowerRate;
+    public float getPowerRate(float tickDelta) {
+        assert world != null;
+        return MathHelper.lerp(MathHelper.clamp(((world.getTime() - lastPowerUpdateTime) + tickDelta) / POWER_TRANSITION_TIME, 0f, 1f), previousPowerRate, powerRate);
     }
 
     public float getPowerRate() {
@@ -78,6 +82,7 @@ public abstract class BaseRunestoneBlockEntity extends BlockEntity {
     public void setPowerRate(float powerRate) {
         this.previousPowerRate = this.powerRate;
         this.powerRate = powerRate;
+        this.lastPowerUpdateTime = this.getWorld() == null ? 0 : this.getWorld().getTime();
     }
 
     @Override

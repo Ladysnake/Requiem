@@ -53,7 +53,6 @@ import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.random.RandomGenerator;
 import net.minecraft.util.registry.Registry;
 
@@ -88,7 +87,7 @@ public class RunestoneBlockEntityRenderer implements BlockEntityRenderer<Runesto
         BlockState blockState = runestone.getCachedState();
         if (!blockState.get(InertRunestoneBlock.ACTIVATED)) return;
         BlockPos pos = runestone.getPos();
-        int powerRate = Math.round(MathHelper.lerp(tickDelta, runestone.getPreviousPowerRate(), runestone.getPowerRate()) * 100);
+        int powerRate = Math.round(runestone.getPowerRate(tickDelta) * 100);
         this.blockRenderManager
             .getModelRenderer()
             .render(

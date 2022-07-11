@@ -85,11 +85,6 @@ public class RunestoneBlockEntity extends BaseRunestoneBlockEntity {
     public static void tick(World world, BlockPos pos, BlockState state, RunestoneBlockEntity be) {
         assert !world.isClient();
 
-        if (be.previousPowerRate != be.powerRate) {
-            be.previousPowerRate = be.powerRate;
-            RequiemNetworking.sendObeliskPowerUpdateMessage(be);
-        }
-
         // Salt the time to avoid checking every potential obelisk on the same tick
         if ((world.getTime() + pos.hashCode()) % 80L == 0L) {
             be.update((ServerWorld) world);
