@@ -1,5 +1,6 @@
 [versions]
 acu = "3.3.1"
+aea = "95f13798d1"
 amecs = "1.1.5+mc21w16a"
 autoconfig = "3.2.2"
 apoli = "2.5.0"
@@ -32,6 +33,7 @@ wood = "2.0.2"
 
 [libraries]
 apoli =         { group = "com.github.apace100",     name = "apoli", version.ref = "apoli" }
+additionalEntityAttributes = { module = "com.github.DaFuqs:AdditionalEntityAttributes", version.ref = "aea" }
 betterGraves =  { group = "io.github.CerulanLumina", name = "better-graves", version.ref = "betterGraves"}
 bewitchment =   { group = "curse.maven",             name = "bewitchment-394915", version.ref = "bewitchment"}
 biomeMakeover = { group = "curse.maven",             name = "biome-makeover-412182", version.ref = "biomeMakeover" }

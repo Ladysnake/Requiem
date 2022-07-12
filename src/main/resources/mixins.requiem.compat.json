@@ -6,6 +6,7 @@
   "client": [
   ],
   "mixins": [
+    "additionalentityattributes.LivingEntityMixin",
     "bettergraves.BetterGravesMixin",
     "biomemakeover.EntityPartMixin",
     "haema.VampireBloodInjectorItemMixin",
