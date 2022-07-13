@@ -41,6 +41,8 @@ import dev.onyxstudios.cca.internal.base.AbstractComponentContainer;
 import io.github.ladysnake.impersonate.Impersonator;
 import ladysnake.requiem.api.v1.entity.InventoryLimiter;
 import ladysnake.requiem.api.v1.event.requiem.PlayerShellEvents;
+import ladysnake.requiem.api.v1.event.requiem.PossessionEvents;
+import ladysnake.requiem.api.v1.event.requiem.SoulboundStackCheckCallback;
 import ladysnake.requiem.api.v1.record.GlobalRecord;
 import ladysnake.requiem.api.v1.record.GlobalRecordKeeper;
 import ladysnake.requiem.api.v1.remnant.PlayerSplitResult;
@@ -53,6 +55,8 @@ import ladysnake.requiem.core.RequiemCore;
 import ladysnake.requiem.core.record.EntityPositionClerk;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.packet.s2c.play.EntityTrackerUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerPositionLookS2CPacket;
@@ -81,11 +85,23 @@ public final class PlayerSplitter {
         int experience = whole.totalExperience;
         ServerPlayerEntity soul = performRespawn(whole);
         soul.addExperience(experience);
+        transferSoulboundItems(shell, soul);
         soul.world.spawnEntity(shell);
         if (mount != null) shell.startRiding(mount);
         setupRecord(whole, shell, soul);
         PlayerShellEvents.PLAYER_SPLIT.invoker().onPlayerSplit(whole, soul, shell);
         return new PlayerSplitResult(soul, shell);
+    }
+
+    private static void transferSoulboundItems(PlayerShellEntity shell, ServerPlayerEntity soul) {
+        // Inverted because we are doing things backwards (moving items back to player)
+        boolean transferAll = !PossessionEvents.INVENTORY_TRANSFER_CHECK.invoker().shouldTransfer(soul, shell).get();
+
+        for (int i = 0; i < soul.getInventory().size(); i++) {
+            if (transferAll || SoulboundStackCheckCallback.EVENT.invoker().isSoulbound(shell.getInventory(), shell.getInventory().getStack(i), i)) {
+                soul.getInventory().setStack(i, shell.getInventory().removeStack(i));
+            }
+        }
     }
 
     private static void setupRecord(ServerPlayerEntity whole, PlayerShellEntity shell, ServerPlayerEntity soul) {
@@ -118,7 +134,8 @@ public final class PlayerSplitter {
     public static void doMerge(PlayerShellEntity shell, ServerPlayerEntity soul) {
         Entity mount = shell.getVehicle();
         shell.stopRiding();
-        soul.getInventory().dropAll();
+        mergeInventories(shell, soul);
+        soul.getInventory().dropAll();  // ensure modded inventories do not get voided, hopefully
         // Note: the teleport request must be before deserialization, as it only encodes the required relative movement
         soul.networkHandler.requestTeleport(shell.getX(), shell.getY(), shell.getZ(), shell.getYaw(), shell.getPitch(), EnumSet.allOf(PlayerPositionLookS2CPacket.Flag.class));
         // override common data that may have been altered during this shell's existence
@@ -137,6 +154,23 @@ public final class PlayerSplitter {
         }
 
         PlayerShellEvents.PLAYER_MERGED.invoker().onPlayerMerge(soul, shell, shell.getGameProfile());
+    }
+
+    private static void mergeInventories(PlayerShellEntity shell, ServerPlayerEntity soul) {
+        PlayerInventory shellInventory = shell.getInventory();
+        PlayerInventory soulInventory = soul.getInventory();
+
+        for (int i = 0; i < soulInventory.size(); i++) {
+            ItemStack stack = soulInventory.removeStack(i);
+
+            if (!stack.isEmpty()) {
+                if (shellInventory.getStack(i).isEmpty()) {
+                    shellInventory.setStack(i, stack);
+                } else {
+                    soul.dropStack(stack);
+                }
+            }
+        }
     }
 
     public static ServerPlayerEntity performRespawn(ServerPlayerEntity player) {

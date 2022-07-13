@@ -47,7 +47,7 @@ import org.spongepowered.asm.mixin.injection.ModifyArg;
 
 import java.util.Objects;
 
-@Mixin(value = LivingEntity.class, priority = 999)
+@Mixin(value = LivingEntity.class, priority = 999)  // apply before AEA's mixin
 public abstract class LivingEntityMixin extends Entity {
     public LivingEntityMixin(EntityType<?> entityType, World world) {
         super(entityType, world);
@@ -57,6 +57,7 @@ public abstract class LivingEntityMixin extends Entity {
     public float waterSpeed(float original) {
         MobEntity host = PossessionComponent.getHost(this);
         if (host != null) {
+            // Fixes the attribute being way higher than it should be for the possessing player
             Objects.requireNonNull(host.getAttributeInstance(AdditionalEntityAttributes.WATER_SPEED)).setBaseValue(original);
         }
         return original;
