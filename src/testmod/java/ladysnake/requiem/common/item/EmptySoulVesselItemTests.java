@@ -52,7 +52,7 @@ import net.minecraft.test.GameTest;
 import net.minecraft.test.TestContext;
 import net.minecraft.util.Hand;
 
-public class EmptySoulVesselItemTest implements FabricGameTest {
+public class EmptySoulVesselItemTests implements FabricGameTest {
     @GameTest(structureName = EMPTY_STRUCTURE)
     public void computeSoulDefense(TestContext ctx) {
         LivingEntity mob = new PiglinBruteEntity(EntityType.PIGLIN_BRUTE, ctx.getWorld());

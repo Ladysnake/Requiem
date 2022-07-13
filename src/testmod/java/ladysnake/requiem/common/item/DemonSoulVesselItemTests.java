@@ -32,40 +32,36 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.requiemtest;
+package ladysnake.requiem.common.item;
 
 import io.github.ladysnake.elmendorf.GameTestUtil;
-import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
+import ladysnake.requiem.common.network.RequiemNetworking;
 import ladysnake.requiem.common.remnant.RemnantTypes;
 import net.fabricmc.fabric.api.gametest.v1.FabricGameTest;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.test.GameTest;
 import net.minecraft.test.TestContext;
 import net.minecraft.util.Hand;
 
-public class RequiemTestSuite implements FabricGameTest {
+public class DemonSoulVesselItemTests implements FabricGameTest {
 
     @GameTest(structureName = EMPTY_STRUCTURE)
-    public void goldenApplesCureZombies(TestContext ctx) {
+    public void sealedVesselWorks(TestContext ctx) {
         var player = ctx.spawnServerPlayer(2, 0, 2);
-        RemnantComponent.get(player).become(RemnantTypes.REMNANT);
-        RemnantComponent.get(player).setVagrant(true);
-        var zombie = ctx.spawnMob(EntityType.ZOMBIE, 3, 0, 3);
-        PossessionComponent.get(player).startPossessing(zombie);
-        GameTestUtil.assertTrue("Vagrant player should be able to possess zombie", PossessionComponent.get(player).getHost() == zombie);
-        player.addStatusEffect(new StatusEffectInstance(StatusEffects.WEAKNESS, 300));
-        player.setStackInHand(Hand.MAIN_HAND, new ItemStack(Items.GOLDEN_APPLE));
-        GameTestUtil.assertTrue("Effects should be transferred to possessed mobs", zombie.hasStatusEffect(StatusEffects.WEAKNESS));
-        GameTestUtil.assertTrue("Possessed mobs should share held items", zombie.getStackInHand(Hand.MAIN_HAND).getItem() == Items.GOLDEN_APPLE);
-        player.getEquippedStack(EquipmentSlot.MAINHAND).use(ctx.getWorld(), player, Hand.MAIN_HAND);
-        player.getEquippedStack(EquipmentSlot.MAINHAND).finishUsing(ctx.getWorld(), player);
-        GameTestUtil.assertTrue("Host should be getting cured", PossessionComponent.get(player).isCuring());
+        GameTestUtil.assertTrue("Default remnant type should be mortal", RemnantComponent.get(player).getRemnantType() == RemnantTypes.MORTAL);
+        player.setStackInHand(Hand.MAIN_HAND, new ItemStack(RequiemItems.SEALED_REMNANT_VESSEL));
+        RequiemItems.SEALED_REMNANT_VESSEL.use(ctx.getWorld(), player, Hand.MAIN_HAND);
+        GameTestUtil.assertTrue("Sealed vessel should convert to remnant", RemnantComponent.get(player).getRemnantType() == RemnantTypes.REMNANT);
+        ctx.verifyConnection(player, conn -> {
+            conn.sentEntityComponentUpdate(
+                player, RemnantComponent.KEY,
+                c -> c.checkVarInt(RemnantTypes.getRawId(RemnantTypes.REMNANT))
+                    .checkBoolean(false)
+                    .noMoreData()
+            );
+            conn.sent(RequiemNetworking.OPUS_USE);
+        });
         ctx.complete();
     }
 }

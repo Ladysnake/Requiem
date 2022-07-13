@@ -22,7 +22,9 @@
       "fabric-gametest": [
         "ladysnake.requiemtest.RequiemTestSuite",
         "ladysnake.requiem.common.block.obelisk.ObeliskTests",
-        "ladysnake.requiem.common.item.EmptySoulVesselItemTest",
+        "ladysnake.requiem.common.item.EmptySoulVesselItemTests",
+        "ladysnake.requiem.common.item.FilledSoulVesselItemTests",
+        "ladysnake.requiem.common.item.DemonSoulVesselItemTests",
         "ladysnake.requiemtest.PlayerShellsTests"
       ]
     },
