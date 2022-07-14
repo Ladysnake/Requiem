@@ -69,16 +69,16 @@ import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
 import ladysnake.requiem.compat.RequiemCompatibilityManager;
 import ladysnake.requiem.core.remnant.VagrantInteractionRegistryImpl;
 import ladysnake.requiem.core.resurrection.ResurrectionDataLoader;
-import net.minecraft.command.argument.IdentifierArgumentType;
 import net.minecraft.command.argument.SingletonArgumentInfo;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.registry.Registry;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.quiltmc.loader.api.ModContainer;
 import org.quiltmc.qsl.base.api.entrypoint.ModInitializer;
 import org.quiltmc.qsl.command.api.CommandRegistrationCallback;
-import org.quiltmc.qsl.command.api.ServerArgumentType;
+import org.quiltmc.qsl.command.mixin.ArgumentTypeInfosAccessor;
 import org.quiltmc.qsl.resource.loader.api.ResourceLoader;
 
 public final class Requiem implements ModInitializer {
@@ -115,7 +115,8 @@ public final class Requiem implements ModInitializer {
         ApiInitializer.discoverEntryPoints();
         Blabber.registerAction(id("remnant_choice"), RemnantChoiceDialogueAction.CODEC);
         CommandRegistrationCallback.EVENT.register((dispatcher, ctx, dedicated) -> RequiemCommand.register(dispatcher));
-        ServerArgumentType.register(Requiem.id("remnant"), RemnantArgumentType.class, SingletonArgumentInfo.contextFree(RemnantArgumentType::remnantType), t -> IdentifierArgumentType.identifier());
+        // Quilt's ServerArgumentType.register seems to break somehow
+        ArgumentTypeInfosAccessor.callRegister(Registry.COMMAND_ARGUMENT_TYPE, "requiem:remnant", RemnantArgumentType.class, SingletonArgumentInfo.contextFree(RemnantArgumentType::remnantType));
         ResourceLoader.get(ResourceType.SERVER_DATA).registerReloader(ResurrectionDataLoader.INSTANCE);
         SyncServerResourcesCallback.EVENT.register(player -> RequiemNetworking.sendTo(player, RequiemNetworking.createDataSyncMessage(SubDataManagerHelper.getServerHelper())));
         ApiInitializer.setPluginCallback(this::registerPlugin);
