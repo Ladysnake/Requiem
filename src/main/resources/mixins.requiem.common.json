@@ -81,6 +81,7 @@
     "remnant.ServerPlayNetworkHandler1Mixin",
     "remnant.ShapeContextMixin",
     "remnant.TargetPredicateMixin",
+    "remnant.WeightedPressurePlateBlockMixin",
     "shell.ai.MemoryModuleTypeAccessor",
     "shell.ai.SensorTypeAccessor",
     "shell.ai.SerializableMemoryModuleTypeAccessor",
