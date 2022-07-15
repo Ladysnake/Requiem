@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "quilt_loader": {
+    "group": "io.github.ladysnake",
+    "id": "pandemonium",
+    "version": "${version}",
+    "metadata": {
+      "name": "Requiem: Pandemonium",
+      "description": "Death revamped and ethereal powers",
+      "contributors": {
+        "Pyrofab": "Owner",
+        "doctor4t": "Owner",
+        "UpcraftLP": "Developer"
+      },
+      "contact": {
+        "sources": "https://github.com/Ladysnake/Requiem",
+        "issues": "https://github.com/Ladysnake/Requiem/issues",
+        "discord": "ladysnake.glitch.me/discord",
+        "homepage": "https://ladysnake.github.io/wiki/requiem/pandemonium"
+      },
+      "license": "GPL-3.0-or-later"
+    },
+    "entrypoints": {
+      "client": "ladysnake.pandemonium.client.PandemoniumClient",
+      "main": "ladysnake.pandemonium.Pandemonium",
+      "modmenu": "ladysnake.pandemonium.compat.PandemoniumModMenuCompat"
+    },
+    "intermediate_mappings": "net.fabricmc:intermediary",
+    "depends": [
+      {
+        "id": "requiem",
+        "version": "~${version}"
+      },
+      {
+        "id": "impersonate",
+        "version": "^2.2.0"
+      },
+      {
+        "id": "automatone",
+        "version": "^0.3.4"
+      }
+    ]
+  },
+  "minecraft": {
+    "environment": "*"
+  },
+  "mixin": [
+    "mixins.pandemonium.client.json",
+    "mixins.pandemonium.common.json"
+  ]
+}

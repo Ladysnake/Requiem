@@ -43,7 +43,7 @@ import io.github.fablabsmc.fablabs.api.fiber.v1.serialization.JanksonValueSerial
 import io.github.fablabsmc.fablabs.api.fiber.v1.tree.ConfigBranch;
 import io.github.fablabsmc.fablabs.api.fiber.v1.tree.ConfigTree;
 import ladysnake.requiem.Requiem;
-import net.fabricmc.loader.api.FabricLoader;
+import org.quiltmc.loader.api.QuiltLoader;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -66,7 +66,7 @@ public final class PandemoniumConfig {
         .fork("possession").applyFromPojo(possession, settings).finishBranch()
         .build();
 
-    private static final Path configPath = FabricLoader.getInstance().getConfigDir().resolve("pandemonium.json5");
+    private static final Path configPath = QuiltLoader.getConfigDir().resolve("pandemonium.json5");
     private static final JanksonValueSerializer serializer = new JanksonValueSerializer(false);
 
     public static ConfigBranch configTree() {
