@@ -49,7 +49,7 @@ public class ReclamationRunestoneBlock extends RunestoneBlock {
     public void applyEffect(ServerPlayerEntity target, int runeLevel, int obeliskWidth) {
         if (!target.hasStatusEffect(this.getEffect())) {
             int effectDuration = (10 - obeliskWidth) * 20 * 60;
-            target.addStatusEffect(new StatusEffectInstance(this.getEffect(), effectDuration, runeLevel - 1, true, true));
+            target.addStatusEffect(new StatusEffectInstance(this.getEffect(), effectDuration, runeLevel - 1, true, false, true));
         }
     }
 }
