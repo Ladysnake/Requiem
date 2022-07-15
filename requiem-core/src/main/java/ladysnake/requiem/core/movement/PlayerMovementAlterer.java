@@ -400,7 +400,6 @@ public abstract class PlayerMovementAlterer implements MovementAlterer {
         if (config.getFlightMode() == UNSPECIFIED) {
             return (entity instanceof FlyingEntity
                 || entity instanceof Flutterer
-                || ((EntityAccessor) entity).requiem$hasWings()
             ) ? FORCED : DISABLED;
         }
         return config.getFlightMode();

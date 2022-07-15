@@ -48,9 +48,6 @@ public interface EntityAccessor {
     @Accessor("movementMultiplier")
     Vec3d requiem$getMovementMultiplier();
 
-    @Invoker("hasWings")
-    boolean requiem$hasWings();
-
     @Invoker("movementInputToVelocity")
     static Vec3d requiem$invokeMovementInputToVelocity(Vec3d movementInput, float speed, float yaw) {
         throw new IllegalStateException(movementInput + "" + speed + "" + yaw);
