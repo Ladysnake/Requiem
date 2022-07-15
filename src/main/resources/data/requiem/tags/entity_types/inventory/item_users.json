@@ -1,10 +1,11 @@
 {
   "replace": false,
   "values": [
-    "minecraft:enderman",
-    "minecraft:panda",
+    "minecraft:allay",
     "minecraft:dolphin",
+    "minecraft:enderman",
     "minecraft:fox",
+    "minecraft:panda",
     "minecraft:vex",
 
     "#requiem:humanoid_zombies",

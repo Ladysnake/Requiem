@@ -1,4 +1,7 @@
 {
+  "minecraft:allay": {
+    "flightMode": "FORCED"
+  },
   "minecraft:axolotl": {
     "landedSpeedModifier": -0.85,
     "waterSpeedModifier": 0.85,
