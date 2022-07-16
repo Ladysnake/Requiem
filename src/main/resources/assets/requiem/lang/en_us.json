@@ -229,5 +229,5 @@
 
   "stat.requiem.interact_with_rift": "[Requiem] Interactions with Obelisk Rift",
 
-  "requiem.message.peaceful_despawn": "Peaceful Mode Despawned Your Body"
+  "requiem.message.peaceful_despawn": "This host may not belong to such a peaceful world"
 }
