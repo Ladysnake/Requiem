@@ -5,7 +5,7 @@ Version 2.0.0
 - Added the Wandering Spirit alternative remnant type previously available in Requiem
 
 **Changes**
-- The "possess all mobs" config option is now off by default
+- The "possess all mobs" config option is now off by default (reminder: you need to enable it on both client and server)
 
 ------------------------------------------------------
 Version 1.7.12

@@ -43,19 +43,17 @@ import ladysnake.requiem.api.v1.event.requiem.PlayerShellEvents;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.common.entity.PlayerShellEntity;
 import net.fabricmc.fabric.api.event.registry.RegistryEntryAddedCallback;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
+import org.quiltmc.loader.api.QuiltLoader;
 
 import java.util.Optional;
 import java.util.function.Consumer;
 
 public final class RequiemCompatibilityManager {
-
-    private static final FabricLoader loader = FabricLoader.getInstance();
 
     public static void init() {
         try {
@@ -74,7 +72,7 @@ public final class RequiemCompatibilityManager {
 
     public static void load(String modId, Class<?> action) {
         try {
-            if (loader.isModLoaded(modId)) {
+            if (QuiltLoader.isModLoaded(modId)) {
                 action.getMethod("init").invoke(null);
             }
         } catch (Throwable t) {
@@ -83,13 +81,13 @@ public final class RequiemCompatibilityManager {
     }
 
     public static void registerEntityComponentFactories(EntityComponentFactoryRegistry registry) {
-        if (loader.isModLoaded("origins")) {
+        if (QuiltLoader.isModLoaded("origins")) {
             registry.beginRegistration(PlayerEntity.class, OriginsCompat.APOLI_HOLDER_KEY).respawnStrategy(RespawnCopyStrategy.ALWAYS_COPY).end(p -> new ComponentDataHolder<>(OriginsCompat.APOLI_POWER_KEY, OriginsCompat.APOLI_HOLDER_KEY));
             registry.beginRegistration(PlayerEntity.class, OriginsCompat.ORIGIN_HOLDER_KEY).after(OriginsCompat.APOLI_HOLDER_KEY).respawnStrategy(RespawnCopyStrategy.ALWAYS_COPY).end(p -> new OriginsCompat.OriginDataHolder(OriginsCompat.ORIGIN_KEY, OriginsCompat.ORIGIN_HOLDER_KEY));
             registry.beginRegistration(PlayerShellEntity.class, OriginsCompat.APOLI_HOLDER_KEY).end(shell -> new ComponentDataHolder<>(OriginsCompat.APOLI_POWER_KEY, OriginsCompat.APOLI_HOLDER_KEY));
             registry.beginRegistration(PlayerShellEntity.class, OriginsCompat.ORIGIN_HOLDER_KEY).after(OriginsCompat.APOLI_HOLDER_KEY).end(shell -> new OriginsCompat.OriginDataHolder(OriginsCompat.ORIGIN_KEY, OriginsCompat.ORIGIN_HOLDER_KEY));
         }
-        if (loader.isModLoaded("haema")) {
+        if (QuiltLoader.isModLoaded("haema")) {
             registry.registerForPlayers(HaemaCompat.HOLDER_KEY, p -> new ComponentDataHolder<>(HaemaCompat.VAMPIRE_KEY, HaemaCompat.HOLDER_KEY), RespawnCopyStrategy.ALWAYS_COPY);
             registry.registerFor(PlayerShellEntity.class, HaemaCompat.HOLDER_KEY, shell -> new ComponentDataHolder<>(HaemaCompat.VAMPIRE_KEY, HaemaCompat.HOLDER_KEY));
         }

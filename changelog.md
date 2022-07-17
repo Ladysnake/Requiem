@@ -1,7 +1,25 @@
 ------------------------------------------------------
 Version 2.0.0
 ------------------------------------------------------
-**Warning: future betas may still break compatibility with worlds started with this version. Don't start using those versions on any world you care about.**
+### Changes in Beta 10
+- Updated to 1.19
+- **Requiem is now a Quilt mod**. You can install the Quilt loader from [quiltmc.org](https://quiltmc.org/install/). 
+  Also note that you now need [Quilt Standard Libraries](https://modrinth.com/mod/qsl) instead of Fabric API.
+- You can now use a soul vessel to steal souls from wardens and withers, damaging them in the process (this does not allow possession)
+- Rifts now need to be witnessed before players can teleport to them (simply right click them for that)
+- Obelisk runestones now show how much power they get from the surrounding soul blocks
+- Experience now stays with your soul instead of with your body when you split
+  - Experience accumulated while vagrant will now be added instead of overwritten when merging with a shell
+- Fixed an incompatibility with the Collective library which was preventing any special item interaction during possession (most notably curing)
+- Fixed soul rifts breaking in all sorts of ways
+- Fixed possessed mobs going *ZOOM* when swimming with Origins installed
+- Fixed splitting not respecting the `requiem:possessionKeepInventory` gamerule
+- Fixed vagrant players activating weighted pressure plates
+- Fixed possessed chicken outright flying instead of falling slowly
+- Fixed reclamation displaying particles when applied by obelisks
+- Fixed mob limbs moving twice as fast as they should
+- Fixed possessed mobs picking up items on their own, fixing some duplication issues
+- Fixed selected slot desync when merging with a shell
 
 ### Changes in Beta 9
 - Fixed crash with bumblezone, courtesy of andy-makes
@@ -206,7 +224,7 @@ Updated to 1.18.2
 
 ### The "Cry of the Obelisks" update
 
-Updated to MC 1.18
+Updated to MC 1.19
 
 **Additions**
 - Added more Soul Status Effects:
@@ -272,6 +290,7 @@ Updated to MC 1.18
 - Undead mobs now use the Haema vampire vision shader when the latter is available
 - Fixed shell creation issues with Origins
 - Fixed crash with Iris
+- Fixed an incompatibility with the Collective library which was preventing any special item interaction during possession (most notably curing)
 
 **Removals**
 - Removed the Opus Daemonium and its derivatives
@@ -285,6 +304,8 @@ Updated to MC 1.18
 - Fixed dolphins not going flop flop outside water
 - Fixed possession not transferring upon mooshroom shearing
 - Held items should no longer randomly drop when repossessing a mob
+- Fixed possessed chicken outright flying instead of falling slowly
+- Fixed possessed mobs picking up items on their own, fixing some duplication issues
 
 #### Pandemonium
 **Additions**
