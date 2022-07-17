@@ -153,6 +153,7 @@ public final class PlayerSplitter {
             Impersonator.get(soul).impersonate(BODY_IMPERSONATION, shellProfile);
         }
 
+        Objects.requireNonNull(soul.getServer()).getPlayerManager().sendPlayerStatus(soul);
         PlayerShellEvents.PLAYER_MERGED.invoker().onPlayerMerge(soul, shell, shell.getGameProfile());
     }
 
