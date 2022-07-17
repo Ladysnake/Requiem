@@ -17,3 +17,9 @@ dependencies {
 jar {
     from rootProject.files("LICENSE-CODE", "LICENSE-ART")
 }
+
+chenille {
+    configurePublishing {
+        withCurseforgeRelease()
+    }
+}
