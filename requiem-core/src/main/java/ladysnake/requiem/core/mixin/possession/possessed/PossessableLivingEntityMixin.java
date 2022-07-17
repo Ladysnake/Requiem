@@ -167,6 +167,8 @@ public abstract class PossessableLivingEntityMixin extends Entity implements Pos
             // Possessed entities get their fall distance reset each tick to avoid double damage
             // We need to revert it when the possession stops to avoid taking no damage
             this.fallDistance = this.possessor.fallDistance;
+            // Sneaking gets synchronized with the possessor, but most entities do not reset it on their own
+            this.setSneaking(false);
         }
 
         this.possessor = possessor;
@@ -240,6 +242,7 @@ public abstract class PossessableLivingEntityMixin extends Entity implements Pos
                 player.setAbsorptionAmount(this.getAbsorptionAmount());
             }
             this.onGround = player.isOnGround();
+            this.setSneaking(player.isSneaking());
         }
     }
 
