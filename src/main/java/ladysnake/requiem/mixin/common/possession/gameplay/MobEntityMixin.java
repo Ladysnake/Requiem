@@ -128,7 +128,6 @@ public abstract class MobEntityMixin extends LivingEntityMixin implements Posses
     @Override
     protected void requiem$travelEnd(Vec3d movementInput, CallbackInfo ci) {
         LivingEntity self = (LivingEntity) (Object) this;
-        this.updateLimbs(self, false);
 
         if (this.onGround && JumpingMountEvents.MOUNT_CHECK.invoker().getJumpingMount(self) instanceof ExternalJumpingMount jumpingMount) {
             jumpingMount.endJump();
