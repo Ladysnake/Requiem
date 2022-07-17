@@ -228,5 +228,7 @@
   "origins:power.requiem.mortal.name": "Respawn",
   "origins:power.requiem.mortal.description": "When you die, and if all goes well, you find yourself at your last resting point with a whole new body.",
 
-  "stat.requiem.interact_with_rift": "[Requiem] Interactions with Obelisk Rift"
+  "stat.requiem.interact_with_rift": "[Requiem] Interactions with Obelisk Rift",
+
+  "requiem.message.peaceful_despawn": "This host may not belong to such a peaceful world"
 }
