@@ -137,6 +137,21 @@ public abstract class PossessableMobEntityMixin extends PossessableLivingEntityM
         PlayerEntity possessor = this.getPossessor();
         if (possessor != null && !world.isClient) {
             possessor.equipStack(slot, item);
+            ci.cancel();
+        }
+    }
+
+    @Inject(method = "canPickupItem", at = @At("HEAD"), cancellable = true)
+    private void cannotPickupItem(ItemStack stack, CallbackInfoReturnable<Boolean> cir) {
+        if (this.isBeingPossessed()) {
+            cir.setReturnValue(false);
+        }
+    }
+
+    @Inject(method = "canGather", at = @At("HEAD"), cancellable = true)
+    private void cannotGather(ItemStack stack, CallbackInfoReturnable<Boolean> cir) {
+        if (this.isBeingPossessed()) {
+            cir.setReturnValue(false);
         }
     }
 
