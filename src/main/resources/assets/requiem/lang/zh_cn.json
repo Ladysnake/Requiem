@@ -59,6 +59,7 @@
   "requiem:commands.soul.restore.success": "成功给%s装填了灵魂",
 
   "requiem:container.obelisk_rift": "裂谷",
+  "requiem:toast.rift_witnessed": "裂谷已见证！",
 
   "requiem:block.minecraft.bed.invalid_body": "这种形态无法睡觉",
 
@@ -226,5 +227,7 @@
   "origins:power.requiem.mortal.name": "再生",
   "origins:power.requiem.mortal.description": "当你死了，如果一切顺利，你会发现自己处于最后的安息之地，拥有全新的身体。",
 
-  "stat.requiem.interact_with_rift": "[安魂曲]与方尖碑裂谷的互动"
+  "stat.requiem.interact_with_rift": "[安魂曲]与方尖碑裂谷的互动",
+  
+  "requiem.message.peaceful_despawn": "这位宿主似乎不属于这样一个和平的世界"
 }
