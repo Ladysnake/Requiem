@@ -1,6 +1,9 @@
 ------------------------------------------------------
 Version 2.0.0
 ------------------------------------------------------
+### Changes in Beta 11
+- Fixed a mixin crash at launch
+
 ### Changes in Beta 10
 - Updated to 1.19
 - **Requiem is now a Quilt mod**. You can install the Quilt loader from [quiltmc.org](https://quiltmc.org/install/). 

@@ -60,10 +60,6 @@
         "versions": "${version}"
       },
       {
-        "id": "satin",
-        "versions": "^1.8.0"
-      },
-      {
         "id": "cardinal-components-base",
         "versions": "^5.0.0"
       },
@@ -73,6 +69,12 @@
         "reason": "Provides the configuration interface in mod menu",
         "environment": "client"
       },
+      {
+        "id": "satin",
+        "versions": "^1.8.0",
+        "environment": "client"
+      },
+      "automatone",
       "fabric-permissions-api-v0",
       "locki",
       "playerabilitylib"
