@@ -107,14 +107,6 @@ allprojects {
 
         compileOnly metaLibs.bundles.devAnnotations
     }
-
-    publishing {
-        publications {
-            mavenJava(MavenPublication) {
-                from components.java
-            }
-        }
-    }
 }
 
 chenille {
