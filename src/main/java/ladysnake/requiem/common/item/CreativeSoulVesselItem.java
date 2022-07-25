@@ -47,7 +47,7 @@ public class CreativeSoulVesselItem extends EmptySoulVesselItem {
     private static final UUID SOUL_OFFENSE_MODIFIER_ID = UUID.fromString("51ace24e-23b8-4571-901a-cc73f822b329");
 
     private final Multimap<EntityAttribute, EntityAttributeModifier> attributeModifiers = ImmutableMultimap.of(
-        RequiemEntityAttributes.SOUL_OFFENSE, new EntityAttributeModifier(SOUL_OFFENSE_MODIFIER_ID, "Creative vessel modifier", Double.POSITIVE_INFINITY, EntityAttributeModifier.Operation.ADDITION)
+        RequiemEntityAttributes.SOUL_OFFENSE, new EntityAttributeModifier(SOUL_OFFENSE_MODIFIER_ID, "Creative vessel modifier", 1E12, EntityAttributeModifier.Operation.ADDITION)
     );
 
     public CreativeSoulVesselItem(Settings settings) {
