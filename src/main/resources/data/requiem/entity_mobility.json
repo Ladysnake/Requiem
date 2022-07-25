@@ -47,6 +47,9 @@
     "swimMode": "FORCED",
     "flopsOnLand": true
   },
+  "minecraft:frog": {
+    "landedSpeedModifier": -0.75
+  },
   "minecraft:ghast": {
     "flightMode": "FORCED"
   },

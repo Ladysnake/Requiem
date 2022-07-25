@@ -46,6 +46,7 @@
     "possession.gameplay.CrossbowItemMixin",
     "possession.gameplay.EndermanEntityMixin",
     "possession.gameplay.FoxEntityMixin",
+    "possession.gameplay.FrogEntityMixin",
     "possession.gameplay.HorseBaseEntityMixin",
     "possession.gameplay.ItemStackMixin",
     "possession.gameplay.LivingEntityMixin",
