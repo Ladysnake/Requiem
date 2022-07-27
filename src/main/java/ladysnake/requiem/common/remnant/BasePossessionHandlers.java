@@ -36,6 +36,7 @@ package ladysnake.requiem.common.remnant;
 
 import dev.onyxstudios.cca.api.v3.entity.TrackingStartCallback;
 import ladysnake.requiem.Requiem;
+import ladysnake.requiem.api.v1.entity.ExternalJumpingMount;
 import ladysnake.requiem.api.v1.event.minecraft.JumpingMountEvents;
 import ladysnake.requiem.api.v1.event.minecraft.MobConversionCallback;
 import ladysnake.requiem.api.v1.event.requiem.PossessionEvents;
@@ -46,7 +47,6 @@ import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.common.advancement.criterion.RequiemCriteria;
 import ladysnake.requiem.common.entity.effect.AttritionStatusEffect;
 import ladysnake.requiem.common.gamerule.RequiemGamerules;
-import ladysnake.requiem.common.possession.DummyGoatJumpingMount;
 import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
 import ladysnake.requiem.core.entity.SoulHolderComponent;
 import ladysnake.requiem.core.possession.PossessedDataBase;
@@ -55,7 +55,6 @@ import ladysnake.requiem.mixin.common.access.EndermanEntityAccessor;
 import net.fabricmc.fabric.api.util.TriState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.JumpingMount;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -113,8 +112,7 @@ public final class BasePossessionHandlers {
             }
             return PossessionStartCallback.Result.PASS;
         });
-        JumpingMountEvents.MOUNT_CHECK.register(e -> e instanceof JumpingMount mount ? mount : null);
-        JumpingMountEvents.MOUNT_CHECK.register(DummyGoatJumpingMount.KEY::getNullable);
+        JumpingMountEvents.MOUNT_CHECK.register(ExternalJumpingMount.KEY::getNullable);
         MobConversionCallback.EVENT.register(PossessedDataBase::onMobConverted);
         MobConversionCallback.EVENT.register((original, converted) -> dropArmorIfBanned(converted));
         MobConversionCallback.EVENT.register(SoulHolderComponent::onMobConverted);

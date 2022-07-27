@@ -32,32 +32,39 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.requiem.common.possession;
+package ladysnake.requiem.common.possession.jump;
 
-import dev.onyxstudios.cca.api.v3.component.ComponentKey;
-import dev.onyxstudios.cca.api.v3.component.ComponentRegistry;
+import com.google.common.base.Preconditions;
 import dev.onyxstudios.cca.api.v3.component.TransientComponent;
-import ladysnake.requiem.Requiem;
+import ladysnake.requiem.api.v1.entity.ExternalJumpingMount;
 import ladysnake.requiem.api.v1.possession.Possessable;
 import ladysnake.requiem.mixin.common.access.EntityAccessor;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.EntityPose;
-import net.minecraft.entity.passive.GoatEntity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.passive.HorseBaseEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.network.packet.c2s.play.ClientCommandC2SPacket;
 import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvents;
+import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
-public class DummyGoatJumpingMount implements ExternalJumpingMount, TransientComponent {
-    public static final ComponentKey<DummyGoatJumpingMount> KEY = ComponentRegistry.getOrCreate(Requiem.id("charged_jump"), DummyGoatJumpingMount.class);
-    private final GoatEntity goat;
+/**
+ * A fake JumpingMount that allows players possessing a mob to long jump by themselves
+ */
+public class DummyJumpingMount implements ExternalJumpingMount, TransientComponent {
+    protected final LivingEntity mob;
+    private final SoundEvent stepSound;
     private float jumpStrength;
     /**@see HorseBaseEntity#isInAir()*/
     private boolean inAir;
+    private final double baseJumpStrength;
 
-    public DummyGoatJumpingMount(GoatEntity goat) {
-        this.goat = goat;
+    public DummyJumpingMount(LivingEntity mob, double baseJumpStrength, SoundEvent stepSound) {
+        this.mob = mob;
+        this.baseJumpStrength = baseJumpStrength;
+        this.stepSound = stepSound;
     }
 
     @Override
@@ -65,7 +72,7 @@ public class DummyGoatJumpingMount implements ExternalJumpingMount, TransientCom
         if (strength < 0) {
             strength = 0;
         } else {
-            PlayerEntity possessor = ((Possessable) this.goat).getPossessor();
+            PlayerEntity possessor = ((Possessable) this.mob).getPossessor();
             if (possessor != null) {
                 possessor.setJumping(true);
             }
@@ -85,41 +92,57 @@ public class DummyGoatJumpingMount implements ExternalJumpingMount, TransientCom
 
     @Override
     public void startJumping(int height) {
-        this.goat.setNoDrag(true);
-        this.goat.setPose(EntityPose.LONG_JUMPING);
+        this.mob.setPose(EntityPose.LONG_JUMPING);
     }
 
     @Override
     public void stopJumping() {
-        this.goat.world.playSoundFromEntity(null, this.goat, SoundEvents.ENTITY_GOAT_STEP, SoundCategory.NEUTRAL, 2.0F, 1.0F);
-        this.goat.setNoDrag(false);
-        this.goat.setPose(EntityPose.STANDING);
+        this.mob.world.playSoundFromEntity(null, this.mob, this.stepSound, SoundCategory.NEUTRAL, 2.0F, 1.0F);
+        this.mob.setPose(EntityPose.STANDING);
     }
 
     @Override
     public void attemptJump() {
-        PlayerEntity possessor = ((Possessable) this.goat).getPossessor();
-        if (possessor != null && this.jumpStrength > 0.0F && !this.inAir && possessor.isOnGround()) {
-            double naturalStrength = 1.0;
-            double baseJumpVelocity = naturalStrength * this.jumpStrength * ((EntityAccessor) this.goat).requiem$invokeGetJumpVelocityMultiplier();
-            double jumpVelocity = baseJumpVelocity + this.goat.getJumpBoostVelocityModifier();
-            Vec3d baseVelocity = possessor.getVelocity();
-            possessor.setVelocity(baseVelocity.x, jumpVelocity, baseVelocity.z);
-            this.inAir = true;
-            possessor.velocityDirty = true;
-            if (possessor.forwardSpeed > 0.0F) {
-                float vx = MathHelper.sin(possessor.getYaw() * (float) (Math.PI / 180.0));
-                float vz = MathHelper.cos(possessor.getYaw() * (float) (Math.PI / 180.0));
-                possessor.setVelocity(possessor.getVelocity().add(-0.4F * vx * this.jumpStrength, 0.0, 0.4F * vz * this.jumpStrength));
-            }
+        PlayerEntity possessor = ((Possessable) this.mob).getPossessor();
 
-            this.jumpStrength = 0.0F;
+        if (possessor != null && possessor.isOnGround()) {
+            if (!this.inAir && this.jumpStrength > 0.0F) {
+                double naturalStrength = getBaseJumpingStrength();
+                double baseJumpVelocity = naturalStrength * this.jumpStrength * ((EntityAccessor) this.mob).requiem$invokeGetJumpVelocityMultiplier();
+                double jumpVelocity = baseJumpVelocity + this.mob.getJumpBoostVelocityModifier();
+                Vec3d baseVelocity = possessor.getVelocity();
+                possessor.setVelocity(baseVelocity.x, jumpVelocity, baseVelocity.z);
+                this.inAir = true;
+                possessor.velocityDirty = true;
+                if (possessor.forwardSpeed > 0.0F) {
+                    float vx = MathHelper.sin(possessor.getYaw() * (float) (Math.PI / 180.0));
+                    float vz = MathHelper.cos(possessor.getYaw() * (float) (Math.PI / 180.0));
+                    possessor.setVelocity(possessor.getVelocity().add(-0.4F * vx * this.jumpStrength, 0.0, 0.4F * vz * this.jumpStrength));
+                }
+
+                this.beginClientJump(possessor);
+            } else if (this.inAir) {
+                this.finishClientJump(possessor);
+            }
         }
     }
 
-    @Override
-    public void endJump() {
+    protected double getBaseJumpingStrength() {
+        return baseJumpStrength;
+    }
+
+    protected void beginClientJump(PlayerEntity possessor) {
+        this.mob.setPose(EntityPose.LONG_JUMPING);
+        this.jumpStrength = 0.0F;
+    }
+
+    protected void finishClientJump(PlayerEntity possessor) {
+        Preconditions.checkState(this.mob.world.isClient, "endJump should only be called clientside");
+
         this.jumpStrength = 0.0F;
         this.inAir = false;
+
+        // Apparently this packet never gets sent under normal conditions in vanilla
+        MinecraftClient.getInstance().player.networkHandler.sendPacket(new ClientCommandC2SPacket(this.mob, ClientCommandC2SPacket.Mode.STOP_RIDING_JUMP));
     }
 }

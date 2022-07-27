@@ -94,11 +94,6 @@ public abstract class LivingEntityMixin extends Entity implements Possessable {
         return movementInput;
     }
 
-    @Inject(method = "travel", at = @At("RETURN"))
-    protected void requiem$travelEnd(Vec3d movementInput, CallbackInfo ci) {
-
-    }
-
     @Inject(method = "damage",
         slice = @Slice(
             from = @At(value = "INVOKE", target = "Lnet/minecraft/server/network/ServerPlayerEntity;increaseStat(Lnet/minecraft/util/Identifier;I)V"),

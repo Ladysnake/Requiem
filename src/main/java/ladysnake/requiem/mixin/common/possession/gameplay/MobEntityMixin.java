@@ -34,11 +34,11 @@
  */
 package ladysnake.requiem.mixin.common.possession.gameplay;
 
+import ladysnake.requiem.api.v1.entity.ExternalJumpingMount;
 import ladysnake.requiem.api.v1.event.minecraft.JumpingMountEvents;
 import ladysnake.requiem.api.v1.event.minecraft.MobTravelRidingCallback;
 import ladysnake.requiem.api.v1.event.requiem.PossessionEvents;
 import ladysnake.requiem.api.v1.possession.Possessable;
-import ladysnake.requiem.common.possession.ExternalJumpingMount;
 import ladysnake.requiem.core.util.DetectionHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -123,15 +123,6 @@ public abstract class MobEntityMixin extends LivingEntityMixin implements Posses
             }
         }
         return movementInput;
-    }
-
-    @Override
-    protected void requiem$travelEnd(Vec3d movementInput, CallbackInfo ci) {
-        LivingEntity self = (LivingEntity) (Object) this;
-
-        if (this.onGround && JumpingMountEvents.MOUNT_CHECK.invoker().getJumpingMount(self) instanceof ExternalJumpingMount jumpingMount) {
-            jumpingMount.endJump();
-        }
     }
 
     @Override

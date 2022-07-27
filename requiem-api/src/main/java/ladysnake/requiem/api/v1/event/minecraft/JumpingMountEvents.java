@@ -24,9 +24,12 @@ import net.minecraft.entity.LivingEntity;
 import org.jetbrains.annotations.Nullable;
 
 public final class JumpingMountEvents {
-    public static final Event<MountCheckCallback> MOUNT_CHECK = EventFactory.createArrayBacked(MountCheckCallback.class, callbacks -> player -> {
+    /**
+     *
+     */
+    public static final Event<MountCheckCallback> MOUNT_CHECK = EventFactory.createArrayBacked(MountCheckCallback.class, callbacks -> entity -> {
         for (MountCheckCallback callback : callbacks) {
-            JumpingMount mount = callback.getJumpingMount(player);
+            JumpingMount mount = callback.getJumpingMount(entity);
             if (mount != null) {
                 return mount;
             }

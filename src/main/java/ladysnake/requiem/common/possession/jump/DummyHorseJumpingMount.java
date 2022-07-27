@@ -32,12 +32,18 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.requiem.common.possession;
+package ladysnake.requiem.common.possession.jump;
 
-import net.minecraft.entity.JumpingMount;
+import net.minecraft.entity.passive.HorseBaseEntity;
+import net.minecraft.sound.SoundEvent;
 
-public interface ExternalJumpingMount extends JumpingMount {
-    void attemptJump();
+public class DummyHorseJumpingMount extends DummyJumpingMount {
+    public DummyHorseJumpingMount(HorseBaseEntity mob, SoundEvent stepSound) {
+        super(mob, -1, stepSound);
+    }
 
-    void endJump();
+    @Override
+    protected double getBaseJumpingStrength() {
+        return ((HorseBaseEntity) this.mob).getJumpStrength();
+    }
 }

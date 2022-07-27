@@ -34,16 +34,20 @@
  */
 package ladysnake.requiem.common;
 
+import dev.onyxstudios.cca.api.v3.component.ComponentFactory;
 import io.github.ladysnake.locki.Locki;
 import ladysnake.requiem.api.v1.RequiemApi;
 import ladysnake.requiem.api.v1.RequiemPlugin;
+import ladysnake.requiem.api.v1.entity.ExternalJumpingMount;
 import ladysnake.requiem.api.v1.entity.InventoryLimiter;
 import ladysnake.requiem.api.v1.entity.ability.MobAbilityConfig;
 import ladysnake.requiem.api.v1.entity.ability.MobAbilityRegistry;
 import ladysnake.requiem.api.v1.internal.ApiInternals;
+import ladysnake.requiem.api.v1.internal.ExternalJumpingMountFactory;
 import ladysnake.requiem.api.v1.remnant.SoulbindingRegistry;
 import ladysnake.requiem.api.v1.util.SubDataManager;
 import ladysnake.requiem.api.v1.util.SubDataManagerHelper;
+import ladysnake.requiem.common.possession.jump.DummyJumpingMount;
 import ladysnake.requiem.core.RequiemCore;
 import ladysnake.requiem.core.ability.DefaultedMobAbilityRegistry;
 import ladysnake.requiem.core.ability.ImmutableMobAbilityConfig;
@@ -55,6 +59,8 @@ import ladysnake.requiem.core.remnant.SoulbindingRegistryImpl;
 import ladysnake.requiem.core.util.reflection.ReflectionHelper;
 import ladysnake.requiem.core.util.reflection.UncheckedReflectionException;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.sound.SoundEvent;
 import net.minecraft.world.World;
 import org.apiguardian.api.API;
 
@@ -72,6 +78,13 @@ public final class ApiInitializer {
         try {
             ReflectionHelper.<Supplier<MobAbilityConfig.Builder<?>>>setField(ApiInternals.class.getDeclaredField("abilityBuilderFactory"),
                 ImmutableMobAbilityConfig.Builder::new);
+            ReflectionHelper.<ExternalJumpingMountFactory>setField(ApiInternals.class.getDeclaredField("externalJumpingMountFactory"),
+                new ExternalJumpingMountFactory() {
+                    @Override
+                    public <E extends LivingEntity> ComponentFactory<E, ExternalJumpingMount> simple(float baseJumpStrength, SoundEvent stepSound) {
+                        return e -> new DummyJumpingMount(e, baseJumpStrength, stepSound);
+                    }
+                });
             ReflectionHelper.<SubDataManagerHelper>setField(ApiInternals.class.getDeclaredField("serverSubDataManagerHelper"),
                 new ServerSubDataManagerHelper());
             ReflectionHelper.<SubDataManagerHelper>setField(ApiInternals.class.getDeclaredField("clientSubDataManagerHelper"),
