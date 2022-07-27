@@ -1,6 +1,12 @@
 ------------------------------------------------------
 Version 2.0.0
 ------------------------------------------------------
+### Changes in Beta 12
+- Added support for frog possession, allowing charged jumps and pulling entities with their tongue
+- Fixed saddled horses being unable to jump while possessed
+- Fixed creative soul vessels always failing when the player had attrition
+- Updated automatone, fixing a random crash caused by player shells
+
 ### Changes in Beta 11
 - Fixed a mixin crash at launch
 
