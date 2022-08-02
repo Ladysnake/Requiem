@@ -43,6 +43,7 @@ import ladysnake.requiem.api.v1.event.minecraft.client.CrosshairRenderCallback;
 import ladysnake.requiem.api.v1.event.requiem.PossessionStateChangeCallback;
 import ladysnake.requiem.api.v1.event.requiem.client.RenderSelfPossessedEntityCallback;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
+import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.client.particle.GhostParticle;
 import ladysnake.requiem.client.screen.RiftScreen;
 import ladysnake.requiem.common.entity.RequiemEntities;
@@ -164,7 +165,7 @@ public final class RequiemClientListener implements
     public void drawEnderCrosshair(MatrixStack matrices, int scaledWidth, int scaledHeight) {
         MinecraftClient client = this.mc;
         assert client.player != null;
-        if (client.targetedEntity instanceof EndermanEntity && client.player.world.getRegistryKey() == World.END) {
+        if (RemnantComponent.isVagrant(client.player) && client.targetedEntity instanceof EndermanEntity && client.player.world.getRegistryKey() == World.END) {
             // TODO probably replace with a proper texture
             RenderSystem.setShaderColor(0.4f, 0.0f, 1.0f, 1.0f);
         }
