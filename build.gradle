@@ -173,6 +173,7 @@ dependencies {
 //    modLocalRuntime compatLibs.bumblezone
     modCompileOnly (compatLibs.bewitchment) { transitive = false }
 //    modLocalRuntime compatLibs.bundles.bewitchment
+    modLocalImplementation (compatLibs.trinkets)
     modLocalRuntime compatLibs.collective
 }
 

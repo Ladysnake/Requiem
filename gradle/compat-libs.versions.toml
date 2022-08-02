@@ -28,7 +28,7 @@ shea = "1.0.1"
 snowmercy = "3253604" # v1.0.5
 somnus = "0.0.14-1.17.1"
 structurized = "1.4.0+1.18"
-trinkets = "3.2.0"
+trinkets = "3.4.0"
 wood = "2.0.2"
 
 [libraries]
