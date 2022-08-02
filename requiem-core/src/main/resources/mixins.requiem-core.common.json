@@ -16,6 +16,7 @@
     "noai.snowflakes.WitchEntityMixin",
     "noai.snowflakes.WitherEntityMixin",
     "possession.EntityAttributeInstanceMixin",
+    "possession.ServerEntityManagerMixin",
     "possession.ServerWorldMixin",
     "possession.TargetGoalAccessor",
     "possession.WorldMixin",

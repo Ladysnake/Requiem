@@ -34,25 +34,30 @@
  */
 package ladysnake.requiem.core.mixin.possession;
 
+import ladysnake.requiem.api.v1.internal.ProtoPossessable;
+import ladysnake.requiem.api.v1.possession.Possessable;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.world.event.GameEvent;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.server.world.ServerEntityManager;
+import net.minecraft.world.entity.EntityLike;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.ModifyVariable;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@Mixin(ServerWorld.class)
-public abstract class ServerWorldMixin {
-    @ModifyVariable(method = "emitGameEvent", at = @At("HEAD"), argsOnly = true)
-    private GameEvent.Context updatePossessorContext(GameEvent.Context ctx) {
-        if (ctx.sourceEntity() instanceof ServerPlayerEntity player) {
-            MobEntity host = PossessionComponent.get(player).getHost();
-            if (host != null) {
-                return GameEvent.Context.create(host, ctx.affectedState());
+@Mixin(ServerEntityManager.class)
+public abstract class ServerEntityManagerMixin {
+    @Inject(method = "addEntity(Lnet/minecraft/world/entity/EntityLike;Z)Z", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/EntityTrackingStatus;shouldTrack()Z"))
+    private void possessLoadedEntities(EntityLike entity, boolean existing, CallbackInfoReturnable<Boolean> cir) {
+        PlayerEntity possessor = ((ProtoPossessable) entity).getPossessor();
+
+        if (possessor != null && entity instanceof MobEntity) {
+            PossessionComponent possessionComponent = PossessionComponent.get(possessor);
+            if (possessionComponent.getHost() != entity) {
+                ((Possessable) entity).setPossessor(null);  // reset the possessor in case the possession actually fails
+                possessionComponent.startPossessing((MobEntity) entity);
             }
         }
-        return ctx;
     }
 }

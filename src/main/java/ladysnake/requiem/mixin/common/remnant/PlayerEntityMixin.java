@@ -75,8 +75,15 @@ public abstract class PlayerEntityMixin extends LivingEntity implements RequiemP
 
     @Inject(method = "isSwimming", at = @At("HEAD"), cancellable = true)
     private void flyLikeSuperman(CallbackInfoReturnable<Boolean> cir) {
-        if (this.abilities.flying && this.isSprinting() && RemnantComponent.KEY.get(this).isIncorporeal()) {
+        if (this.abilities.flying && this.isSprinting() && RemnantComponent.isIncorporeal(this)) {
             cir.setReturnValue(true);
+        }
+    }
+
+    @Inject(method = "getMoveEffect", at = @At("RETURN"), cancellable = true)
+    private void preventMoveEffects(CallbackInfoReturnable<MoveEffect> cir) {
+        if (cir.getReturnValue() != MoveEffect.NONE && RemnantComponent.isIncorporeal(this)) {
+            cir.setReturnValue(MoveEffect.NONE);
         }
     }
 
