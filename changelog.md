@@ -1,6 +1,9 @@
 ------------------------------------------------------
 Version 2.0.0
 ------------------------------------------------------
+### Changes in Beta 13
+- Updated to 1.19.1
+
 ### Changes in Beta 12
 - Added support for frog possession, allowing charged jumps and pulling entities with their tongue
 - Fixed saddled horses being unable to jump while possessed
