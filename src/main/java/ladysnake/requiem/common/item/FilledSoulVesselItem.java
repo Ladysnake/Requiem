@@ -62,9 +62,17 @@ public class FilledSoulVesselItem extends Item {
     public static final String SOUL_FRAGMENT_NBT = "requiem:soul_fragment";
 
     public static ItemStack forEntityType(EntityType<?> type) {
+        return forSoul(new SoulFragmentInfo(Optional.of(type), Optional.empty()));
+    }
+
+    public static ItemStack forSoul(SoulFragmentInfo soul) {
         ItemStack result = new ItemStack(RequiemItems.FILLED_SOUL_VESSEL);
-        result.getOrCreateSubNbt(SOUL_FRAGMENT_NBT).putString("type", EntityType.getId(type).toString());
+        result.getOrCreateNbt().put(SOUL_FRAGMENT_NBT, soul.toNbt());
         return result;
+    }
+
+    public static Optional<SoulFragmentInfo> parseSoulFragment(ItemStack stack) {
+        return Optional.ofNullable(stack.getSubNbt(SOUL_FRAGMENT_NBT)).flatMap(SoulFragmentInfo::fromNbt);
     }
 
     private final EmptySoulVesselItem emptySoulVessel;
@@ -84,8 +92,8 @@ public class FilledSoulVesselItem extends Item {
 
     @Override
     public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
-        Optional.ofNullable(stack.getSubNbt(SOUL_FRAGMENT_NBT))
-            .flatMap(fragmentData -> EntityType.get(fragmentData.getString("type")))
+        parseSoulFragment(stack)
+            .flatMap(SoulFragmentInfo::entityType)
             .ifPresent(contained -> tooltip.add(Text.translatable("requiem:tooltip.filled_vessel", contained.getName()).formatted(Formatting.GRAY)));
     }
 
@@ -93,10 +101,7 @@ public class FilledSoulVesselItem extends Item {
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
         ItemStack stack = user.getStackInHand(hand);
         if (!world.isClient()) {
-            releaseSoul(user, Optional.ofNullable(stack.getSubNbt(FilledSoulVesselItem.SOUL_FRAGMENT_NBT))
-                .filter(data -> data.containsUuid("uuid"))
-                .map(data -> data.getUuid("uuid"))
-                .orElse(null));
+            releaseSoul(user, parseSoulFragment(stack).flatMap(SoulFragmentInfo::entityId).orElse(null));
             return TypedActionResult.success(ItemUsage.exchangeStack(stack, user, this.getEmptiedStack()));
         }
         user.playSound(RequiemSoundEvents.ITEM_FILLED_VESSEL_USE, 3f, 0.6F + user.getRandom().nextFloat() * 0.4F);

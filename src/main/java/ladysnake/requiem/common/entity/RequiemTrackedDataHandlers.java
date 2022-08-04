@@ -34,14 +34,35 @@
  */
 package ladysnake.requiem.common.entity;
 
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.data.TrackedDataHandler;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.registry.Registry;
 
 import java.util.Optional;
 
 public final class RequiemTrackedDataHandlers {
+    public static final TrackedDataHandler<Optional<EntityType<?>>> OPTIONAL_ENTITY_TYPE = new TrackedDataHandler<>() {
+        @Override
+        public void write(PacketByteBuf buf, Optional<EntityType<?>> value) {
+            buf.writeBoolean(value.isPresent());
+            value.ifPresent(type -> buf.writeVarInt(Registry.ENTITY_TYPE.getRawId(type)));
+        }
+
+        @Override
+        public Optional<EntityType<?>> read(PacketByteBuf buf) {
+            return buf.readBoolean()
+                ? Optional.of(Registry.ENTITY_TYPE.get(buf.readVarInt())) : Optional.empty();
+        }
+
+        @Override
+        public Optional<EntityType<?>> copy(Optional<EntityType<?>> value) {
+            return value;
+        }
+    };
+
     public static final TrackedDataHandler<Optional<Vec3d>> OPTIONAL_VEC_3D = new TrackedDataHandler<>() {
         @Override
         public void write(PacketByteBuf buf, Optional<Vec3d> value) {
@@ -71,5 +92,6 @@ public final class RequiemTrackedDataHandlers {
 
     public static void init() {
         TrackedDataHandlerRegistry.register(OPTIONAL_VEC_3D);
+        TrackedDataHandlerRegistry.register(OPTIONAL_ENTITY_TYPE);
     }
 }

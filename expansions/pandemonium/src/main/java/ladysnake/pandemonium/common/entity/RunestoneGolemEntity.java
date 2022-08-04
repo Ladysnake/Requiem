@@ -34,16 +34,36 @@
  */
 package ladysnake.pandemonium.common.entity;
 
+import com.demonwav.mcdev.annotations.CheckEnv;
+import com.demonwav.mcdev.annotations.Env;
+import ladysnake.requiem.common.entity.RequiemTrackedDataHandlers;
+import ladysnake.requiem.common.item.FilledSoulVesselItem;
+import ladysnake.requiem.common.item.RequiemItems;
+import ladysnake.requiem.common.item.SoulFragmentInfo;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.entity.data.DataTracker;
+import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.passive.TameableEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.ItemUsage;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.Hand;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Optional;
+
 public class RunestoneGolemEntity extends TameableEntity {
+    public static final TrackedData<Optional<EntityType<?>>> HOSTED_SOUL_TYPE = DataTracker.registerData(RunestoneGolemEntity.class, RequiemTrackedDataHandlers.OPTIONAL_ENTITY_TYPE);
+
+    private @Nullable SoulFragmentInfo hostedSoul;
+
     public RunestoneGolemEntity(EntityType<? extends TameableEntity> entityType, World world) {
         super(entityType, world);
     }
@@ -52,9 +72,84 @@ public class RunestoneGolemEntity extends TameableEntity {
         return createMobAttributes().add(EntityAttributes.GENERIC_ATTACK_DAMAGE);
     }
 
+    @CheckEnv(Env.SERVER)
+    public void setHostedSoul(@Nullable SoulFragmentInfo soulFragment) {
+        this.hostedSoul = soulFragment;
+        this.getDataTracker().set(HOSTED_SOUL_TYPE, Optional.ofNullable(soulFragment).flatMap(SoulFragmentInfo::entityType));
+    }
+
+    @CheckEnv(Env.SERVER)
+    public Optional<SoulFragmentInfo> getHostedSoul() {
+        return Optional.ofNullable(this.hostedSoul);
+    }
+
+    public Optional<EntityType<?>> getHostedSoulType() {
+        return this.getDataTracker().get(HOSTED_SOUL_TYPE);
+    }
+
+    @Override
+    protected void initDataTracker() {
+        super.initDataTracker();
+        this.getDataTracker().startTracking(HOSTED_SOUL_TYPE, Optional.empty());
+    }
+
     @Nullable
     @Override
     public PassiveEntity createChild(ServerWorld world, PassiveEntity entity) {
         return PandemoniumEntities.RUNESTONE_GOLEM.create(world);
+    }
+
+    @Override
+    public ActionResult interactMob(PlayerEntity user, Hand hand) {
+        ItemStack stack = user.getStackInHand(hand);
+
+        if (stack.isOf(RequiemItems.FILLED_SOUL_VESSEL)) {
+            if (this.world.isClient) {
+                return ActionResult.CONSUME;
+            }
+
+            Optional<SoulFragmentInfo> soul = FilledSoulVesselItem.parseSoulFragment(stack);
+
+            if (soul.isPresent()) {
+                this.setHostedSoul(soul.get());
+                user.setStackInHand(hand, ItemUsage.exchangeStack(
+                    stack,
+                    user,
+                    ((FilledSoulVesselItem) stack.getItem()).getEmptiedStack())
+                );
+                return ActionResult.SUCCESS;
+            }
+        } else if (stack.isOf(RequiemItems.EMPTY_SOUL_VESSEL)) {
+            if (this.getHostedSoulType().isEmpty()) {   // available clientside
+                return ActionResult.FAIL;
+            }
+            if (!this.world.isClient) {
+                SoulFragmentInfo soul = this.getHostedSoul().orElseThrow(IllegalStateException::new);
+                ItemUsage.exchangeStack(stack, user, FilledSoulVesselItem.forSoul(soul));
+                this.setHostedSoul(null);
+            }
+            return ActionResult.SUCCESS;
+        }
+
+        return super.interactMob(user, hand);
+    }
+
+    @Override
+    public boolean isBreedingItem(ItemStack stack) {
+        return false;
+    }
+
+    @Override
+    public void writeCustomDataToNbt(NbtCompound nbt) {
+        super.writeCustomDataToNbt(nbt);
+        if (this.hostedSoul != null) {
+            nbt.put("soul_fragment", this.hostedSoul.toNbt());
+        }
+    }
+
+    @Override
+    public void readCustomDataFromNbt(NbtCompound nbt) {
+        super.readCustomDataFromNbt(nbt);
+        this.setHostedSoul(SoulFragmentInfo.fromNbt(nbt.getCompound("soul_fragment")).orElse(null));
     }
 }
