@@ -42,8 +42,9 @@ import ladysnake.pandemonium.common.item.PandemoniumItems;
 import ladysnake.pandemonium.common.network.ServerMessageHandling;
 import ladysnake.requiem.api.v1.RequiemApi;
 import ladysnake.requiem.api.v1.annotation.CalledThroughReflection;
-import net.fabricmc.api.ModInitializer;
 import net.minecraft.util.Identifier;
+import org.quiltmc.loader.api.ModContainer;
+import org.quiltmc.qsl.base.api.entrypoint.ModInitializer;
 
 @CalledThroughReflection
 public final class Pandemonium implements ModInitializer {
@@ -54,7 +55,7 @@ public final class Pandemonium implements ModInitializer {
     }
 
     @Override
-    public void onInitialize() {
+    public void onInitialize(ModContainer mod) {
         PandemoniumConfig.load();
         PandemoniumBlocks.init();
         PandemoniumEntities.init();
