@@ -32,22 +32,48 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.pandemonium.common.entity;
+package ladysnake.pandemonium.client.render.entity;
 
-import ladysnake.requiem.Requiem;
-import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
-import net.minecraft.entity.EntityDimensions;
-import net.minecraft.entity.EntityType;
-import net.minecraft.util.registry.Registry;
+import ladysnake.pandemonium.common.entity.RunestoneGolemEntity;
+import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.render.entity.model.SinglePartEntityModel;
+import net.minecraft.util.math.MathHelper;
 
-public final class PandemoniumEntities {
-    public static final EntityType<RunestoneGolemEntity> RUNESTONE_GOLEM = FabricEntityTypeBuilder.<RunestoneGolemEntity>createMob()
-        .entityFactory(RunestoneGolemEntity::new)
-        .dimensions(EntityDimensions.changing(0.5f, 1))
-        .defaultAttributes(RunestoneGolemEntity::createRunestoneGolemAttributes)
-        .build();
+public class RunestoneGolemEntityModel<T extends RunestoneGolemEntity> extends SinglePartEntityModel<T> {
+    private final ModelPart root;
+    private final ModelPart head;
+    private final ModelPart rightArm;
+    private final ModelPart leftArm;
+    private final ModelPart rightLeg;
+    private final ModelPart leftLeg;
 
-    public static void init() {
-        Registry.register(Registry.ENTITY_TYPE, Requiem.id("runestone_golem"), RUNESTONE_GOLEM);
+    public RunestoneGolemEntityModel(ModelPart modelPart) {
+        this.root = modelPart;
+        this.head = modelPart.getChild("head");
+        this.rightArm = modelPart.getChild("right_arm");
+        this.leftArm = modelPart.getChild("left_arm");
+        this.rightLeg = modelPart.getChild("right_leg");
+        this.leftLeg = modelPart.getChild("left_leg");
+    }
+
+    @Override
+    public ModelPart getPart() {
+        return this.root;
+    }
+
+    @Override
+    public void setAngles(T golem, float f, float g, float h, float i, float j) {
+        this.head.yaw = i * 0.017453292F;
+        this.head.pitch = j * 0.017453292F;
+        this.rightLeg.pitch = -1.5F * MathHelper.wrap(f, 13.0F) * g;
+        this.leftLeg.pitch = 1.5F * MathHelper.wrap(f, 13.0F) * g;
+        this.rightLeg.yaw = 0.0F;
+        this.leftLeg.yaw = 0.0F;
+    }
+
+    @Override
+    public void animateModel(T golem, float f, float g, float h) {
+        this.rightArm.pitch = (-0.2F + 1.5F * MathHelper.wrap(f, 13.0F)) * g;
+        this.leftArm.pitch = (-0.2F - 1.5F * MathHelper.wrap(f, 13.0F)) * g;
     }
 }

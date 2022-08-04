@@ -32,22 +32,29 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.pandemonium.common.entity;
+package ladysnake.pandemonium.client.render.entity;
 
-import ladysnake.requiem.Requiem;
-import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
-import net.minecraft.entity.EntityDimensions;
-import net.minecraft.entity.EntityType;
-import net.minecraft.util.registry.Registry;
+import ladysnake.pandemonium.common.entity.RunestoneGolemEntity;
+import net.minecraft.client.render.entity.EntityRendererFactory;
+import net.minecraft.client.render.entity.MobEntityRenderer;
+import net.minecraft.client.render.entity.model.EntityModelLayers;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.util.Identifier;
 
-public final class PandemoniumEntities {
-    public static final EntityType<RunestoneGolemEntity> RUNESTONE_GOLEM = FabricEntityTypeBuilder.<RunestoneGolemEntity>createMob()
-        .entityFactory(RunestoneGolemEntity::new)
-        .dimensions(EntityDimensions.changing(0.5f, 1))
-        .defaultAttributes(RunestoneGolemEntity::createRunestoneGolemAttributes)
-        .build();
+public class RunestoneGolemEntityRenderer extends MobEntityRenderer<RunestoneGolemEntity, RunestoneGolemEntityModel<RunestoneGolemEntity>> {
+    private static final Identifier TEXTURE = new Identifier("textures/entity/iron_golem/iron_golem.png");
 
-    public static void init() {
-        Registry.register(Registry.ENTITY_TYPE, Requiem.id("runestone_golem"), RUNESTONE_GOLEM);
+    public RunestoneGolemEntityRenderer(EntityRendererFactory.Context context) {
+        super(context, new RunestoneGolemEntityModel<>(context.getPart(EntityModelLayers.IRON_GOLEM)), 0.2f);
+    }
+
+    @Override
+    protected void scale(RunestoneGolemEntity entity, MatrixStack matrices, float amount) {
+        matrices.scale(0.33f, 0.33f, 0.33f);
+    }
+
+    @Override
+    public Identifier getTexture(RunestoneGolemEntity entity) {
+        return TEXTURE;
     }
 }

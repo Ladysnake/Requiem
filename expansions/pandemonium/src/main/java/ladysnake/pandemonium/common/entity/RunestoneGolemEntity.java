@@ -34,20 +34,27 @@
  */
 package ladysnake.pandemonium.common.entity;
 
-import ladysnake.requiem.Requiem;
-import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
-import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityType;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.entity.attribute.DefaultAttributeContainer;
+import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.entity.passive.PassiveEntity;
+import net.minecraft.entity.passive.TameableEntity;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 
-public final class PandemoniumEntities {
-    public static final EntityType<RunestoneGolemEntity> RUNESTONE_GOLEM = FabricEntityTypeBuilder.<RunestoneGolemEntity>createMob()
-        .entityFactory(RunestoneGolemEntity::new)
-        .dimensions(EntityDimensions.changing(0.5f, 1))
-        .defaultAttributes(RunestoneGolemEntity::createRunestoneGolemAttributes)
-        .build();
+public class RunestoneGolemEntity extends TameableEntity {
+    public RunestoneGolemEntity(EntityType<? extends TameableEntity> entityType, World world) {
+        super(entityType, world);
+    }
 
-    public static void init() {
-        Registry.register(Registry.ENTITY_TYPE, Requiem.id("runestone_golem"), RUNESTONE_GOLEM);
+    public static DefaultAttributeContainer.Builder createRunestoneGolemAttributes() {
+        return createMobAttributes().add(EntityAttributes.GENERIC_ATTACK_DAMAGE);
+    }
+
+    @Nullable
+    @Override
+    public PassiveEntity createChild(ServerWorld world, PassiveEntity entity) {
+        return PandemoniumEntities.RUNESTONE_GOLEM.create(world);
     }
 }

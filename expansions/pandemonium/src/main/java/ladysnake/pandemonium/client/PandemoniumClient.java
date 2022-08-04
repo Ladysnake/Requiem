@@ -34,18 +34,27 @@
  */
 package ladysnake.pandemonium.client;
 
+import ladysnake.pandemonium.client.render.entity.RunestoneGolemEntityRenderer;
+import ladysnake.pandemonium.common.entity.PandemoniumEntities;
 import ladysnake.requiem.api.v1.annotation.CalledThroughReflection;
 import ladysnake.requiem.api.v1.event.minecraft.client.CrosshairRenderCallback;
-import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
 import net.minecraft.util.Identifier;
+import org.quiltmc.loader.api.ModContainer;
+import org.quiltmc.qsl.base.api.entrypoint.client.ClientModInitializer;
 
 @CalledThroughReflection
 public class PandemoniumClient implements ClientModInitializer {
     @Override
-    public void onInitializeClient() {
+    public void onInitializeClient(ModContainer mod) {
         ClientMessageHandling.init();
         this.registerCallbacks();
         this.registerSprites();
+        this.registerEntityRenderers();
+    }
+
+    private void registerEntityRenderers() {
+        EntityRendererRegistry.register(PandemoniumEntities.RUNESTONE_GOLEM, RunestoneGolemEntityRenderer::new);
     }
 
     private void registerSprites() {
