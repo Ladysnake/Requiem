@@ -29,7 +29,7 @@
   "requiem:commands.ethereal.set.fail": "改变%s的虚灵状态失败",
   "requiem:commands.ethereal.set.success.other": "设置%s的虚灵状态为%s",
   "requiem:commands.ethereal.set.success.self": "设置自己的虚灵状态为%s",
-  "requiem:commands.ethereal.set.target": "你的灵魂状态已更新为%s",
+  "requiem:commands.ethereal.set.target": "你的虚灵状态已更新为%s",
   "requiem:commands.remnant.set.success.other": "设置%s的残魂状态为%s",
   "requiem:commands.remnant.set.success.self": "设置自己的残魂状态为%s",
   "requiem:commands.remnant.set.target": "你的残魂状态已更新为%s",
