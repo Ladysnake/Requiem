@@ -11,7 +11,8 @@ jobs:
                         17    # Minimum supported by Minecraft
                 ]
                 # and run on both Linux and Windows
-                os: [ubuntu-20.04, windows-latest]
+                # TODO re-enable windows-latest when Quilt-Loom merges the fix for long JavaExec command lines
+                os: [ubuntu-20.04]
         runs-on: ${{ matrix.os }}
         steps:
             - name: checkout repository
