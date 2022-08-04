@@ -84,6 +84,9 @@ public final class PlayerSplitter {
         Entity mount = whole.getVehicle();
         int experience = whole.totalExperience;
         ServerPlayerEntity soul = performRespawn(whole);
+        // Respawning in some conditions can place us away from the shell
+        soul.setSneaking(whole.isSneaking());
+        soul.networkHandler.requestTeleport(shell.getX(), shell.getY(), shell.getZ(), shell.getYaw(), shell.getPitch());
         soul.addExperience(experience);
         transferSoulboundItems(shell, soul);
         soul.world.spawnEntity(shell);
