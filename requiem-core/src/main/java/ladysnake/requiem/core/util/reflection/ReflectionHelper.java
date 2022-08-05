@@ -34,11 +34,10 @@
  */
 package ladysnake.requiem.core.util.reflection;
 
-import net.fabricmc.loader.api.FabricLoader;
-import net.fabricmc.loader.api.MappingResolver;
-import net.fabricmc.loader.launch.common.FabricLauncherBase;
 import org.apiguardian.api.API;
 import org.objectweb.asm.Type;
+import org.quiltmc.loader.api.MappingResolver;
+import org.quiltmc.loader.api.QuiltLoader;
 
 import java.lang.invoke.CallSite;
 import java.lang.invoke.LambdaMetafactory;
@@ -55,14 +54,14 @@ import static org.apiguardian.api.API.Status.MAINTAINED;
 import static org.apiguardian.api.API.Status.STABLE;
 
 // TODO add variants that return null instead of throwing (if (dothrow) throw e ?)
-public class ReflectionHelper {
+public final class ReflectionHelper {
 
     public static final String INTERMEDIARY = "intermediary";
     public static final Pattern LTYPE_PATTERN = Pattern.compile("L(.*?);");
 
     @API(status = MAINTAINED, since = "1.0.0")
     public static boolean isDevEnv() {
-        return FabricLauncherBase.getLauncher().isDevelopment();
+        return QuiltLoader.isDevelopmentEnvironment();
     }
 
     @API(status = MAINTAINED, since = "1.0.0")
@@ -199,6 +198,6 @@ public class ReflectionHelper {
     }
 
     private static MappingResolver getMappingResolver() {
-        return FabricLoader.getInstance().getMappingResolver();
+        return QuiltLoader.getMappingResolver();
     }
 }

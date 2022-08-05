@@ -40,11 +40,16 @@ import ladysnake.requiem.common.entity.RequiemTrackedDataHandlers;
 import ladysnake.requiem.common.item.FilledSoulVesselItem;
 import ladysnake.requiem.common.item.RequiemItems;
 import ladysnake.requiem.common.item.SoulFragmentInfo;
+import ladysnake.requiem.core.mixin.access.MobEntityAccessor;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.ai.goal.GoalSelector;
+import net.minecraft.entity.ai.goal.PrioritizedGoal;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
+import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -57,8 +62,10 @@ import net.minecraft.util.Hand;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.HashSet;
 import java.util.Optional;
 
+// TODO make a SoulHolderComponent impl that ties isSoulless to hostedSoul
 public class RunestoneGolemEntity extends TameableEntity {
     public static final TrackedData<Optional<EntityType<?>>> HOSTED_SOUL_TYPE = DataTracker.registerData(RunestoneGolemEntity.class, RequiemTrackedDataHandlers.OPTIONAL_ENTITY_TYPE);
 
@@ -78,7 +85,19 @@ public class RunestoneGolemEntity extends TameableEntity {
     @CheckEnv(Env.SERVER)
     public void setHostedSoul(@Nullable SoulFragmentInfo soulFragment) {
         this.hostedSoul = soulFragment;
-        this.getDataTracker().set(HOSTED_SOUL_TYPE, Optional.ofNullable(soulFragment).flatMap(SoulFragmentInfo::entityType));
+        Optional<EntityType<?>> entityType = Optional.ofNullable(soulFragment).flatMap(SoulFragmentInfo::entityType);
+        if (entityType != this.getHostedSoulType()) this.clearAi();
+        this.getDataTracker().set(HOSTED_SOUL_TYPE, entityType);
+        entityType.ifPresent(this::setupAi);
+    }
+
+    private void clearAi() {
+        for (PrioritizedGoal targetGoal : new HashSet<>(this.targetSelector.getGoals())) {
+            this.targetSelector.remove(targetGoal);
+        }
+        for (PrioritizedGoal goal : this.goalSelector.getGoals()) {
+            this.goalSelector.remove(goal);
+        }
     }
 
     @CheckEnv(Env.SERVER)
@@ -88,6 +107,20 @@ public class RunestoneGolemEntity extends TameableEntity {
 
     public Optional<EntityType<?>> getHostedSoulType() {
         return this.getDataTracker().get(HOSTED_SOUL_TYPE);
+    }
+
+    private void setupAi(EntityType<?> entityType) {
+        Entity e = entityType.create(this.world);
+        if (!(e instanceof MobEntity mob)) return;
+        copyGoals(mob, ((MobEntityAccessor) mob).getTargetSelector(), this.targetSelector);
+        copyGoals(mob, ((MobEntityAccessor) mob).getGoalSelector(), this.goalSelector);
+    }
+
+    private void copyGoals(MobEntity mob, GoalSelector sourceGoalContainer, GoalSelector targetGoalContainer) {
+        for (PrioritizedGoal goal : sourceGoalContainer.getGoals()) {
+            AiAbyss.attune(goal.getGoal(), mob, this)
+                .ifPresent(g -> targetGoalContainer.add(goal.getPriority(), g));
+        }
     }
 
     @Override
@@ -128,7 +161,7 @@ public class RunestoneGolemEntity extends TameableEntity {
             }
             if (!this.world.isClient) {
                 SoulFragmentInfo soul = this.getHostedSoul().orElseThrow(IllegalStateException::new);
-                ItemUsage.exchangeStack(stack, user, FilledSoulVesselItem.forSoul(soul));
+                user.setStackInHand(hand, ItemUsage.exchangeStack(stack, user, FilledSoulVesselItem.forSoul(soul)));
                 this.setHostedSoul(null);
             }
             return ActionResult.SUCCESS;
