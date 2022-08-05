@@ -36,13 +36,21 @@ package ladysnake.pandemonium.common.entity;
 
 import com.demonwav.mcdev.annotations.CheckEnv;
 import com.demonwav.mcdev.annotations.Env;
+import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
+import com.mojang.datafixers.util.Pair;
 import ladysnake.requiem.common.entity.RequiemTrackedDataHandlers;
 import ladysnake.requiem.common.item.FilledSoulVesselItem;
 import ladysnake.requiem.common.item.RequiemItems;
 import ladysnake.requiem.common.item.SoulFragmentInfo;
 import ladysnake.requiem.core.mixin.access.MobEntityAccessor;
+import ladysnake.requiem.mixin.common.access.BrainAccessor;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.ai.brain.Activity;
+import net.minecraft.entity.ai.brain.Brain;
+import net.minecraft.entity.ai.brain.MemoryModuleState;
+import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.goal.GoalSelector;
 import net.minecraft.entity.ai.goal.PrioritizedGoal;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
@@ -59,17 +67,22 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 // TODO make a SoulHolderComponent impl that ties isSoulless to hostedSoul
 public class RunestoneGolemEntity extends TameableEntity {
     public static final TrackedData<Optional<EntityType<?>>> HOSTED_SOUL_TYPE = DataTracker.registerData(RunestoneGolemEntity.class, RequiemTrackedDataHandlers.OPTIONAL_ENTITY_TYPE);
 
     private @Nullable SoulFragmentInfo hostedSoul;
+    private List<Activity> possibleActivities = List.of();
 
     public RunestoneGolemEntity(EntityType<? extends TameableEntity> entityType, World world) {
         super(entityType, world);
@@ -91,15 +104,6 @@ public class RunestoneGolemEntity extends TameableEntity {
         entityType.ifPresent(this::setupAi);
     }
 
-    private void clearAi() {
-        for (PrioritizedGoal targetGoal : new HashSet<>(this.targetSelector.getGoals())) {
-            this.targetSelector.remove(targetGoal);
-        }
-        for (PrioritizedGoal goal : this.goalSelector.getGoals()) {
-            this.goalSelector.remove(goal);
-        }
-    }
-
     @CheckEnv(Env.SERVER)
     public Optional<SoulFragmentInfo> getHostedSoul() {
         return Optional.ofNullable(this.hostedSoul);
@@ -109,11 +113,30 @@ public class RunestoneGolemEntity extends TameableEntity {
         return this.getDataTracker().get(HOSTED_SOUL_TYPE);
     }
 
+    private void clearAi() {
+        Preconditions.checkState(!this.world.isClient);
+        for (PrioritizedGoal pg : new HashSet<>(this.targetSelector.getGoals())) {
+            this.targetSelector.remove(pg.getGoal());
+        }
+        for (PrioritizedGoal pg : new HashSet<>(this.goalSelector.getGoals())) {
+            this.goalSelector.remove(pg.getGoal());
+        }
+        this.getBrain().stopAllTasks((ServerWorld) this.world, this);
+    }
+
     private void setupAi(EntityType<?> entityType) {
         Entity e = entityType.create(this.world);
         if (!(e instanceof MobEntity mob)) return;
         copyGoals(mob, ((MobEntityAccessor) mob).getTargetSelector(), this.targetSelector);
         copyGoals(mob, ((MobEntityAccessor) mob).getGoalSelector(), this.goalSelector);
+        copyBrain(mob.getBrain());
+    }
+
+    private void copyBrain(Brain<?> brain) {
+        // TODO copy the tasks, but filter based on Task's type parameter, and remove any that has lambdas in its fields
+        Map<Activity, Set<Pair<MemoryModuleType<?>, MemoryModuleState>>> requiredActivityMemories = ((BrainAccessor<?>) brain).getRequiredActivityMemories();
+        // very approximate, but activities added first to the registry seem to have the least priority
+        this.possibleActivities = List.copyOf(Lists.reverse(Registry.ACTIVITY.stream().filter(requiredActivityMemories::containsKey).toList()));
     }
 
     private void copyGoals(MobEntity mob, GoalSelector sourceGoalContainer, GoalSelector targetGoalContainer) {
@@ -121,6 +144,12 @@ public class RunestoneGolemEntity extends TameableEntity {
             AiAbyss.attune(goal.getGoal(), mob, this)
                 .ifPresent(g -> targetGoalContainer.add(goal.getPriority(), g));
         }
+    }
+
+    @Override
+    public Brain<RunestoneGolemEntity> getBrain() {
+        @SuppressWarnings("unchecked") Brain<RunestoneGolemEntity> r = (Brain<RunestoneGolemEntity>) super.getBrain();
+        return r;
     }
 
     @Override
@@ -168,6 +197,24 @@ public class RunestoneGolemEntity extends TameableEntity {
         }
 
         return super.interactMob(user, hand);
+    }
+
+    @Override
+    protected void mobTick() {
+        if (!this.possibleActivities.isEmpty()) {
+            this.world.getProfiler().push("runestoneGolemBrain");
+            this.getBrain().tick((ServerWorld)this.world, this);
+            this.world.getProfiler().pop();
+            this.world.getProfiler().push("runestoneGolemActivityUpdate");
+            this.tickActivities();
+            this.world.getProfiler().pop();
+        }
+        super.mobTick();
+    }
+
+    private void tickActivities() {
+        this.getBrain().resetPossibleActivities(this.possibleActivities);
+        this.setAttacking(this.getBrain().hasMemoryModule(MemoryModuleType.ATTACK_TARGET));
     }
 
     @Override

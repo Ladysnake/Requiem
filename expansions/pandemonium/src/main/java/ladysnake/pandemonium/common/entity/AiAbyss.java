@@ -39,6 +39,8 @@ import ladysnake.requiem.core.util.reflection.UncheckedReflectionException;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.entity.mob.SpiderEntity;
+import net.minecraft.entity.mob.VindicatorEntity;
 import org.jetbrains.annotations.Nullable;
 import sun.misc.Unsafe;
 
@@ -82,21 +84,8 @@ public final class AiAbyss {
 
             Optional<GoalTypeInfo> parentInfo = superclass == null ? Optional.empty() : dissect(superclass);
 
-            // If we are supposed to substitute with a further ancestor, no need to keep our own info
-            if (parentInfo.isPresent() && parentInfo.get().implClass() != null && parentInfo.get().implClass() != superclass) return parentInfo;
-
-            for (Constructor<?> constructor : gc.getDeclaredConstructors()) {
-                for (Parameter cntParam : constructor.getParameters()) {
-                    // Assume that an entity passed to a constructor must be the goal's owner
-                    // Even if not, it's probably attached to the owner in some way
-                    if (Entity.class.isAssignableFrom(cntParam.getType())) {
-                        if (!cntParam.getType().isAssignableFrom(RunestoneGolemEntity.class)) {
-                            // This goal is expecting an owner incompatible with our golems,
-                            // let's see if there is something usable higher up
-                            return parentInfo;
-                        }
-                    }
-                }
+            if (shouldBeSubstitutedWithAncestor(gc, parentInfo.orElse(null))) {
+                return parentInfo;
             }
 
             Set<HexedField> fields = new HashSet<>(parentInfo.map(GoalTypeInfo::fields).orElse(Set.of()));
@@ -113,6 +102,44 @@ public final class AiAbyss {
 
             return Optional.of(new GoalTypeInfo(implClass, fields));
         });
+    }
+
+    private static boolean shouldBeSubstitutedWithAncestor(Class<? extends Goal> gc, @Nullable GoalTypeInfo parentInfo) {
+        // If the parent is supposed to be substituted, obviously this too
+        if (parentInfo != null && parentInfo.implClass() != null && parentInfo.implClass() != gc.getSuperclass()) {
+            return true;
+        }
+
+        return isUnsafeGoal(gc);
+    }
+
+    private static boolean isUnsafeGoal(Class<? extends Goal> gc) {
+        if (isDefinitelySafe(gc)) return false;
+        if (isDefinitelyUnsafe(gc)) return true;
+
+        for (Constructor<?> constructor : gc.getDeclaredConstructors()) {
+            for (Parameter cntParam : constructor.getParameters()) {
+                // Assume that an entity passed to a constructor must be the goal's owner
+                // Even if not, it's probably attached to the owner in some way
+                if (Entity.class.isAssignableFrom(cntParam.getType())) {
+                    if (!cntParam.getType().isAssignableFrom(RunestoneGolemEntity.class)) {
+                        // This goal is expecting an owner incompatible with our golems,
+                        // let's see if there is something usable higher up
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    private static boolean isDefinitelySafe(Class<? extends Goal> goalClass) {
+        // Spiders' attack goals are actually fine with any entity
+        return goalClass.getEnclosingClass() == SpiderEntity.class;
+    }
+
+    private static boolean isDefinitelyUnsafe(Class<? extends Goal> goalClass) {
+        return goalClass.getEnclosingClass() == VindicatorEntity.class; // hello yes unsafe cast go brr
     }
 
     // Hex kind of like byte manipulation, but mostly as in curse
