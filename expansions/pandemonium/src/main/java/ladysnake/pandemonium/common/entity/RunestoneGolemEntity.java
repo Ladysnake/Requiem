@@ -69,7 +69,10 @@ public class RunestoneGolemEntity extends TameableEntity {
     }
 
     public static DefaultAttributeContainer.Builder createRunestoneGolemAttributes() {
-        return createMobAttributes().add(EntityAttributes.GENERIC_ATTACK_DAMAGE);
+        return createMobAttributes()
+            .add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.25F)
+            .add(EntityAttributes.GENERIC_MAX_HEALTH, 10.0)
+            .add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 2.0);
     }
 
     @CheckEnv(Env.SERVER)
