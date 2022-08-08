@@ -40,6 +40,8 @@ import net.minecraft.entity.ai.brain.Activity;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
+import net.minecraft.entity.ai.brain.sensor.Sensor;
+import net.minecraft.entity.ai.brain.sensor.SensorType;
 import net.minecraft.entity.ai.brain.task.Task;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
@@ -53,4 +55,12 @@ public interface BrainAccessor<E extends LivingEntity> {
     Map<Integer, Map<Activity, Set<Task<? super E>>>> getTasks();
     @Accessor
     Map<Activity, Set<Pair<MemoryModuleType<?>, MemoryModuleState>>> getRequiredActivityMemories();
+    @Accessor
+    Map<Activity, Set<MemoryModuleType<?>>> getForgettingActivityMemories();
+    @Accessor
+    Set<Activity> getCoreActivities();
+    @Accessor
+    Activity getDefaultActivity();
+    @Accessor
+    Map<SensorType<? extends Sensor<? super E>>, Sensor<? super E>> getSensors();
 }

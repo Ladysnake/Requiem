@@ -39,6 +39,8 @@ import com.demonwav.mcdev.annotations.Env;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.mojang.datafixers.util.Pair;
+import com.mojang.serialization.Dynamic;
+import ladysnake.pandemonium.common.entity.chaos.AiAbyss;
 import ladysnake.requiem.common.entity.RequiemTrackedDataHandlers;
 import ladysnake.requiem.common.item.FilledSoulVesselItem;
 import ladysnake.requiem.common.item.RequiemItems;
@@ -47,10 +49,13 @@ import ladysnake.requiem.core.mixin.access.MobEntityAccessor;
 import ladysnake.requiem.mixin.common.access.BrainAccessor;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.Activity;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
+import net.minecraft.entity.ai.brain.Schedule;
+import net.minecraft.entity.ai.brain.task.Task;
 import net.minecraft.entity.ai.goal.GoalSelector;
 import net.minecraft.entity.ai.goal.PrioritizedGoal;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
@@ -64,6 +69,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsage;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
@@ -71,7 +77,9 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -122,6 +130,7 @@ public class RunestoneGolemEntity extends TameableEntity {
             this.goalSelector.remove(pg.getGoal());
         }
         this.getBrain().stopAllTasks((ServerWorld) this.world, this);
+        this.brain = this.deserializeBrain(new Dynamic<>(NbtOps.INSTANCE));
     }
 
     private void setupAi(EntityType<?> entityType) {
@@ -129,14 +138,42 @@ public class RunestoneGolemEntity extends TameableEntity {
         if (!(e instanceof MobEntity mob)) return;
         copyGoals(mob, ((MobEntityAccessor) mob).getTargetSelector(), this.targetSelector);
         copyGoals(mob, ((MobEntityAccessor) mob).getGoalSelector(), this.goalSelector);
-        copyBrain(mob.getBrain());
+        copyBrain(mob);
     }
 
-    private void copyBrain(Brain<?> brain) {
-        // TODO copy the tasks, but filter based on Task's type parameter, and remove any that has lambdas in its fields
-        Map<Activity, Set<Pair<MemoryModuleType<?>, MemoryModuleState>>> requiredActivityMemories = ((BrainAccessor<?>) brain).getRequiredActivityMemories();
+    private void copyBrain(MobEntity mob) {
+        this.brain = mob.getBrain().copy();
+
+        @SuppressWarnings("unchecked") BrainAccessor<LivingEntity> theirBrain = (BrainAccessor<LivingEntity>) mob.getBrain();
+        @SuppressWarnings("unchecked") BrainAccessor<RunestoneGolemEntity> ourBrain = (BrainAccessor<RunestoneGolemEntity>) this.getBrain();
+
+        ourBrain.getSensors().entrySet().removeIf(e -> AiAbyss.isInvalidSensor(e.getValue(), this));
+        this.getBrain().setSchedule(mob.getBrain().getSchedule());
+        Map<Activity, Set<Pair<MemoryModuleType<?>, MemoryModuleState>>> requiredActivityMemories = theirBrain.getRequiredActivityMemories();
         // very approximate, but activities added first to the registry seem to have the least priority
         this.possibleActivities = List.copyOf(Lists.reverse(Registry.ACTIVITY.stream().filter(requiredActivityMemories::containsKey).toList()));
+        ourBrain.getRequiredActivityMemories().putAll(requiredActivityMemories);
+        ourBrain.getForgettingActivityMemories().putAll(theirBrain.getForgettingActivityMemories());
+        this.getBrain().setCoreActivities(theirBrain.getCoreActivities());
+        this.getBrain().setDefaultActivity(theirBrain.getDefaultActivity());
+
+        for (Map.Entry<Integer, Map<Activity, Set<Task<? super LivingEntity>>>> prioritizedEntry : theirBrain.getTasks().entrySet()) {
+            Map<Activity, Set<Task<? super RunestoneGolemEntity>>> newActivityMap = new HashMap<>();
+
+            for (Map.Entry<Activity, Set<Task<? super LivingEntity>>> activityEntry : prioritizedEntry.getValue().entrySet()) {
+                Set<Task<? super RunestoneGolemEntity>> newTaskSet = new LinkedHashSet<>();
+
+                for (Task<? super LivingEntity> task : activityEntry.getValue()) {
+                    AiAbyss.attune(task, mob, this).ifPresent(newTaskSet::add);
+                }
+
+                newActivityMap.put(activityEntry.getKey(), newTaskSet);
+            }
+
+            ourBrain.getTasks().put(prioritizedEntry.getKey(), newActivityMap);
+        }
+
+            this.getBrain().refreshActivities(this.world.getTimeOfDay(), this.world.getTime());
     }
 
     private void copyGoals(MobEntity mob, GoalSelector sourceGoalContainer, GoalSelector targetGoalContainer) {
@@ -205,9 +242,12 @@ public class RunestoneGolemEntity extends TameableEntity {
             this.world.getProfiler().push("runestoneGolemBrain");
             this.getBrain().tick((ServerWorld)this.world, this);
             this.world.getProfiler().pop();
-            this.world.getProfiler().push("runestoneGolemActivityUpdate");
-            this.tickActivities();
-            this.world.getProfiler().pop();
+
+            if (this.getBrain().getSchedule() == Schedule.EMPTY) {
+                this.world.getProfiler().push("runestoneGolemActivityUpdate");
+                this.tickActivities();
+                this.world.getProfiler().pop();
+            }
         }
         super.mobTick();
     }
