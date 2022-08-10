@@ -26,6 +26,7 @@
         "ladysnake.requiem.common.item.FilledSoulVesselItemTests",
         "ladysnake.requiem.common.item.DemonSoulVesselItemTests",
         "ladysnake.requiem.common.remnant.VagrantPlayerTests",
+        "ladysnake.requiem.compat.RequiemCompatTestManager",
         "ladysnake.requiemtest.PlayerShellsTests"
       ]
     },
