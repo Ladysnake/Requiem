@@ -35,17 +35,32 @@
 package ladysnake.pandemonium.common.entity.chaos;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.reflect.TypeToken;
 import ladysnake.pandemonium.common.entity.RunestoneGolemEntity;
+import ladysnake.pandemonium.common.entity.ai.brain.task.generic.GenerifiedGoToPointOfInterestTask;
+import ladysnake.pandemonium.common.entity.ai.brain.task.generic.GenerifiedPanicTask;
+import ladysnake.pandemonium.common.entity.ai.brain.task.generic.GenerifiedVillagerWalkTowardsTask;
+import ladysnake.pandemonium.common.entity.ai.brain.task.generic.GenerifiedWalkTowardJobSiteTask;
+import ladysnake.pandemonium.mixin.common.GoToPointOfInterestTaskAccessor;
+import ladysnake.pandemonium.mixin.common.VillagerWalkTowardsTaskAccessor;
+import ladysnake.pandemonium.mixin.common.WalkTowardsJobSiteTaskAccessor;
+import ladysnake.pandemonium.mixin.common.WeightedListAccessor;
+import ladysnake.requiem.Requiem;
 import ladysnake.requiem.core.util.reflection.UncheckedReflectionException;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.ai.RangedAttackMob;
 import net.minecraft.entity.ai.brain.sensor.Sensor;
+import net.minecraft.entity.ai.brain.task.PanicTask;
 import net.minecraft.entity.ai.brain.task.Task;
 import net.minecraft.entity.ai.goal.Goal;
+import net.minecraft.entity.ai.goal.HoldInHandsGoal;
+import net.minecraft.entity.mob.DrownedEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.SpiderEntity;
 import net.minecraft.entity.mob.VindicatorEntity;
+import net.minecraft.util.collection.WeightedList;
 import org.apache.commons.lang3.exception.CloneFailedException;
 import org.jetbrains.annotations.Nullable;
 import sun.misc.Unsafe;
@@ -55,8 +70,11 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -84,10 +102,20 @@ public final class AiAbyss {
     }
 
     public static Optional<Task<? super RunestoneGolemEntity>> attune(Task<?> task, MobEntity currentHost, RunestoneGolemEntity newHost) {
-        @SuppressWarnings("unchecked") Class<? extends Task<?>> tc = (Class<? extends Task<?>>) task.getClass();
-        return dissectTask(tc)
-            .filter(taskTypeInfo -> taskTypeInfo.implClass() != null)
-            .map(taskTypeInfo -> conceiveShadowClone(task, taskTypeInfo, currentHost, newHost));
+        if (task instanceof PanicTask) {
+            return Optional.of(new GenerifiedPanicTask<>());
+        } else if (task instanceof WalkTowardsJobSiteTaskAccessor t) {
+            return Optional.of(new GenerifiedWalkTowardJobSiteTask<>(t.getSpeed()));
+        } else if (task instanceof VillagerWalkTowardsTaskAccessor t) {
+            return Optional.of(new GenerifiedVillagerWalkTowardsTask(t.getDestination(), t.getSpeed(), t.getCompletionRange(), t.getMaxRange(), t.getMaxRunTime()));
+        } else if (task instanceof GoToPointOfInterestTaskAccessor t) {
+            return Optional.of(new GenerifiedGoToPointOfInterestTask(t.getSpeed(), t.getCompletionRange()));
+        } else {
+            @SuppressWarnings("unchecked") Class<? extends Task<?>> tc = (Class<? extends Task<?>>) task.getClass();
+            return dissectTask(tc)
+                .filter(taskTypeInfo -> taskTypeInfo.implClass() != null)
+                .map(taskTypeInfo -> conceiveShadowClone(task, taskTypeInfo, currentHost, newHost));
+        }
     }
 
     private static Optional<ClassInfo<Goal>> dissectGoal(Class<? extends Goal> gc) {
@@ -122,18 +150,31 @@ public final class AiAbyss {
         try {
             @SuppressWarnings("unchecked") Task<? super RunestoneGolemEntity> cursedChild = (Task<? super RunestoneGolemEntity>) abholos.allocateInstance(info.implClass());
 
-            try {
-                for (HexedField<?> field : info.fields()) {
+            for (HexedField<?> field : info.fields()) {
+                try {
                     field.copy(task, cursedChild, (value, f) -> {
-                        if (value instanceof Task<?> t) return f.cast(attune(t, currentHost, newHost));
-                        // Tasks delegate most entity-specific matters to lambda functions, which need to be converted
-                        Object lambdaReplacement = FunctionalRecycler.tryRepurpose(value, f.field().getGenericType(), newHost);
-                        if (lambdaReplacement != null) return f.cast(lambdaReplacement);
+                        if (value instanceof Task<?> t) {
+                            return f.cast(attune(t, currentHost, newHost).orElseThrow(() -> new CloneFailedException("Could not convert task " + t)));
+                        } else if (isTaskList(value, f)) {
+                            @SuppressWarnings("unchecked") WeightedListAccessor<Task<?>> taskList = (WeightedListAccessor<Task<?>>) value;
+                            WeightedList<Task<?>> converted = new WeightedList<>();
+                            for (WeightedList.Entry<Task<?>> entry : taskList.getEntries()) {
+                                attune(entry.getElement(), currentHost, newHost).ifPresent(t -> converted.add(t, entry.getWeight()));
+                            }
+                            return f.cast(converted);
+                        } else {
+                            // Tasks delegate most entity-specific matters to lambda functions, which need to be converted
+                            Object lambdaReplacement = FunctionalRecycler.tryRepurpose(value, f.field().getGenericType(), newHost);
+                            if (lambdaReplacement != null) {
+                                return f.cast(lambdaReplacement);
+                            }
+                        }
                         return value;
                     });
+                } catch (CloneFailedException e) {
+                    Requiem.LOGGER.error("Failed to clone field {} in task {}: {}", field.field(), task, e.getMessage());
+                    return null;    // yeet the child (leaving a half-initialized object to the garbage collector is fine right ?)
                 }
-            } catch (CloneFailedException e) {
-                return null;    // yeet the child (leaving a half-initialized object to the garbage collector is fine right ?)
             }
 
             return cursedChild;
@@ -143,10 +184,15 @@ public final class AiAbyss {
     }
 
     @SuppressWarnings("UnstableApiUsage")
+    private static boolean isTaskList(Object value, HexedField<?> f) {
+        return value instanceof WeightedList<?> && TypeToken.of(((ParameterizedType) f.field().getGenericType()).getActualTypeArguments()[0]).getRawType() == Task.class;
+    }
+
+    @SuppressWarnings("UnstableApiUsage")
     public static boolean isInvalidSensor(Sensor<?> value, RunestoneGolemEntity runestoneGolemEntity) {
         TypeToken<?> parameterizedSensor = TypeToken.of(value.getClass()).getSupertype(Sensor.class);
-        TypeToken<?> sensorArg = TypeToken.of(((ParameterizedType) parameterizedSensor.getType()).getActualTypeArguments()[0]);
-        return !sensorArg.getRawType().isInstance(runestoneGolemEntity);
+        Type sensorArg = ((ParameterizedType) parameterizedSensor.getType()).getActualTypeArguments()[0];
+        return isIncompatible(sensorArg, runestoneGolemEntity.getClass(), false);
     }
 
     private record ClassInfo<T>(@Nullable Class<? extends T> implClass, Set<HexedField<?>> fields) {
@@ -160,7 +206,7 @@ public final class AiAbyss {
             this.upperBound = upperBound;
         }
 
-        Optional<ClassInfo<T>> dissect(Class<? extends T> declaredType) {
+        public Optional<ClassInfo<T>> dissect(Class<? extends T> declaredType) {
             return this.cache.computeIfAbsent(declaredType, klass -> {
                 @Nullable @SuppressWarnings("unchecked") Class<? extends T> superclass = klass == this.upperBound
                     ? null
@@ -198,6 +244,21 @@ public final class AiAbyss {
     }
 
     private static class GoalClassAnalyser extends ClassAnalyser<Goal> {
+        private static final List<Class<?>> entityRootClasses = List.of(Entity.class, RangedAttackMob.class);
+        /**
+         * Goal classes that are definitely unsafe for whatever reason
+         */
+        private static final Set<Class<? extends Goal>> unsafeGoalClasses = Set.of(
+            HoldInHandsGoal.class   // uses an entity predicate task-style
+        );
+        /**
+         * Those kinda just like unsafe casting
+         */
+        // oh ye the JDK unmodifiable sets kinda just hate nulls
+        private static final Set<Class<? extends MobEntity>> unsafeEnclosingClasses = ImmutableSet.of(
+            VindicatorEntity.class, DrownedEntity.class
+        );
+
         public GoalClassAnalyser() {
             super(Goal.class);
         }
@@ -215,11 +276,13 @@ public final class AiAbyss {
                 for (Parameter cntParam : constructor.getParameters()) {
                     // Assume that an entity passed to a constructor must be the goal's owner
                     // Even if not, it's probably attached to the owner in some way
-                    if (Entity.class.isAssignableFrom(cntParam.getType())) {
-                        if (!cntParam.getType().isAssignableFrom(RunestoneGolemEntity.class)) {
-                            // This goal is expecting an owner incompatible with our golems,
-                            // let's see if there is something usable higher up
-                            return true;
+                    for (Class<?> entityRootClass : entityRootClasses) {
+                        if (entityRootClass.isAssignableFrom(cntParam.getType())) {
+                            if (!cntParam.getType().isAssignableFrom(RunestoneGolemEntity.class)) {
+                                // This goal is expecting an owner incompatible with our golems,
+                                // let's see if there is something usable higher up
+                                return true;
+                            }
                         }
                     }
                 }
@@ -233,8 +296,7 @@ public final class AiAbyss {
         }
 
         private static boolean isDefinitelyUnsafe(Class<? extends Goal> goalClass) {
-            // Vindicators kinda just like unsafe casting
-            return goalClass.getEnclosingClass() == VindicatorEntity.class;
+            return unsafeGoalClasses.contains(goalClass) || unsafeEnclosingClasses.contains(goalClass.getEnclosingClass());
         }
     }
 
@@ -250,8 +312,24 @@ public final class AiAbyss {
             // Task<E extends LivingEntity>
             ParameterizedType parameterizedTaskType = (ParameterizedType) TypeToken.of(tc).getSupertype(Task.class).getType();
             // <E extends LivingEntity>
-            @SuppressWarnings("unchecked") TypeToken<? extends LivingEntity> ownerType = (TypeToken<? extends LivingEntity>) TypeToken.of(parameterizedTaskType.getActualTypeArguments()[0]);
-            return !ownerType.isSupertypeOf(RunestoneGolemEntity.class);
+            Type ownerType = parameterizedTaskType.getActualTypeArguments()[0];
+            return isIncompatible(ownerType, RunestoneGolemEntity.class, false);
+        }
+    }
+
+    @SuppressWarnings("UnstableApiUsage")
+    static boolean isIncompatible(Type type1, Class<? extends LivingEntity> type2, boolean reverse) {
+        if (type1 instanceof TypeVariable<?> variable) {
+            // e.g. ownerType = <E extends ...>
+            for (Type upperBound : variable.getBounds()) {
+                if (isIncompatible(upperBound, type2, reverse)) return true;
+            }
+            return false;
+        } else if (type1 instanceof Class<?> cls) {
+            return reverse ? !type2.isAssignableFrom(cls) : !cls.isAssignableFrom(type2);
+        } else {
+            // Unlikely to get here, but at least we can more or less handle anything
+            return reverse ? !TypeToken.of(type2).isSupertypeOf(type1) : !TypeToken.of(type1).isSupertypeOf(type2);
         }
     }
 }

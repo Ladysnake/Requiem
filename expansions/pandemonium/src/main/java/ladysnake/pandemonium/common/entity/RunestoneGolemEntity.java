@@ -37,9 +37,11 @@ package ladysnake.pandemonium.common.entity;
 import com.demonwav.mcdev.annotations.CheckEnv;
 import com.demonwav.mcdev.annotations.Env;
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Dynamic;
+import ladysnake.pandemonium.common.entity.ai.brain.task.generic.GenerifiedVillagerWalkTowardsTask;
 import ladysnake.pandemonium.common.entity.chaos.AiAbyss;
 import ladysnake.requiem.common.entity.RequiemTrackedDataHandlers;
 import ladysnake.requiem.common.item.FilledSoulVesselItem;
@@ -92,7 +94,7 @@ public class RunestoneGolemEntity extends TameableEntity {
     private @Nullable SoulFragmentInfo hostedSoul;
     private List<Activity> possibleActivities = List.of();
 
-    public RunestoneGolemEntity(EntityType<? extends TameableEntity> entityType, World world) {
+    public RunestoneGolemEntity(EntityType<? extends RunestoneGolemEntity> entityType, World world) {
         super(entityType, world);
     }
 
@@ -130,7 +132,7 @@ public class RunestoneGolemEntity extends TameableEntity {
             this.goalSelector.remove(pg.getGoal());
         }
         this.getBrain().stopAllTasks((ServerWorld) this.world, this);
-        this.brain = this.deserializeBrain(new Dynamic<>(NbtOps.INSTANCE));
+        this.brain = this.deserializeBrain(new Dynamic<>(NbtOps.INSTANCE, NbtOps.INSTANCE.createMap(ImmutableMap.of(NbtOps.INSTANCE.createString("memories"), NbtOps.INSTANCE.emptyMap()))));
     }
 
     private void setupAi(EntityType<?> entityType) {
@@ -260,6 +262,15 @@ public class RunestoneGolemEntity extends TameableEntity {
     @Override
     public boolean isBreedingItem(ItemStack stack) {
         return false;
+    }
+
+    @Override
+    public void remove(RemovalReason reason) {
+        if (!this.world.isClient() && reason.shouldDestroy()) {
+            GenerifiedVillagerWalkTowardsTask.releaseAllTickets(this);
+        }
+
+        super.remove(reason);
     }
 
     @Override

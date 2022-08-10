@@ -36,7 +36,7 @@ package ladysnake.pandemonium.common.entity.chaos;
 
 import ladysnake.pandemonium.common.entity.RunestoneGolemEntity;
 import ladysnake.requiem.Requiem;
-import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -188,7 +188,7 @@ public final class FunctionalRecycler {
         }
     }
 
-    private static boolean isNotEntityType(Type consumerArgument1) {
-        return !(consumerArgument1 instanceof Class<?> klass && Entity.class.isAssignableFrom(klass));
+    private static boolean isNotEntityType(Type type) {
+        return AiAbyss.isIncompatible(type, LivingEntity.class, true);
     }
 }

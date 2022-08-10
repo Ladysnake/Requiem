@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "quilt_loader": {
+    "group": "io.github.ladysnake",
+    "id": "pandemonium-test",
+    "version": "${version}",
+    "metadata": {
+      "name": "Pandemonium Test Mod",
+      "description": "It's just a test... Or is it ?",
+      "license": "LGPL-3.0-or-later",
+      "icon": "assets/pandemonium-test/textures/skull_logo.png",
+      "contributors": {
+        "Pyrofab": "Owner"
+      },
+      "contact": {
+        "sources": "https://github.com/Ladysnake/Requiem",
+        "issues": "https://github.com/Ladysnake/Requiem/issues",
+        "discord": "ladysnake.glitch.me"
+      }
+    },
+    "entrypoints": {
+      "fabric-gametest": [
+        "ladysnake.pandemoniumtest.entity.RunestoneGolemEntityTests"
+      ]
+    },
+    "depends": [
+      "fabric"
+    ],
+    "intermediate_mappings": "net.fabricmc:intermediary"
+  },
+  "minecraft": {
+    "environment": "*"
+  },
+  "mixin": []
+}

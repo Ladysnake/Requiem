@@ -19,6 +19,7 @@ jar {
 }
 
 chenille {
+    configureTestmod()
     configurePublishing {
         withArtifactory()
         withCurseforgeRelease()
