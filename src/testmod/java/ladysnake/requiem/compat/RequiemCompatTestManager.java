@@ -34,45 +34,18 @@
  */
 package ladysnake.requiem.compat;
 
+import io.github.ladysnake.elmendorf.Elmendorf;
 import ladysnake.requiem.api.v1.annotation.CalledThroughReflection;
-import ladysnake.requiemtest.mixin.FabricGameTestModInitializerAccessor;
-import ladysnake.requiemtest.mixin.TestFunctionsAccessor;
-import net.fabricmc.fabric.api.gametest.v1.FabricGameTest;
-import net.minecraft.test.CustomTestProvider;
-import net.minecraft.test.GameTest;
-import net.minecraft.test.TestFunction;
+import org.quiltmc.loader.api.ModContainer;
 import org.quiltmc.loader.api.QuiltLoader;
-
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import org.quiltmc.qsl.base.api.entrypoint.ModInitializer;
 
 @CalledThroughReflection
-public class RequiemCompatTestManager {
-    @CustomTestProvider
-    public Collection<TestFunction> createCompatTests() {
-        List<TestFunction> ret = new ArrayList<>();
-
+public class RequiemCompatTestManager implements ModInitializer {
+    @Override
+    public void onInitialize(ModContainer mod) {
         if (QuiltLoader.isModLoaded("origins")) {
-            ret.addAll(scanTestClass(OriginsCompatTest.class));
+            Elmendorf.registerTestClass(OriginsCompatTest.class, "requiem-test");
         }
-
-        return ret;
-    }
-
-    private List<TestFunction> scanTestClass(Class<? extends FabricGameTest> compatTestClass) {
-        List<TestFunction> ret = new ArrayList<>();
-
-        FabricGameTestModInitializerAccessor.getGameTestIds().put(compatTestClass, "requiem-test");
-
-        for (Method it : compatTestClass.getMethods()) {
-            if (it.isAnnotationPresent(GameTest.class)) {
-                TestFunction testFunction = TestFunctionsAccessor.invokeGetTestFunction(it);
-                ret.add(testFunction);
-            }
-        }
-
-        return ret;
     }
 }
