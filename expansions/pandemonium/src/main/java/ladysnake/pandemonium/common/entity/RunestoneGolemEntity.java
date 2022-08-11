@@ -132,6 +132,7 @@ public class RunestoneGolemEntity extends TameableEntity {
             this.goalSelector.remove(pg.getGoal());
         }
         this.getBrain().stopAllTasks((ServerWorld) this.world, this);
+        GenerifiedVillagerWalkTowardsTask.releaseAllTickets(this);
         this.brain = this.deserializeBrain(new Dynamic<>(NbtOps.INSTANCE, NbtOps.INSTANCE.createMap(ImmutableMap.of(NbtOps.INSTANCE.createString("memories"), NbtOps.INSTANCE.emptyMap()))));
     }
 
@@ -267,7 +268,7 @@ public class RunestoneGolemEntity extends TameableEntity {
     @Override
     public void remove(RemovalReason reason) {
         if (!this.world.isClient() && reason.shouldDestroy()) {
-            GenerifiedVillagerWalkTowardsTask.releaseAllTickets(this);
+            this.clearAi();
         }
 
         super.remove(reason);
