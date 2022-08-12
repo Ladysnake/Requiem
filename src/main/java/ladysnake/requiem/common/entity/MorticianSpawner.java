@@ -38,7 +38,6 @@ import ladysnake.requiem.api.v1.record.GlobalRecord;
 import ladysnake.requiem.api.v1.record.GlobalRecordKeeper;
 import ladysnake.requiem.common.RequiemRecordTypes;
 import ladysnake.requiem.common.block.obelisk.RiftRunestoneBlock;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.world.ServerWorld;
@@ -46,38 +45,64 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameRules;
+import org.quiltmc.qsl.lifecycle.api.event.ServerTickEvents;
 
 import java.util.stream.Stream;
 
-public class MorticianSpawner implements ServerTickEvents.EndTick {
+public class MorticianSpawner implements ServerTickEvents.End {
     private static final int SPAWN_COOLDOWN = 1200;
     private int ticksUntilNextSpawn;
 
     public static void init() {
-        ServerTickEvents.END_SERVER_TICK.register(new MorticianSpawner());
+        ServerTickEvents.END.register(new MorticianSpawner());
     }
 
     @Override
-    public void onEndTick(MinecraftServer server) {
+    public void endServerTick(MinecraftServer server) {
         if (server.shouldSpawnAnimals() && server.getGameRules().getBoolean(GameRules.DO_MOB_SPAWNING)) {
             --this.ticksUntilNextSpawn;
             if (this.ticksUntilNextSpawn <= 0) {
                 this.ticksUntilNextSpawn = SPAWN_COOLDOWN;
-                streamSpawnableObelisks(server)
-                    .forEach(r -> r.get(RequiemRecordTypes.OBELISK_REF).ifPresent(obelisk -> {
-                        ServerWorld world = server.getWorld(obelisk.dimension());
-                        if (world == null || !world.isRegionLoaded(obelisk.pos().getX() - 10, obelisk.pos().getZ() - 10, obelisk.pos().getZ() + 10, obelisk.pos().getZ() + 10)) return;
-                        RiftRunestoneBlock.findRespawnPosition(RequiemEntities.MORTICIAN, world, obelisk.pos()).ifPresent(spawnPos -> {
-                            MorticianEntity mortician = RequiemEntities.MORTICIAN.spawn(world, null, null, null, new BlockPos(spawnPos), SpawnReason.STRUCTURE, false, false);
-                            if (mortician != null) {
-                                Vec3d towardsObelisk = obelisk.center().subtract(spawnPos).normalize();
-                                mortician.setYaw((float) MathHelper.wrapDegrees(MathHelper.atan2(towardsObelisk.z, towardsObelisk.x) * 180.0F / (float)Math.PI - 90.0));
-                                mortician.linkWith(r);
-                            }
-                        });
-                    }));
+                streamSpawnableObelisks(server).forEach(r -> trySpawnMortician(server, r));
             }
         }
+    }
+
+    private void trySpawnMortician(MinecraftServer server, GlobalRecord r) {
+        r.get(RequiemRecordTypes.OBELISK_REF).ifPresent(obelisk -> {
+            ServerWorld world = server.getWorld(obelisk.dimension());
+            if (world == null || !world.isRegionLoaded(
+                obelisk.pos().getX() - 10,
+                obelisk.pos().getZ() - 10,
+                obelisk.pos().getZ() + 10,
+                obelisk.pos().getZ() + 10)
+            ) {
+                return;
+            }
+            RiftRunestoneBlock.findRespawnPosition(RequiemEntities.MORTICIAN, world, obelisk.pos())
+                .ifPresent(spawnPos -> {
+                    MorticianEntity mortician = RequiemEntities.MORTICIAN.spawn(
+                        world,
+                        null,
+                        null,
+                        null,
+                        new BlockPos(spawnPos),
+                        SpawnReason.STRUCTURE,
+                        false,
+                        false
+                    );
+                    if (mortician != null) {
+                        Vec3d towardsObelisk = obelisk.center().subtract(spawnPos).normalize();
+                        mortician.setYaw((float) MathHelper.wrapDegrees(
+                            MathHelper.atan2(
+                                towardsObelisk.z,
+                                towardsObelisk.x
+                            ) * 180.0F / (float) Math.PI - 90.0)
+                        );
+                        mortician.linkWith(r);
+                    }
+                });
+        });
     }
 
     public static Stream<GlobalRecord> streamSpawnableObelisks(MinecraftServer server) {
@@ -85,6 +110,6 @@ public class MorticianSpawner implements ServerTickEvents.EndTick {
             .getRecords().stream()
             // Find all obelisks that have no mortician
             .filter(r -> r.get(RequiemRecordTypes.RIFT_OBELISK).isPresent())
-            .filter(r -> r.get(RequiemRecordTypes.MORTICIAN_REF).isEmpty());
+            .filter(r -> r.get(RequiemRecordTypes.PROJECTED_MORTICIAN).flatMap(ptr -> ptr.resolve(server)).isEmpty());
     }
 }

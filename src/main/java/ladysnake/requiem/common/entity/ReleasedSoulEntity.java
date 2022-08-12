@@ -154,7 +154,7 @@ public class ReleasedSoulEntity extends SoulEntity {
     }
 
     private Optional<EntityPointer> getOwnerRef() {
-        return this.getOwnerRecord().flatMap(record -> record.get(RequiemRecordTypes.SOUL_OWNER_REF));
+        return this.getOwnerRecord().flatMap(record -> record.get(RequiemRecordTypes.ENTITY_REF));
     }
 
     private Optional<GlobalRecord> getOwnerRecord() {

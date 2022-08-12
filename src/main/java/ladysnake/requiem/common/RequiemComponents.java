@@ -51,7 +51,6 @@ import ladysnake.requiem.api.v1.remnant.AttritionFocus;
 import ladysnake.requiem.api.v1.remnant.DeathSuspender;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.api.v1.remnant.RiftTracker;
-import ladysnake.requiem.client.ClientRecordKeeper;
 import ladysnake.requiem.common.entity.CoolPlayerMovementAlterer;
 import ladysnake.requiem.common.entity.SkeletonBoneComponent;
 import ladysnake.requiem.common.entity.WololoComponent;
@@ -73,6 +72,7 @@ import ladysnake.requiem.core.ability.PlayerAbilityController;
 import ladysnake.requiem.core.entity.EntityAiToggle;
 import ladysnake.requiem.core.entity.SoulHolderComponent;
 import ladysnake.requiem.core.possession.PossessionComponentImpl;
+import ladysnake.requiem.core.record.CommonRecordKeeper;
 import ladysnake.requiem.core.record.EntityPositionClerk;
 import ladysnake.requiem.core.record.ServerRecordKeeper;
 import ladysnake.requiem.core.remnant.RevivingDeathSuspender;
@@ -107,7 +107,7 @@ public final class RequiemComponents implements EntityComponentInitializer, Scor
         registry.registerFor(ZombieVillagerEntity.class, CurableEntityComponent.KEY, DelegatingCurableEntityComponent::new);
         registry.registerFor(ZombifiedPiglinEntity.class, CurableEntityComponent.KEY, CurableZombifiedPiglinComponent::new);
         registry.registerFor(LivingEntity.class, EntityAiToggle.KEY, EntityAiToggle::new);
-        registry.registerFor(LivingEntity.class, EntityPositionClerk.KEY, EntityPositionClerk::new);
+        registry.registerFor(LivingEntity.class, EntityPositionClerk.KEY, entity -> new EntityPositionClerk(RequiemRecordTypes.ENTITY_REF, entity));
         registry.registerForPlayers(PlayerBodyTracker.KEY, PlayerBodyTracker::new, RespawnCopyStrategy.ALWAYS_COPY);
         registry.registerForPlayers(PenanceComponent.KEY, PenanceComponent::new, RespawnCopyStrategy.LOSSLESS_ONLY);
         registry.registerFor(LivingEntity.class, SoulHolderComponent.KEY, SoulHolderComponent::new);
@@ -122,8 +122,8 @@ public final class RequiemComponents implements EntityComponentInitializer, Scor
         registry.registerScoreboardComponent(AttritionFocus.KEY, GlobalAttritionFocus.class, (sc, server) -> new GlobalAttritionFocus(server));
         registry.registerScoreboardComponent(RequiemSyncedGamerules.KEY, (scoreboard, server) -> new RequiemSyncedGamerules(server));
         registry.registerScoreboardComponent(GlobalRecordKeeper.KEY, (scoreboard, server) -> server == null
-            ? new ClientRecordKeeper(scoreboard)
-            : new ServerRecordKeeper(scoreboard, server)
+            ? new CommonRecordKeeper()
+            : new ServerRecordKeeper(server)
         );
     }
 }

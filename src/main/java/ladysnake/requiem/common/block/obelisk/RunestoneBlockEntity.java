@@ -217,8 +217,7 @@ public class RunestoneBlockEntity extends BaseRunestoneBlockEntity {
                     Optional<Text> customName = match.names().stream().unordered().findAny();
                     if (this.recordUuid == null && runes.containsKey(RequiemBlocks.RIFT_RUNE)) {
                         // Clear leftover global records, should not be needed but uuuh bugs
-                        GlobalRecordKeeper.get(this.world).getRecords()
-                            .stream()
+                        GlobalRecordKeeper.get(this.world).stream()
                             .filter(r -> r.get(RequiemRecordTypes.OBELISK_REF)
                                 .map(ObeliskDescriptor::pos)
                                 .filter(this.pos::equals).isPresent())

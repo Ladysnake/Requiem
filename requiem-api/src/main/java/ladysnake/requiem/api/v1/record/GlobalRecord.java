@@ -29,19 +29,12 @@ import java.util.stream.Stream;
 /**
  * A {@link GlobalRecord} represents a serializable collection of data accessible from anywhere in the world.
  * Global records are tracked regardless of distance and loaded chunks.
+ *
+ * @since 2.0.0
  */
 public interface GlobalRecord {
     /**
-     * Returns the constant shorter ID that uniquely identifies the record
-     * within its {@link GlobalRecordKeeper}. This ID may change whenever the record is
-     * loaded from disk and may be reused.
-     *
-     * @return the constant short ID for this record
-     */
-    int getId();
-
-    /**
-     * Returns the constant longer UUID that uniquely identifies the record
+     * Returns the constant identifier that uniquely identifies the record
      * within its {@link GlobalRecordKeeper}. This ID will not change whenever the record is
      * loaded from disk and may not be reused.
      *
@@ -49,23 +42,37 @@ public interface GlobalRecord {
      */
     UUID getUuid();
 
-    void remove(RecordType<?> type);
+    <T> Optional<T> get(RecordType<T> type);
 
     <T> void put(RecordType<T> type, @Nullable T data);
 
-    <T> Optional<T> get(RecordType<T> type);
+    void remove(RecordType<?> type);
 
-    void addTickingAction(Identifier actionId, Consumer<GlobalRecord> action);
+    /**
+     * Shorthand for {@code get(type).isPresent()}
+     */
+    <T> boolean has(RecordType<T> type);
 
-    void removeTickingAction(Identifier actionId);
-
-    void update();
-
-    boolean isInvalid();
+    boolean isValid();
 
     void invalidate();
 
     Stream<RecordType<?>> types();
 
-    NbtCompound toTag(NbtCompound tag);
+    NbtCompound toTag();
+
+    @Deprecated(forRemoval = true)
+    default int getId() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Deprecated(forRemoval = true)
+    default void addTickingAction(Identifier actionId, Consumer<GlobalRecord> action) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Deprecated(forRemoval = true)
+    default void removeTickingAction(Identifier actionId) {
+        throw new UnsupportedOperationException();
+    }
 }

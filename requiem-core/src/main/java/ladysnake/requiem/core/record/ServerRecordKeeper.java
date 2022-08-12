@@ -37,46 +37,33 @@ package ladysnake.requiem.core.record;
 import ladysnake.requiem.api.v1.record.GlobalRecord;
 import ladysnake.requiem.api.v1.record.RecordType;
 import ladysnake.requiem.core.RequiemCore;
-import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.profiler.Profiler;
-import net.minecraft.util.registry.RegistryKey;
-import net.minecraft.world.World;
-
-import java.util.Optional;
 
 public class ServerRecordKeeper extends CommonRecordKeeper {
     private final MinecraftServer server;
 
-    public ServerRecordKeeper(Scoreboard scoreboard, MinecraftServer server) {
-        super(scoreboard);
+    public ServerRecordKeeper(MinecraftServer server) {
         this.server = server;
     }
 
     @Override
-    public Optional<World> getWorld(RegistryKey<World> worldKey) {
-        return Optional.ofNullable(this.server.getWorld(worldKey));
+    protected boolean checkValidityForInsertion(GlobalRecord record) {
+        return record.types().map(t -> this.checkFieldValidity(record, t)).reduce(true, Boolean::logicalAnd);
     }
 
-    @Override
-    protected Profiler getProfiler() {
-        return this.server.getProfiler();
-    }
+    private <T> boolean checkFieldValidity(GlobalRecord record, RecordType<T> type) {
+        T value = record.get(type).orElseThrow();
 
-    @Override
-    protected boolean checkWorld(GlobalRecord record) {
-        return record.types().map(t -> checkWorld(record, t)).reduce(true, Boolean::logicalAnd);
-    }
-
-    private <T> boolean checkWorld(GlobalRecord record, RecordType<T> type) {
-        Optional<RegistryKey<World>> worldRef = record.get(type).flatMap(type::getReferencedWorld);
-
-        if (worldRef.map(this::getWorld).map(Optional::isPresent).orElse(Boolean.TRUE)) {
+        if (this.checkFieldValidity(record, type, value)) {
             return true;
         }
 
-        worldRef.ifPresent(w -> RequiemCore.LOGGER.error("{}'s field {} references unknown world {}", record, type, w));
-        record.remove(type);
+        RequiemCore.LOGGER.error("Record {} got field {} with invalid value {}", record, type, value);
         return false;
+    }
+
+    @Override
+    protected <T> boolean checkFieldValidity(GlobalRecord record, RecordType<T> type, T value) {
+        return type.checkValidity(this.server, value);
     }
 }

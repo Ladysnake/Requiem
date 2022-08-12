@@ -34,7 +34,9 @@
  */
 package ladysnake.requiem.common.remnant;
 
+import com.google.common.base.Preconditions;
 import ladysnake.requiem.api.v1.block.ObeliskDescriptor;
+import ladysnake.requiem.api.v1.record.GlobalRecord;
 import ladysnake.requiem.api.v1.record.GlobalRecordKeeper;
 import ladysnake.requiem.api.v1.remnant.RiftTracker;
 import ladysnake.requiem.common.RequiemRecordTypes;
@@ -63,13 +65,13 @@ public class PlayerRiftTracker implements RiftTracker {
     }
 
     @Override
-    public void addRift(UUID riftRecordId) {
-        if (this.riftRecordUuids.add(riftRecordId) && this.player instanceof ServerPlayerEntity sp) {
-            ObeliskDescriptor obeliskDescriptor = GlobalRecordKeeper.get(sp.getWorld()).getRecord(riftRecordId)
-                .filter(r -> r.get(RequiemRecordTypes.RIFT_OBELISK).isPresent())
-                .flatMap(r -> r.get(RequiemRecordTypes.OBELISK_REF))
-                .orElseThrow(() -> new IllegalStateException("Not a rift obelisk"));
-            RequiemNetworking.sendRiftWitnessedMessage(sp, obeliskDescriptor.name().orElse(Text.empty()));
+    public void addRift(GlobalRecord riftRecord) {
+        Preconditions.checkArgument(riftRecord.has(RequiemRecordTypes.RIFT_OBELISK));
+        Preconditions.checkArgument(riftRecord.has(RequiemRecordTypes.OBELISK_REF));
+
+        if (this.riftRecordUuids.add(riftRecord.getUuid()) && this.player instanceof ServerPlayerEntity sp) {
+            Optional<Text> obeliskName = riftRecord.get(RequiemRecordTypes.OBELISK_REF).flatMap(ObeliskDescriptor::name);
+            RequiemNetworking.sendRiftWitnessedMessage(sp, obeliskName.orElse(Text.empty()));
         }
     }
 

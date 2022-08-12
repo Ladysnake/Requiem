@@ -50,14 +50,4 @@ public abstract class ServerEntityHandlerMixin implements EntityHandler<Entity> 
     private void onDestroyed(Entity entity, CallbackInfo ci) {
         EntityPositionClerk.KEY.maybeGet(entity).ifPresent(EntityPositionClerk::destroy);
     }
-
-    @Inject(method = "Lnet/minecraft/server/world/ServerWorld$ServerEntityHandler;startTicking(Lnet/minecraft/entity/Entity;)V", at = @At("RETURN"))
-    private void onStartTicking(Entity entity, CallbackInfo ci) {
-        EntityPositionClerk.KEY.maybeGet(entity).ifPresent(EntityPositionClerk::startTicking);
-    }
-
-    @Inject(method = "Lnet/minecraft/server/world/ServerWorld$ServerEntityHandler;stopTicking(Lnet/minecraft/entity/Entity;)V", at = @At("RETURN"))
-    private void onStopTicking(Entity entity, CallbackInfo ci) {
-        EntityPositionClerk.KEY.maybeGet(entity).ifPresent(EntityPositionClerk::stopTicking);
-    }
 }

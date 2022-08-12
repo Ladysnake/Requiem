@@ -39,15 +39,16 @@ import com.mojang.serialization.Codec;
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.block.ObeliskDescriptor;
 import ladysnake.requiem.api.v1.record.EntityPointer;
+import ladysnake.requiem.api.v1.record.RecordPointer;
 import ladysnake.requiem.api.v1.record.RecordType;
+import ladysnake.requiem.core.RequiemCore;
 
 public final class RequiemRecordTypes {
     public static final RecordType<Unit> RELEASED_SOUL = register("released_soul", Codec.unit(Unit.INSTANCE));
     public static final RecordType<Unit> RIFT_OBELISK = register("rift_obelisk", Codec.unit(Unit.INSTANCE));
-    public static final RecordType<EntityPointer> BODY_REF = RecordType.register(Requiem.id("body_ref"), EntityPointer.CODEC, EntityPointer::world, true);
-    public static final RecordType<EntityPointer> SOUL_OWNER_REF = RecordType.register(Requiem.id("soul_owner_ref"), EntityPointer.CODEC, EntityPointer::world, false);
-    public static final RecordType<EntityPointer> MORTICIAN_REF = RecordType.register(Requiem.id("mortician_ref"), EntityPointer.CODEC, EntityPointer::world, false);
-    public static final RecordType<ObeliskDescriptor> OBELISK_REF = RecordType.register(Requiem.id("obelisk_ref"), ObeliskDescriptor.CODEC, ObeliskDescriptor::dimension, false);
+    public static final RecordType<EntityPointer> ENTITY_REF = RecordType.register(RequiemCore.id("entity_ref"), EntityPointer.CODEC, EntityPointer::world);
+    public static final RecordType<ObeliskDescriptor> OBELISK_REF = RecordType.register(Requiem.id("obelisk_ref"), ObeliskDescriptor.CODEC, ObeliskDescriptor::dimension);
+    public static final RecordType<RecordPointer> PROJECTED_MORTICIAN = RecordType.register(Requiem.id("projected_mortician"), RecordPointer.CODEC);
 
     public static void init() {
         // NO-OP

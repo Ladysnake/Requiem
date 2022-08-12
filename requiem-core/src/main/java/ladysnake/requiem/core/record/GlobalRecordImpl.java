@@ -39,46 +39,31 @@ import ladysnake.requiem.api.v1.record.GlobalRecordKeeper;
 import ladysnake.requiem.api.v1.record.RecordType;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtOps;
-import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
-import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-public class GlobalRecordImpl implements GlobalRecord {
+public final class GlobalRecordImpl implements GlobalRecord {
     public static final String ANCHOR_UUID_NBT = "uuid";
 
-    protected final GlobalRecordKeeper manager;
-    private final int id;
+    private final GlobalRecordKeeper manager;
     private final UUID uuid;
     private final Map<RecordType<?>, Object> data;
-    private final Map<Identifier, Consumer<GlobalRecord>> tickingActions;
-    private final Set<RecordType<?>> missingData;
     private boolean invalid;
 
-    public GlobalRecordImpl(GlobalRecordKeeper manager, UUID uuid, int id) {
+    public GlobalRecordImpl(GlobalRecordKeeper manager, UUID uuid) {
         this.manager = manager;
-        this.id = id;
         this.uuid = uuid;
         this.data = new HashMap<>();
-        this.tickingActions = new HashMap<>();
-        this.missingData = new HashSet<>();
     }
 
-    GlobalRecordImpl(GlobalRecordKeeper manager, UUID uuid, int id, Map<RecordType<?>, Object> data) {
-        this(manager, uuid, id);
+    GlobalRecordImpl(GlobalRecordKeeper manager, UUID uuid, Map<RecordType<?>, Object> data) {
+        this(manager, uuid);
         this.data.putAll(data);
-    }
-
-    @Override
-    public int getId() {
-        return this.id;
     }
 
     @Override
@@ -88,7 +73,6 @@ public class GlobalRecordImpl implements GlobalRecord {
 
     @Override
     public void remove(RecordType<?> type) {
-        if (type.isRequired()) this.missingData.add(type);
         this.data.remove(type);
     }
 
@@ -97,7 +81,11 @@ public class GlobalRecordImpl implements GlobalRecord {
         if (data == null) {
             this.remove(type);
         } else {
-            this.missingData.remove(type);
+            if (!((CommonRecordKeeper) this.manager).checkFieldValidity(this, type, data)) {
+                throw new IllegalArgumentException(
+                    "Invalid value %s for field %s in record %s".formatted(data, type, this)
+                );
+            }
             this.data.put(type, data);
         }
     }
@@ -109,30 +97,19 @@ public class GlobalRecordImpl implements GlobalRecord {
     }
 
     @Override
-    public void addTickingAction(Identifier actionId, Consumer<GlobalRecord> action) {
-        this.tickingActions.put(actionId, action);
-    }
-
-    @Override
-    public void removeTickingAction(Identifier actionId) {
-        this.tickingActions.remove(actionId);
-    }
-
-    @Override
-    public void update() {
-        for (Consumer<GlobalRecord> runnable : this.tickingActions.values()) {
-            runnable.accept(this);
-        }
+    public <T> boolean has(RecordType<T> type) {
+        return this.data.containsKey(type);
     }
 
     @Override
     public void invalidate() {
         this.invalid = true;
+        ((CommonRecordKeeper) this.manager).invalidate(this);
     }
 
     @Override
-    public boolean isInvalid() {
-        return this.invalid || !this.missingData.isEmpty();
+    public boolean isValid() {
+        return !this.invalid;
     }
 
     @Override
@@ -141,7 +118,8 @@ public class GlobalRecordImpl implements GlobalRecord {
     }
 
     @Override
-    public NbtCompound toTag(NbtCompound tag) {
+    public NbtCompound toTag() {
+        NbtCompound tag = new NbtCompound();
         tag.putUuid(ANCHOR_UUID_NBT, this.getUuid());
         NbtCompound data = new NbtCompound();
         for (var entry : this.data.keySet()) writeToTag(data, entry);

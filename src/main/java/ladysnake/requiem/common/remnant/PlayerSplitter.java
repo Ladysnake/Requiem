@@ -43,12 +43,9 @@ import ladysnake.requiem.api.v1.entity.InventoryLimiter;
 import ladysnake.requiem.api.v1.event.requiem.PlayerShellEvents;
 import ladysnake.requiem.api.v1.event.requiem.PossessionEvents;
 import ladysnake.requiem.api.v1.event.requiem.SoulboundStackCheckCallback;
-import ladysnake.requiem.api.v1.record.GlobalRecord;
-import ladysnake.requiem.api.v1.record.GlobalRecordKeeper;
 import ladysnake.requiem.api.v1.remnant.PlayerSplitResult;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.api.v1.remnant.SoulbindingRegistry;
-import ladysnake.requiem.common.RequiemRecordTypes;
 import ladysnake.requiem.common.entity.PlayerShellEntity;
 import ladysnake.requiem.common.entity.RequiemEntities;
 import ladysnake.requiem.core.RequiemCore;
@@ -91,7 +88,7 @@ public final class PlayerSplitter {
         transferSoulboundItems(shell, soul);
         soul.world.spawnEntity(shell);
         if (mount != null) shell.startRiding(mount);
-        setupRecord(whole, shell, soul);
+        PlayerBodyTracker.get(soul).setAnchor(EntityPositionClerk.get(shell).getOrCreateRecord());
         PlayerShellEvents.PLAYER_SPLIT.invoker().onPlayerSplit(whole, soul, shell);
         return new PlayerSplitResult(soul, shell);
     }
@@ -105,12 +102,6 @@ public final class PlayerSplitter {
                 soul.getInventory().setStack(i, shell.getInventory().removeStack(i));
             }
         }
-    }
-
-    private static void setupRecord(ServerPlayerEntity whole, PlayerShellEntity shell, ServerPlayerEntity soul) {
-        GlobalRecord anchor = GlobalRecordKeeper.get(whole.world).createRecord();
-        EntityPositionClerk.get(shell).linkWith(anchor, RequiemRecordTypes.BODY_REF);
-        PlayerBodyTracker.get(soul).setAnchor(anchor);
     }
 
     public static PlayerShellEntity createShell(ServerPlayerEntity whole) {

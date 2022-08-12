@@ -28,6 +28,7 @@ import net.minecraft.world.World;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 /**
  * A {@link GlobalRecordKeeper} stores recorded data for access from anywhere
@@ -53,14 +54,22 @@ public interface GlobalRecordKeeper extends CommonTickingComponent {
 
     GlobalRecord createRecord();
 
-    Optional<GlobalRecord> getRecord(int anchorId);
+    @Deprecated(forRemoval = true)
+    default Optional<GlobalRecord> getRecord(int anchorId) {
+        throw new UnsupportedOperationException();
+    }
 
     Optional<GlobalRecord> getRecord(UUID anchorUuid);
 
     Collection<GlobalRecord> getRecords();
 
+    Stream<GlobalRecord> stream();
+
     @Override
     void tick();
 
-    Optional<World> getWorld(RegistryKey<World> worldKey);
+    @Deprecated(forRemoval = true)
+    default Optional<World> getWorld(RegistryKey<World> worldKey) {
+        throw new UnsupportedOperationException();
+    }
 }

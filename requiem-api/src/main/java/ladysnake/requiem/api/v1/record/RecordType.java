@@ -19,6 +19,7 @@ package ladysnake.requiem.api.v1.record;
 
 import com.mojang.serialization.Codec;
 import net.fabricmc.fabric.api.event.registry.FabricRegistryBuilder;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
@@ -27,6 +28,7 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
+import java.util.function.BiPredicate;
 import java.util.function.Function;
 
 /**
@@ -42,14 +44,12 @@ public final class RecordType<T> {
 
     private final Identifier id;
     private final Codec<T> codec;
-    private final Function<T, Optional<RegistryKey<World>>> worldGetter;
-    private final boolean required;
+    private final BiPredicate<MinecraftServer, T> validityPredicate;
 
-    private RecordType(Identifier id, Codec<T> codec, Function<T, Optional<RegistryKey<World>>> worldGetter, boolean required) {
+    private RecordType(Identifier id, Codec<T> codec, BiPredicate<MinecraftServer, T> validityPredicate) {
         this.id = id;
         this.codec = codec;
-        this.worldGetter = worldGetter;
-        this.required = required;
+        this.validityPredicate = validityPredicate;
     }
 
     public <U> Optional<RecordType<U>> tryCast(Codec<U> witness) {
@@ -64,12 +64,8 @@ public final class RecordType<T> {
         return codec;
     }
 
-    public boolean isRequired() {
-        return required;
-    }
-
-    public Optional<RegistryKey<World>> getReferencedWorld(T value) {
-        return this.worldGetter.apply(value);
+    public boolean checkValidity(MinecraftServer context, T value) {
+        return this.validityPredicate.test(context, value);
     }
 
     public Identifier getId() {
@@ -90,7 +86,7 @@ public final class RecordType<T> {
      * @return a newly registered {@link RecordType} for encoding instances of {@code T}
      */
     public static <T> RecordType<T> register(Identifier id, Codec<T> codec) {
-        return register(id, codec, null, false);
+        return register(id, codec, null);
     }
 
     /**
@@ -99,12 +95,18 @@ public final class RecordType<T> {
      * @param id          the unique identifier used to register the resulting record type
      * @param codec       the {@link Codec} to use to (de)serialize associated data
      * @param worldGetter a getter for referenced worlds which absence could invalidate the record
-     * @param required    whether removing data of this type from a record invalidates it
-     * @param <T>         type for which the {@code RecordType} is being registered
      * @return a newly registered {@link RecordType} for encoding instances of {@code T}
      */
-    public static <T> RecordType<T> register(Identifier id, Codec<T> codec, @Nullable Function<T, RegistryKey<World>> worldGetter, boolean required) {
-        return Registry.register(REGISTRY, id, new RecordType<>(id, codec, worldGetter == null ? t -> Optional.empty() : t -> Optional.of(worldGetter.apply(t)), required));
+    public static <T> RecordType<T> register(Identifier id, Codec<T> codec, @Nullable Function<T, RegistryKey<World>> worldGetter) {
+        return Registry.register(REGISTRY, id, new RecordType<>(
+            id,
+            codec,
+            worldGetter == null ? (s, t) -> true : (s, t) -> s.getWorld(worldGetter.apply(t)) != null)
+        );
     }
 
+    @Deprecated(forRemoval = true)
+    public static <T> RecordType<T> register(Identifier id, Codec<T> codec, @Nullable Function<T, RegistryKey<World>> worldGetter, @SuppressWarnings("unused") boolean required) {
+        return register(id, codec, worldGetter);
+    }
 }
