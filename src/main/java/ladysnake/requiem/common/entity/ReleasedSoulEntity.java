@@ -41,7 +41,6 @@ import ladysnake.requiem.api.v1.record.GlobalRecordKeeper;
 import ladysnake.requiem.common.RequiemRecordTypes;
 import ladysnake.requiem.common.particle.WispTrailParticleEffect;
 import ladysnake.requiem.common.sound.RequiemSoundEvents;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
@@ -52,6 +51,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import org.intellij.lang.annotations.MagicConstant;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
@@ -92,7 +92,7 @@ public class ReleasedSoulEntity extends SoulEntity {
     public void tick() {
         if (!this.world.isClient()) {
             this.setBodyStatus(
-                this.getTarget()
+                this.getOwnerRef()
                     .map(ptr -> ptr.resolve(((ServerWorld) this.world).getServer())
                         .filter(e -> e.world == this.world)
                         .filter(e -> e.distanceTo(this) < 100)
@@ -104,14 +104,22 @@ public class ReleasedSoulEntity extends SoulEntity {
                 this.setMaxAge(60);
             } else {
                 this.setMaxAge(-1);
-                this.getCollidingBody().ifPresent(body -> {
-                    this.world.sendEntityStatus(this, SOUL_EXPIRED_STATUS);
-                    this.getRecord().orElseThrow().put(RequiemRecordTypes.RELEASED_SOUL, Unit.INSTANCE);
-                    this.discard();
-                });
+
+                if (this.isCollidingWithOwner()) {
+                    this.releaseSoul(MERGE_WITH_BODY_STATUS);
+                }
             }
         }
         super.tick();
+    }
+
+    private void releaseSoul(
+        @MagicConstant(intValues = {SOUL_EXPIRED_STATUS, TELEPORT_AWAY_STATUS, MERGE_WITH_BODY_STATUS}) byte status
+    ) {
+        // Will be retrieved later (see FilledSoulVesselItem#registerCallbacks)
+        this.getOwnerRecord().ifPresent(data -> data.put(RequiemRecordTypes.RELEASED_SOUL, Unit.INSTANCE));
+        this.world.sendEntityStatus(this, status);
+        this.discard();
     }
 
     @Override
@@ -122,21 +130,12 @@ public class ReleasedSoulEntity extends SoulEntity {
     @Override
     protected void expire() {
         if (this.getBodyStatus() == BODY_ISEKAI) {
-            // Will be retrieved later
-            this.getRecord().ifPresent(data -> data.put(RequiemRecordTypes.RELEASED_SOUL, Unit.INSTANCE));
-            this.world.sendEntityStatus(this, TELEPORT_AWAY_STATUS);
+            this.releaseSoul(TELEPORT_AWAY_STATUS);
         } else {
             // RIP
-            this.getRecord().ifPresent(GlobalRecord::invalidate);
-            this.world.sendEntityStatus(this, SOUL_EXPIRED_STATUS);
+            this.getOwnerRecord().ifPresent(GlobalRecord::invalidate);
+            super.expire();
         }
-        this.discard();
-    }
-
-    private Optional<Entity> getCollidingBody() {
-        return this.getTarget()
-            .flatMap(ptr -> ptr.resolve(((ServerWorld)this.world).getServer()))
-            .filter(e -> e.getBoundingBox().intersects(this.getBoundingBox()));
     }
 
     private void setBodyStatus(byte value) {
@@ -147,11 +146,18 @@ public class ReleasedSoulEntity extends SoulEntity {
         return this.getDataTracker().get(BODY_STATUS);
     }
 
-    private Optional<EntityPointer> getTarget() {
-        return this.getRecord().flatMap(record -> record.get(RequiemRecordTypes.SOUL_OWNER_REF));
+    private boolean isCollidingWithOwner() {
+        return this.getOwnerRef()
+            .flatMap(ptr -> ptr.resolve(((ServerWorld)this.world).getServer()))
+            .filter(e -> e.getBoundingBox().intersects(this.getBoundingBox()))
+            .isPresent();
     }
 
-    private Optional<GlobalRecord> getRecord() {
+    private Optional<EntityPointer> getOwnerRef() {
+        return this.getOwnerRecord().flatMap(record -> record.get(RequiemRecordTypes.SOUL_OWNER_REF));
+    }
+
+    private Optional<GlobalRecord> getOwnerRecord() {
         return Optional.ofNullable(ownerRecord)
             .flatMap(GlobalRecordKeeper.get(this.world)::getRecord);
     }
@@ -175,7 +181,7 @@ public class ReleasedSoulEntity extends SoulEntity {
     @Override
     protected Vec3d selectNextTarget() {
         return switch (this.getBodyStatus()) {
-            case BODY_FOUND -> this.getTarget().map(EntityPointer::pos).map(this::selectPosTowards).orElseThrow();
+            case BODY_FOUND -> this.getOwnerRef().map(EntityPointer::pos).map(this::selectPosTowards).orElseThrow();
             case BODY_ISEKAI -> this.getPos().add(0, this.random.nextGaussian() * 0.1, 0);
             default -> this.getPos().add(
                 random.nextGaussian(),
