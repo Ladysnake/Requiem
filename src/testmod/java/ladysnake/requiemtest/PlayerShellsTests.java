@@ -39,6 +39,7 @@ import ladysnake.requiem.api.v1.remnant.PlayerSplitResult;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.common.gamerule.PossessionKeepInventory;
 import ladysnake.requiem.common.gamerule.RequiemGamerules;
+import ladysnake.requiem.common.network.RequiemNetworking;
 import ladysnake.requiem.common.remnant.RemnantTypes;
 import net.fabricmc.fabric.api.gametest.v1.FabricGameTest;
 import net.minecraft.block.Blocks;
@@ -77,6 +78,18 @@ public class PlayerShellsTests implements FabricGameTest {
         result.shell().addExperience(100);
         RemnantComponent.get(result.soul()).merge(result.shell());
         GameTestUtil.assertTrue("Soul and body experience should merge", result.soul().totalExperience == 300);
+        ctx.complete();
+    }
+
+    @GameTest(structureName = EMPTY_STRUCTURE)
+    public void shellsShouldWarnWhenHurt(TestContext ctx) {
+        ServerPlayerEntity player = ctx.spawnServerPlayer(2, 0, 2);
+        RemnantComponent.get(player).become(RemnantTypes.REMNANT);
+        PlayerSplitResult result = RemnantComponent.get(player).splitPlayer(true).orElseThrow();
+        ctx.getWorld().tickEntity(result.soul());
+        result.shell().setHealth(result.shell().getHealth() - 1);
+        ctx.getWorld().tickEntity(result.soul());
+        ctx.verifyConnection(player, c -> c.sent(RequiemNetworking.ANCHOR_DAMAGE, buf -> buf.checkBoolean(false).noMoreData()));
         ctx.complete();
     }
 
