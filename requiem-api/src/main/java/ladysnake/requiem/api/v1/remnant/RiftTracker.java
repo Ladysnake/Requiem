@@ -21,14 +21,17 @@ import dev.onyxstudios.cca.api.v3.component.Component;
 import dev.onyxstudios.cca.api.v3.component.ComponentKey;
 import dev.onyxstudios.cca.api.v3.component.ComponentRegistry;
 import ladysnake.requiem.api.v1.block.ObeliskDescriptor;
+import ladysnake.requiem.api.v1.record.GlobalRecord;
 import net.minecraft.util.Identifier;
 
 import java.util.Set;
-import java.util.UUID;
 
 public interface RiftTracker extends Component {
     ComponentKey<RiftTracker> KEY = ComponentRegistry.getOrCreate(new Identifier("requiem", "rift_tracker"), RiftTracker.class);
 
-    void addRift(UUID riftRecordId);
+    /**
+     * @throws IllegalArgumentException if {@code riftRecord} does not describe an obelisk with a rift runestone
+     */
+    void addRift(GlobalRecord riftRecord);
     Set<ObeliskDescriptor> fetchKnownObelisks();
 }

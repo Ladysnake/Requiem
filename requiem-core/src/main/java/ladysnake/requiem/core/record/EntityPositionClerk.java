@@ -34,9 +34,10 @@
  */
 package ladysnake.requiem.core.record;
 
-import dev.onyxstudios.cca.api.v3.component.Component;
 import dev.onyxstudios.cca.api.v3.component.ComponentKey;
 import dev.onyxstudios.cca.api.v3.component.ComponentRegistry;
+import dev.onyxstudios.cca.api.v3.component.tick.ServerTickingComponent;
+import ladysnake.requiem.api.v1.event.minecraft.MobConversionCallback;
 import ladysnake.requiem.api.v1.event.requiem.EntityRecordUpdateCallback;
 import ladysnake.requiem.api.v1.record.EntityPointer;
 import ladysnake.requiem.api.v1.record.GlobalRecord;
@@ -46,71 +47,97 @@ import ladysnake.requiem.core.RequiemCore;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtList;
-import net.minecraft.util.Identifier;
+import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Nullable;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 
-public final class EntityPositionClerk implements Component {
+/**
+ * Maintains a {@link GlobalRecord} describing an entity, allowing it to be referenced across dimensions
+ */
+public final class EntityPositionClerk implements ServerTickingComponent {
     public static final ComponentKey<EntityPositionClerk> KEY = ComponentRegistry.getOrCreate(RequiemCore.id("entity_clerk"), EntityPositionClerk.class);
-    public static final Identifier UPDATE_ACTION_ID = RequiemCore.id("entity_status_sync");
 
     public static EntityPositionClerk get(LivingEntity entity) {
         return KEY.get(entity);
     }
 
+    public static void registerCallbacks() {
+        MobConversionCallback.EVENT.register(EntityPositionClerk::transferRecord);
+    }
+
+    private final RecordType<EntityPointer> pointerType;
     private final LivingEntity entity;
-    private final Map<GlobalRecord, RecordType<EntityPointer>> refs;
-    private boolean ticking;
+    private @Nullable GlobalRecord record;
 
-    public EntityPositionClerk(LivingEntity entity) {
+    public EntityPositionClerk(RecordType<EntityPointer> pointerType, LivingEntity entity) {
+        this.pointerType = pointerType;
         this.entity = entity;
-        this.refs = new HashMap<>();
     }
 
-    public void linkWith(GlobalRecord record, RecordType<EntityPointer> pointerType) {
-        this.refs.put(record, pointerType);
-        this.updateRecord(record, pointerType);
+    public Optional<GlobalRecord> getRecord() {
+        return Optional.ofNullable(this.record);
+    }
 
-        if (this.ticking) {
-            record.addTickingAction(UPDATE_ACTION_ID, r -> updateRecord(r, pointerType));
+    public GlobalRecord getOrCreateRecord() {
+        if (this.record == null) {
+            this.linkWith(GlobalRecordKeeper.get(this.entity.getWorld()).createRecord());
+        }
+        return this.record;
+    }
+
+    @ApiStatus.Internal
+    public void linkWith(GlobalRecord record) {
+        this.record = record;
+        this.updateRecord(record);
+    }
+
+    /**
+     * Unlinks the attached record without destroying it
+     */
+    @ApiStatus.Internal
+    public void unlink() {
+        if (this.record != null) {
+            this.record.remove(this.pointerType);
+            this.record = null;
         }
     }
 
-    public void startTicking() {
-        this.ticking = true;
-        for (var anchor : this.refs.entrySet()) {
-            anchor.getKey().addTickingAction(UPDATE_ACTION_ID, record -> updateRecord(record, anchor.getValue()));
-        }
-    }
+    @ApiStatus.Internal
+    public static void transferRecord(LivingEntity from, LivingEntity to) {
+        EntityPositionClerk original = get(from);
+        GlobalRecord record = original.record;
 
-    public void transferFrom(EntityPositionClerk original) {
-        original.refs.forEach(this::linkWith);
-        original.refs.clear();
-    }
-
-    public void stopTicking() {
-        for (GlobalRecord anchor : this.refs.keySet()) {
-            anchor.removeTickingAction(UPDATE_ACTION_ID);
+        if (record != null) {
+            original.unlink();
+            get(to).linkWith(record);
         }
-        this.ticking = false;
     }
 
     public void destroy() {
-        this.refs.forEach(GlobalRecord::remove);
+        if (this.record != null) {
+            this.record.invalidate();
+        }
     }
 
-    private void updateRecord(GlobalRecord record, RecordType<EntityPointer> pointerType) {
+    @Override
+    public void serverTick() {
+        if (this.record != null) {
+            this.updateRecord(this.record);
+        }
+    }
+
+    private void updateRecord(GlobalRecord record) {
         if (this.entity.getHealth() <= 0.0F) {
-            record.remove(pointerType);
+            record.remove(this.pointerType);    // not destroying the record yet
         } else {
-            Optional<EntityPointer> ptr = record.get(pointerType);
+            Optional<EntityPointer> ptr = record.get(this.pointerType);
+
             if (ptr.isEmpty() || !entity.getPos().equals(ptr.get().pos())) {
-                record.put(pointerType, new EntityPointer(entity));
+                record.put(this.pointerType, new EntityPointer(entity));
             }
+
             EntityRecordUpdateCallback.EVENT.invoker().update(entity, record);
         }
     }
@@ -121,25 +148,23 @@ public final class EntityPositionClerk implements Component {
 
     @Override
     public void readFromNbt(NbtCompound tag) {
-        NbtList refs = tag.getList("refs", NbtElement.COMPOUND_TYPE);
-        for (int i = 0; i < refs.size(); i++) {
-            NbtCompound refNbt = refs.getCompound(i);
-            this.getTracker().getRecord(refNbt.getUuid("uuid"))
-                .ifPresent(r -> RecordType.REGISTRY.getOrEmpty(Identifier.tryParse(refNbt.getString("type")))
-                    .flatMap(refType -> refType.tryCast(EntityPointer.CODEC))
-                    .ifPresent(refType -> this.linkWith(r, refType)));
+        if (tag.containsUuid("record")) {
+            this.getTracker().getRecord(tag.getUuid("record")).ifPresent(this::linkWith);
+        } else if (tag.getType("refs") == NbtElement.LIST_TYPE) {
+            // Pre 2.0.0-beta.14 backward compatibility
+            NbtList refs = tag.getList("refs", NbtElement.COMPOUND_TYPE);
+
+            if (!refs.isEmpty()) {
+                NbtCompound refNbt = refs.getCompound(0);
+                this.getTracker().getRecord(refNbt.getUuid("uuid")).ifPresent(this::linkWith);
+            }
         }
     }
 
     @Override
     public void writeToNbt(NbtCompound tag) {
-        NbtList list = new NbtList();
-        for (var ref : this.refs.entrySet()) {
-            NbtCompound refNbt = new NbtCompound();
-            refNbt.put("uuid", NbtHelper.fromUuid(ref.getKey().getUuid()));
-            refNbt.putString("type", ref.getValue().getId().toString());
-            list.add(refNbt);
+        if (this.record != null) {
+            tag.putUuid("record", this.record.getUuid());
         }
-        tag.put("refs", list);
     }
 }

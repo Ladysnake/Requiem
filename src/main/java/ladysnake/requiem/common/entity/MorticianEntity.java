@@ -39,6 +39,7 @@ import ladysnake.requiem.api.v1.block.ObeliskDescriptor;
 import ladysnake.requiem.api.v1.possession.Possessable;
 import ladysnake.requiem.api.v1.record.GlobalRecord;
 import ladysnake.requiem.api.v1.record.GlobalRecordKeeper;
+import ladysnake.requiem.api.v1.record.RecordPointer;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.api.v1.util.RequiemTargetPredicate;
 import ladysnake.requiem.common.RequiemRecordTypes;
@@ -85,6 +86,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtList;
+import net.minecraft.screen.MerchantScreenHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
@@ -132,6 +134,7 @@ public class MorticianEntity extends MerchantEntity implements Angerable {
         return MobEntity.createMobAttributes().add(RequiemEntityAttributes.SOUL_OFFENSE, 30);
     }
 
+    private boolean checkLegacyData;
     private @Nullable UUID linkedObelisk;
     private int angerTime;
     private @Nullable UUID angryAt;
@@ -176,8 +179,8 @@ public class MorticianEntity extends MerchantEntity implements Angerable {
         this.targetSelector.add(3, new TargetGoal<>(this, PlayerEntity.class, 10, true, false, this::shouldAngerAt));
     }
 
-    public void addCapturedSoul(UUID recordId) {
-        this.capturedSouls.add(recordId);
+    public void addCapturedSoul(GlobalRecord soulRecord) {
+        this.capturedSouls.add(soulRecord.getUuid());
     }
 
     @Override
@@ -297,6 +300,22 @@ public class MorticianEntity extends MerchantEntity implements Angerable {
     }
 
     @Override
+    public void baseTick() {
+        if (this.checkLegacyData && this.linkedObelisk != null) {
+            Optional<GlobalRecord> linkedRecord = EntityPositionClerk.get(this).getRecord();
+            // Backwards compatibility (pre-2.0.0beta.14) : if this mortician is directly linked to an obelisk,
+            // we need to add a level of indirection
+            if (linkedRecord.isPresent() && linkedRecord.get().has(RequiemRecordTypes.OBELISK_REF)) {
+                EntityPositionClerk.get(this).unlink();
+                this.linkWith(linkedRecord.get());
+            }
+            this.checkLegacyData = false;
+        }
+
+        super.baseTick();
+    }
+
+    @Override
     public void tickMovement() {
         super.tickMovement();
         if (this.world instanceof ServerWorld sw && this.hasInvalidLinkedObelisk()) {
@@ -314,7 +333,7 @@ public class MorticianEntity extends MerchantEntity implements Angerable {
                     },
                     () -> {
                         this.setFadingTicks(this.getFadingTicks() + 1);
-                        if (this.getFadingTicks() <= 0) {
+                        if (this.getFadingTicks() >= DESPAWN_DELAY) {
                             world.sendEntityStatus(this, EntityStatuses.ADD_PORTAL_PARTICLES);
                             this.discard();
                         }
@@ -371,10 +390,14 @@ public class MorticianEntity extends MerchantEntity implements Angerable {
     }
 
     public void linkWith(GlobalRecord r) {
-        Optional<ObeliskDescriptor> obelisk = r.get(RequiemRecordTypes.OBELISK_REF);
-        Preconditions.checkState(obelisk.isPresent());
-        EntityPositionClerk.get(this).linkWith(r, RequiemRecordTypes.MORTICIAN_REF);
-        this.linkedObelisk = r.getUuid();
+        Preconditions.checkState(r.get(RequiemRecordTypes.OBELISK_REF).isPresent());
+        RecordPointer thisRef = new RecordPointer(EntityPositionClerk.get(this).getOrCreateRecord());
+        r.put(RequiemRecordTypes.PROJECTED_MORTICIAN, thisRef);
+        this.setLinkedObelisk(r.getUuid());
+    }
+
+    private void setLinkedObelisk(UUID linkedRecordId) {
+        this.linkedObelisk = linkedRecordId;
         this.setObeliskProjection(true);
     }
 
@@ -393,8 +416,9 @@ public class MorticianEntity extends MerchantEntity implements Angerable {
         super.readCustomDataFromNbt(nbt);
 
         if (nbt.containsUuid("linked_obelisk")) {
-            GlobalRecordKeeper.get(this.world).getRecord(nbt.getUuid("linked_obelisk")).ifPresent(this::linkWith);
+            this.setLinkedObelisk(nbt.getUuid("linked_obelisk"));
             this.setObeliskProjection(true);
+            this.checkLegacyData = true;
         } else {
             this.setObeliskProjection(false);
         }
@@ -458,6 +482,11 @@ public class MorticianEntity extends MerchantEntity implements Angerable {
                 FilledSoulVesselItem.releaseSoul(this, capturedSoul);
             }
         }
+
+        if (this.getCurrentCustomer() instanceof ServerPlayerEntity sp && sp.currentScreenHandler instanceof MerchantScreenHandler) {
+            sp.closeHandledScreen();
+        }
+
         super.remove(reason);
     }
 

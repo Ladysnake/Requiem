@@ -39,6 +39,7 @@ import ladysnake.requiem.client.render.entity.model.MorticianEntityModel;
 import ladysnake.requiem.common.entity.MorticianEntity;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.MobEntityRenderer;
 import net.minecraft.client.render.entity.feature.HeadFeatureRenderer;
@@ -55,6 +56,12 @@ public class MorticianEntityRenderer extends MobEntityRenderer<MorticianEntity, 
         super(ctx, new MorticianEntityModel<>(ctx.getModelLoader().getModelPart(MorticianEntityModel.MODEL_LAYER)), 0.5F);
         this.addFeature(new HeadFeatureRenderer<>(this, ctx.getModelLoader(), ctx.getHeldItemRenderer()));
         this.addFeature(new VillagerHeldItemFeatureRenderer<>(this, ctx.getHeldItemRenderer()));
+    }
+
+    @Override
+    public void render(MorticianEntity mortician, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
+        this.getModel().setBaseAlpha(1f - mortician.getFadingAmount());
+        super.render(mortician, f, g, matrixStack, vertexConsumerProvider, i);
     }
 
     @Override

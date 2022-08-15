@@ -102,11 +102,14 @@ public final class PlayerBodyTracker implements ServerTickingComponent {
 
     private void updateBodyHealth(GlobalRecord anchor) {
         ServerPlayerEntity player = (ServerPlayerEntity) this.player;
-        if (anchor.get(RequiemRecordTypes.BODY_REF).flatMap(ptr -> ptr.resolve(player.server)).orElse(null) instanceof LivingEntity anchorEntity) {
+
+        if (anchor.get(RequiemRecordTypes.ENTITY_REF).flatMap(ptr -> ptr.resolve(player.server)).orElse(null) instanceof LivingEntity anchorEntity) {
             float health = anchorEntity.getHealth();
+
             if (health < this.previousAnchorHealth) {
                 RequiemNetworking.sendAnchorDamageMessage(player, false);
             }
+
             this.previousAnchorHealth = health;
         }
     }

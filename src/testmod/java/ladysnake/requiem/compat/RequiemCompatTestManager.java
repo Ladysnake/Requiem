@@ -32,38 +32,20 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.requiem.core.record;
+package ladysnake.requiem.compat;
 
-import ladysnake.requiem.api.v1.record.GlobalRecord;
-import ladysnake.requiem.api.v1.record.RecordType;
-import ladysnake.requiem.core.RequiemCore;
-import net.minecraft.server.MinecraftServer;
+import io.github.ladysnake.elmendorf.Elmendorf;
+import ladysnake.requiem.api.v1.annotation.CalledThroughReflection;
+import org.quiltmc.loader.api.ModContainer;
+import org.quiltmc.loader.api.QuiltLoader;
+import org.quiltmc.qsl.base.api.entrypoint.ModInitializer;
 
-public class ServerRecordKeeper extends CommonRecordKeeper {
-    private final MinecraftServer server;
-
-    public ServerRecordKeeper(MinecraftServer server) {
-        this.server = server;
-    }
-
+@CalledThroughReflection
+public class RequiemCompatTestManager implements ModInitializer {
     @Override
-    protected boolean checkValidityForInsertion(GlobalRecord record) {
-        return record.types().map(t -> this.checkFieldValidity(record, t)).reduce(true, Boolean::logicalAnd);
-    }
-
-    private <T> boolean checkFieldValidity(GlobalRecord record, RecordType<T> type) {
-        T value = record.get(type).orElseThrow();
-
-        if (this.checkFieldValidity(record, type, value)) {
-            return true;
+    public void onInitialize(ModContainer mod) {
+        if (QuiltLoader.isModLoaded("origins")) {
+            Elmendorf.registerTestClass(OriginsCompatTest.class, "requiem-test");
         }
-
-        RequiemCore.LOGGER.error("Record {} got field {} with invalid value {}", record, type, value);
-        return false;
-    }
-
-    @Override
-    protected <T> boolean checkFieldValidity(GlobalRecord record, RecordType<T> type, T value) {
-        return type.checkValidity(this.server, value);
     }
 }

@@ -36,8 +36,6 @@ package ladysnake.requiem.common.item;
 
 import ladysnake.requiem.api.v1.event.requiem.SoulCaptureEvents;
 import ladysnake.requiem.api.v1.record.GlobalRecord;
-import ladysnake.requiem.api.v1.record.GlobalRecordKeeper;
-import ladysnake.requiem.common.RequiemRecordTypes;
 import ladysnake.requiem.common.block.RequiemBlocks;
 import ladysnake.requiem.common.block.obelisk.InertRunestoneBlock;
 import ladysnake.requiem.common.block.obelisk.RunestoneBlock;
@@ -199,7 +197,7 @@ public class EmptySoulVesselItem extends Item {
         if (wins(remnant, target, captureType.get())) {
             result = FilledSoulVesselItem.forEntityType(entity.getType());
             UUID recordUuid = switch(captureType.get()) {
-                case NORMAL -> setupRecord(target);
+                case NORMAL -> setupRecord(target).getUuid();
                 case AGGREGATE -> UUID.randomUUID(); // if we are stealing a soul from an aggregate, there is no linked entity
             };
             result.getOrCreateSubNbt(FilledSoulVesselItem.SOUL_FRAGMENT_NBT).putUuid("uuid", recordUuid);
@@ -219,10 +217,8 @@ public class EmptySoulVesselItem extends Item {
         return ItemUsage.exchangeStack(stack, remnant, result, false);
     }
 
-    public static UUID setupRecord(LivingEntity target) {
-        GlobalRecord record = GlobalRecordKeeper.get(target.getWorld()).createRecord();
-        EntityPositionClerk.get(target).linkWith(record, RequiemRecordTypes.SOUL_OWNER_REF);
-        return record.getUuid();
+    public static GlobalRecord setupRecord(LivingEntity target) {
+        return EntityPositionClerk.get(target).getOrCreateRecord();
     }
 
     @Override

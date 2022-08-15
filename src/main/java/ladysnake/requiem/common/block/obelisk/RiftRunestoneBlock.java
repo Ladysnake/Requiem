@@ -37,7 +37,6 @@ package ladysnake.requiem.common.block.obelisk;
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.block.ObeliskRune;
 import ladysnake.requiem.api.v1.block.VagrantTargetableBlock;
-import ladysnake.requiem.api.v1.record.GlobalRecord;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.api.v1.remnant.RiftTracker;
 import ladysnake.requiem.common.advancement.RequiemStats;
@@ -83,7 +82,7 @@ public class RiftRunestoneBlock extends InertRunestoneBlock implements ObeliskRu
         }
         if (!(ObeliskMatcher.findObeliskOrigin(world, pos).map(world::getBlockEntity).orElse(null) instanceof RunestoneBlockEntity controller)) return ActionResult.PASS;
 
-        controller.getDescriptorRecord().map(GlobalRecord::getUuid).ifPresent(player.getComponent(RiftTracker.KEY)::addRift);
+        controller.getDescriptorRecord().ifPresent(player.getComponent(RiftTracker.KEY)::addRift);
 
         if (!RemnantComponent.isIncorporeal(player) || !this.canBeUsedByVagrant(player)) {
             return ActionResult.PASS;

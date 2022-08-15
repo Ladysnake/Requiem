@@ -38,7 +38,6 @@ import dev.onyxstudios.cca.api.v3.component.ComponentKey;
 import dev.onyxstudios.cca.api.v3.component.ComponentRegistry;
 import dev.onyxstudios.cca.api.v3.component.sync.AutoSyncedComponent;
 import ladysnake.requiem.core.RequiemCore;
-import ladysnake.requiem.core.record.EntityPositionClerk;
 import ladysnake.requiem.core.tag.RequiemCoreTags;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.nbt.NbtCompound;
@@ -56,7 +55,6 @@ public class SoulHolderComponent implements AutoSyncedComponent {
 
     public static void onMobConverted(LivingEntity original, LivingEntity converted) {
         KEY.get(converted).setSoulRemoved(KEY.get(original).removedSoul);
-        EntityPositionClerk.get(converted).transferFrom(EntityPositionClerk.get(original));
     }
 
     private final LivingEntity owner;

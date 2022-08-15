@@ -62,6 +62,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
 import java.util.List;
@@ -105,7 +106,11 @@ public final class OriginsCompat {
         ComponentRegistry.getOrCreate(Requiem.id("apoli_power_holder"), ((Class<ComponentDataHolder<PowerHolderComponent>>) (Class<?>) ComponentDataHolder.class));
 
     private static final Identifier SOUL_TYPE_LAYER_ID = Requiem.id("soul_type");
-    private static Origin vagrant;
+    private static @Nullable Origin vagrant;
+
+    public static @Nullable Origin getVagrantOrigin() {
+        return vagrant;
+    }
 
     private static void applyVagrantOrigin(PlayerEntity player) {
         if (vagrant != null) {

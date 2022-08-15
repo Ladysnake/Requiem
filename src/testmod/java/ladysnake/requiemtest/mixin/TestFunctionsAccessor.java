@@ -32,35 +32,19 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.requiem.client;
+package ladysnake.requiemtest.mixin;
 
-import ladysnake.requiem.core.record.CommonRecordKeeper;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.world.ClientWorld;
-import net.minecraft.scoreboard.Scoreboard;
-import net.minecraft.util.profiler.Profiler;
-import net.minecraft.util.registry.RegistryKey;
-import net.minecraft.world.World;
+import net.minecraft.test.TestFunction;
+import net.minecraft.test.TestFunctions;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.gen.Invoker;
 
-import java.util.Optional;
+import java.lang.reflect.Method;
 
-// Currently unused, global records may one day be synchronized though
-public class ClientRecordKeeper extends CommonRecordKeeper {
-    public ClientRecordKeeper(Scoreboard scoreboard) {
-        super(scoreboard);
-    }
-
-    @Override
-    public Optional<World> getWorld(RegistryKey<World> worldKey) {
-        // ClientRecordKeeper may be loaded serverside, and implicitly casting ClientWorld to World trips the verifier on there
-        ClientWorld world = MinecraftClient.getInstance().world;
-        if (world == null) throw new IllegalStateException();
-        if (world.getRegistryKey().equals(worldKey)) return Optional.of(world);
-        return Optional.empty();
-    }
-
-    @Override
-    protected Profiler getProfiler() {
-        return MinecraftClient.getInstance().getProfiler();
+@Mixin(TestFunctions.class)
+public interface TestFunctionsAccessor {
+    @Invoker
+    static TestFunction invokeGetTestFunction(Method method) {
+        throw new IllegalStateException();
     }
 }

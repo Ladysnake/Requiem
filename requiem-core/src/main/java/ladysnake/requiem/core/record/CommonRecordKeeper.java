@@ -35,8 +35,6 @@
 package ladysnake.requiem.core.record;
 
 import com.mojang.serialization.DataResult;
-import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
-import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import ladysnake.requiem.api.v1.record.GlobalRecord;
 import ladysnake.requiem.api.v1.record.GlobalRecordKeeper;
 import ladysnake.requiem.api.v1.record.RecordType;
@@ -47,11 +45,12 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtOps;
-import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.profiler.Profiler;
 
+import java.util.ArrayDeque;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -60,81 +59,58 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public abstract class CommonRecordKeeper implements GlobalRecordKeeper {
-    private final Map<UUID, GlobalRecord> anchorsByUuid = new HashMap<>();
-    private final Int2ObjectMap<GlobalRecord> anchorsById = new Int2ObjectOpenHashMap<>();
-
-    protected final Scoreboard scoreboard;
-    private int nextIdCandidate;
-
-    public CommonRecordKeeper(Scoreboard scoreboard) {
-        this.scoreboard = scoreboard;
-    }
+public class CommonRecordKeeper implements GlobalRecordKeeper {
+    private final Map<UUID, GlobalRecord> records = new HashMap<>();
+    private final Deque<GlobalRecord> invalidationQueue = new ArrayDeque<>();
 
     protected void addRecord(GlobalRecord anchor) {
-        if (this.checkWorld(anchor)) {
-            anchorsByUuid.put(anchor.getUuid(), anchor);
-            anchorsById.put(anchor.getId(), anchor);
+        if (this.checkValidityForInsertion(anchor)) {
+            records.put(anchor.getUuid(), anchor);
         }
     }
 
-    protected boolean checkWorld(GlobalRecord anchor) {
+    protected void invalidate(GlobalRecord record) {
+        this.invalidationQueue.push(record);
+    }
+
+    protected boolean checkValidityForInsertion(GlobalRecord anchor) {
         return true;
     }
 
-    private int nextId() {
-        // Guarantee that the next id is unused
-        while (anchorsById.containsKey(nextIdCandidate)) {
-            nextIdCandidate++;
-        }
-        return nextIdCandidate;
+    protected <T> boolean checkFieldValidity(GlobalRecord record, RecordType<T> type, T value) {
+        return true;
     }
 
     @Override
     public Collection<GlobalRecord> getRecords() {
-        return this.anchorsById.values();
+        // Quick copy to avoid CME's
+        return Arrays.asList(this.records.values().toArray(new GlobalRecord[0]));
+    }
+
+    @Override
+    public Stream<GlobalRecord> stream() {
+        return Arrays.stream(this.records.values().toArray(new GlobalRecord[0])).filter(GlobalRecord::isValid);
     }
 
     @Override
     public void tick() {
-        Profiler profiler = this.getProfiler();
-        profiler.push("requiem:global_entities");
-
-        for (var it = this.anchorsById.values().iterator(); it.hasNext(); ) {
-            GlobalRecord anchor = it.next();
-            if (isValid(anchor)) {
-                anchor.update();
-            } // no else, invalidation can happen in update
-            if (!isValid(anchor)) {
-                this.anchorsByUuid.remove(anchor.getUuid());
-                it.remove();
-            }
+        while (!this.invalidationQueue.isEmpty()) {
+            GlobalRecord invalidated = this.invalidationQueue.pop();
+            if (invalidated.isValid()) throw new IllegalStateException();
+            this.records.remove(invalidated.getUuid());
         }
-
-        profiler.pop();
     }
-
-    protected boolean isValid(GlobalRecord anchor) {
-        return !anchor.isInvalid();
-    }
-
-    protected abstract Profiler getProfiler();
 
     @Override
     public GlobalRecord createRecord() {
-        GlobalRecordImpl record = new GlobalRecordImpl(this, UUID.randomUUID(), this.nextId());
+        GlobalRecordImpl record = new GlobalRecordImpl(this, UUID.randomUUID());
         this.addRecord(record);
         return record;
     }
 
     @Override
-    public Optional<GlobalRecord> getRecord(int anchorId) {
-        return Optional.ofNullable(this.anchorsById.get(anchorId)).filter(this::isValid);
-    }
-
-    @Override
     public Optional<GlobalRecord> getRecord(UUID anchorUuid) {
-        return Optional.ofNullable(this.anchorsByUuid.get(anchorUuid)).filter(this::isValid);
+        return Optional.ofNullable(this.records.get(anchorUuid)).filter(GlobalRecord::isValid);
     }
 
     @Override
@@ -150,7 +126,7 @@ public abstract class CommonRecordKeeper implements GlobalRecordKeeper {
 
     private DataResult<GlobalRecord> deserialize(NbtCompound anchorTag) {
         return DataResult.unbox(DataResult.instance().apply2(
-            (uuid, data) -> new GlobalRecordImpl(this, uuid, this.nextId(), data),
+            (uuid, data) -> new GlobalRecordImpl(this, uuid, data),
             DataResults.tryGet(() -> anchorTag.getUuid(GlobalRecordImpl.ANCHOR_UUID_NBT)),
             this.deserializeRawData(anchorTag.getCompound("data"))
         ));
@@ -171,6 +147,11 @@ public abstract class CommonRecordKeeper implements GlobalRecordKeeper {
     }
 
     private DataResult<RecordType<?>> tryParseRecordType(String key) {
+        // Pre-2.0.0-beta.14 backward compatibility
+        if (key.equals("requiem:body_ref") || key.equals("requiem:soul_owner_ref") || key.equals("requiem:mortician_ref")) {
+            key = "requiem:entity_ref";
+        }
+
         RecordType<?> type = RecordType.REGISTRY.get(Identifier.tryParse(key));
         if (type == null) return DataResult.error("Unknown record type %s".formatted(key));
         return DataResult.success(type);
@@ -183,14 +164,14 @@ public abstract class CommonRecordKeeper implements GlobalRecordKeeper {
     @Override
     public void writeToNbt(NbtCompound tag) {
         NbtList list = new NbtList();
-        for (GlobalRecord anchor : this.getRecords()) {
-            list.add(anchor.toTag(new NbtCompound()));
+        for (GlobalRecord anchor : this.records.values()) {
+            list.add(anchor.toTag());
         }
         if (!list.isEmpty()) tag.put("records", list);
     }
 
     @Override
     public String toString() {
-        return this.anchorsByUuid.toString();
+        return this.records.toString();
     }
 }
