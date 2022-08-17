@@ -74,7 +74,38 @@
         "versions": "^1.8.0",
         "environment": "client"
       },
-      "automatone",
+      {
+        "id": "impersonate",
+        "versions": "~2.6.1",
+        "unless": {
+          "id": "minecraft",
+          "versions": ">1.19.1-"
+        }
+      },
+      {
+        "id": "impersonate",
+        "versions": "^2.7.0",
+        "unless": {
+          "id": "minecraft",
+          "versions": "<1.19.1-"
+        }
+      },
+      {
+        "id": "automatone",
+        "versions": "~0.8.2",
+        "unless": {
+          "id": "minecraft",
+          "versions": ">1.19.1-"
+        }
+      },
+      {
+        "id": "automatone",
+        "versions": "^0.9.0",
+        "unless": {
+          "id": "minecraft",
+          "versions": "<1.19.1-"
+        }
+      },
       "fabric-permissions-api-v0",
       "locki",
       "playerabilitylib"
