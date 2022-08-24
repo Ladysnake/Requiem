@@ -1,0 +1,11 @@
+{
+  "item.pandemonium.baleful_soul_vessel": "Зловещий сосуд душ",
+  "requiem:remnant_vessel.banishment": "Изгнать",
+  "config.pandemonium.possession": "Овладение",
+  "config.pandemonium.allow_possessing_all_mobs": "Позволить овладевать всеми мобами",
+  "requiem:remnant_type.pandemonium.wandering_spirit.name": "Странствующий дух",
+  "origins:origin.pandemonium.wandering_spirit.name": "Странствующий дух",
+  "origins:origin.pandemonium.wandering_spirit.description": "Эти давно потерянные демоны стали неспособными восстанавливать свою человеческую форму.",
+  "origins:power.pandemonium.wandering_spirit.name": "Прохожий",
+  "origins:power.pandemonium.wandering_spirit.description": "Ты можешь покинуть бесноватое тело в любое время."
+}
