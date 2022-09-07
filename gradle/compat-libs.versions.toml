@@ -25,7 +25,7 @@ patchouli = "1.18-61-FABRIC-SNAPSHOT"
 pehkui = "3.1.0"
 reach = "2.1.1"
 shea = "1.0.1"
-snowmercy = "3253604" # v1.0.5
+snowmercy = "2.0.1"
 somnus = "0.0.14-1.17.1"
 structurized = "1.4.0+1.18"
 trinkets = "3.4.0"
@@ -50,7 +50,7 @@ omegaConfig =   { group = "com.github.Draylar.omega-config", name = "omega-confi
 origins =       { group = "maven.modrinth",     name = "origins", version.ref = "origins" }
 patchouli =     { group = "vazkii.patchouli",        name = "Patchouli", version.ref = "patchouli" }
 pehkui =        { module= "com.github.Virtuoel:Pehkui", version.ref = "pehkui" }
-snowmercy =     { group = "curse.maven",             name = "Snow-Mercy-429949", version.ref = "snowmercy" }
+snowmercy =     { module = "io.github.ladysnake:Snow-Mercy", version.ref = "snowmercy" }
 stepHeightEntityAttributes = { module = "com.github.emilyploszaj:step-height-entity-attribute", version.ref = "shea" }
 structurized =  { module = "com.github.Frqnny:structurized", version.ref = "structurized" }
 trinkets =      { module = "dev.emi:trinkets", version.ref = "trinkets" }
