@@ -45,7 +45,6 @@ import io.github.apace100.apoli.registry.ApoliRegistries;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataType;
 import io.github.apace100.origins.component.OriginComponent;
-import io.github.apace100.origins.integration.OriginDataLoadedCallback;
 import io.github.apace100.origins.origin.Origin;
 import io.github.apace100.origins.origin.OriginLayer;
 import io.github.apace100.origins.origin.OriginLayers;
@@ -60,12 +59,18 @@ import ladysnake.requiem.common.gamerule.RequiemSyncedGamerules;
 import ladysnake.requiem.common.gamerule.StartingRemnantType;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.resource.ResourceManager;
+import net.minecraft.resource.ResourceType;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.Nullable;
+import org.quiltmc.qsl.resource.loader.api.ResourceLoader;
+import org.quiltmc.qsl.resource.loader.api.reloader.SimpleSynchronousResourceReloader;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 public final class OriginsCompat {
     public static final ComponentKey<OriginComponent> ORIGIN_KEY = ModComponents.ORIGIN;
@@ -106,6 +111,7 @@ public final class OriginsCompat {
         ComponentRegistry.getOrCreate(Requiem.id("apoli_power_holder"), ((Class<ComponentDataHolder<PowerHolderComponent>>) (Class<?>) ComponentDataHolder.class));
 
     private static final Identifier SOUL_TYPE_LAYER_ID = Requiem.id("soul_type");
+    private static final Identifier ORIGIN_MANAGER_RESOURCE_ID = new Identifier("origins", "origins");
     private static @Nullable Origin vagrant;
 
     public static @Nullable Origin getVagrantOrigin() {
@@ -141,10 +147,23 @@ public final class OriginsCompat {
                 }
             }
         });
-        OriginDataLoadedCallback.EVENT.register(isClient -> {
-            vagrant = OriginRegistry.get(Requiem.id("vagrant"));
-            if (vagrant == null) throw new IllegalStateException("Special vagrant origin not found");
-            vagrant.setSpecial();
+        ResourceLoader.get(ResourceType.SERVER_DATA).registerReloader(new SimpleSynchronousResourceReloader() {
+            @Override
+            public void reload(ResourceManager manager) {
+                vagrant = OriginRegistry.get(Requiem.id("vagrant"));
+                if (vagrant == null) throw new IllegalStateException("Special vagrant origin not found");
+                vagrant.setSpecial();
+            }
+
+            @Override
+            public Identifier getQuiltId() {
+                return Requiem.id("origins_origin_tweaker");
+            }
+
+            @Override
+            public Collection<Identifier> getQuiltDependencies() {
+                return Set.of(ORIGIN_MANAGER_RESOURCE_ID);
+            }
         });
         RequiemCompatibilityManager.registerShellDataCallbacks(OriginsCompat.ORIGIN_HOLDER_KEY);
         RequiemCompatibilityManager.registerShellDataCallbacks(OriginsCompat.APOLI_HOLDER_KEY);
