@@ -35,6 +35,7 @@
 package ladysnake.requiem.common;
 
 import baritone.api.fakeplayer.AutomatoneFakePlayer;
+import com.mojang.authlib.GameProfile;
 import io.github.ladysnake.impersonate.Impersonate;
 import io.github.ladysnake.locki.DefaultInventoryNodes;
 import io.github.ladysnake.locki.ModdedInventoryNodes;
@@ -229,7 +230,10 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
         AllowUseEntityCallback.EVENT.register((player, world, hand, target) -> !isInteractionForbidden(player));
         UseItemCallback.EVENT.register((player, world, hand) -> new TypedActionResult<>(getInteractionResult(player), player.getStackInHand(hand)));
         // Make players respawn in the right place with the right state
-        PrepareRespawnCallback.EVENT.register((original, clone, returnFromEnd) -> RemnantComponent.get(clone).prepareRespawn(original, returnFromEnd));
+        PrepareRespawnCallback.EVENT.register((original, clone, returnFromEnd) -> {
+            if (original.isDead()) resetIdentity(clone);
+            RemnantComponent.get(clone).prepareRespawn(original, returnFromEnd);
+        });
         PlayerRespawnCallback.EVENT.register(((player, returnFromEnd) -> {
             player.sendAbilitiesUpdate();
             ((MobResurrectable) player).spawnResurrectionEntity();
@@ -242,6 +246,8 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
             player.networkHandler.sendPacket(new EntityTrackerUpdateS2CPacket(player.getId(), player.getDataTracker(), true));
         }));
         RemnantStateChangeCallback.EVENT.register((player, remnant, cause) -> {
+            if (cause.isCharacterSwitch()) resetIdentity(player);
+
             if (!remnant.isVagrant()) {
                 PossessionComponent.get(player).stopPossessing(false);
                 InventoryLimiter.instance().disable(player);
@@ -255,12 +261,13 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
                 PlayerAbilityController.get(player).resetAbilities(remnant.isIncorporeal());
             }
         });
-        PlayerRespawnCallback.EVENT.register((player, returnFromEnd) -> {
-            if (!returnFromEnd) Impersonate.IMPERSONATION.get(player).stopImpersonation(PlayerSplitter.BODY_IMPERSONATION);
-        });
-        RemnantStateChangeCallback.EVENT.register((player, state, cause) -> {
-            if (state.isVagrant()) Impersonate.IMPERSONATION.get(player).stopImpersonation(PlayerSplitter.BODY_IMPERSONATION);
-        });
+    }
+
+    private static void resetIdentity(PlayerEntity player) {
+        GameProfile previouslyImpersonated = Impersonate.IMPERSONATION.get(player).stopImpersonation(PlayerSplitter.BODY_IMPERSONATION);
+        if (previouslyImpersonated != null && player instanceof ServerPlayerEntity sp) {
+            PlayerShellEvents.RESET_IDENTITY.invoker().resetIdentity(sp, previouslyImpersonated);
+        }
     }
 
     @Nonnull
