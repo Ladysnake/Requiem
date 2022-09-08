@@ -133,6 +133,8 @@ dependencies {
     api include(project(path: ":requiem-core", configuration: "namedElements")) { transitive = false }
     modImplementation libs.bundles.requiredLibraries
     include libs.bundles.requiredLibraries
+    include "io.github.ladysnake:impersonate:2.6.1"
+    include "io.github.ladysnake:automatone:0.8.2"
 
     // Test dependencies
     testImplementation testLibs.junit
