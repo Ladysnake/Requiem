@@ -34,9 +34,13 @@
  */
 package ladysnake.requiemtest;
 
+import com.mojang.authlib.GameProfile;
 import io.github.ladysnake.elmendorf.GameTestUtil;
+import ladysnake.requiem.api.v1.event.requiem.PlayerShellEvents;
 import ladysnake.requiem.api.v1.remnant.PlayerSplitResult;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
+import ladysnake.requiem.common.entity.PlayerShellEntity;
+import ladysnake.requiem.common.entity.RequiemEntities;
 import ladysnake.requiem.common.gamerule.PossessionKeepInventory;
 import ladysnake.requiem.common.gamerule.RequiemGamerules;
 import ladysnake.requiem.common.network.RequiemNetworking;
@@ -46,6 +50,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.network.packet.c2s.play.ClientStatusC2SPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.test.AfterBatch;
@@ -53,6 +58,9 @@ import net.minecraft.test.BeforeBatch;
 import net.minecraft.test.GameTest;
 import net.minecraft.test.TestContext;
 import net.minecraft.util.Hand;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.UUID;
 
 public class PlayerShellsTests implements FabricGameTest {
     public static final String POSSESSION_KEEPS_INVENTORY_BATCH = "possessionKeepsInventory";
@@ -144,6 +152,44 @@ public class PlayerShellsTests implements FabricGameTest {
         GameTestUtil.assertTrue("Player should get offhand item back", ItemStack.areEqual(result.soul().getOffHandStack(), torch));
         GameTestUtil.assertTrue("Player should keep item from shell's main inventory", result.soul().getInventory().getStack(slot).isOf(Items.POTION));
         ctx.expectEntity(EntityType.ITEM);  // dirt should have been dropped
+        ctx.complete();
+    }
+
+    @GameTest(structureName = EMPTY_STRUCTURE)
+    public void resetIdentityEventGetsFired(TestContext ctx) {
+        ServerPlayerEntity player = ctx.spawnServerPlayer(2, 0, 2);
+        var listener = new PlayerShellEvents.IdentityReset() {
+            private int resets = 0;
+
+            @Override
+            public void resetIdentity(@NotNull ServerPlayerEntity player, @NotNull GameProfile previousIdentity) {
+                resets++;
+            }
+
+            int countResets() {
+                int r = resets;
+                resets = 0;
+                return r;
+            }
+        };
+        PlayerShellEvents.RESET_IDENTITY.register(listener);
+        RemnantComponent.get(player).become(RemnantTypes.REMNANT);
+        RemnantComponent.get(player).setVagrant(true);
+        PlayerShellEntity shell = (PlayerShellEntity) ctx.spawnEntity(RequiemEntities.PLAYER_SHELL, 3, 0, 3);
+        shell.setDisplayProfile(new GameProfile(UUID.fromString("577a28bd-0fcf-49bb-b406-407f8041872b"), "Pyrofab"));
+        RemnantComponent.get(player).merge(shell);
+        GameTestUtil.assertTrue("Assuming a new identity should not trigger an identity reset", listener.countResets() == 0);
+        PlayerSplitResult playerSplitResult = RemnantComponent.get(player).splitPlayer(true).orElseThrow();
+        GameTestUtil.assertTrue("Splitting should trigger an identity reset", listener.countResets() == 1);
+        player = playerSplitResult.soul();
+        shell = (PlayerShellEntity) playerSplitResult.shell();
+        RemnantComponent.get(player).merge(shell);
+        RemnantComponent.get(player).become(RemnantTypes.MORTAL);
+        GameTestUtil.assertTrue("Becoming mortal should keep the identity temporarily", listener.countResets() == 0);
+        player.setHealth(0);
+        player.kill();
+        player.networkHandler.onClientStatus(new ClientStatusC2SPacket(ClientStatusC2SPacket.Mode.PERFORM_RESPAWN));
+        GameTestUtil.assertTrue("Dying should trigger an identity reset", listener.countResets() == 1);
         ctx.complete();
     }
 }

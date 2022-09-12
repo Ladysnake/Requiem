@@ -25,6 +25,9 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * @since 2.0.0
+ */
 @ApiStatus.Experimental
 public final class PlayerShellEvents {
     public static final Event<DataTransfer> DATA_TRANSFER = EventFactory.createArrayBacked(DataTransfer.class, (callbacks) -> (from, to, merge) -> {
@@ -69,6 +72,15 @@ public final class PlayerShellEvents {
     public static final Event<Merge> PLAYER_MERGED = EventFactory.createArrayBacked(Merge.class, (callbacks) -> (player, playerShell, shellProfile) -> {
         for (Merge callback : callbacks) {
             callback.onPlayerMerge(player, playerShell, shellProfile);
+        }
+    });
+
+    /**
+     * Fired when a player stops assuming another player's identity (typically either through dissociation or death)
+     */
+    public static final Event<IdentityReset> RESET_IDENTITY = EventFactory.createArrayBacked(IdentityReset.class, (callbacks) -> (player, previousIdentity) -> {
+        for (IdentityReset callback : callbacks) {
+            callback.resetIdentity(player, previousIdentity);
         }
     });
 
@@ -121,5 +133,14 @@ public final class PlayerShellEvents {
          * @param shellProfile the profile of the player which created this shell
          */
         void onPlayerMerge(ServerPlayerEntity player, ServerPlayerEntity playerShell, GameProfile shellProfile);
+    }
+
+    @FunctionalInterface
+    public interface IdentityReset {
+        /**
+         * @param player                  the player getting reset
+         * @param previousIdentity        the previously assumed identity
+         */
+        void resetIdentity(ServerPlayerEntity player, GameProfile previousIdentity);
     }
 }

@@ -116,5 +116,6 @@ public final class RequiemCompatibilityManager {
                 holder.copyDataBetween(from, to);
             }
         });
+        PlayerShellEvents.RESET_IDENTITY.register((player, previousIdentity) -> holderKey.get(player).restoreDataToPlayer(player, false));
     }
 }
