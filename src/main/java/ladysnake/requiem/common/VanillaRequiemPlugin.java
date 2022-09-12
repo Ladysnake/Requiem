@@ -60,6 +60,7 @@ import ladysnake.requiem.api.v1.event.requiem.PlayerShellEvents;
 import ladysnake.requiem.api.v1.event.requiem.PossessionEvents;
 import ladysnake.requiem.api.v1.event.requiem.PossessionStateChangeCallback;
 import ladysnake.requiem.api.v1.event.requiem.RemnantStateChangeCallback;
+import ladysnake.requiem.api.v1.event.requiem.RemnantTypeChangeCallback;
 import ladysnake.requiem.api.v1.event.requiem.SoulCaptureEvents;
 import ladysnake.requiem.api.v1.possession.PossessedData;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
@@ -83,6 +84,7 @@ import ladysnake.requiem.common.gamerule.RequiemGamerules;
 import ladysnake.requiem.common.network.RequiemNetworking;
 import ladysnake.requiem.common.possession.MobRidingType;
 import ladysnake.requiem.common.remnant.BasePossessionHandlers;
+import ladysnake.requiem.common.remnant.MortalDysmorphiaDamageSource;
 import ladysnake.requiem.common.remnant.PlayerSplitter;
 import ladysnake.requiem.common.remnant.RemnantTypes;
 import ladysnake.requiem.common.tag.RequiemBlockTags;
@@ -127,6 +129,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.Nonnull;
 import java.util.HashMap;
@@ -261,13 +264,23 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
                 PlayerAbilityController.get(player).resetAbilities(remnant.isIncorporeal());
             }
         });
+        RemnantTypeChangeCallback.EVENT.register((player, oldType, newType) -> {
+            if (newType == RemnantTypes.MORTAL) {
+                GameProfile bodyIdentity = resetIdentity(player);
+                if (bodyIdentity != null) {
+                    player.damage(new MortalDysmorphiaDamageSource(player.getDisplayName(), Text.literal(bodyIdentity.getName())), 100F);
+                }
+            }
+        });
     }
 
-    private static void resetIdentity(PlayerEntity player) {
+    private static @Nullable GameProfile resetIdentity(PlayerEntity player) {
         GameProfile previouslyImpersonated = Impersonate.IMPERSONATION.get(player).stopImpersonation(PlayerSplitter.BODY_IMPERSONATION);
         if (previouslyImpersonated != null && player instanceof ServerPlayerEntity sp) {
             PlayerShellEvents.RESET_IDENTITY.invoker().resetIdentity(sp, previouslyImpersonated);
+            return previouslyImpersonated;
         }
+        return null;
     }
 
     @Nonnull
