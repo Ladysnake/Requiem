@@ -37,6 +37,7 @@ package ladysnake.requiem.common;
 import baritone.api.fakeplayer.AutomatoneFakePlayer;
 import com.mojang.authlib.GameProfile;
 import io.github.ladysnake.impersonate.Impersonate;
+import io.github.ladysnake.impersonate.Impersonator;
 import io.github.ladysnake.locki.DefaultInventoryNodes;
 import io.github.ladysnake.locki.ModdedInventoryNodes;
 import ladysnake.requiem.Requiem;
@@ -129,7 +130,6 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
-import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.Nonnull;
 import java.util.HashMap;
@@ -266,7 +266,7 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
         });
         RemnantTypeChangeCallback.EVENT.register((player, oldType, newType) -> {
             if (newType == RemnantTypes.MORTAL) {
-                GameProfile bodyIdentity = resetIdentity(player);
+                GameProfile bodyIdentity = Impersonator.get(player).getImpersonatedProfile(PlayerSplitter.BODY_IMPERSONATION);
                 if (bodyIdentity != null) {
                     player.damage(new MortalDysmorphiaDamageSource(player.getDisplayName(), Text.literal(bodyIdentity.getName())), 100F);
                 }
@@ -274,13 +274,11 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
         });
     }
 
-    private static @Nullable GameProfile resetIdentity(PlayerEntity player) {
+    private static void resetIdentity(PlayerEntity player) {
         GameProfile previouslyImpersonated = Impersonate.IMPERSONATION.get(player).stopImpersonation(PlayerSplitter.BODY_IMPERSONATION);
         if (previouslyImpersonated != null && player instanceof ServerPlayerEntity sp) {
             PlayerShellEvents.RESET_IDENTITY.invoker().resetIdentity(sp, previouslyImpersonated);
-            return previouslyImpersonated;
         }
-        return null;
     }
 
     @Nonnull
