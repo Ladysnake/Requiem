@@ -1,6 +1,22 @@
 ------------------------------------------------------
 Version 2.0.0
 ------------------------------------------------------
+### Changes in Beta 14
+- Updated to 1.19.2
+- Turning mortal while in another player's body is now strongly discouraged
+- Vagrant players no longer emit vibrations
+- Dissociating while crawling will no longer teleport you above the ceiling
+- Localized gamerule values in the gamerule editing GUI
+- Tweaked the effect when a released soul merges with its body
+- Ethereal morticians now fade out before they despawn from their obelisk being broken
+- Updated Chinese localization (credits to Touch Night)
+- Fixed morticians' conversion trade being available while vagrant
+- Fixed crosshair being always colored as if in the End when attempting to possess an enderman
+- Fixed Trinkets API's extra slots getting linked with the main hand slot
+- Fixed ethereal morticians forgetting their obelisk, or becoming regular morticians, or forgetting to spawn...
+- Fixed soul vessels dropping from ethereal morticians instead of from naturally spawned ones
+- Fixed origins compatibility
+
 ### Changes in Beta 13
 - Updated to 1.19.1
 
