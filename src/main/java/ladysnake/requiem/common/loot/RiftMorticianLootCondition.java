@@ -70,7 +70,7 @@ public class RiftMorticianLootCondition implements LootCondition {
 
     @Override
     public boolean test(LootContext lootContext) {
-        return lootContext.get(this.entity.getParameter()) instanceof MorticianEntity mortician && mortician.isObeliskProjection();
+        return (lootContext.get(this.entity.getParameter()) instanceof MorticianEntity mortician && mortician.isObeliskProjection()) == rift;
     }
 
     public static class Serializer implements JsonSerializer<RiftMorticianLootCondition> {
