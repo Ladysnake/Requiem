@@ -38,6 +38,7 @@ import baritone.api.fakeplayer.FakeServerPlayerEntity;
 import com.google.common.base.Preconditions;
 import ladysnake.requiem.api.v1.event.requiem.PlayerShellEvents;
 import ladysnake.requiem.api.v1.event.requiem.RemnantStateChangeCallback;
+import ladysnake.requiem.api.v1.event.requiem.RemnantTypeChangeCallback;
 import ladysnake.requiem.api.v1.remnant.PlayerSplitResult;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.api.v1.remnant.RemnantState;
@@ -75,7 +76,9 @@ public final class RemnantComponentImpl implements RemnantComponent {
             RequiemCriteria.MADE_REMNANT_CHOICE.handle((ServerPlayerEntity) player, type);
         }
 
-        if (type == this.remnantType) {
+        RemnantType oldType = this.remnantType;
+
+        if (type == oldType) {
             return;
         }
 
@@ -92,6 +95,7 @@ public final class RemnantComponentImpl implements RemnantComponent {
         this.remnantType = type;
         this.state.setup(oldHandler);
         RemnantComponent.KEY.sync(this.player);
+        RemnantTypeChangeCallback.EVENT.invoker().onRemnantTypeChange(player, oldType, type);
         this.fireRemnantStateChange(wasSoul, RemnantStateChangeCallback.Cause.TYPE_UPDATE);
     }
 
@@ -175,10 +179,10 @@ public final class RemnantComponentImpl implements RemnantComponent {
 
     @Override
     public Optional<PlayerSplitResult> splitPlayer(boolean forced) {
-        if (this.player instanceof ServerPlayerEntity player && this.canSplitPlayer(forced)) {
+        if (this.player instanceof ServerPlayerEntity sp && this.canSplitPlayer(forced)) {
             try {
                 this.splitting = true;
-                return Optional.of(PlayerSplitter.doSplit(player));
+                return Optional.of(PlayerSplitter.doSplit(sp));
             } finally {
                 this.splitting = false;
             }

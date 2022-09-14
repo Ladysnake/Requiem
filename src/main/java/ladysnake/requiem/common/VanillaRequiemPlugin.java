@@ -37,6 +37,7 @@ package ladysnake.requiem.common;
 import baritone.api.fakeplayer.AutomatoneFakePlayer;
 import com.mojang.authlib.GameProfile;
 import io.github.ladysnake.impersonate.Impersonate;
+import io.github.ladysnake.impersonate.Impersonator;
 import io.github.ladysnake.locki.DefaultInventoryNodes;
 import io.github.ladysnake.locki.ModdedInventoryNodes;
 import ladysnake.requiem.Requiem;
@@ -60,6 +61,7 @@ import ladysnake.requiem.api.v1.event.requiem.PlayerShellEvents;
 import ladysnake.requiem.api.v1.event.requiem.PossessionEvents;
 import ladysnake.requiem.api.v1.event.requiem.PossessionStateChangeCallback;
 import ladysnake.requiem.api.v1.event.requiem.RemnantStateChangeCallback;
+import ladysnake.requiem.api.v1.event.requiem.RemnantTypeChangeCallback;
 import ladysnake.requiem.api.v1.event.requiem.SoulCaptureEvents;
 import ladysnake.requiem.api.v1.possession.PossessedData;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
@@ -83,6 +85,7 @@ import ladysnake.requiem.common.gamerule.RequiemGamerules;
 import ladysnake.requiem.common.network.RequiemNetworking;
 import ladysnake.requiem.common.possession.MobRidingType;
 import ladysnake.requiem.common.remnant.BasePossessionHandlers;
+import ladysnake.requiem.common.remnant.MortalDysmorphiaDamageSource;
 import ladysnake.requiem.common.remnant.PlayerSplitter;
 import ladysnake.requiem.common.remnant.RemnantTypes;
 import ladysnake.requiem.common.tag.RequiemBlockTags;
@@ -259,6 +262,14 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
                 PlayerAbilityController.get(player).usePossessedAbilities(possessed);
             } else {
                 PlayerAbilityController.get(player).resetAbilities(remnant.isIncorporeal());
+            }
+        });
+        RemnantTypeChangeCallback.EVENT.register((player, oldType, newType) -> {
+            if (newType == RemnantTypes.MORTAL) {
+                GameProfile bodyIdentity = Impersonator.get(player).getImpersonatedProfile(PlayerSplitter.BODY_IMPERSONATION);
+                if (bodyIdentity != null) {
+                    player.damage(new MortalDysmorphiaDamageSource(player.getDisplayName(), Text.literal(bodyIdentity.getName())), 100F);
+                }
             }
         });
     }

@@ -185,7 +185,8 @@ public class PlayerShellsTests implements FabricGameTest {
         shell = (PlayerShellEntity) playerSplitResult.shell();
         RemnantComponent.get(player).merge(shell);
         RemnantComponent.get(player).become(RemnantTypes.MORTAL);
-        GameTestUtil.assertTrue("Becoming mortal should keep the identity temporarily", listener.countResets() == 0);
+        GameTestUtil.assertTrue("Becoming mortal should keep the identity until respawn", listener.countResets() == 0);
+        // make sure it's dead, origins makes them invincible
         player.setHealth(0);
         player.kill();
         player.networkHandler.onClientStatus(new ClientStatusC2SPacket(ClientStatusC2SPacket.Mode.PERFORM_RESPAWN));
