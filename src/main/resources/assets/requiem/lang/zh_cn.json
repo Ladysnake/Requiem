@@ -155,8 +155,9 @@
   "config.requiem.more_info.gamerules": "游戏规则",
   "config.requiem.more_info.official_doc": "Ladysnake网站上的官方文档",
 
-  "death.attack.requiem.attrition.hardcore": "%1$s永远地安息",
-  "death.attack.requiem.attrition.hardcore.player": "%2$s使%1$s永远地安息",
+  "death.attack.requiem.attrition.hardcore": "%1$s永远地安息。",
+  "death.attack.requiem.attrition.hardcore.player": "%2$s使%1$s永远地安息。",
+  "death.attack.requiem.mortal_dysmorphia": "%1$s的灵魂与%2$s的身体不适配。",
 
   "gamerule.requiem:showPossessorNameTag": "(安魂曲)显示附身者名称",
   "gamerule.requiem:showPossessorNameTag.description": "显示附身实体的玩家名称标签",
