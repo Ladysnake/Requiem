@@ -261,6 +261,6 @@ public class RiftScreen extends HandledScreen<RiftScreenHandler> {
 
     public void updateMatrices(MatrixStack modelViewStack, Matrix4f projectionMatrix) {
         this.projectionViewMatrix = projectionMatrix.copy();
-        this.projectionViewMatrix.multiply(modelViewStack.peek().getPosition());
+        this.projectionViewMatrix.multiply(modelViewStack.peek().getModel());
     }
 }
