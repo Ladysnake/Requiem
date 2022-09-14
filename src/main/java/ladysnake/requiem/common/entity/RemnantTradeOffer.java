@@ -41,6 +41,7 @@ import net.minecraft.village.TradeOffer;
 public class RemnantTradeOffer extends TradeOffer {
     private final TradeOffer vanillaOffer, demonOffer;
     private final boolean exorcism;
+    private boolean tempDisabled;
     boolean demonCustomer;
 
     public static RemnantTradeOffer fromNbt(NbtCompound compound) {
@@ -50,6 +51,7 @@ public class RemnantTradeOffer extends TradeOffer {
         RemnantTradeOffer offer = new RemnantTradeOffer(vanillaOffer, demonOffer, exorcism);
         // Need this specifically to sync trades in singleplayer
         if (compound.getBoolean("demon_customer")) offer.demonCustomer = true;
+        if (compound.getBoolean("temp_disabled")) offer.tempDisabled = true;
         return offer;
     }
 
@@ -155,7 +157,7 @@ public class RemnantTradeOffer extends TradeOffer {
 
     @Override
     public boolean isDisabled() {
-        return getDelegate().isDisabled();
+        return tempDisabled || getDelegate().isDisabled();
     }
 
     @Override
@@ -181,6 +183,7 @@ public class RemnantTradeOffer extends TradeOffer {
         whole.put("vanilla_offer", this.vanillaOffer.toNbt());
         whole.putBoolean("exorcism", this.exorcism);
         if (this.demonCustomer) whole.putBoolean("demon_customer", true);
+        if (this.tempDisabled) whole.putBoolean("temp_disabled", true);
         return whole;
     }
 
@@ -196,5 +199,9 @@ public class RemnantTradeOffer extends TradeOffer {
 
     public void setRemnant(boolean demon) {
         demonCustomer = demon;
+    }
+
+    public void setTempDisabled(boolean tempDisabled) {
+        this.tempDisabled = tempDisabled;
     }
 }

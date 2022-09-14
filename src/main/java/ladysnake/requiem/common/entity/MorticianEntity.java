@@ -385,6 +385,7 @@ public class MorticianEntity extends MerchantEntity implements Angerable {
         for (TradeOffer offer : this.getOffers()) {
             if (offer instanceof RemnantTradeOffer demonTradeOffer) {
                 demonTradeOffer.setRemnant(RemnantComponent.get(customer).getRemnantType().isDemon());
+                demonTradeOffer.setTempDisabled(RemnantComponent.isVagrant(customer));
             }
         }
     }
