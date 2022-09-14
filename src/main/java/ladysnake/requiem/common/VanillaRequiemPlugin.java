@@ -77,7 +77,22 @@ import ladysnake.requiem.common.enchantment.RequiemEnchantments;
 import ladysnake.requiem.common.entity.PlayerShellEntity;
 import ladysnake.requiem.common.entity.RequiemEntities;
 import ladysnake.requiem.common.entity.SkeletonBoneComponent;
-import ladysnake.requiem.common.entity.ability.*;
+import ladysnake.requiem.common.entity.ability.AxolotlPlayingDeadAbility;
+import ladysnake.requiem.common.entity.ability.BlazeFireballAbility;
+import ladysnake.requiem.common.entity.ability.BlinkAbility;
+import ladysnake.requiem.common.entity.ability.CreeperPrimingAbility;
+import ladysnake.requiem.common.entity.ability.EvokerFangAbility;
+import ladysnake.requiem.common.entity.ability.EvokerVexAbility;
+import ladysnake.requiem.common.entity.ability.EvokerWololoAbility;
+import ladysnake.requiem.common.entity.ability.FrogCatchAbility;
+import ladysnake.requiem.common.entity.ability.GhastFireballAbility;
+import ladysnake.requiem.common.entity.ability.GoatRamAbility;
+import ladysnake.requiem.common.entity.ability.GuardianBeamAbility;
+import ladysnake.requiem.common.entity.ability.PufferfishInflationAbility;
+import ladysnake.requiem.common.entity.ability.ShulkerPeekAbility;
+import ladysnake.requiem.common.entity.ability.ShulkerShootAbility;
+import ladysnake.requiem.common.entity.ability.VagrantPossessAbility;
+import ladysnake.requiem.common.entity.ability.WitherSkullAbility;
 import ladysnake.requiem.common.entity.effect.ReclamationStatusEffect;
 import ladysnake.requiem.common.entity.effect.RequiemStatusEffects;
 import ladysnake.requiem.common.gamerule.PossessionDetection;
@@ -268,7 +283,7 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
             if (newType == RemnantTypes.MORTAL) {
                 GameProfile bodyIdentity = Impersonator.get(player).getImpersonatedProfile(PlayerSplitter.BODY_IMPERSONATION);
                 if (bodyIdentity != null) {
-                    player.damage(new MortalDysmorphiaDamageSource(player.getDisplayName(), Text.literal(bodyIdentity.getName())), 100F);
+                    player.damage(new MortalDysmorphiaDamageSource(Text.literal(player.getGameProfile().getName()), Text.literal(bodyIdentity.getName())), 100F);
                 }
             }
         });

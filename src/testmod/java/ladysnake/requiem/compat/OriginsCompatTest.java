@@ -58,7 +58,7 @@ public class OriginsCompatTest implements FabricGameTest {
         Origin humanOrigin = OriginRegistry.get(new Identifier("origins:human"));
         originComponent.setOrigin(layer, humanOrigin);
         RemnantComponent.get(player).become(RemnantTypes.REMNANT);
-        Origin vagrantOrigin = OriginsCompat.getVagrantOrigin();
+        Origin vagrantOrigin = OriginRegistry.get(OriginsCompat.VAGRANT_ORIGIN_ID);
         GameTestUtil.assertTrue("Vagrant origin should exist", vagrantOrigin != null);
         GameTestUtil.assertTrue("Vagrant origin should be special", vagrantOrigin.isSpecial());
         GameTestUtil.assertTrue("Corporeal player should have human origin", originComponent.getOrigin(layer) == humanOrigin);

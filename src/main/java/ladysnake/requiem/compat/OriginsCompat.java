@@ -45,7 +45,7 @@ import io.github.apace100.apoli.registry.ApoliRegistries;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataType;
 import io.github.apace100.origins.component.OriginComponent;
-import io.github.apace100.origins.origin.Origin;
+import io.github.apace100.origins.integration.OriginDataLoadedCallback;
 import io.github.apace100.origins.origin.OriginLayer;
 import io.github.apace100.origins.origin.OriginLayers;
 import io.github.apace100.origins.origin.OriginRegistry;
@@ -63,7 +63,6 @@ import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
-import org.jetbrains.annotations.Nullable;
 import org.quiltmc.qsl.resource.loader.api.ResourceLoader;
 import org.quiltmc.qsl.resource.loader.api.reloader.SimpleSynchronousResourceReloader;
 
@@ -110,24 +109,18 @@ public final class OriginsCompat {
     public static final ComponentKey<ComponentDataHolder<PowerHolderComponent>> APOLI_HOLDER_KEY =
         ComponentRegistry.getOrCreate(Requiem.id("apoli_power_holder"), ((Class<ComponentDataHolder<PowerHolderComponent>>) (Class<?>) ComponentDataHolder.class));
 
-    private static final Identifier SOUL_TYPE_LAYER_ID = Requiem.id("soul_type");
-    private static final Identifier ORIGIN_MANAGER_RESOURCE_ID = new Identifier("origins", "origins");
-    private static @Nullable Origin vagrant;
-
-    public static @Nullable Origin getVagrantOrigin() {
-        return vagrant;
-    }
+    public static final Identifier SOUL_TYPE_LAYER_ID = Requiem.id("soul_type");
+    public static final Identifier ORIGIN_MANAGER_RESOURCE_ID = new Identifier("origins", "origins");
+    public static final Identifier VAGRANT_ORIGIN_ID = Requiem.id("vagrant");
 
     private static void applyVagrantOrigin(PlayerEntity player) {
-        if (vagrant != null) {
-            OriginComponent originComponent = ModComponents.ORIGIN.get(player);
-            for (OriginLayer originLayer : OriginLayers.getLayers()) {
-                if (originLayer.isEnabled() && !SOUL_TYPE_LAYER_ID.equals(originLayer.getIdentifier())) {
-                    originComponent.setOrigin(originLayer, vagrant);
-                }
+        OriginComponent originComponent = ModComponents.ORIGIN.get(player);
+        for (OriginLayer originLayer : OriginLayers.getLayers()) {
+            if (originLayer.isEnabled() && !SOUL_TYPE_LAYER_ID.equals(originLayer.getIdentifier())) {
+                originComponent.setOrigin(originLayer, OriginRegistry.get(VAGRANT_ORIGIN_ID));
             }
-            OriginComponent.sync(player);
         }
+        OriginComponent.sync(player);
     }
 
     @CalledThroughReflection
@@ -147,12 +140,14 @@ public final class OriginsCompat {
                 }
             }
         });
+        OriginDataLoadedCallback.EVENT.register(client -> {
+            // see Requiem#571 and calio#3, serverside ordering is wrong
+            if (client) OriginRegistry.get(VAGRANT_ORIGIN_ID).setSpecial();
+        });
         ResourceLoader.get(ResourceType.SERVER_DATA).registerReloader(new SimpleSynchronousResourceReloader() {
             @Override
             public void reload(ResourceManager manager) {
-                vagrant = OriginRegistry.get(Requiem.id("vagrant"));
-                if (vagrant == null) throw new IllegalStateException("Special vagrant origin not found");
-                vagrant.setSpecial();
+                OriginRegistry.get(VAGRANT_ORIGIN_ID).setSpecial();
             }
 
             @Override
