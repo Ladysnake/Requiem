@@ -39,6 +39,7 @@ import dev.onyxstudios.cca.api.v3.component.ComponentRegistry;
 import io.github.apace100.apoli.component.PowerHolderComponent;
 import io.github.apace100.apoli.data.ApoliDataTypes;
 import io.github.apace100.apoli.power.Active;
+import io.github.apace100.apoli.power.PowerType;
 import io.github.apace100.apoli.power.factory.PowerFactory;
 import io.github.apace100.apoli.power.factory.condition.ConditionFactory;
 import io.github.apace100.apoli.registry.ApoliRegistries;
@@ -46,6 +47,7 @@ import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataType;
 import io.github.apace100.origins.component.OriginComponent;
 import io.github.apace100.origins.integration.OriginDataLoadedCallback;
+import io.github.apace100.origins.origin.Origin;
 import io.github.apace100.origins.origin.OriginLayer;
 import io.github.apace100.origins.origin.OriginLayers;
 import io.github.apace100.origins.origin.OriginRegistry;
@@ -112,8 +114,19 @@ public final class OriginsCompat {
 
     private static void applyVagrantOrigin(PlayerEntity player) {
         OriginComponent originComponent = ModComponents.ORIGIN.get(player);
+
+        originSubstitution:
         for (OriginLayer originLayer : OriginLayers.getLayers()) {
             if (originLayer.isEnabled() && !SOUL_TYPE_LAYER_ID.equals(originLayer.getIdentifier())) {
+                Origin origin = originComponent.getOrigin(originLayer);
+
+                if (origin != null) {
+                    // Do not replace soul-affecting origins
+                    for (PowerType<?> powerType : origin.getPowerTypes()) {
+                        if (powerType.getFactory().getFactory() == REMNANT_POWER_FACTORY) continue originSubstitution;
+                    }
+                }
+
                 originComponent.setOrigin(originLayer, OriginRegistry.get(VAGRANT_ORIGIN_ID));
             }
         }

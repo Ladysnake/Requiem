@@ -1,6 +1,10 @@
 ------------------------------------------------------
 Version 2.0.0
 ------------------------------------------------------
+### Changes in Beta 15
+- Fixed remnant origins from the main Origins layer (e.g. Pandemonium's wandering spirit or Mischief's ratified) being replaced with the vagrant origin
+- Fixed inventory desync from special remnant types that trigger instant possession
+
 ### Changes in Beta 14
 - Updated to 1.19.2
 - Turning mortal while in another player's body is now strongly discouraged

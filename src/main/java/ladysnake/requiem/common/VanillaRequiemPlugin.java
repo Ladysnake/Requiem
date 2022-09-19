@@ -145,6 +145,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.Nonnull;
 import java.util.HashMap;
@@ -266,13 +267,15 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
         RemnantStateChangeCallback.EVENT.register((player, remnant, cause) -> {
             if (cause.isCharacterSwitch()) resetIdentity(player);
 
+            MobEntity possessed = PossessionComponent.getHost(player);
+
             if (!remnant.isVagrant()) {
                 PossessionComponent.get(player).stopPossessing(false);
                 InventoryLimiter.instance().disable(player);
             } else {
-                InventoryLimiter.instance().enable(player);
+                refreshInventoryLocks(player, possessed);
             }
-            MobEntity possessed = PossessionComponent.getHost(player);
+
             if (possessed != null) {
                 PlayerAbilityController.get(player).usePossessedAbilities(possessed);
             } else {
@@ -339,33 +342,15 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
             }
         }));
         PossessionStateChangeCallback.EVENT.register((player, possessed) -> {
-                InventoryLimiter inventoryLimiter = InventoryLimiter.instance();
-                if (!player.world.isClient) {
-                    inventoryLimiter.enable(player);
-                }
+                refreshInventoryLocks(player, possessed);
+
                 if (possessed == null) {
                     PlayerAbilityController.get(player).resetAbilities(RemnantComponent.isIncorporeal(player));
                 } else {
                     PlayerAbilityController.get(player).usePossessedAbilities(possessed);
-
-                    if (!player.world.isClient) {
-                        if (possessed.getType().isIn(RequiemCoreTags.Entity.INVENTORY_CARRIERS)) {
-                            inventoryLimiter.unlock(player, DefaultInventoryNodes.MAIN_INVENTORY);
-                        }
-                        if (canUseItems(possessed)) {
-                            inventoryLimiter.unlock(player, DefaultInventoryNodes.HANDS);
-                            inventoryLimiter.unlock(player, DefaultInventoryNodes.CRAFTING);
-                        }
-                        if (canWearArmor(possessed)) {
-                            inventoryLimiter.unlock(player, DefaultInventoryNodes.ARMOR);
-                            inventoryLimiter.unlock(player, ModdedInventoryNodes.TOOL_SPACE);
-                        }
-                        if (canCarryHotbar(possessed)) {
-                            inventoryLimiter.unlock(player, DefaultInventoryNodes.HOTBAR);
-                        }
-                        PossessedData.KEY.get(possessed).giftFirstPossessionLoot(player);
-                    }
+                    PossessedData.KEY.get(possessed).giftFirstPossessionLoot(player);
                 }
+
             }
         );
         EntitySleepEvents.ALLOW_SLEEPING.register((player, pos) -> {
@@ -390,6 +375,30 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
                 };
             };
         });
+    }
+
+    private void refreshInventoryLocks(PlayerEntity player, @Nullable MobEntity possessed) {
+        InventoryLimiter inventoryLimiter = InventoryLimiter.instance();
+        if (!player.world.isClient) {
+            inventoryLimiter.enable(player);
+
+            if (possessed != null) {
+                if (possessed.getType().isIn(RequiemCoreTags.Entity.INVENTORY_CARRIERS)) {
+                    inventoryLimiter.unlock(player, DefaultInventoryNodes.MAIN_INVENTORY);
+                }
+                if (canUseItems(possessed)) {
+                    inventoryLimiter.unlock(player, DefaultInventoryNodes.HANDS);
+                    inventoryLimiter.unlock(player, DefaultInventoryNodes.CRAFTING);
+                }
+                if (canWearArmor(possessed)) {
+                    inventoryLimiter.unlock(player, DefaultInventoryNodes.ARMOR);
+                    inventoryLimiter.unlock(player, ModdedInventoryNodes.TOOL_SPACE);
+                }
+                if (canCarryHotbar(possessed)) {
+                    inventoryLimiter.unlock(player, DefaultInventoryNodes.HOTBAR);
+                }
+            }
+        }
     }
 
     private static boolean canUseItems(MobEntity possessed) {
