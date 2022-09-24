@@ -38,52 +38,64 @@ import com.google.common.collect.ImmutableSet;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
-import ladysnake.requiem.common.entity.MorticianEntity;
+import ladysnake.requiem.api.v1.record.EntityPointer;
+import ladysnake.requiem.common.RequiemRecordTypes;
+import ladysnake.requiem.common.remnant.PlayerBodyTracker;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.condition.LootConditionType;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameter;
+import net.minecraft.loot.context.LootContextParameters;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.JsonSerializer;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Set;
 
-public class RiftMorticianLootCondition implements LootCondition {
+public class BoundShellLootCondition implements LootCondition {
     private final LootContext.EntityTarget entity;
-    private final boolean rift;
+    private final EntityRefPredicate predicate;
 
-    public RiftMorticianLootCondition(LootContext.EntityTarget entity, boolean rift) {
+    public BoundShellLootCondition(LootContext.EntityTarget entity, EntityRefPredicate predicate) {
         this.entity = entity;
-        this.rift = rift;
+        this.predicate = predicate;
     }
 
     @Override
     public LootConditionType getType() {
-        return RequiemLootTables.RIFT_MORTICIAN_CONDITION;
+        return RequiemLootTables.BOUND_SHELL_CONDITION;
     }
 
     @Override
     public Set<LootContextParameter<?>> getRequiredParameters() {
-        return ImmutableSet.of(this.entity.getParameter());
+        return ImmutableSet.of(LootContextParameters.ORIGIN, this.entity.getParameter());
     }
 
     @Override
     public boolean test(LootContext lootContext) {
-        return (lootContext.get(this.entity.getParameter()) instanceof MorticianEntity mortician && mortician.isObeliskProjection()) == rift;
+        if (!(lootContext.get(this.entity.getParameter()) instanceof ServerPlayerEntity player)) return false;
+
+        @Nullable EntityPointer shellPointer = PlayerBodyTracker.get(player)
+            .getAnchor()
+            .flatMap(record -> record.get(RequiemRecordTypes.ENTITY_REF))
+            .orElse(null);
+
+        return this.predicate.test(lootContext.getWorld(), lootContext.get(LootContextParameters.ORIGIN), shellPointer);
     }
 
-    public static class Serializer implements JsonSerializer<RiftMorticianLootCondition> {
+    public static class Serializer implements JsonSerializer<BoundShellLootCondition> {
         @Override
-        public void toJson(JsonObject jsonObject, RiftMorticianLootCondition condition, JsonSerializationContext ctx) {
+        public void toJson(JsonObject jsonObject, BoundShellLootCondition condition, JsonSerializationContext ctx) {
             jsonObject.add("entity", ctx.serialize(condition.entity));
-            jsonObject.addProperty("rift", condition.rift);
+            jsonObject.add("predicate", condition.predicate.toJson());
         }
 
         @Override
-        public RiftMorticianLootCondition fromJson(JsonObject jsonObject, JsonDeserializationContext ctx) {
-            return new RiftMorticianLootCondition(
+        public BoundShellLootCondition fromJson(JsonObject jsonObject, JsonDeserializationContext ctx) {
+            return new BoundShellLootCondition(
                 JsonHelper.deserialize(jsonObject, "entity", ctx, LootContext.EntityTarget.class),
-                JsonHelper.getBoolean(jsonObject, "rift", true)
+                EntityRefPredicate.fromJson(jsonObject.get("predicate"))
             );
         }
     }

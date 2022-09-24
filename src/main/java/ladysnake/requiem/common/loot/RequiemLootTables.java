@@ -62,6 +62,8 @@ public final class RequiemLootTables {
         builder -> builder.require(LootContextParameters.THIS_ENTITY).require(LootContextParameters.ORIGIN)
     );
     public static final LootConditionType RIFT_MORTICIAN_CONDITION = new LootConditionType(new RiftMorticianLootCondition.Serializer());
+    public static final LootConditionType BOUND_SHELL_CONDITION = new LootConditionType(new BoundShellLootCondition.Serializer());
+    public static final LootConditionType HOST_CONDITION = new LootConditionType(new HostLootCondition.Serializer());
 
     private static final Pattern NETHER_CHEST = Pattern.compile("chests/.*nether.*");
     /** The chance that a nether chest gets a Humanity enchanted book */
@@ -71,6 +73,8 @@ public final class RequiemLootTables {
 
     public static void init() {
         Registry.register(Registry.LOOT_CONDITION_TYPE, Requiem.id("rift_mortician"), RIFT_MORTICIAN_CONDITION);
+        Registry.register(Registry.LOOT_CONDITION_TYPE, Requiem.id("bound_shell"), BOUND_SHELL_CONDITION);
+        Registry.register(Registry.LOOT_CONDITION_TYPE, Requiem.id("host"), HOST_CONDITION);
 
         LootTableEvents.MODIFY.register((resourceManager, lootManager, identifier, fabricLootSupplierBuilder, lootTableSetter) -> {
             if (NETHER_CHEST.matcher(identifier.getPath()).matches()) {

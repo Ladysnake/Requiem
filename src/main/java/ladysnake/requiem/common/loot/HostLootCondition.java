@@ -38,52 +38,59 @@ import com.google.common.collect.ImmutableSet;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
-import ladysnake.requiem.common.entity.MorticianEntity;
+import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.condition.LootConditionType;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameter;
+import net.minecraft.loot.context.LootContextParameters;
+import net.minecraft.predicate.entity.EntityPredicate;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.JsonSerializer;
 
 import java.util.Set;
 
-public class RiftMorticianLootCondition implements LootCondition {
+public class HostLootCondition implements LootCondition {
     private final LootContext.EntityTarget entity;
-    private final boolean rift;
+    private final EntityPredicate predicate;
 
-    public RiftMorticianLootCondition(LootContext.EntityTarget entity, boolean rift) {
+    public HostLootCondition(LootContext.EntityTarget entity, EntityPredicate predicate) {
         this.entity = entity;
-        this.rift = rift;
+        this.predicate = predicate;
     }
 
     @Override
     public LootConditionType getType() {
-        return RequiemLootTables.RIFT_MORTICIAN_CONDITION;
+        return RequiemLootTables.HOST_CONDITION;
     }
 
     @Override
     public Set<LootContextParameter<?>> getRequiredParameters() {
-        return ImmutableSet.of(this.entity.getParameter());
+        return ImmutableSet.of(LootContextParameters.ORIGIN, this.entity.getParameter());
     }
 
     @Override
     public boolean test(LootContext lootContext) {
-        return (lootContext.get(this.entity.getParameter()) instanceof MorticianEntity mortician && mortician.isObeliskProjection()) == rift;
+        return lootContext.get(this.entity.getParameter()) instanceof ServerPlayerEntity player && predicate.test(
+            lootContext.getWorld(),
+            lootContext.get(LootContextParameters.ORIGIN),
+            PossessionComponent.getHost(player)
+        );
     }
 
-    public static class Serializer implements JsonSerializer<RiftMorticianLootCondition> {
+    public static class Serializer implements JsonSerializer<HostLootCondition> {
         @Override
-        public void toJson(JsonObject jsonObject, RiftMorticianLootCondition condition, JsonSerializationContext ctx) {
+        public void toJson(JsonObject jsonObject, HostLootCondition condition, JsonSerializationContext ctx) {
             jsonObject.add("entity", ctx.serialize(condition.entity));
-            jsonObject.addProperty("rift", condition.rift);
+            jsonObject.add("predicate", condition.predicate.toJson());
         }
 
         @Override
-        public RiftMorticianLootCondition fromJson(JsonObject jsonObject, JsonDeserializationContext ctx) {
-            return new RiftMorticianLootCondition(
+        public HostLootCondition fromJson(JsonObject jsonObject, JsonDeserializationContext ctx) {
+            return new HostLootCondition(
                 JsonHelper.deserialize(jsonObject, "entity", ctx, LootContext.EntityTarget.class),
-                JsonHelper.getBoolean(jsonObject, "rift", true)
+                EntityPredicate.fromJson(jsonObject.get("predicate"))
             );
         }
     }
