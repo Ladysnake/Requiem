@@ -68,7 +68,7 @@ public abstract class LocationPredicateMixin {
         if (cir.getReturnValueZ() && this.requiem$biomeTag != null) {
             BlockPos blockPos = new BlockPos(x, y, z);
 
-            if (!world.getBiome(blockPos).isIn(this.requiem$biomeTag)) {
+            if (!(world.canSetBlock(blockPos) && world.getBiome(blockPos).isIn(this.requiem$biomeTag))) {
                 cir.setReturnValue(false);
             }
         }
