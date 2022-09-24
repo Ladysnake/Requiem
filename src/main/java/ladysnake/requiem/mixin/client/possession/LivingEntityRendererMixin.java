@@ -52,7 +52,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import javax.annotation.Nullable;
 import java.util.Objects;
 
-@Mixin(LivingEntityRenderer.class)
+@Mixin(value = LivingEntityRenderer.class, priority = 1200)
 public abstract class LivingEntityRendererMixin {
 
     @Nullable
