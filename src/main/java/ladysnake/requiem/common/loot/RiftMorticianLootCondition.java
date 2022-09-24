@@ -50,11 +50,9 @@ import java.util.Set;
 
 public class RiftMorticianLootCondition implements LootCondition {
     private final LootContext.EntityTarget entity;
-    private final boolean rift;
 
-    public RiftMorticianLootCondition(LootContext.EntityTarget entity, boolean rift) {
+    public RiftMorticianLootCondition(LootContext.EntityTarget entity) {
         this.entity = entity;
-        this.rift = rift;
     }
 
     @Override
@@ -69,21 +67,19 @@ public class RiftMorticianLootCondition implements LootCondition {
 
     @Override
     public boolean test(LootContext lootContext) {
-        return (lootContext.get(this.entity.getParameter()) instanceof MorticianEntity mortician && mortician.isObeliskProjection()) == rift;
+        return lootContext.get(this.entity.getParameter()) instanceof MorticianEntity mortician && mortician.isObeliskProjection();
     }
 
     public static class Serializer implements JsonSerializer<RiftMorticianLootCondition> {
         @Override
         public void toJson(JsonObject jsonObject, RiftMorticianLootCondition condition, JsonSerializationContext ctx) {
             jsonObject.add("entity", ctx.serialize(condition.entity));
-            jsonObject.addProperty("rift", condition.rift);
         }
 
         @Override
         public RiftMorticianLootCondition fromJson(JsonObject jsonObject, JsonDeserializationContext ctx) {
             return new RiftMorticianLootCondition(
-                JsonHelper.deserialize(jsonObject, "entity", ctx, LootContext.EntityTarget.class),
-                JsonHelper.getBoolean(jsonObject, "rift", true)
+                JsonHelper.deserialize(jsonObject, "entity", ctx, LootContext.EntityTarget.class)
             );
         }
     }

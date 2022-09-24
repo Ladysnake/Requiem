@@ -61,9 +61,9 @@ public final class RequiemLootTables {
         "requiem:possession",
         builder -> builder.require(LootContextParameters.THIS_ENTITY).require(LootContextParameters.ORIGIN)
     );
-    public static final LootConditionType RIFT_MORTICIAN_CONDITION = new LootConditionType(new RiftMorticianLootCondition.Serializer());
     public static final LootConditionType BOUND_SHELL_CONDITION = new LootConditionType(new BoundShellLootCondition.Serializer());
     public static final LootConditionType HOST_CONDITION = new LootConditionType(new HostLootCondition.Serializer());
+    public static final LootConditionType RIFT_MORTICIAN_CONDITION = new LootConditionType(new RiftMorticianLootCondition.Serializer());
 
     private static final Pattern NETHER_CHEST = Pattern.compile("chests/.*nether.*");
     /** The chance that a nether chest gets a Humanity enchanted book */

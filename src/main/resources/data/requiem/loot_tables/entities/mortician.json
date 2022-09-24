@@ -2,7 +2,7 @@
   "type": "minecraft:entity",
   "pools": [
     {
-      "rolls": 1.0,
+      "rolls": 1,
       "bonus_rolls": 0.0,
       "entries": [
         {
@@ -15,9 +15,11 @@
           "condition": "minecraft:killed_by_player"
         },
         {
-          "condition": "requiem:rift_mortician",
-          "rift": false,
-          "entity": "this"
+          "condition": "inverted",
+          "term": {
+            "condition": "requiem:rift_mortician",
+            "entity": "this"
+          }
         }
       ]
     }
