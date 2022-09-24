@@ -348,7 +348,10 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
                     PlayerAbilityController.get(player).resetAbilities(RemnantComponent.isIncorporeal(player));
                 } else {
                     PlayerAbilityController.get(player).usePossessedAbilities(possessed);
-                    PossessedData.KEY.get(possessed).giftFirstPossessionLoot(player);
+
+                    if (!possessed.world.isClient) {
+                        PossessedData.KEY.get(possessed).giftFirstPossessionLoot(player);
+                    }
                 }
 
             }
