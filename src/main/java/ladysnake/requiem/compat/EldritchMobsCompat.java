@@ -38,6 +38,7 @@ import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.annotation.CalledThroughReflection;
 import ladysnake.requiem.api.v1.event.requiem.PossessionStartCallback;
 import net.hyper_pigeon.eldritch_mobs.EldritchMobsMod;
+import net.hyper_pigeon.eldritch_mobs.rank.MobRank;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.text.Text;
@@ -50,7 +51,8 @@ public final class EldritchMobsCompat implements PossessionStartCallback {
 
     @Override
     public Result onPossessionAttempted(MobEntity target, PlayerEntity possessor, boolean simulate) {
-        if (EldritchMobsMod.isEldritch(target.asComponentProvider()) || EldritchMobsMod.isElite(target.asComponentProvider()) || EldritchMobsMod.isUltra(target.asComponentProvider())) {
+        MobRank rank = EldritchMobsMod.getRank(target.asComponentProvider());
+        if (rank != MobRank.UNDECIDED && rank != MobRank.NONE) {
             if (!possessor.world.isClient) possessor.sendMessage(Text.translatable("requiem:possess.incompatible_body"), true);
             return Result.DENY;
         }
