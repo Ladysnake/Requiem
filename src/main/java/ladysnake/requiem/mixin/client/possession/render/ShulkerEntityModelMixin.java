@@ -35,6 +35,7 @@
 package ladysnake.requiem.mixin.client.possession.render;
 
 import ladysnake.requiem.api.v1.possession.Possessable;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.entity.model.ShulkerEntityModel;
 import net.minecraft.entity.mob.ShulkerEntity;
@@ -56,11 +57,12 @@ public abstract class ShulkerEntityModelMixin {
 
     @Inject(method = "setAngles", at = @At("RETURN"))
     private void removeNerdFace(ShulkerEntity shulkerEntity, float f, float g, float h, float i, float j, CallbackInfo ci) {
-        if (((Possessable)shulkerEntity).isBeingPossessed()) {
+        if (((Possessable)shulkerEntity).isBeingPossessed() && MinecraftClient.getInstance().options.getPerspective().isFirstPerson()) {
             this.head.visible = false;
             this.disabledNerdFace = true;
         } else if (disabledNerdFace) {  // probably slightly incompatible, but who's going to do the same thing ?!
             this.head.visible = true;
+            this.disabledNerdFace = false;
         }
     }
 }

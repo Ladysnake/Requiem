@@ -252,8 +252,9 @@ public abstract class PossessableLivingEntityMixin extends Entity implements Pos
         // If anyone has a better idea for immovable mobs, tell me
         if (player != null) {
             this.setRotation(player.getYaw(), player.getPitch());
-            this.headYaw = this.bodyYaw = this.prevYaw = this.getYaw();
+            this.headYaw = this.prevYaw = this.getYaw();
             if (!this.requiem_immovable) {
+                this.bodyYaw = this.headYaw;
                 this.setSwimming(player.isSwimming());
                 // Prevent this entity from taking fall damage unless triggered by the possessor
                 this.fallDistance = 0;
