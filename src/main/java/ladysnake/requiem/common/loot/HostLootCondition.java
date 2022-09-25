@@ -38,24 +38,27 @@ import com.google.common.collect.ImmutableSet;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
+import ladysnake.requiem.api.v1.possession.Possessable;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.condition.LootConditionType;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameter;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.predicate.entity.EntityPredicate;
-import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.JsonSerializer;
 
 import java.util.Set;
 
 public class HostLootCondition implements LootCondition {
+    private final CheckedEntity checkedEntity;
     private final LootContext.EntityTarget entity;
     private final EntityPredicate predicate;
 
-    public HostLootCondition(LootContext.EntityTarget entity, EntityPredicate predicate) {
+    public HostLootCondition(CheckedEntity checkedEntity, LootContext.EntityTarget entity, EntityPredicate predicate) {
+        this.checkedEntity = checkedEntity;
         this.entity = entity;
         this.predicate = predicate;
     }
@@ -72,14 +75,23 @@ public class HostLootCondition implements LootCondition {
 
     @Override
     public boolean test(LootContext lootContext) {
-        return lootContext.get(this.entity.getParameter()) instanceof ServerPlayerEntity player && predicate.test(
+        return lootContext.get(this.entity.getParameter()) instanceof LivingEntity e && predicate.test(
             lootContext.getWorld(),
             lootContext.get(LootContextParameters.ORIGIN),
-            PossessionComponent.getHost(player)
+            switch (checkedEntity) {
+                case HOST -> PossessionComponent.getHost(e);
+                case POSSESSOR -> ((Possessable) e).getPossessor();
+            }
         );
     }
 
     public static class Serializer implements JsonSerializer<HostLootCondition> {
+        private final CheckedEntity checkedEntity;
+
+        public Serializer(CheckedEntity checkedEntity) {
+            this.checkedEntity = checkedEntity;
+        }
+
         @Override
         public void toJson(JsonObject jsonObject, HostLootCondition condition, JsonSerializationContext ctx) {
             jsonObject.add("entity", ctx.serialize(condition.entity));
@@ -89,9 +101,14 @@ public class HostLootCondition implements LootCondition {
         @Override
         public HostLootCondition fromJson(JsonObject jsonObject, JsonDeserializationContext ctx) {
             return new HostLootCondition(
+                checkedEntity,
                 JsonHelper.deserialize(jsonObject, "entity", ctx, LootContext.EntityTarget.class),
                 EntityPredicate.fromJson(jsonObject.get("predicate"))
             );
         }
+    }
+
+    public enum CheckedEntity {
+        HOST, POSSESSOR
     }
 }

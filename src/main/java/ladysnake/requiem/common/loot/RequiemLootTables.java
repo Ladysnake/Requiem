@@ -62,7 +62,8 @@ public final class RequiemLootTables {
         builder -> builder.require(LootContextParameters.THIS_ENTITY).require(LootContextParameters.ORIGIN)
     );
     public static final LootConditionType BOUND_SHELL_CONDITION = new LootConditionType(new BoundShellLootCondition.Serializer());
-    public static final LootConditionType HOST_CONDITION = new LootConditionType(new HostLootCondition.Serializer());
+    public static final LootConditionType HOST_CONDITION = new LootConditionType(new HostLootCondition.Serializer(HostLootCondition.CheckedEntity.HOST));
+    public static final LootConditionType POSSESSOR_CONDITION = new LootConditionType(new HostLootCondition.Serializer(HostLootCondition.CheckedEntity.POSSESSOR));
     public static final LootConditionType RIFT_MORTICIAN_CONDITION = new LootConditionType(new RiftMorticianLootCondition.Serializer());
 
     private static final Pattern NETHER_CHEST = Pattern.compile("chests/.*nether.*");
@@ -75,6 +76,7 @@ public final class RequiemLootTables {
         Registry.register(Registry.LOOT_CONDITION_TYPE, Requiem.id("rift_mortician"), RIFT_MORTICIAN_CONDITION);
         Registry.register(Registry.LOOT_CONDITION_TYPE, Requiem.id("bound_shell"), BOUND_SHELL_CONDITION);
         Registry.register(Registry.LOOT_CONDITION_TYPE, Requiem.id("host"), HOST_CONDITION);
+        Registry.register(Registry.LOOT_CONDITION_TYPE, Requiem.id("possessor"), POSSESSOR_CONDITION);
 
         LootTableEvents.MODIFY.register((resourceManager, lootManager, identifier, fabricLootSupplierBuilder, lootTableSetter) -> {
             if (NETHER_CHEST.matcher(identifier.getPath()).matches()) {
