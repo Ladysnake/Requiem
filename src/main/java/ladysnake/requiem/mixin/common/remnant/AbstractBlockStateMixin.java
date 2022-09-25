@@ -34,20 +34,25 @@
  */
 package ladysnake.requiem.mixin.common.remnant;
 
+import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.common.tag.RequiemBlockTags;
 import ladysnake.requiem.common.util.ExtendedShapeContext;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.ShapeContext;
+import net.minecraft.entity.Entity;
+import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.TagKey;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
+import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(AbstractBlock.AbstractBlockState.class)
@@ -66,6 +71,13 @@ public abstract class AbstractBlockStateMixin {
     private void phaseThroughBlocks(BlockView world, BlockPos pos, ShapeContext context, CallbackInfoReturnable<VoxelShape> info) {
         if (((ExtendedShapeContext) context).requiem_isNoClipping() && !this.isIn(RequiemBlockTags.SOUL_IMPERMEABLE)) {
             info.setReturnValue(VoxelShapes.empty());
+        }
+    }
+
+    @Inject(method = "onEntityCollision", at = @At("HEAD"), cancellable = true)
+    private void preventBlockCollisionEffects(World world, BlockPos pos, Entity entity, CallbackInfo ci) {
+        if (RemnantComponent.isIncorporeal(entity) && !this.isIn(BlockTags.PORTALS)) {
+            ci.cancel();
         }
     }
 }
