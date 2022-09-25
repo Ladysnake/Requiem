@@ -2,8 +2,12 @@
 Version 2.0.0
 ------------------------------------------------------
 ### Changes in Beta 15
+- Added [3 new loot conditions](https://ladysnake.github.io/wiki/requiem/configuration#loot-table-conditions) and [3 new predicates](https://ladysnake.github.io/wiki/requiem/commands#predicates) for use in commands and datapacks
+- Big dripleafs no longer detect vagrant players
+- Fixed Eldritch Mobs compatibility
 - Fixed remnant origins from the main Origins layer (e.g. Pandemonium's wandering spirit or Mischief's ratified) being replaced with the vagrant origin
 - Fixed inventory desync from special remnant types that trigger instant possession
+- Fixed requiem's biome extension to loot table location predicates being able to load chunks
 
 ### Changes in Beta 14
 - Updated to 1.19.2
