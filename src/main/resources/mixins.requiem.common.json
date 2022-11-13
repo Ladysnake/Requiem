@@ -36,6 +36,7 @@
     "inventory.SlotMixin",
     "inventory.balance.EntityPredicatesEquipableMixin",
     "opus.LecternBlockEntityMixin",
+    "possession.PlayerManagerMixin",
     "possession.gameplay.AbstractPiglinEntityMixin",
     "possession.gameplay.BlockItemMixin",
     "possession.gameplay.BowItemMixin",

@@ -37,6 +37,7 @@ package ladysnake.requiemtest;
 import com.mojang.authlib.GameProfile;
 import io.github.ladysnake.elmendorf.GameTestUtil;
 import ladysnake.requiem.api.v1.event.requiem.PlayerShellEvents;
+import ladysnake.requiem.api.v1.record.GlobalRecord;
 import ladysnake.requiem.api.v1.remnant.PlayerSplitResult;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.common.entity.PlayerShellEntity;
@@ -45,6 +46,7 @@ import ladysnake.requiem.common.gamerule.PossessionKeepInventory;
 import ladysnake.requiem.common.gamerule.RequiemGamerules;
 import ladysnake.requiem.common.network.RequiemNetworking;
 import ladysnake.requiem.common.remnant.RemnantTypes;
+import ladysnake.requiem.core.record.EntityPositionClerk;
 import net.fabricmc.fabric.api.gametest.v1.FabricGameTest;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityType;
@@ -60,6 +62,7 @@ import net.minecraft.test.TestContext;
 import net.minecraft.util.Hand;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Objects;
 import java.util.UUID;
 
 public class PlayerShellsTests implements FabricGameTest {
@@ -191,6 +194,24 @@ public class PlayerShellsTests implements FabricGameTest {
         player.kill();
         player.networkHandler.onClientStatus(new ClientStatusC2SPacket(ClientStatusC2SPacket.Mode.PERFORM_RESPAWN));
         GameTestUtil.assertTrue("Dying should trigger an identity reset", listener.countResets() == 1);
+        ctx.complete();
+    }
+
+    @GameTest(structureName = EMPTY_STRUCTURE)
+    public void splittingAndMergingTransfersTrackedRecord(TestContext ctx) {
+        ServerPlayerEntity player = ctx.spawnServerPlayer(2, 0, 2);
+        GlobalRecord record = EntityPositionClerk.get(player).getOrCreateRecord();
+        RemnantComponent.get(player).become(RemnantTypes.REMNANT);
+        PlayerSplitResult result = RemnantComponent.get(player).splitPlayer(true).orElseThrow();
+        GameTestUtil.assertTrue("Splitting should transfer tracked records to the shell", Objects.equals(
+            EntityPositionClerk.get(result.shell()).getRecord().orElse(null),
+            record
+        ));
+        RemnantComponent.get(result.soul()).merge(result.shell());
+        GameTestUtil.assertTrue("Merging should transfer tracked records to the merged player", Objects.equals(
+            EntityPositionClerk.get(result.soul()).getRecord().orElse(null),
+            record
+        ));
         ctx.complete();
     }
 }

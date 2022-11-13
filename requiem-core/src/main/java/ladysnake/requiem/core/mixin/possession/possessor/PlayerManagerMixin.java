@@ -86,13 +86,13 @@ public abstract class PlayerManagerMixin {
             );
             if (possessedEntityMount != null) {
                 UUID possessedEntityUuid = serializedPossessedInfo.getUuid(POSSESSED_UUID_TAG);
-                resumePossession(PossessionComponent.get(player), world, possessedEntityMount, possessedEntityUuid);
+                resumePossession(PossessionComponent.get(player), possessedEntityMount, possessedEntityUuid);
             }
         }
         return serializedPlayer;
     }
 
-    private void resumePossession(PossessionComponent player, ServerWorld world, Entity possessedEntityMount, UUID possessedEntityUuid) {
+    private void resumePossession(PossessionComponent player, Entity possessedEntityMount, UUID possessedEntityUuid) {
         if (possessedEntityMount instanceof MobEntity && possessedEntityMount.getUuid().equals(possessedEntityUuid)) {
             player.startPossessing((MobEntity) possessedEntityMount);
         } else {
@@ -115,14 +115,13 @@ public abstract class PlayerManagerMixin {
             at = @At(
                     value = "INVOKE",
                     target = "Lnet/minecraft/server/PlayerManager;savePlayerData(Lnet/minecraft/server/network/ServerPlayerEntity;)V",
-                    shift = AFTER,
-                    ordinal = 0
-            )
+                    shift = AFTER
+            ),
+        allow = 1
     )
     private void logOutPossessedEntity(ServerPlayerEntity player, CallbackInfo info) {
         Entity possessedEntity = PossessionComponent.get(player).getHost();
         if (possessedEntity != null) {
-            ServerWorld world = player.getWorld();
             possessedEntity.streamPassengersAndSelf().forEach(e -> e.setRemoved(Entity.RemovalReason.UNLOADED_WITH_PLAYER));
         }
     }

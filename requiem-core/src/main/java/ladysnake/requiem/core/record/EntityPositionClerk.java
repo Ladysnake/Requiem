@@ -52,6 +52,7 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
+import java.util.UUID;
 
 /**
  * Maintains a {@link GlobalRecord} describing an entity, allowing it to be referenced across dimensions
@@ -69,27 +70,35 @@ public final class EntityPositionClerk implements ServerTickingComponent {
 
     private final RecordType<EntityPointer> pointerType;
     private final LivingEntity entity;
-    private @Nullable GlobalRecord record;
+    private final GlobalRecordKeeper recordKeeper;
+    private @Nullable UUID recordId;
 
     public EntityPositionClerk(RecordType<EntityPointer> pointerType, LivingEntity entity) {
         this.pointerType = pointerType;
         this.entity = entity;
+        this.recordKeeper = GlobalRecordKeeper.get(entity.world);
     }
 
     public Optional<GlobalRecord> getRecord() {
-        return Optional.ofNullable(this.record);
+        if (this.recordId == null) return Optional.empty();
+        return this.recordKeeper.getRecord(this.recordId);
     }
 
     public GlobalRecord getOrCreateRecord() {
-        if (this.record == null) {
-            this.linkWith(GlobalRecordKeeper.get(this.entity.getWorld()).createRecord());
+        Optional<GlobalRecord> existingRecord = this.getRecord();
+
+        if (existingRecord.isPresent()) {
+            return existingRecord.get();
         }
-        return this.record;
+
+        GlobalRecord newRecord = GlobalRecordKeeper.get(this.entity.getWorld()).createRecord();
+        this.linkWith(newRecord);
+        return newRecord;
     }
 
     @ApiStatus.Internal
     public void linkWith(GlobalRecord record) {
-        this.record = record;
+        this.recordId = record.getUuid();
         this.updateRecord(record);
     }
 
@@ -98,33 +107,33 @@ public final class EntityPositionClerk implements ServerTickingComponent {
      */
     @ApiStatus.Internal
     public void unlink() {
-        if (this.record != null) {
-            this.record.remove(this.pointerType);
-            this.record = null;
-        }
+        this.getRecord().ifPresent(globalRecord -> globalRecord.remove(this.pointerType));
+        this.recordId = null;
     }
 
     @ApiStatus.Internal
     public static void transferRecord(LivingEntity from, LivingEntity to) {
         EntityPositionClerk original = get(from);
-        GlobalRecord record = original.record;
+        Optional<GlobalRecord> record = original.getRecord();
 
-        if (record != null) {
+        if (record.isPresent()) {
             original.unlink();
-            get(to).linkWith(record);
+            get(to).linkWith(record.get());
         }
     }
 
     public void destroy() {
-        if (this.record != null) {
-            this.record.invalidate();
-        }
+        this.getRecord().ifPresent(GlobalRecord::invalidate);
     }
 
     @Override
     public void serverTick() {
-        if (this.record != null) {
-            this.updateRecord(this.record);
+        Optional<GlobalRecord> record = this.getRecord();
+
+        if (record.isPresent()) {
+            this.updateRecord(record.get());
+        } else {
+            this.recordId = null;
         }
     }
 
@@ -142,29 +151,25 @@ public final class EntityPositionClerk implements ServerTickingComponent {
         }
     }
 
-    private GlobalRecordKeeper getTracker() {
-        return GlobalRecordKeeper.get(entity.getWorld());
-    }
-
     @Override
     public void readFromNbt(NbtCompound tag) {
         if (tag.containsUuid("record")) {
-            this.getTracker().getRecord(tag.getUuid("record")).ifPresent(this::linkWith);
+            this.recordKeeper.getRecord(tag.getUuid("record")).ifPresent(this::linkWith);
         } else if (tag.getType("refs") == NbtElement.LIST_TYPE) {
             // Pre 2.0.0-beta.14 backward compatibility
             NbtList refs = tag.getList("refs", NbtElement.COMPOUND_TYPE);
 
             if (!refs.isEmpty()) {
                 NbtCompound refNbt = refs.getCompound(0);
-                this.getTracker().getRecord(refNbt.getUuid("uuid")).ifPresent(this::linkWith);
+                this.recordKeeper.getRecord(refNbt.getUuid("uuid")).ifPresent(this::linkWith);
             }
         }
     }
 
     @Override
     public void writeToNbt(NbtCompound tag) {
-        if (this.record != null) {
-            tag.putUuid("record", this.record.getUuid());
+        if (this.recordId != null) {
+            tag.putUuid("record", this.recordId);
         }
     }
 }

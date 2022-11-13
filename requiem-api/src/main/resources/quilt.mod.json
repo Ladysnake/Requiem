@@ -59,6 +59,7 @@
     "requiem:body_tracker",
     "requiem:soul_holder",
     "requiem:charged_jump",
-    "requiem:rift_tracker"
+    "requiem:rift_tracker",
+    "requiem:dropped_vessel_tracker"
   ]
 }

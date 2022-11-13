@@ -51,6 +51,8 @@ public class RequiemGamerules {
         register("possessionKeepInventory", GameRuleFactory.createEnumRule(PossessionKeepInventory.NEVER), GameRules.Category.PLAYER);
     public static final GameRules.Key<EnumRule<PossessionDetection>> POSSESSION_DETECTION =
         register("possessionDetection", GameRuleFactory.createEnumRule(PossessionDetection.NORMAL), GameRules.Category.MOBS);
+    public static final GameRules.Key<GameRules.BooleanRule> DROP_VESSEL_ON_DISCONNECT =
+        register("dropVesselOnDisconnect", GameRuleFactory.createBooleanRule(false), GameRules.Category.PLAYER);
 
     public static void init() {
         // static init

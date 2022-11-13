@@ -62,6 +62,7 @@ import ladysnake.requiem.common.entity.effect.StatusEffectReapplicatorImpl;
 import ladysnake.requiem.common.gamerule.RequiemSyncedGamerules;
 import ladysnake.requiem.common.possession.LootingPossessedData;
 import ladysnake.requiem.common.possession.jump.DummyHorseJumpingMount;
+import ladysnake.requiem.common.remnant.DroppedVesselTracker;
 import ladysnake.requiem.common.remnant.GlobalAttritionFocus;
 import ladysnake.requiem.common.remnant.PlayerBodyTracker;
 import ladysnake.requiem.common.remnant.PlayerRiftTracker;
@@ -107,7 +108,7 @@ public final class RequiemComponents implements EntityComponentInitializer, Scor
         registry.registerFor(ZombieVillagerEntity.class, CurableEntityComponent.KEY, DelegatingCurableEntityComponent::new);
         registry.registerFor(ZombifiedPiglinEntity.class, CurableEntityComponent.KEY, CurableZombifiedPiglinComponent::new);
         registry.registerFor(LivingEntity.class, EntityAiToggle.KEY, EntityAiToggle::new);
-        registry.registerFor(LivingEntity.class, EntityPositionClerk.KEY, entity -> new EntityPositionClerk(RequiemRecordTypes.ENTITY_REF, entity));
+        registry.beginRegistration(LivingEntity.class, EntityPositionClerk.KEY).respawnStrategy(RespawnCopyStrategy.LOSSLESS_ONLY).end(entity -> new EntityPositionClerk(RequiemRecordTypes.ENTITY_REF, entity));
         registry.registerForPlayers(PlayerBodyTracker.KEY, PlayerBodyTracker::new, RespawnCopyStrategy.ALWAYS_COPY);
         registry.registerForPlayers(PenanceComponent.KEY, PenanceComponent::new, RespawnCopyStrategy.LOSSLESS_ONLY);
         registry.registerFor(LivingEntity.class, SoulHolderComponent.KEY, SoulHolderComponent::new);
@@ -115,6 +116,7 @@ public final class RequiemComponents implements EntityComponentInitializer, Scor
         registry.registerFor(GoatEntity.class, ExternalJumpingMount.KEY, ExternalJumpingMount.simple(1F, SoundEvents.ENTITY_GOAT_STEP));
         registry.registerFor(HorseBaseEntity.class, ExternalJumpingMount.KEY, e -> new DummyHorseJumpingMount(e, SoundEvents.ENTITY_HORSE_STEP));
         registry.registerForPlayers(RiftTracker.KEY, PlayerRiftTracker::new, RespawnCopyStrategy.ALWAYS_COPY);
+        registry.registerForPlayers(DroppedVesselTracker.KEY, DroppedVesselTracker::new, RespawnCopyStrategy.LOSSLESS_ONLY);
     }
 
     @Override

@@ -170,16 +170,16 @@ public final class RemnantComponentImpl implements RemnantComponent {
     }
 
     @Override
-    public boolean canSplitPlayer(boolean forced) {
+    public boolean canSplitPlayer(boolean ignoreGameConditions) {
         return !this.player.isRemoved()
-            && this.state.canSplit(forced)
+            && this.state.canSplit(ignoreGameConditions)
             && !this.isVagrant()
-            && (forced || PlayerShellEvents.PRE_SPLIT.invoker().canSplit(this.player));
+            && (ignoreGameConditions || PlayerShellEvents.PRE_SPLIT.invoker().canSplit(this.player));
     }
 
     @Override
-    public Optional<PlayerSplitResult> splitPlayer(boolean forced) {
-        if (this.player instanceof ServerPlayerEntity sp && this.canSplitPlayer(forced)) {
+    public Optional<PlayerSplitResult> splitPlayer(boolean ignoreGameConditions) {
+        if (this.player instanceof ServerPlayerEntity sp && this.canSplitPlayer(ignoreGameConditions)) {
             try {
                 this.splitting = true;
                 return Optional.of(PlayerSplitter.doSplit(sp));

@@ -80,6 +80,7 @@ public final class PlayerSplitter {
         PlayerShellEntity shell = createShell(whole);
         Entity mount = whole.getVehicle();
         int experience = whole.totalExperience;
+        EntityPositionClerk.transferRecord(whole, shell);
         ServerPlayerEntity soul = performRespawn(whole);
         // Respawning in some conditions can place us away from the shell
         soul.setSneaking(whole.isSneaking());
@@ -135,6 +136,7 @@ public final class PlayerSplitter {
         // override common data that may have been altered during this shell's existence
         performNbtCopy(computeCopyNbt(shell), soul);
         soul.addExperience(shell.totalExperience);
+        EntityPositionClerk.transferRecord(shell, soul);
         PlayerShellEvents.DATA_TRANSFER.invoker().transferData(shell, soul, true);
 
         soul.networkHandler.sendPacket(new EntityTrackerUpdateS2CPacket(soul.getId(), soul.getDataTracker(), true));

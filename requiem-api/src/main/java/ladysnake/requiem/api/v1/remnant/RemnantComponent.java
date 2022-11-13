@@ -161,24 +161,24 @@ public interface RemnantComponent extends AutoSyncedComponent, ServerTickingComp
 
     /**
      *
+     * @param ignoreGameConditions if {@code true}, external factors like status effects will be ignored
      * @return {@code true} if this player can currently split into a player shell and a vagrant form
-     * @param forced if {@code true}, external factors like status effects will be ignored
      * @since 2.0.0
      */
-    boolean canSplitPlayer(boolean forced);
+    boolean canSplitPlayer(boolean ignoreGameConditions);
 
     /**
      * Attempts to split a player into a player-controlled vagrant part and an inert shell.
      *
      * <p>This operation fails if the player is currently {@linkplain #isVagrant() vagrant}.
      *
-     * @param forced if {@code true}, the player will be split regardless of external factors like status effects
+     * @param ignoreGameConditions if {@code true}, the player will be split regardless of external factors like status effects
      * @return an {@link Optional} describing the spawned player shell, or {@link Optional#empty()} if
      * the operation failed.
      * @since 2.0.0
      */
     @API(status = API.Status.EXPERIMENTAL)
-    Optional<PlayerSplitResult> splitPlayer(boolean forced);
+    Optional<PlayerSplitResult> splitPlayer(boolean ignoreGameConditions);
 
     /**
      * Attempts to merge a player with an inert shell.
