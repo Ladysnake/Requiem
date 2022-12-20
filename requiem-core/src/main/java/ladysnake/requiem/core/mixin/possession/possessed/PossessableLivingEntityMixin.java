@@ -337,6 +337,7 @@ public abstract class PossessableLivingEntityMixin extends Entity implements Pos
     This causes issues, to which one of the simplest fix is to call remove() right after calling next().
      */
 
+    /*
     @Redirect(method = "clearStatusEffects", at = @At(value = "INVOKE", target = "Ljava/util/Iterator;next()Ljava/lang/Object;", remap = false))
     private Object swapIteratorOperationsPart1(Iterator<?> iterator) {
         Object next = iterator.next();
@@ -347,6 +348,8 @@ public abstract class PossessableLivingEntityMixin extends Entity implements Pos
     private void swapIteratorOperationsPart2(Iterator<?> iterator) {
         // NO-OP
     }
+
+     */
 
     /* * * * * * * * * * * *
         Delegation land

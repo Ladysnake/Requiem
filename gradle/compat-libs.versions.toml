@@ -1,9 +1,9 @@
 [versions]
 acu = "3.3.1"
-aea = "95f13798d1"
+aea = "9bd3a45dc9"
 amecs = "1.1.5+mc21w16a"
 autoconfig = "3.2.2"
-apoli = "2.5.0"
+apoli = "2.6.1"
 backslot = "3476614"
 betterGraves = "0.4.0"
 bewitchment = "3637935" # v1.18-9
