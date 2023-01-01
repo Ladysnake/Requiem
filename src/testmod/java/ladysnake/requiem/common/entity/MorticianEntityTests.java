@@ -44,6 +44,7 @@ import ladysnake.requiem.core.record.EntityPositionClerk;
 import net.fabricmc.fabric.api.gametest.v1.FabricGameTest;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.test.GameTest;
+import net.minecraft.test.GameTestException;
 import net.minecraft.test.TestContext;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
@@ -56,9 +57,9 @@ public class MorticianEntityTests implements FabricGameTest {
     public void oldEtherealMorticiansGetConverted(TestContext ctx) {
         BlockPos controllerPos = new BlockPos(20, 3, 20);
         ctx.setBlockState(controllerPos.up(), RequiemBlocks.RIFT_RUNE);
-        ctx.waitAndRun(2, () -> {
+        ctx.addInstantFinalTask(() -> {
             RunestoneBlockEntity controller = Objects.requireNonNull(((RunestoneBlockEntity) ctx.getBlockEntity(controllerPos)));
-            GlobalRecord obeliskRecord = controller.getDescriptorRecord().orElseThrow();
+            GlobalRecord obeliskRecord = controller.getDescriptorRecord().orElseThrow(() -> new GameTestException("Unavailable obelisk"));
             NbtCompound morticianNbt = Util.make(new NbtCompound(), nbt -> {
                 MorticianEntity m = new MorticianEntity(RequiemEntities.MORTICIAN, ctx.getWorld());
                 EntityPositionClerk.get(m).linkWith(obeliskRecord);
@@ -81,7 +82,6 @@ public class MorticianEntityTests implements FabricGameTest {
                     .filter(mortician::equals)
                     .isPresent()
             );
-            ctx.complete();
         });
     }
 }

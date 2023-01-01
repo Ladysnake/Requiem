@@ -19,8 +19,9 @@ package ladysnake.requiem.api.v1.remnant;
 
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
+import org.quiltmc.qsl.entity.effect.api.QuiltStatusEffectExtensions;
 
-public interface StickyStatusEffect {
+public interface StickyStatusEffect extends QuiltStatusEffectExtensions {
     /**
      * If this method returns {@code true}, this effect cannot be cleared by anything
      * except the /clear command.

@@ -25,10 +25,12 @@
       "fabric-gametest": [
         "ladysnake.requiemtest.RequiemTestSuite",
         "ladysnake.requiem.common.block.obelisk.ObeliskTests",
+        "ladysnake.requiem.common.effect.SoulboundEffectTests",
         "ladysnake.requiem.common.entity.MorticianEntityTests",
         "ladysnake.requiem.common.item.EmptySoulVesselItemTests",
         "ladysnake.requiem.common.item.FilledSoulVesselItemTests",
         "ladysnake.requiem.common.item.DemonSoulVesselItemTests",
+        "ladysnake.requiem.common.possession.PossessionStatusEffectsTests",
         "ladysnake.requiem.common.remnant.DroppedVesselTrackerTests",
         "ladysnake.requiem.common.remnant.VagrantPlayerTests",
         "ladysnake.requiemtest.PlayerShellsTests"

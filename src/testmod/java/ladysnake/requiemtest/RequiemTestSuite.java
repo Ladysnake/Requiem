@@ -36,8 +36,6 @@ package ladysnake.requiemtest;
 
 import io.github.ladysnake.elmendorf.GameTestUtil;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
-import ladysnake.requiem.api.v1.remnant.RemnantComponent;
-import ladysnake.requiem.common.remnant.RemnantTypes;
 import net.fabricmc.fabric.api.gametest.v1.FabricGameTest;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
@@ -54,11 +52,8 @@ public class RequiemTestSuite implements FabricGameTest {
     @GameTest(structureName = EMPTY_STRUCTURE)
     public void goldenApplesCureZombies(TestContext ctx) {
         var player = ctx.spawnServerPlayer(2, 0, 2);
-        RemnantComponent.get(player).become(RemnantTypes.REMNANT);
-        RemnantComponent.get(player).setVagrant(true);
         var zombie = ctx.spawnMob(EntityType.ZOMBIE, 3, 0, 3);
-        PossessionComponent.get(player).startPossessing(zombie);
-        GameTestUtil.assertTrue("Vagrant player should be able to possess zombie", PossessionComponent.get(player).getHost() == zombie);
+        RequiemTestUtil.startPossession(player, zombie);
         player.addStatusEffect(new StatusEffectInstance(StatusEffects.WEAKNESS, 300));
         player.setStackInHand(Hand.MAIN_HAND, new ItemStack(Items.GOLDEN_APPLE));
         GameTestUtil.assertTrue("Effects should be transferred to possessed mobs", zombie.hasStatusEffect(StatusEffects.WEAKNESS));

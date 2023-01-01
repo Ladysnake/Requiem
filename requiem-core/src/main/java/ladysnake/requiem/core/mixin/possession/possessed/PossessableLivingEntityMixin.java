@@ -70,13 +70,11 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
-import java.util.Iterator;
 import java.util.UUID;
 
 import static org.spongepowered.asm.mixin.injection.At.Shift.AFTER;
@@ -331,22 +329,6 @@ public abstract class PossessableLivingEntityMixin extends Entity implements Pos
         if (possessor instanceof ServerPlayerEntity) {
             possessor.removeStatusEffect(effect.getEffectType());
         }
-    }
-
-    /*
-    clearPotionEffects calls onStatusEffectRemoved before actually removing it, unlike everything else.
-    This causes issues, to which one of the simplest fix is to call remove() right after calling next().
-     */
-
-    @Redirect(method = "clearStatusEffects", at = @At(value = "INVOKE", target = "Ljava/util/Iterator;next()Ljava/lang/Object;", remap = false))
-    private Object swapIteratorOperationsPart1(Iterator<?> iterator) {
-        Object next = iterator.next();
-        iterator.remove();
-        return next;
-    }
-    @Redirect(method = "clearStatusEffects", at = @At(value = "INVOKE", target = "Ljava/util/Iterator;remove()V", remap = false))
-    private void swapIteratorOperationsPart2(Iterator<?> iterator) {
-        // NO-OP
     }
 
     /* * * * * * * * * * * *
