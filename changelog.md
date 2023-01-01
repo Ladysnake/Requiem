@@ -1,6 +1,15 @@
 ------------------------------------------------------
 Version 2.0.0
 ------------------------------------------------------
+### Changes in Beta 16
+- Added an experimental `dropVesselOnDisconnect` gamerule
+  - The default value is `false`
+  - When switched on, every remnant player dissociates whenever they disconnect. They will get their body back when they rejoin, as long as nothing happened to it...
+  - Have fun on your multiplayer servers with this, and please report bugs you find!
+- Updated localization, including Chinese translation (thanks Touch-Night)
+- Fixed some shulker rendering issues when possessed
+- Fixed incompatibility with latest QSL
+
 ### Changes in Beta 15
 - Added [3 new loot conditions](https://ladysnake.github.io/wiki/requiem/configuration#loot-table-conditions) and [3 new predicates](https://ladysnake.github.io/wiki/requiem/commands#predicates) for use in commands and datapacks
 - Big dripleafs no longer detect vagrant players
