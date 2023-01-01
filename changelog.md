@@ -8,7 +8,8 @@ Version 2.0.0
   - Have fun on your multiplayer servers with this, and please report bugs you find!
 - Updated localization, including Chinese translation (thanks Touch-Night)
 - Fixed some shulker rendering issues when possessed
-- Fixed incompatibility with latest QSL
+- Fixed some possessed mobs getting the wrong height when riding, e.g. spider jockeys or chicken jockeys
+- **Fixed incompatibility with latest QSL**
 
 ### Changes in Beta 15
 - Added [3 new loot conditions](https://ladysnake.github.io/wiki/requiem/configuration#loot-table-conditions) and [3 new predicates](https://ladysnake.github.io/wiki/requiem/commands#predicates) for use in commands and datapacks
