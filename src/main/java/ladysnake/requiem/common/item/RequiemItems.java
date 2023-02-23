@@ -44,9 +44,10 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.SpawnEggItem;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Rarity;
-import net.minecraft.util.registry.Registry;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -96,6 +97,6 @@ public final class RequiemItems {
     }
 
     public static <T extends Item> void registerItem(T item, String name) {
-        Registry.register(Registry.ITEM, Requiem.id(name), item);
+        Registry.register(Registries.ITEM, Requiem.id(name), item);
     }
 }

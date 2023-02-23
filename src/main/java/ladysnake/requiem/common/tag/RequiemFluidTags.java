@@ -36,9 +36,9 @@ package ladysnake.requiem.common.tag;
 
 import ladysnake.requiem.Requiem;
 import net.minecraft.fluid.Fluid;
-import net.minecraft.tag.TagKey;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.tag.TagKey;
 
 public final class RequiemFluidTags {
-    public static final TagKey<Fluid> EMPTY = TagKey.of(Registry.FLUID_KEY, Requiem.id("empty"));
+    public static final TagKey<Fluid> EMPTY = TagKey.of(RegistryKeys.FLUID, Requiem.id("empty"));
 }

@@ -36,8 +36,8 @@ package ladysnake.requiem.common.tag;
 
 import ladysnake.requiem.Requiem;
 import net.minecraft.entity.EntityType;
-import net.minecraft.tag.TagKey;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.tag.TagKey;
 
 public final class RequiemEntityTypeTags {
     public static final TagKey<EntityType<?>> DICHROMATS = register("vision/dichromats");
@@ -66,6 +66,6 @@ public final class RequiemEntityTypeTags {
     }
 
     public static TagKey<EntityType<?>> register(String name) {
-        return TagKey.of(Registry.ENTITY_TYPE_KEY, Requiem.id(name));
+        return TagKey.of(RegistryKeys.ENTITY_TYPE, Requiem.id(name));
     }
 }

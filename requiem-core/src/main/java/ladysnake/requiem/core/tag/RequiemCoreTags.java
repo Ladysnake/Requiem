@@ -36,8 +36,8 @@ package ladysnake.requiem.core.tag;
 
 import ladysnake.requiem.core.RequiemCore;
 import net.minecraft.entity.EntityType;
-import net.minecraft.tag.TagKey;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.tag.TagKey;
 
 public final class RequiemCoreTags {
     public static final class Entity {
@@ -53,11 +53,11 @@ public final class RequiemCoreTags {
         public static final TagKey<EntityType<?>> SOULLESS = register("possession/soulless");
 
         private static TagKey<EntityType<?>> register(String name) {
-            return TagKey.of(Registry.ENTITY_TYPE_KEY, RequiemCore.id(name));
+            return TagKey.of(RegistryKeys.ENTITY_TYPE, RequiemCore.id(name));
         }
     }
 
     public static final class Item {
-        public static final TagKey<net.minecraft.item.Item> UNDEAD_CURES = TagKey.of(Registry.ITEM_KEY, RequiemCore.id("undead_cures"));
+        public static final TagKey<net.minecraft.item.Item> UNDEAD_CURES = TagKey.of(RegistryKeys.ITEM, RequiemCore.id("undead_cures"));
     }
 }

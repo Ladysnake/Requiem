@@ -46,8 +46,8 @@ import net.fabricmc.fabric.api.event.registry.RegistryEntryAddedCallback;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 import org.quiltmc.loader.api.QuiltLoader;
 
 import java.util.Optional;
@@ -94,11 +94,11 @@ public final class RequiemCompatibilityManager {
     }
 
     static <T extends Entity> void findEntityType(Identifier id, Consumer<EntityType<T>> action) {
-        @SuppressWarnings("unchecked") Optional<EntityType<T>> maybe = (Optional<EntityType<T>>) (Optional<?>) Registry.ENTITY_TYPE.getOrEmpty(id);
+        @SuppressWarnings("unchecked") Optional<EntityType<T>> maybe = (Optional<EntityType<T>>) (Optional<?>) Registries.ENTITY_TYPE.getOrEmpty(id);
         if (maybe.isPresent()) {
             action.accept(maybe.get());
         } else {
-            RegistryEntryAddedCallback.event(Registry.ENTITY_TYPE).register((rawId, id1, object) -> {
+            RegistryEntryAddedCallback.event(Registries.ENTITY_TYPE).register((rawId, id1, object) -> {
                 if (id.equals(id1)) {
                     @SuppressWarnings("unchecked") EntityType<T> t = (EntityType<T>) object;
                     action.accept(t);

@@ -34,12 +34,7 @@
  */
 package ladysnake.requiem.core.movement;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonIOException;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonSyntaxException;
+import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
 import ladysnake.requiem.api.v1.entity.MovementConfig;
 import ladysnake.requiem.api.v1.entity.MovementRegistry;
@@ -50,12 +45,12 @@ import ladysnake.requiem.core.util.serde.TriStateTypeAdapter;
 import net.fabricmc.fabric.api.util.TriState;
 import net.minecraft.entity.EntityType;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.registry.Registries;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.profiler.Profiler;
-import net.minecraft.util.registry.Registry;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -99,7 +94,7 @@ public final class MovementAltererManager implements SubDataManager<Map<EntityTy
             Identifier id = buf.readIdentifier();
             SerializableMovementConfig conf = new SerializableMovementConfig();
             conf.fromPacket(buf);
-            ret.put(Registry.ENTITY_TYPE.get(id), conf);
+            ret.put(Registries.ENTITY_TYPE.get(id), conf);
         }
         return ret;
     }

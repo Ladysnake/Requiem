@@ -40,8 +40,8 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.ZombifiedPiglinEntity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.Nullable;
 
 public class CurableZombifiedPiglinComponent extends SimpleCurableEntityComponent {
@@ -87,7 +87,7 @@ public class CurableZombifiedPiglinComponent extends SimpleCurableEntityComponen
     public void readFromNbt(NbtCompound tag) {
         super.readFromNbt(tag);
         if (tag.contains("original_piglin_type")) {
-            this.originalPiglinType = Registry.ENTITY_TYPE.getOrEmpty(Identifier.tryParse(tag.getString("original_piglin_type"))).orElse(null);
+            this.originalPiglinType = Registries.ENTITY_TYPE.getOrEmpty(Identifier.tryParse(tag.getString("original_piglin_type"))).orElse(null);
         }
     }
 
@@ -95,7 +95,7 @@ public class CurableZombifiedPiglinComponent extends SimpleCurableEntityComponen
     public void writeToNbt(NbtCompound tag) {
         super.writeToNbt(tag);
         if (this.originalPiglinType != null) {
-            tag.putString("original_piglin_type", Registry.ENTITY_TYPE.getId(this.originalPiglinType).toString());
+            tag.putString("original_piglin_type", Registries.ENTITY_TYPE.getId(this.originalPiglinType).toString());
         }
     }
 }

@@ -25,6 +25,7 @@ import ladysnake.requiem.api.v1.internal.ApiInternals;
 import net.minecraft.entity.JumpingMount;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
@@ -33,7 +34,7 @@ import org.apiguardian.api.API;
 /**
  * A fake {@link JumpingMount} that is not implemented by a rideable entity.
  *
- * <p>Can be attached to
+ * <p>Can be attached to various entities as a component
  */
 @API(status = API.Status.EXPERIMENTAL, since = "2.0.0")
 public interface ExternalJumpingMount extends JumpingMount, Component {
@@ -47,7 +48,7 @@ public interface ExternalJumpingMount extends JumpingMount, Component {
      * @return {@code true} if the player should be able to initiate long jumps with this mount
      */
     @Override
-    boolean canJump();
+    boolean canJump(PlayerEntity playerEntity);
 
     /**
      * Called when a player releases the jump key clientside

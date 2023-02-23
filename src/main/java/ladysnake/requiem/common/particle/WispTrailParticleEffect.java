@@ -41,7 +41,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleType;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.Registries;
 
 public record WispTrailParticleEffect(float red, float green, float blue, float redEvolution, float greenEvolution,
                                       float blueEvolution) implements ParticleEffect {
@@ -89,7 +89,7 @@ public record WispTrailParticleEffect(float red, float green, float blue, float 
 
     @Override
     public String asString() {
-        return "%s %.2f %.2f %.2f %.2f %.2f %.2f".formatted(Registry.PARTICLE_TYPE.getId(this.getType()), this.red, this.green, this.blue, this.redEvolution, this.greenEvolution, this.blueEvolution);
+        return "%s %.2f %.2f %.2f %.2f %.2f %.2f".formatted(Registries.PARTICLE_TYPE.getId(this.getType()), this.red, this.green, this.blue, this.redEvolution, this.greenEvolution, this.blueEvolution);
     }
 
     @Override

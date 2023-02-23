@@ -38,8 +38,9 @@ import ladysnake.requiem.Requiem;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentTarget;
 import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 
 public class RequiemEnchantments {
     public static final Identifier HUMANITY_ID = Requiem.id("humanity");
@@ -48,6 +49,6 @@ public class RequiemEnchantments {
     );
 
     public static void init() {
-        Registry.register(Registry.ENCHANTMENT, HUMANITY_ID, HUMANITY);
+        Registry.register(Registries.ENCHANTMENT, HUMANITY_ID, HUMANITY);
     }
 }

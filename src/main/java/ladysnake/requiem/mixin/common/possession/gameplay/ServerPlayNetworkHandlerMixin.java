@@ -52,7 +52,7 @@ public class ServerPlayNetworkHandlerMixin {
     @Shadow
     public ServerPlayerEntity player;
 
-    @Inject(method = "onClientCommand", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "onClientCommand", at = @At("HEAD"))
     private void swapJumpingMount(ClientCommandC2SPacket packet, CallbackInfo ci) {
         if (packet.getMode() == ClientCommandC2SPacket.Mode.START_RIDING_JUMP || packet.getMode() == ClientCommandC2SPacket.Mode.STOP_RIDING_JUMP) {
             if (!(this.player.getVehicle() instanceof JumpingMount)) {
@@ -62,7 +62,7 @@ public class ServerPlayNetworkHandlerMixin {
                     if (jumpingMount != null) {
                         if (packet.getMode() == ClientCommandC2SPacket.Mode.START_RIDING_JUMP) {
                             int i = packet.getMountJumpHeight();
-                            if (jumpingMount.canJump() && i > 0) {
+                            if (jumpingMount.canJump(this.player) && i > 0) {
                                 jumpingMount.startJumping(i);
                             }
                         } else {

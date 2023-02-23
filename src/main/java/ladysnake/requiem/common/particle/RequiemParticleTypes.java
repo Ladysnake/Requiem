@@ -39,7 +39,8 @@ import ladysnake.requiem.Requiem;
 import net.fabricmc.fabric.api.particle.v1.FabricParticleTypes;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.particle.ParticleType;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 
 public final class RequiemParticleTypes {
     public static final DefaultParticleType ATTRITION = FabricParticleTypes.simple(false);
@@ -62,13 +63,13 @@ public final class RequiemParticleTypes {
     public static final DefaultParticleType PENANCE = FabricParticleTypes.simple(false);
 
     public static void init() {
-        Registry.register(Registry.PARTICLE_TYPE, Requiem.id("attrition"), ATTRITION);
-        Registry.register(Registry.PARTICLE_TYPE, Requiem.id("attuned"), ATTUNED);
-        Registry.register(Registry.PARTICLE_TYPE, Requiem.id("cure"), CURE);
-        Registry.register(Registry.PARTICLE_TYPE, Requiem.id("entity_dust"), ENTITY_DUST);
-        Registry.register(Registry.PARTICLE_TYPE, Requiem.id("ghost"), GHOST);
-        Registry.register(Registry.PARTICLE_TYPE, Requiem.id("soul_trail"), SOUL_TRAIL);
-        Registry.register(Registry.PARTICLE_TYPE, Requiem.id("obelisk_soul"), OBELISK_SOUL);
-        Registry.register(Registry.PARTICLE_TYPE, Requiem.id("penance"), PENANCE);
+        Registry.register(Registries.PARTICLE_TYPE, Requiem.id("attrition"), ATTRITION);
+        Registry.register(Registries.PARTICLE_TYPE, Requiem.id("attuned"), ATTUNED);
+        Registry.register(Registries.PARTICLE_TYPE, Requiem.id("cure"), CURE);
+        Registry.register(Registries.PARTICLE_TYPE, Requiem.id("entity_dust"), ENTITY_DUST);
+        Registry.register(Registries.PARTICLE_TYPE, Requiem.id("ghost"), GHOST);
+        Registry.register(Registries.PARTICLE_TYPE, Requiem.id("soul_trail"), SOUL_TRAIL);
+        Registry.register(Registries.PARTICLE_TYPE, Requiem.id("obelisk_soul"), OBELISK_SOUL);
+        Registry.register(Registries.PARTICLE_TYPE, Requiem.id("penance"), PENANCE);
     }
 }

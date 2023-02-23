@@ -36,14 +36,14 @@ package ladysnake.requiem.common.tag;
 
 import ladysnake.requiem.Requiem;
 import net.minecraft.block.Block;
-import net.minecraft.tag.TagKey;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.tag.TagKey;
 
 public final class RequiemBlockTags {
-    public static final TagKey<Block> SOUL_IMPERMEABLE = TagKey.of(Registry.BLOCK_KEY, Requiem.id("soul_impermeable"));
-    public static final TagKey<Block> SOUL_INTERACTABLE = TagKey.of(Registry.BLOCK_KEY, Requiem.id("soul_interactable"));
-    public static final TagKey<Block> WANDERING_SOUL_TRAVERSABLE = TagKey.of(Registry.BLOCK_KEY, Requiem.id("wandering_soul_traversable"));
+    public static final TagKey<Block> SOUL_IMPERMEABLE = TagKey.of(RegistryKeys.BLOCK, Requiem.id("soul_impermeable"));
+    public static final TagKey<Block> SOUL_INTERACTABLE = TagKey.of(RegistryKeys.BLOCK, Requiem.id("soul_interactable"));
+    public static final TagKey<Block> WANDERING_SOUL_TRAVERSABLE = TagKey.of(RegistryKeys.BLOCK, Requiem.id("wandering_soul_traversable"));
 
-    public static final TagKey<Block> OBELISK_FRAME = TagKey.of(Registry.BLOCK_KEY, Requiem.id("obelisk/frame"));
-    public static final TagKey<Block> OBELISK_CORE = TagKey.of(Registry.BLOCK_KEY, Requiem.id("obelisk/core"));
+    public static final TagKey<Block> OBELISK_FRAME = TagKey.of(RegistryKeys.BLOCK, Requiem.id("obelisk/frame"));
+    public static final TagKey<Block> OBELISK_CORE = TagKey.of(RegistryKeys.BLOCK, Requiem.id("obelisk/core"));
 }

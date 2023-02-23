@@ -41,9 +41,9 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.EntityShapeContext;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.entity.effect.StatusEffect;
+import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
@@ -53,9 +53,9 @@ import java.util.function.Supplier;
 
 public class RunestoneBlock extends InertRunestoneBlock implements ObeliskEffectRune {
     public static Optional<Block> getByEffect(StatusEffect effect) {
-        Identifier id = Registry.STATUS_EFFECT.getId(effect);
+        Identifier id = Registries.STATUS_EFFECT.getId(effect);
         return Optional.ofNullable(id).flatMap(i ->
-            Registry.BLOCK.getOrEmpty(new Identifier(i.getNamespace(), "tachylite/runic/" + i.getPath())));
+            Registries.BLOCK.getOrEmpty(new Identifier(i.getNamespace(), "tachylite/runic/" + i.getPath())));
     }
 
     private final Supplier<StatusEffect> effect;

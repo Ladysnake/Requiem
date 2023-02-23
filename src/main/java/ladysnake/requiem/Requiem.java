@@ -70,9 +70,9 @@ import ladysnake.requiem.compat.RequiemCompatibilityManager;
 import ladysnake.requiem.core.remnant.VagrantInteractionRegistryImpl;
 import ladysnake.requiem.core.resurrection.ResurrectionDataLoader;
 import net.minecraft.command.argument.SingletonArgumentInfo;
+import net.minecraft.registry.Registries;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.quiltmc.loader.api.ModContainer;
@@ -116,7 +116,7 @@ public final class Requiem implements ModInitializer {
         Blabber.registerAction(id("remnant_choice"), RemnantChoiceDialogueAction.CODEC);
         CommandRegistrationCallback.EVENT.register((dispatcher, ctx, dedicated) -> RequiemCommand.register(dispatcher));
         // Quilt's ServerArgumentType.register seems to break somehow
-        ArgumentTypeInfosAccessor.callRegister(Registry.COMMAND_ARGUMENT_TYPE, "requiem:remnant", RemnantArgumentType.class, SingletonArgumentInfo.contextFree(RemnantArgumentType::remnantType));
+        ArgumentTypeInfosAccessor.callRegister(Registries.COMMAND_ARGUMENT_TYPE, "requiem:remnant", RemnantArgumentType.class, SingletonArgumentInfo.contextFree(RemnantArgumentType::remnantType));
         ResourceLoader.get(ResourceType.SERVER_DATA).registerReloader(ResurrectionDataLoader.INSTANCE);
         SyncServerResourcesCallback.EVENT.register(player -> RequiemNetworking.sendTo(player, RequiemNetworking.createDataSyncMessage(SubDataManagerHelper.getServerHelper())));
         ApiInitializer.setPluginCallback(this::registerPlugin);

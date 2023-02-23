@@ -44,19 +44,14 @@ import ladysnake.requiem.common.block.obelisk.RiftRunestoneBlock;
 import ladysnake.requiem.common.block.obelisk.RunestoneBlock;
 import ladysnake.requiem.common.entity.effect.RequiemStatusEffects;
 import ladysnake.requiem.common.item.RequiemItems;
-import net.minecraft.block.AbstractBlock;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.ExperienceDroppingBlock;
-import net.minecraft.block.PillarBlock;
-import net.minecraft.block.SlabBlock;
+import net.minecraft.block.*;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.intprovider.UniformIntProvider;
-import net.minecraft.util.registry.Registry;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -104,7 +99,7 @@ public final class RequiemBlocks {
     private static RunestoneBlock makeRunic(String effectName, int maxLevel) {
         return make(() -> new RunestoneBlock(
             AbstractBlock.Settings.copy(TACHYLITE),
-            Suppliers.memoize(() -> Registry.STATUS_EFFECT.getOrEmpty(Requiem.id(effectName)).orElseThrow()),
+            Suppliers.memoize(() -> Registries.STATUS_EFFECT.getOrEmpty(Requiem.id(effectName)).orElseThrow()),
             maxLevel
         ), "tachylite/runic/" + effectName);
     }
@@ -130,7 +125,7 @@ public final class RequiemBlocks {
     }
 
     private static void register(Block block, BlockRegistration registration) {
-        Registry.register(Registry.BLOCK, Requiem.id(registration.name()), block);
+        Registry.register(Registries.BLOCK, Requiem.id(registration.name()), block);
 
         BlockRegistration.BlockItemRegistration blockItemRegistration = registration.blockItemRegistration();
         if (blockItemRegistration != null) {

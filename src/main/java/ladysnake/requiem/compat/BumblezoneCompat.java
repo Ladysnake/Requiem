@@ -42,15 +42,15 @@ import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.passive.BeeEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
 
 public final class BumblezoneCompat implements UseBlockCallback {
-    public static final RegistryKey<World> BZ_WORLD_KEY = RegistryKey.of(Registry.WORLD_KEY, Bumblezone.MOD_DIMENSION_ID);
+    public static final RegistryKey<World> BZ_WORLD_KEY = RegistryKey.of(RegistryKeys.WORLD, Bumblezone.MOD_DIMENSION_ID);
 
     @CalledThroughReflection
     public static void init() throws NoSuchMethodException {

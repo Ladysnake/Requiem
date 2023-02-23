@@ -35,9 +35,10 @@
 package ladysnake.requiem.common.sound;
 
 import ladysnake.requiem.Requiem;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 
 public final class RequiemSoundEvents {
     public static final SoundEvent BLOCK_OBELISK_ACTIVATE = register("block.obelisk.activate");
@@ -70,7 +71,7 @@ public final class RequiemSoundEvents {
 
     private static SoundEvent register(String name) {
         Identifier id = Requiem.id(name);
-        return Registry.register(Registry.SOUND_EVENT, id, new SoundEvent(id));
+        return Registry.register(Registries.SOUND_EVENT, id, SoundEvent.createVariableRangeEvent(id));
     }
 
     public static void init() {

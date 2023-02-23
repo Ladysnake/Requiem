@@ -86,7 +86,7 @@ public class DummyJumpingMount implements ExternalJumpingMount, TransientCompone
     }
 
     @Override
-    public boolean canJump() {
+    public boolean canJump(PlayerEntity playerEntity) {
         return true;
     }
 

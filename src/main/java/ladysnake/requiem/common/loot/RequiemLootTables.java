@@ -52,7 +52,8 @@ import net.minecraft.loot.entry.ItemEntry;
 import net.minecraft.loot.function.LootFunction;
 import net.minecraft.loot.function.LootFunctionType;
 import net.minecraft.loot.provider.number.ConstantLootNumberProvider;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 
 import java.util.regex.Pattern;
 
@@ -73,10 +74,10 @@ public final class RequiemLootTables {
     public static final double BASIC_HUMANITY_CHANCE = 0.9;
 
     public static void init() {
-        Registry.register(Registry.LOOT_CONDITION_TYPE, Requiem.id("rift_mortician"), RIFT_MORTICIAN_CONDITION);
-        Registry.register(Registry.LOOT_CONDITION_TYPE, Requiem.id("bound_shell"), BOUND_SHELL_CONDITION);
-        Registry.register(Registry.LOOT_CONDITION_TYPE, Requiem.id("host"), HOST_CONDITION);
-        Registry.register(Registry.LOOT_CONDITION_TYPE, Requiem.id("possessor"), POSSESSOR_CONDITION);
+        Registry.register(Registries.LOOT_CONDITION_TYPE, Requiem.id("rift_mortician"), RIFT_MORTICIAN_CONDITION);
+        Registry.register(Registries.LOOT_CONDITION_TYPE, Requiem.id("bound_shell"), BOUND_SHELL_CONDITION);
+        Registry.register(Registries.LOOT_CONDITION_TYPE, Requiem.id("host"), HOST_CONDITION);
+        Registry.register(Registries.LOOT_CONDITION_TYPE, Requiem.id("possessor"), POSSESSOR_CONDITION);
 
         LootTableEvents.MODIFY.register((resourceManager, lootManager, identifier, fabricLootSupplierBuilder, lootTableSetter) -> {
             if (NETHER_CHEST.matcher(identifier.getPath()).matches()) {

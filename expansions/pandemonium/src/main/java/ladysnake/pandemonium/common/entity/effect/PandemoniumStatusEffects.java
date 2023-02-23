@@ -36,7 +36,8 @@ package ladysnake.pandemonium.common.entity.effect;
 
 import ladysnake.requiem.Requiem;
 import net.minecraft.entity.effect.StatusEffect;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 
 public final class PandemoniumStatusEffects {
 
@@ -45,6 +46,6 @@ public final class PandemoniumStatusEffects {
     }
 
     public static void registerEffect(StatusEffect effect, String name) {
-        Registry.register(Registry.STATUS_EFFECT, Requiem.id(name), effect);
+        Registry.register(Registries.STATUS_EFFECT, Requiem.id(name), effect);
     }
 }

@@ -36,8 +36,8 @@ package ladysnake.requiem.common.entity;
 
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.passive.VillagerEntity;
+import net.minecraft.registry.Registries;
 import net.minecraft.text.Text;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 
 public class CuredVillagerEntity extends VillagerEntity {
@@ -47,6 +47,6 @@ public class CuredVillagerEntity extends VillagerEntity {
 
     @Override
     protected Text getDefaultName() {
-        return Text.translatable(EntityType.VILLAGER.getTranslationKey() + '.' + Registry.VILLAGER_PROFESSION.getId(this.getVillagerData().getProfession()).getPath());
+        return Text.translatable(EntityType.VILLAGER.getTranslationKey() + '.' + Registries.VILLAGER_PROFESSION.getId(this.getVillagerData().getProfession()).getPath());
     }
 }

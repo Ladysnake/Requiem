@@ -39,7 +39,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.Registries;
 
 import java.util.OptionalDouble;
 import java.util.function.Supplier;
@@ -59,7 +59,7 @@ public class PossessionDelegatingModifier implements NonDeterministicModifier {
 
     public static void replaceAttributes(LivingEntity e, Supplier<LivingEntity> entitySupplier) {
         // Replace every registered attribute
-        for (EntityAttribute attribute : Registry.ATTRIBUTE) {
+        for (EntityAttribute attribute : Registries.ENTITY_ATTRIBUTE) {
             // Note: this fills the attribute map for the player, whether this is an issue is to be determined
             EntityAttributeInstance current = e.getAttributeInstance(attribute);
             if (current != null) {

@@ -24,7 +24,7 @@ import ladysnake.requiem.api.v1.remnant.RemnantState;
 import ladysnake.requiem.api.v1.remnant.RemnantType;
 import ladysnake.requiem.api.v1.remnant.SoulbindingRegistry;
 import ladysnake.requiem.api.v1.remnant.VagrantInteractionRegistry;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.Registry;
 import org.apiguardian.api.API;
 
 /**

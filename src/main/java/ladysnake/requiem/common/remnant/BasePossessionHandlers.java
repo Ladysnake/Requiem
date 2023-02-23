@@ -81,7 +81,7 @@ public final class BasePossessionHandlers {
             (possessor, host) -> possessor.world.getGameRules().get(RequiemGamerules.POSSESSION_KEEP_INVENTORY).get().shouldTransfer(host.isAlive()) ? TriState.TRUE : TriState.DEFAULT
         );
         PossessionEvents.HOST_DEATH.register((player, host, deathCause) -> {
-            if (player.world.getLevelProperties().isHardcore()) {
+            if (player.world.getProperties().isHardcore()) {
                 player.damage(AttritionStatusEffect.ATTRITION_HARDCORE_DEATH, Float.MAX_VALUE);
             } else {
                 AttritionStatusEffect.apply(player);

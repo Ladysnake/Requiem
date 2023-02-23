@@ -57,10 +57,10 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.packet.s2c.play.EntityTrackerUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerPositionLookS2CPacket;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
@@ -139,7 +139,7 @@ public final class PlayerSplitter {
         EntityPositionClerk.transferRecord(shell, soul);
         PlayerShellEvents.DATA_TRANSFER.invoker().transferData(shell, soul, true);
 
-        soul.networkHandler.sendPacket(new EntityTrackerUpdateS2CPacket(soul.getId(), soul.getDataTracker(), true));
+        soul.networkHandler.sendPacket(new EntityTrackerUpdateS2CPacket(soul.getId(), soul.getDataTracker().m_inhpjhpj()));
 
         shell.remove(Entity.RemovalReason.DISCARDED);
         if (mount != null) soul.startRiding(mount);

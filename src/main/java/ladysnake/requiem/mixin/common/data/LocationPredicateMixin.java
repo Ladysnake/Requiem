@@ -39,10 +39,10 @@ import com.google.gson.JsonObject;
 import com.mojang.serialization.JsonOps;
 import ladysnake.requiem.Requiem;
 import net.minecraft.predicate.entity.LocationPredicate;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.tag.TagKey;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.tag.TagKey;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
@@ -58,7 +58,7 @@ public abstract class LocationPredicateMixin {
     /**
      * For... reasons, we run tests on clients with a null server world. This does not work well with {@code LocationPredicate}s, so we skip all the world checks.
      */
-    @Inject(method = "test", at = @At(value = "FIELD", target = "Lnet/minecraft/predicate/entity/LocationPredicate;dimension:Lnet/minecraft/util/registry/RegistryKey;", ordinal = 0), cancellable = true)
+    @Inject(method = "test", at = @At(value = "FIELD", target = "Lnet/minecraft/predicate/entity/LocationPredicate;dimension:Lnet/minecraft/registry/RegistryKey;", ordinal = 0), cancellable = true)
     private void cancelTestOnClients(@Nullable ServerWorld world, double x, double y, double z, CallbackInfoReturnable<Boolean> cir) {
         if (world == null) cir.setReturnValue(true);
     }
@@ -88,7 +88,7 @@ public abstract class LocationPredicateMixin {
         }
         //noinspection ConstantConditions
         ((LocationPredicateMixin) (Object) cir.getReturnValue()).requiem$biomeTag
-            = TagKey.createCodec(Registry.BIOME_KEY).parse(JsonOps.INSTANCE, biomeCategory)
+            = TagKey.createCodec(RegistryKeys.BIOME).parse(JsonOps.INSTANCE, biomeCategory)
             .getOrThrow(false, msg -> Requiem.LOGGER.error("[Requiem] Failed to parse biome_tag extension to LocationPredicate: {}", msg));
     }
 }

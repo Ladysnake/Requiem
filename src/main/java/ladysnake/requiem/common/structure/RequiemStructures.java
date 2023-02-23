@@ -35,14 +35,15 @@
 package ladysnake.requiem.common.structure;
 
 import ladysnake.requiem.Requiem;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 import net.minecraft.structure.StructureType;
-import net.minecraft.util.registry.Registry;
 
 public final class RequiemStructures {
     public static final StructureType<DerelictObeliskFeature> DERELICT_OBELISK = () -> DerelictObeliskFeature.CODEC;
 
     public static void init() {
-        Registry.register(Registry.STRUCTURE_TYPE, Requiem.id("derelict_obelisk"), DERELICT_OBELISK);
+        Registry.register(Registries.STRUCTURE_TYPE, Requiem.id("derelict_obelisk"), DERELICT_OBELISK);
     }
 }
 

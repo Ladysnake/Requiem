@@ -1,15 +1,15 @@
 [versions]
 acu = "3.3.1"
-aea = "95f13798d1"
+aea = "e26900f"
 amecs = "1.1.5+mc21w16a"
 autoconfig = "3.2.2"
-apoli = "2.5.0"
+apoli = "2.7.1"
 backslot = "3476614"
 betterGraves = "0.4.0"
 bewitchment = "3637935" # v1.18-9
 biomeMakeover = "3634309" # v1.18.1-1.4.4
 bumblezone = "3646901" # v4.3.1
-calio = "1.7.0"
+calio = "1.9.0"
 collective = "3821256" # 4.27
 eldritchMobs = "v1.12.6"
 fallflyinglib = "3.0.0-beta.2"
@@ -20,7 +20,7 @@ libgui = "3.3.5+1.16.5"
 mobz = "3498091"
 modmenu = "3.0.0"
 omegaConfig = "1.2.1-1.18.1"
-origins = "1.6.2"
+origins = "1.8.1"
 patchouli = "1.18-61-FABRIC-SNAPSHOT"
 pehkui = "3.1.0"
 reach = "2.1.1"
@@ -28,7 +28,7 @@ shea = "1.0.1"
 snowmercy = "2.0.1"
 somnus = "0.0.14-1.17.1"
 structurized = "1.4.0+1.18"
-trinkets = "3.4.0"
+trinkets = "3.5.0"
 wood = "2.0.2"
 
 [libraries]

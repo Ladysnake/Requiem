@@ -35,16 +35,17 @@
 package ladysnake.requiem.common.advancement;
 
 import ladysnake.requiem.Requiem;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 import net.minecraft.stat.StatFormatter;
 import net.minecraft.stat.Stats;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 
 public final class RequiemStats {
     public static final Identifier INTERACT_WITH_RIFT = Requiem.id("interact_with_rift");
 
     private static Identifier register(Identifier id, StatFormatter formatter) {
-        Registry.register(Registry.CUSTOM_STAT, id, id);
+        Registry.register(Registries.CUSTOM_STAT, id, id);
         Stats.CUSTOM.getOrCreateStat(id, formatter);
         return id;
     }

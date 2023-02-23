@@ -45,9 +45,9 @@ import net.minecraft.loot.LootTable;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.Registries;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 
 public class LootingPossessedData extends PossessedDataBase {
@@ -96,7 +96,7 @@ public class LootingPossessedData extends PossessedDataBase {
     }
 
     private Identifier getLootTable() {
-        Identifier identifier = Registry.ENTITY_TYPE.getId(this.holder.getType());
+        Identifier identifier = Registries.ENTITY_TYPE.getId(this.holder.getType());
         return new Identifier(identifier.getNamespace(), "requiem/possession/" + identifier.getPath());
     }
 

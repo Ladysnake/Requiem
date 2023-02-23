@@ -51,7 +51,7 @@ public final class RequiemStatusEffectSpriteManager implements ClientSpriteRegis
     private final Map<Identifier, Identifier[]> spriteMappings = new HashMap<>();
 
     public void registerAltSprites(StatusEffect effect, int altSpriteCount) {
-        Identifier baseId = net.minecraft.util.registry.Registry.STATUS_EFFECT.getId(effect);
+        Identifier baseId = net.minecraft.registry.Registry.STATUS_EFFECT.getId(effect);
         if (baseId == null) throw new IllegalStateException("Unregistered status effect " + effect);
         Identifier[] altSprites = new Identifier[altSpriteCount];
         for (int amplifier = 0; amplifier < altSpriteCount; amplifier++) {

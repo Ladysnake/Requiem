@@ -35,6 +35,7 @@
 package ladysnake.requiem.mixin.client.possession.riding;
 
 import com.mojang.authlib.GameProfile;
+import ladysnake.requiem.api.v1.entity.ExternalJumpingMount;
 import ladysnake.requiem.api.v1.event.minecraft.JumpingMountEvents;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.core.mixin.access.LivingEntityAccessor;
@@ -43,7 +44,6 @@ import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.JumpingMount;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.network.encryption.PlayerPublicKey;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -52,40 +52,29 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(ClientPlayerEntity.class)
 public class ClientPlayerEntityMixin extends AbstractClientPlayerEntity {
-    public ClientPlayerEntityMixin(ClientWorld world, GameProfile profile, PlayerPublicKey key) {
-        super(world, profile, key);
+    public ClientPlayerEntityMixin(ClientWorld world, GameProfile profile) {
+        super(world, profile);
     }
 
-    /**
-     * But what happens if a mod calls this method then assumes mount != null ?
-     * Well that would be very sad and I'd tell that mod to add an instance check :P
-     */
-    @Inject(method = "hasJumpingMount", at = @At("RETURN"), cancellable = true)
-    private void hackJumpingMount(CallbackInfoReturnable<Boolean> cir) {
-        if (!cir.getReturnValueZ() && this.getVehicle() == null) {
+    @Inject(method = "m_kxlksird", at = @At("RETURN"), cancellable = true)
+    private void hackJumpingMount(CallbackInfoReturnable<JumpingMount> cir) {
+        if (cir.getReturnValue() == null && this.getVehicle() == null) {
             LivingEntity host = PossessionComponent.getHost(this);
             if (host != null) {
                 JumpingMount jumpingMount = JumpingMountEvents.MOUNT_CHECK.invoker().getJumpingMount(host);
-                if (jumpingMount != null && jumpingMount.canJump()) {
-                    cir.setReturnValue(true);
+                if (jumpingMount != null && jumpingMount.canJump(this)) {
+                    cir.setReturnValue(jumpingMount);
                 }
             }
         }
     }
 
-    @ModifyVariable(method = "tickMovement", at = @At("STORE"))
-    private JumpingMount swapJumpingMount(JumpingMount baseMount) {
-        if (baseMount == null) {
-            LivingEntity host = PossessionComponent.getHost(this);
-            if (host != null) {
-                JumpingMount jumpingMount = JumpingMountEvents.MOUNT_CHECK.invoker().getJumpingMount(host);
-                if (jumpingMount != null) {
-                    // prevent normal jumps
-                    ((LivingEntityAccessor) this).setJumpingCooldown(10);
-                    return jumpingMount;
-                }
-            }
+    @ModifyVariable(method = "tickMovement", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/JumpingMount;getJumpCooldown()I"), allow = 1)
+    private JumpingMount swapJumpingMount(JumpingMount mount) {
+        if (mount instanceof ExternalJumpingMount) {
+            // prevent normal jumps
+            ((LivingEntityAccessor) this).setJumpingCooldown(10);
         }
-        return baseMount;
+        return mount;
     }
 }

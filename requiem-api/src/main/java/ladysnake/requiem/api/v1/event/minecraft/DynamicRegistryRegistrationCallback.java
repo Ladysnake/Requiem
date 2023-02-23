@@ -20,8 +20,8 @@ package ladysnake.requiem.api.v1.event.minecraft;
 import com.mojang.serialization.Codec;
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryKey;
+import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryKey;
 
 public interface DynamicRegistryRegistrationCallback {
     /**

@@ -39,9 +39,9 @@ import com.mojang.serialization.Codec;
 import ladysnake.requiem.api.v1.event.minecraft.DynamicRegistryRegistrationCallback;
 import ladysnake.requiem.common.RequiemRegistries;
 import ladysnake.requiem.common.util.data.DynamicRegistryRegistrationHelperImpl;
-import net.minecraft.util.registry.DynamicRegistryManager;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryKey;
+import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryLoader;
 import org.spongepowered.asm.mixin.Dynamic;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -50,7 +50,11 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
-@Mixin(DynamicRegistryManager.class)
+/**
+ * @see RegistryLoader#WORLDGEN_REGISTRIES for dynamic registries
+ * @see net.minecraft.unmapped.C_uhbbwvga#f_hmxjhwjb for syncing
+ */
+@Mixin(RegistryLoader.class)
 public interface DynamicRegistryManagerMixin {
     @Shadow
     private static void register(ImmutableMap.Builder<RegistryKey<? extends Registry<?>>, ?> infosBuilder, RegistryKey<? extends Registry<?>> registryRef, Codec<?> entryCodec) {

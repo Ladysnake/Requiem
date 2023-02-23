@@ -41,7 +41,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleType;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.Registries;
 
 public class RequiemEntityParticleEffect implements ParticleEffect {
     public static final Factory<RequiemEntityParticleEffect> PARAMETERS_FACTORY = new Factory<>() {
@@ -84,7 +84,7 @@ public class RequiemEntityParticleEffect implements ParticleEffect {
 
     @Override
     public String asString() {
-        return "%s %d %d".formatted(Registry.PARTICLE_TYPE.getId(this.getType()), this.sourceEntityId, this.targetEntityId);
+        return "%s %d %d".formatted(Registries.PARTICLE_TYPE.getId(this.getType()), this.sourceEntityId, this.targetEntityId);
     }
 
     @Override

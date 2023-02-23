@@ -51,10 +51,10 @@ import net.minecraft.client.render.block.BlockRenderManager;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.random.RandomGenerator;
-import net.minecraft.util.registry.Registry;
 
 import java.util.IdentityHashMap;
 import java.util.Map;
@@ -74,7 +74,7 @@ public class RunestoneBlockEntityRenderer implements BlockEntityRenderer<Runesto
     }
 
     public static Identifier createRuneIdentifier(Identifier runestoneId) {
-        if (runestoneId.equals(Registry.BLOCK.getId(RequiemBlocks.TACHYLITE_RUNESTONE))) {
+        if (runestoneId.equals(Registries.BLOCK.getId(RequiemBlocks.TACHYLITE_RUNESTONE))) {
             return Requiem.id("tachylite_rune/neutral");
         }
         return new Identifier(

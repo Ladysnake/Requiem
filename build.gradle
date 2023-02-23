@@ -1,8 +1,8 @@
 // Credits to UpcraftLP for the base build script
 
 plugins {
+    id 'org.quiltmc.loom' version '1.+'
     alias(libs.plugins.chenille)
-    id 'io.github.juuxel.loom-quiltflower' version "1.6.0"
 }
 
 group = rootProject.maven_group
@@ -34,6 +34,10 @@ allprojects {
             lucko()
             modrinth()
             jitpack()
+        }
+        maven {
+            name = 'Quilt'
+            url = 'https://maven.quiltmc.org/repository/snapshot'
         }
         maven {
             url = 'https://maven.willbl.dev/releases'
@@ -77,7 +81,7 @@ allprojects {
             url = "https://maven.terraformersmc.com/releases"
             content {
                 includeGroupByRegex 'com.terraformersmc.*'
-                includeGroupByRegex 'dev.emi.*'
+                includeGroup 'dev.emi'
             }
         }
         mavenLocal()
@@ -98,9 +102,7 @@ allprojects {
     dependencies {
         //to change the versions see the gradle.properties file
         minecraft "com.mojang:minecraft:${project.minecraft_version}"
-        mappings(loom.layered {
-            addLayer(quiltMappings.mappings("org.quiltmc:quilt-mappings:${minecraft_version}+build.${quilt_mappings}:v2"))
-        })
+        mappings "org.quiltmc:quilt-mappings:${minecraft_version}+build.${quilt_mappings}:intermediary-v2"
         modImplementation "org.quiltmc:quilt-loader:${project.loader_version}"
         modImplementation "org.quiltmc:qsl:${qsl_version}+${minecraft_version}"
         modImplementation "org.quiltmc.quilted-fabric-api:quilted-fabric-api:${quilted_fabric_api_version}-${minecraft_version}"

@@ -46,7 +46,8 @@ import net.minecraft.entity.mob.PiglinBruteEntity;
 import net.minecraft.entity.mob.PiglinEntity;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 
 public final class RequiemEntities {
 
@@ -111,13 +112,13 @@ public final class RequiemEntities {
         .build();
 
     public static void init() {
-        Registry.register(Registry.ENTITY_TYPE, Requiem.id("player_shell"), PLAYER_SHELL);
-        Registry.register(Registry.ENTITY_TYPE, Requiem.id("obelisk_soul"), OBELISK_SOUL);
-        Registry.register(Registry.ENTITY_TYPE, Requiem.id("released_soul"), RELEASED_SOUL);
-        Registry.register(Registry.ENTITY_TYPE, Requiem.id("cured_villager"), CURED_VILLAGER);
-        Registry.register(Registry.ENTITY_TYPE, Requiem.id("cured_piglin"), CURED_PIGLIN);
-        Registry.register(Registry.ENTITY_TYPE, Requiem.id("cured_piglin_brute"), CURED_PIGLIN_BRUTE);
-        Registry.register(Registry.ENTITY_TYPE, Requiem.id("mortician"), MORTICIAN);
+        Registry.register(Registries.ENTITY_TYPE, Requiem.id("player_shell"), PLAYER_SHELL);
+        Registry.register(Registries.ENTITY_TYPE, Requiem.id("obelisk_soul"), OBELISK_SOUL);
+        Registry.register(Registries.ENTITY_TYPE, Requiem.id("released_soul"), RELEASED_SOUL);
+        Registry.register(Registries.ENTITY_TYPE, Requiem.id("cured_villager"), CURED_VILLAGER);
+        Registry.register(Registries.ENTITY_TYPE, Requiem.id("cured_piglin"), CURED_PIGLIN);
+        Registry.register(Registries.ENTITY_TYPE, Requiem.id("cured_piglin_brute"), CURED_PIGLIN_BRUTE);
+        Registry.register(Registries.ENTITY_TYPE, Requiem.id("mortician"), MORTICIAN);
 
         MorticianSpawner.init();
     }

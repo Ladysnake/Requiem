@@ -39,8 +39,9 @@ import ladysnake.pandemonium.common.remnant.PandemoniumRemnantTypes;
 import ladysnake.requiem.common.item.DemonSoulVesselItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 import net.minecraft.util.Formatting;
-import net.minecraft.util.registry.Registry;
 
 public final class PandemoniumItems {
     public static final DemonSoulVesselItem BALEFUL_SOUL_VESSEL = new DemonSoulVesselItem(PandemoniumRemnantTypes.WANDERING_SPIRIT, Formatting.GRAY, new Item.Settings().group(ItemGroup.MISC).maxCount(1), "requiem:remnant_vessel.banishment");
@@ -50,6 +51,6 @@ public final class PandemoniumItems {
     }
 
     public static <T extends Item> void registerItem(T item, String name) {
-        Registry.register(Registry.ITEM, Pandemonium.id(name), item);
+        Registry.register(Registries.ITEM, Pandemonium.id(name), item);
     }
 }

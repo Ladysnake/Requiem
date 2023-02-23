@@ -38,7 +38,8 @@ import ladysnake.requiem.Requiem;
 import ladysnake.requiem.common.block.obelisk.RunestoneBlockEntity;
 import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
 import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 
 public final class RequiemBlockEntities {
     public static final BlockEntityType<RunestoneBlockEntity> RUNIC_OBSIDIAN = FabricBlockEntityTypeBuilder.create(RunestoneBlockEntity::new,
@@ -55,6 +56,6 @@ public final class RequiemBlockEntities {
     }
 
     private static void register(String id, BlockEntityType<?> type) {
-        Registry.register(Registry.BLOCK_ENTITY_TYPE, Requiem.id(id), type);
+        Registry.register(Registries.BLOCK_ENTITY_TYPE, Requiem.id(id), type);
     }
 }
