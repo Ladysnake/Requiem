@@ -59,7 +59,7 @@ public abstract class LightmapTextureManagerMixin {
         method = "update",
         slice = @Slice(
             from = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/GameRenderer;getNightVisionStrength(Lnet/minecraft/entity/LivingEntity;F)F"),
-            to = @At(value = "INVOKE", target = "Lnet/minecraft/util/math/Vec3f;<init>(FFF)V", ordinal = 0)
+            to = @At(value = "INVOKE", target = "Lorg/joml/Vector3f;<init>(FFF)V", ordinal = 0, remap = false)
         ),
         at = @At("STORE"),
         index = 8 // there are too many floats in this method, so we just take the variable index from the bytecode

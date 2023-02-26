@@ -80,6 +80,7 @@ import org.quiltmc.qsl.base.api.entrypoint.ModInitializer;
 import org.quiltmc.qsl.command.api.CommandRegistrationCallback;
 import org.quiltmc.qsl.command.mixin.ArgumentTypeInfosAccessor;
 import org.quiltmc.qsl.resource.loader.api.ResourceLoader;
+import org.quiltmc.qsl.resource.loader.api.reloader.ResourceReloaderKeys;
 
 public final class Requiem implements ModInitializer {
     public static final String MOD_ID = "requiem";
@@ -117,7 +118,9 @@ public final class Requiem implements ModInitializer {
         CommandRegistrationCallback.EVENT.register((dispatcher, ctx, dedicated) -> RequiemCommand.register(dispatcher));
         // Quilt's ServerArgumentType.register seems to break somehow
         ArgumentTypeInfosAccessor.callRegister(Registries.COMMAND_ARGUMENT_TYPE, "requiem:remnant", RemnantArgumentType.class, SingletonArgumentInfo.contextFree(RemnantArgumentType::remnantType));
-        ResourceLoader.get(ResourceType.SERVER_DATA).registerReloader(ResurrectionDataLoader.INSTANCE);
+        ResourceLoader resourceLoader = ResourceLoader.get(ResourceType.SERVER_DATA);
+        resourceLoader.registerReloader(ResurrectionDataLoader.INSTANCE);
+        resourceLoader.addReloaderOrdering(ResourceReloaderKeys.Server.TAGS, ResurrectionDataLoader.INSTANCE.getQuiltId());
         SyncServerResourcesCallback.EVENT.register(player -> RequiemNetworking.sendTo(player, RequiemNetworking.createDataSyncMessage(SubDataManagerHelper.getServerHelper())));
         ApiInitializer.setPluginCallback(this::registerPlugin);
         RequiemCompatibilityManager.init();

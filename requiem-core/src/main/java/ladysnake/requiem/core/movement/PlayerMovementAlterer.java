@@ -66,8 +66,8 @@ import net.minecraft.entity.passive.FishEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.NotNull;
 
@@ -122,7 +122,7 @@ public abstract class PlayerMovementAlterer implements MovementAlterer {
     }
 
     private void updateSpeedModifier(LivingEntity currentBody, UUID speedModifierUuid, ToDoubleFunction<MovementConfig> property, boolean shouldApplyModifier) {
-        EntityAttributeInstance speedAttribute = currentBody.getAttributes().getCustomInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED);
+        EntityAttributeInstance speedAttribute = currentBody.getAttributes().m_rkfdyugp(EntityAttributes.GENERIC_MOVEMENT_SPEED);
         if (speedAttribute != null) {
             speedAttribute.removeModifier(speedModifierUuid);
             if (shouldApplyModifier && config != null && property.applyAsDouble(config) != 1.0) {

@@ -57,7 +57,7 @@ public class MorticianEntityTests implements FabricGameTest {
     public void oldEtherealMorticiansGetConverted(TestContext ctx) {
         BlockPos controllerPos = new BlockPos(20, 3, 20);
         ctx.setBlockState(controllerPos.up(), RequiemBlocks.RIFT_RUNE);
-        ctx.addInstantFinalTask(() -> {
+        ctx.succeedIf(() -> {
             RunestoneBlockEntity controller = Objects.requireNonNull(((RunestoneBlockEntity) ctx.getBlockEntity(controllerPos)));
             GlobalRecord obeliskRecord = controller.getDescriptorRecord().orElseThrow(() -> new GameTestException("Unavailable obelisk"));
             NbtCompound morticianNbt = Util.make(new NbtCompound(), nbt -> {

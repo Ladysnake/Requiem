@@ -88,7 +88,7 @@ public abstract class CraftingScreenMixin extends HandledScreen<CraftingScreenHa
     @Inject(method = { "m_rvbeuffp", "method_19890" }, at = @At("RETURN"), remap = false, require = 1, allow = 1)
     private void repositionCraftingButton(ButtonWidget button, CallbackInfo ci) {
         if (this.supercrafterButton != null) {
-            this.supercrafterButton.setPos(this.x + 5, this.height / 2 - 30);
+            this.supercrafterButton.setPosition(this.x + 5, this.height / 2 - 30);
         }
     }
 }

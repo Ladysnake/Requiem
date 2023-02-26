@@ -71,18 +71,18 @@ public abstract class GameRendererMixin implements GameRendererAccessor {
 
     @Shadow
     @Final
-    private MinecraftClient client;
+    MinecraftClient client;
 
     // synthetic method corresponding to the ProjectileUtil#raycast lambda predicate in updateTargetedEntity
     @SuppressWarnings("ShadowTarget")
     @Shadow(remap = false)
-    private static boolean method_18144(Entity tested) {
+    private static boolean m_vziixqvb(Entity tested) {
         return false;
     }
 
     @Override
     public boolean requiem$isEligibleForTargeting(Entity tested) {
-        return method_18144(tested);
+        return m_vziixqvb(tested);
     }
 
     @Inject(method = "updateTargetedEntity", at = @At(value = "FIELD", target = "Lnet/minecraft/client/MinecraftClient;targetedEntity:Lnet/minecraft/entity/Entity;", ordinal = 0))

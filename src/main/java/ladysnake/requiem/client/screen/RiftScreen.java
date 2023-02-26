@@ -46,11 +46,11 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.Vec3f;
-import net.minecraft.util.math.Vector4f;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Matrix4f;
+import org.joml.Vector3f;
+import org.joml.Vector4f;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -58,6 +58,7 @@ import java.util.Objects;
 
 public class RiftScreen extends HandledScreen<RiftScreenHandler> {
     private static final Identifier RIFT_ICONS = Requiem.id("textures/gui/soul_rift.png");
+    private static final Vector3f VECTOR_ZERO = new Vector3f(0, 0, 0);
 
     private @Nullable Matrix4f projectionViewMatrix;
     private @Nullable ObeliskDescriptor currentMouseOver;
@@ -95,30 +96,30 @@ public class RiftScreen extends HandledScreen<RiftScreenHandler> {
             RenderSystem.setShaderTexture(0, RIFT_ICONS);
 
             for (ObeliskDescriptor obelisk : this.handler.getObelisks()) {
-                Vec3f projected = worldToScreenSpace(this.projectionViewMatrix, obelisk.center());
+                Vector3f projected = worldToScreenSpace(this.projectionViewMatrix, obelisk.center());
                 int x, y;
 
-                if (projected.getZ() > 0
-                    && projected.getX() >= 0 && projected.getX() <= width
-                    && projected.getY() >= 0 && projected.getY() <= height) {
+                if (projected.z() > 0
+                    && projected.x() >= 0 && projected.x() <= width
+                    && projected.y() >= 0 && projected.y() <= height) {
                     // Obelisk is in front of us, just display the icon on the screen
-                    x = Math.round(projected.getX());
-                    y = Math.round(projected.getY());
+                    x = Math.round(projected.x());
+                    y = Math.round(projected.y());
                 } else {
                     // Obelisk is outside the screen's boundaries
-                    if (projected.getZ() < 0) {
+                    if (projected.z() < 0) {
                         // when the point gets behind us, it becomes mirrored, so we have to un-mirror it
-                        projected.set(width - projected.getX(), height - projected.getY(), projected.getZ());
+                        projected.set(width - projected.x(), height - projected.y(), projected.z());
                     }
 
                     // Project point to border of the screen
                     // https://stackoverflow.com/questions/1585525/how-to-find-the-intersection-point-between-a-line-and-a-rectangle
-                    double slope = (projected.getY() - centerY) / (projected.getX() - centerX);
+                    double slope = (projected.y() - centerY) / (projected.x() - centerX);
                     double heightAtCenterX = slope * (width * 0.5);
                     double lengthAtCenterY = (height * 0.5) / slope;
 
                     if (height * -0.5 <= heightAtCenterX && heightAtCenterX <= height * 0.5) {
-                        if (projected.getX() > centerX) {
+                        if (projected.x() > centerX) {
                             // Right edge
                             x = width;
                         } else {
@@ -129,7 +130,7 @@ public class RiftScreen extends HandledScreen<RiftScreenHandler> {
                         }
                         y = (int) Math.round(centerY + heightAtCenterX);
                     } else {
-                        if (projected.getY() > centerY) {
+                        if (projected.y() > centerY) {
                             // Bottom edge (bottom edge is bigger Y)
                             y = height;
                         } else {
@@ -156,7 +157,6 @@ public class RiftScreen extends HandledScreen<RiftScreenHandler> {
                 }
 
                 // actually the parameter names are wrong
-                //noinspection SuspiciousNameCombination
                 drawTexture(matrices, x - iconHalfSize, y - iconHalfSize, this.getZOffset(), 0, v, iconSize, iconSize, textureWidth, textureHeight);
             }
 
@@ -198,27 +198,27 @@ public class RiftScreen extends HandledScreen<RiftScreenHandler> {
         super.render(matrices, mouseX, mouseY, delta);
     }
 
-    private Vec3f worldToScreenSpace(Matrix4f projectionViewMatrix, Vec3d worldPos) {
+    private Vector3f worldToScreenSpace(Matrix4f projectionViewMatrix, Vec3d worldPos) {
         Vec3d cameraPos = Objects.requireNonNull(client).gameRenderer.getCamera().getPos();
         Vector4f clipSpacePos = worldToClipSpace(projectionViewMatrix, worldPos, cameraPos, 0);
 
         // If W is 0, we cannot perform the division, so we retry with a little nudge
-        if (clipSpacePos.getW() == 0) {
+        if (clipSpacePos.w() == 0) {
             clipSpacePos = worldToClipSpace(projectionViewMatrix, worldPos, cameraPos, 0.00001F);
         }
 
-        float sign = Math.signum(clipSpacePos.getW());
+        float sign = Math.signum(clipSpacePos.w());
         try {
-            clipSpacePos.normalizeProjectiveCoordinates();
+            clipSpacePos.div(clipSpacePos.w());
         } catch (ArithmeticException e) {
             // Should be pretty rare, but may hypothetically happen ?
-            return Vec3f.ZERO;
+            return VECTOR_ZERO;
         }
 
-        return new Vec3f(
-            ((clipSpacePos.getX() + 1f) / 2f) * this.width,
-            ((-clipSpacePos.getY() + 1f) / 2f) * this.height,   // screen coordinates origin are at top-left
-            Math.abs(clipSpacePos.getZ()) * sign // we use the depth to know if a point is behind us, or behind another point
+        return new Vector3f(
+            ((clipSpacePos.x() + 1f) / 2f) * this.width,
+            ((-clipSpacePos.y() + 1f) / 2f) * this.height,   // screen coordinates origin are at top-left
+            Math.abs(clipSpacePos.z()) * sign // we use the depth to know if a point is behind us, or behind another point
         );
     }
 
@@ -229,7 +229,7 @@ public class RiftScreen extends HandledScreen<RiftScreenHandler> {
             (float) (worldPos.getZ() + 0.5F - cameraPos.getZ() + nudge),
             1.0F
         );
-        clipSpacePos.transform(projectionViewMatrix);
+        clipSpacePos.mul(projectionViewMatrix);
         return clipSpacePos;
     }
 
@@ -260,7 +260,7 @@ public class RiftScreen extends HandledScreen<RiftScreenHandler> {
     }
 
     public void updateMatrices(MatrixStack modelViewStack, Matrix4f projectionMatrix) {
-        this.projectionViewMatrix = projectionMatrix.copy();
-        this.projectionViewMatrix.multiply(modelViewStack.peek().getModel());
+        this.projectionViewMatrix = new Matrix4f(projectionMatrix);
+        this.projectionViewMatrix.mul(modelViewStack.peek().getModel());
     }
 }

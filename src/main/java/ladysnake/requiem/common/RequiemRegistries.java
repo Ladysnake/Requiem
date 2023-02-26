@@ -35,7 +35,6 @@
 package ladysnake.requiem.common;
 
 import ladysnake.requiem.Requiem;
-import ladysnake.requiem.api.v1.event.minecraft.DynamicRegistryRegistrationCallback;
 import ladysnake.requiem.api.v1.possession.item.PossessionItemAction;
 import ladysnake.requiem.api.v1.remnant.RemnantState;
 import ladysnake.requiem.api.v1.remnant.RemnantType;
@@ -49,6 +48,7 @@ import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.SimpleRegistry;
 import net.minecraft.util.Identifier;
 import org.apiguardian.api.API;
+import org.quiltmc.qsl.registry.api.dynamic.DynamicMetaregistry;
 
 import static org.apiguardian.api.API.Status.EXPERIMENTAL;
 
@@ -70,11 +70,6 @@ public final class RequiemRegistries {
 
     public static void init() {
         Registry.register(REMNANT_STATES, new Identifier(RemnantState.NULL_STATE_ID), RemnantTypes.MORTAL);
-
-        RequiemBuiltinRegistries.init();
-
-        DynamicRegistryRegistrationCallback.EVENT.register(helper -> {
-            helper.registerSynced(MOB_ITEM_OVERRIDE_KEY, PossessionItemOverrideWrapper.CODEC, PossessionItemOverrideWrapper.NETWORK_CODEC);
-        });
+        DynamicMetaregistry.registerSynced(MOB_ITEM_OVERRIDE_KEY, PossessionItemOverrideWrapper.CODEC, PossessionItemOverrideWrapper.NETWORK_CODEC);
     }
 }

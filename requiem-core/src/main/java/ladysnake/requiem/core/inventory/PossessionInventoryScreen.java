@@ -74,7 +74,11 @@ public class PossessionInventoryScreen extends AbstractInventoryScreen<PlayerScr
         assert this.client.player != null;
 
         if (this.client.interactionManager.hasCreativeInventory()) {
-            this.client.setScreen(new CreativeInventoryScreen(this.client.player));
+            this.client.setScreen(new CreativeInventoryScreen(
+                this.client.player,
+                this.client.player.networkHandler.getEnabledFlags(),
+                this.client.options.m_hfsamqbt().get()
+            ));
             return true;
         } else if (InventoryLimiter.instance().getInventoryShape(this.player) != InventoryShape.ALT_LARGE) {
             this.client.setScreen(new InventoryScreen(this.client.player));

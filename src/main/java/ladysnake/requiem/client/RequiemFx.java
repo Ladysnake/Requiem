@@ -230,7 +230,7 @@ public final class RequiemFx implements ShaderEffectRenderCallback, ClientTickEv
         RenderSystem.disableDepthTest();
         RenderSystem.depthMask(false);
         RenderSystem.enableBlend();
-        RenderSystem.blendFuncSeparate(GlStateManager.class_4535.ONE, GlStateManager.class_4534.ONE, GlStateManager.class_4535.ONE, GlStateManager.class_4534.ONE);
+        RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE);
         RenderSystem.setShaderColor(r, g, b, 1.0F);
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderTexture(0, PENANCE_OVERLAY);

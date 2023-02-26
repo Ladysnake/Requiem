@@ -54,8 +54,7 @@ public final class DamageSourceSerialization {
     static {
         // God I wish we had a registry for this
         for (DamageSource damage : new DamageSource[]{IN_FIRE, LIGHTNING_BOLT, ON_FIRE, LAVA, HOT_FLOOR, IN_WALL,
-                CRAMMING, DROWN, STARVE, CACTUS, FALL, FLY_INTO_WALL, OUT_OF_WORLD, GENERIC, MAGIC, WITHER, ANVIL,
-                FALLING_BLOCK, DRAGON_BREATH, DRYOUT, SWEET_BERRY_BUSH}) {
+                CRAMMING, DROWN, STARVE, CACTUS, FALL, FLY_INTO_WALL, OUT_OF_WORLD, GENERIC, MAGIC, WITHER, DRAGON_BREATH, DRYOUT, SWEET_BERRY_BUSH}) {
             DAMAGE_FACTORIES.put(damage.name, (e1, e2) -> damage);
         }
         for (String name : new String[] {"mob", "arrow", "trident", "fireball", "thrown", "indirectMagic", "fireworks"}) {

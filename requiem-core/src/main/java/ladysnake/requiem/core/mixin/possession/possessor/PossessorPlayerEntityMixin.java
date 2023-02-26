@@ -154,7 +154,7 @@ public abstract class PossessorPlayerEntityMixin extends PossessorLivingEntityMi
         @SuppressWarnings("ConstantConditions") Entity self = (Entity) (Object) this;
         // This method can be called in the constructor
         //noinspection ConstantConditions
-        if (self.asComponentProvider().getComponentContainer() != null) {
+        if (((ComponentProvider) self).asComponentProvider().getComponentContainer() != null) {
             Entity possessedEntity = PossessionComponent.getHost(self);
             if (possessedEntity != null) {
                 cir.setReturnValue(possessedEntity.getAir());
@@ -241,12 +241,12 @@ public abstract class PossessorPlayerEntityMixin extends PossessorLivingEntityMi
         }
     }
 
-    @Inject(method = "slowMovement", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "setMovementMultiplier", at = @At("HEAD"), cancellable = true)
     private void slowMovement(BlockState state, Vec3d multiplier, CallbackInfo ci) {
         MobEntity possessedEntity = PossessionComponent.KEY.get(this).getHost();
         if (possessedEntity != null) {
             possessedEntity.fallDistance = this.requiem$getFallDistance();
-            possessedEntity.slowMovement(state, multiplier);
+            possessedEntity.setMovementMultiplier(state, multiplier);
             this.requiem$setFallDistance(possessedEntity.fallDistance);
             this.requiem$setMovementMultiplier(((EntityAccessor) possessedEntity).requiem$getMovementMultiplier());
             ci.cancel();

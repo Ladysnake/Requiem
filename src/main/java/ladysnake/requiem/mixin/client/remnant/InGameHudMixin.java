@@ -49,7 +49,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluid;
-import net.minecraft.tag.TagKey;
+import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.math.MathHelper;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -80,7 +80,7 @@ public abstract class InGameHudMixin extends DrawableHelper {
     @Shadow
     protected abstract PlayerEntity getCameraPlayer();
 
-    @Inject(method = "renderCrosshair", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/systems/RenderSystem;blendFuncSeparate(Lcom/mojang/blaze3d/platform/GlStateManager$class_4535;Lcom/mojang/blaze3d/platform/GlStateManager$class_4534;Lcom/mojang/blaze3d/platform/GlStateManager$class_4535;Lcom/mojang/blaze3d/platform/GlStateManager$class_4534;)V"))
+    @Inject(method = "renderCrosshair", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/systems/RenderSystem;blendFuncSeparate(Lcom/mojang/blaze3d/platform/GlStateManager$SourceFactor;Lcom/mojang/blaze3d/platform/GlStateManager$DestFactor;Lcom/mojang/blaze3d/platform/GlStateManager$SourceFactor;Lcom/mojang/blaze3d/platform/GlStateManager$DestFactor;)V"))
     private void colorCrosshair(MatrixStack matrices, CallbackInfo ci) {
         CrosshairRenderCallback.EVENT.invoker().onCrosshairRender(matrices, this.scaledWidth, this.scaledHeight);
     }

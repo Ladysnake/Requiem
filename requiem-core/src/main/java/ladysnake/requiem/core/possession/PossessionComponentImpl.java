@@ -220,7 +220,7 @@ public final class PossessionComponentImpl implements PossessionComponent {
             ((LivingEntityAccessor) player).requiem$invokeDropInventory();
         }
         player.clearStatusEffects();
-        if (player.world.getLevelProperties().isHardcore()) {
+        if (player.world.getProperties().isHardcore()) {
             AttritionFocus.KEY.get(possessed).applyAttrition(player);
         }
         PossessionEvents.DISSOCIATION_CLEANUP.invoker().cleanUpAfterDissociation(player, possessed);

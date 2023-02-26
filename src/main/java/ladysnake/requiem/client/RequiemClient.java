@@ -34,7 +34,6 @@
  */
 package ladysnake.requiem.client;
 
-import com.google.common.collect.ImmutableSet;
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.annotation.CalledThroughReflection;
 import ladysnake.requiem.client.model.lib.SimpleBakedModel;
@@ -74,8 +73,6 @@ import net.minecraft.client.particle.SpellParticle;
 import net.minecraft.client.render.entity.PlayerEntityRenderer;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.texture.Sprite;
-import net.minecraft.client.texture.SpriteAtlasTexture;
-import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.entity.EntityType;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
@@ -170,10 +167,7 @@ public final class RequiemClient {
                             -1, d -> d.getAxis() == Direction.Axis.Y ? topRuneSprite : sideRuneSprite,
                             -0.0001f, -0.0001f, -0.0001f, 1.0001f, 1.0001f, 1.0001f);
                         return new SimpleBakedModel(mb.builder.build(), ModelHelper.MODEL_TRANSFORM_BLOCK, sideRuneSprite, null);
-                    }, ImmutableSet.of( // Set.of throws on duplicate elements! (ImmutableSet.of does not)
-                        new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(topRuneSpriteId)),
-                        new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(sideRuneSpriteId))
-                    ));
+                    });
                 }
             }
             return null;
@@ -232,6 +226,5 @@ public final class RequiemClient {
         this.worldFreezeFxRenderer.registerCallbacks();
         this.listener.registerCallbacks();
         this.targetHandler.registerCallbacks();
-        this.statusEffectSpriteManager.registerCallbacks();
     }
 }

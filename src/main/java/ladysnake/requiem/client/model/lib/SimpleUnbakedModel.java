@@ -16,10 +16,9 @@
 
 package ladysnake.requiem.client.model.lib;
 
-import com.mojang.datafixers.util.Pair;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.ModelBakeSettings;
-import net.minecraft.client.render.model.ModelLoader;
+import net.minecraft.client.render.model.ModelBaker;
 import net.minecraft.client.render.model.UnbakedModel;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.SpriteIdentifier;
@@ -27,16 +26,13 @@ import net.minecraft.util.Identifier;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 import java.util.function.Function;
 
 public class SimpleUnbakedModel implements UnbakedModel {
     Function<ModelBuilder, BakedModel> baker;
-    private final Set<SpriteIdentifier> textureDependencies;
 
-    public SimpleUnbakedModel(Function<ModelBuilder, BakedModel> baker, Set<SpriteIdentifier> textureDependencies) {
+    public SimpleUnbakedModel(Function<ModelBuilder, BakedModel> baker) {
         this.baker = baker;
-        this.textureDependencies = textureDependencies;
     }
 
     @Override
@@ -45,12 +41,12 @@ public class SimpleUnbakedModel implements UnbakedModel {
     }
 
     @Override
-    public Collection<SpriteIdentifier> getTextureDependencies(Function<Identifier, UnbakedModel> var1, Set<Pair<String, String>> set) {
-        return textureDependencies;
+    public void resolveParents(Function<Identifier, UnbakedModel> models) {
+
     }
 
     @Override
-    public BakedModel bake(ModelLoader modelLoader, Function<SpriteIdentifier, Sprite> spriteFunc, ModelBakeSettings var3, Identifier var4) {
-        return baker.apply(ModelBuilder.prepare(spriteFunc));
+    public BakedModel bake(ModelBaker modelBaker, Function<SpriteIdentifier, Sprite> textureGetter, ModelBakeSettings rotationContainer, Identifier modelId) {
+        return baker.apply(ModelBuilder.prepare(textureGetter));
     }
 }

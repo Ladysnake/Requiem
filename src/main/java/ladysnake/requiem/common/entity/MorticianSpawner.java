@@ -81,15 +81,10 @@ public class MorticianSpawner implements ServerTickEvents.End {
             }
             RiftRunestoneBlock.findRespawnPosition(RequiemEntities.MORTICIAN, world, obelisk.pos())
                 .ifPresent(spawnPos -> {
-                    MorticianEntity mortician = RequiemEntities.MORTICIAN.spawn(
+                    MorticianEntity mortician = RequiemEntities.MORTICIAN.m_gdkrszjk(
                         world,
-                        null,
-                        null,
-                        null,
                         new BlockPos(spawnPos),
-                        SpawnReason.STRUCTURE,
-                        false,
-                        false
+                        SpawnReason.STRUCTURE
                     );
                     if (mortician != null) {
                         Vec3d towardsObelisk = obelisk.center().subtract(spawnPos).normalize();

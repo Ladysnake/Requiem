@@ -47,7 +47,6 @@ import net.minecraft.advancement.AdvancementProgress;
 import net.minecraft.advancement.PlayerAdvancementTracker;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.encryption.PlayerPublicKey;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
@@ -61,8 +60,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ServerPlayerEntity.class)
 public abstract class ServerPlayerEntityMixin extends PlayerEntity implements RequiemPlayer {
-    public ServerPlayerEntityMixin(World world, BlockPos pos, float yaw, GameProfile profile, PlayerPublicKey key) {
-        super(world, pos, yaw, profile, key);
+    public ServerPlayerEntityMixin(World world, BlockPos pos, float yaw, GameProfile profile) {
+        super(world, pos, yaw, profile);
     }
 
     @Shadow
@@ -86,7 +85,7 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity implements Re
         AdvancementProgress progress = this.getAdvancementTracker().getProgress(theChoice);
         if (progress == null) {
             Requiem.LOGGER.error("Advancement '{}' is missing", advancementId);
-        } else if (!progress.isDone() && !world.getLevelProperties().isHardcore()) {
+        } else if (!progress.isDone() && !world.getProperties().isHardcore()) {
             RemnantType startingRemnantType = world.getGameRules().get(RequiemGamerules.STARTING_SOUL_MODE).get().getRemnantType();
             if (startingRemnantType == null) {
                 DeathSuspender.get(this).suspendDeath(killingBlow);
@@ -102,7 +101,7 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity implements Re
      */
     @Inject(method = "onDeath", at = @At(value = "FIELD", target = "Lnet/minecraft/world/GameRules;SHOW_DEATH_MESSAGES:Lnet/minecraft/world/GameRules$Key;"))
     private void revokeLifeRights(DamageSource source, CallbackInfo ci) {
-        if (world.getLevelProperties().isHardcore()) {
+        if (world.getProperties().isHardcore()) {
             RemnantComponent.get(this).become(RemnantTypes.MORTAL);
         }
     }

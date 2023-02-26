@@ -42,7 +42,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@Mixin(EntityPredicates.Equipable.class)
+@Mixin(EntityPredicates.Equippable.class)
 public class EntityPredicatesEquipableMixin {
     @Inject(method = "test", at = @At("RETURN"), cancellable = true)
     private void requiem$noArmorForYou(Entity entity, CallbackInfoReturnable<Boolean> cir) {

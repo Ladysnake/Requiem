@@ -296,8 +296,8 @@ public class EmptySoulVesselItem extends Item {
     }
 
     private static double getAttributeBaseValue(LivingEntity entity, EntityAttribute attribute) {
-        if (!entity.getAttributes().hasAttribute(attribute)) return 0;
-        return entity.getAttributeBaseValue(attribute);
+        if (!entity.getAttributes().m_vonjnjfn(attribute)) return 0;
+        return entity.m_xpojueyp(attribute);
     }
 
     @Override

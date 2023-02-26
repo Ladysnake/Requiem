@@ -37,6 +37,7 @@ package ladysnake.requiem.mixin.common.attrition;
 import ladysnake.requiem.api.v1.internal.StatusEffectReapplicator;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.effect.StatusEffect;
+import net.minecraft.registry.Holder;
 import net.minecraft.server.command.EffectCommand;
 import net.minecraft.server.command.ServerCommandSource;
 import org.spongepowered.asm.mixin.Mixin;
@@ -56,10 +57,10 @@ public abstract class EffectCommandMixin {
     }
 
     // ModifyVariable to capture the entity more easily
-    @ModifyVariable(method = "executeClear(Lnet/minecraft/server/command/ServerCommandSource;Ljava/util/Collection;Lnet/minecraft/entity/effect/StatusEffect;)I",
+    @ModifyVariable(method = "executeClear(Lnet/minecraft/server/command/ServerCommandSource;Ljava/util/Collection;Lnet/minecraft/registry/Holder;)I",
         at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;removeStatusEffect(Lnet/minecraft/entity/effect/StatusEffect;)Z", shift = At.Shift.AFTER))
-    private static Entity actuallyClearSoulboundEffect(Entity entity, ServerCommandSource source, Collection<Entity> targets, StatusEffect effect) {
-        StatusEffectReapplicator.KEY.maybeGet(entity).ifPresent(r -> r.definitivelyClear(effect));
+    private static Entity actuallyClearSoulboundEffect(Entity entity, ServerCommandSource source, Collection<? extends Entity> targets, Holder<StatusEffect> effect) {
+        StatusEffectReapplicator.KEY.maybeGet(entity).ifPresent(r -> r.definitivelyClear(effect.value()));
         return entity;
     }
 }

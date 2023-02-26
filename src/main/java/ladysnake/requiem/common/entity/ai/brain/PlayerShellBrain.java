@@ -48,11 +48,10 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.Activity;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
-import net.minecraft.entity.ai.brain.task.FollowMobTask;
-import net.minecraft.entity.ai.brain.task.TimeLimitedTask;
 import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.unmapped.C_lygsomtd;
 import net.minecraft.util.math.intprovider.UniformIntProvider;
 
 import java.util.Optional;
@@ -77,7 +76,7 @@ public final class PlayerShellBrain {
         brain.setTaskList(Activity.IDLE, 10, ImmutableList.of(
             new PlayerGoHomeTask(MemoryModuleType.HOME, 1f, 10, 5000),  // TODO fix the attempt thing
             new LivingUpdateAttackTargetTask<>(PlayerShellBrain::canFight, PlayerShellBrain::getPriorityAttackTarget),
-            new TimeLimitedTask<>(new FollowMobTask(8.0F), UniformIntProvider.create(30, 60))
+            C_lygsomtd.m_ouvkkubu(8.0F, UniformIntProvider.create(30, 60))
         ));
     }
 

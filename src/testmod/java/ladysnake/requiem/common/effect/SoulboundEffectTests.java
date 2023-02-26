@@ -52,14 +52,14 @@ public class SoulboundEffectTests implements FabricGameTest {
         ServerPlayerEntity ghost = RequiemTestUtil.spawnGhost(ctx);
         ghost.addStatusEffect(new StatusEffectInstance(RequiemStatusEffects.ATTRITION, 30, 0));
         ghost.clearStatusEffects();
-        ctx.runAtTick(1, () -> ctx.addInstantFinalTask(() -> GameTestUtil.assertTrue("Player should keep attrition", ghost.hasStatusEffect(RequiemStatusEffects.ATTRITION))));
+        ctx.succeedAtTickIf(1, () -> GameTestUtil.assertTrue("Player should keep attrition", ghost.hasStatusEffect(RequiemStatusEffects.ATTRITION)));
     }
 
-    @GameTest(structureName = EMPTY_STRUCTURE, duration = 2)
+    @GameTest(structureName = EMPTY_STRUCTURE)
     public void clearCommandBypassesSticky(TestContext ctx) {
         ServerPlayerEntity ghost = RequiemTestUtil.spawnGhost(ctx);
         ghost.addStatusEffect(new StatusEffectInstance(RequiemStatusEffects.ATTRITION, 30, 0));
         EffectCommandAccessor.invokeExecuteClear(ghost.getCommandSource(), List.of(ghost));
-        ctx.runAtTick(1, () -> ctx.addInstantFinalTask(() -> GameTestUtil.assertFalse("Player should lose attrition", ghost.hasStatusEffect(RequiemStatusEffects.ATTRITION))));
+        ctx.succeedAtTickIf(1, () -> GameTestUtil.assertFalse("Player should lose attrition", ghost.hasStatusEffect(RequiemStatusEffects.ATTRITION)));
     }
 }

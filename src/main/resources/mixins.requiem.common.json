@@ -17,7 +17,6 @@
     "attrition.LivingEntityMixin",
     "attrition.ServerPlayerEntityMixin",
     "attrition.StatusEffectInstanceMixin",
-    "data.DynamicRegistryManagerMixin",
     "data.EntityPredicateMixin",
     "data.ItemPredicateMixin",
     "data.LocationPredicateMixin",

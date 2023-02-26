@@ -107,7 +107,7 @@ public abstract class InventoryScreenMixin extends AbstractInventoryScreen<Playe
     @Inject(method = { "m_ekzothcc", "method_19891" }, at = @At("RETURN"), remap = false, require = 1, allow = 1)
     private void repositionCraftingButton(ButtonWidget button, CallbackInfo ci) {
         if (this.supercrafterButton != null) {
-            this.supercrafterButton.setPos(this.x + 131, this.height / 2 - 22);
+            this.supercrafterButton.setPosition(this.x + 131, this.height / 2 - 22);
         }
     }
 

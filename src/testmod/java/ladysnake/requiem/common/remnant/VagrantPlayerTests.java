@@ -75,7 +75,7 @@ public class VagrantPlayerTests implements FabricGameTest {
         ctx.setBlockState(vagrantPlatePos, Blocks.LIGHT_WEIGHTED_PRESSURE_PLATE);
         ctx.getBlockState(regularPlatePos).onEntityCollision(ctx.getWorld(), ctx.getAbsolutePos(regularPlatePos), regularPlayer);
         ctx.getBlockState(vagrantPlatePos).onEntityCollision(ctx.getWorld(), ctx.getAbsolutePos(vagrantPlatePos), vagrantPlayer);
-        ctx.addInstantFinalTask(() -> {
+        ctx.succeedIf(() -> {
             ctx.expectBlockProperty(regularPlatePos, WeightedPressurePlateBlock.POWER, 5);  // FIXME I have no idea why 4 player shells appear on this block
             ctx.expectBlockProperty(vagrantPlatePos, WeightedPressurePlateBlock.POWER, 0);
         });
@@ -112,15 +112,15 @@ public class VagrantPlayerTests implements FabricGameTest {
             }
 
             @Override
-            public boolean listen(ServerWorld world, GameEvent.Message eventMessage) {
-                if (eventMessage.getContext().sourceEntity() instanceof LivingEntity living) {
-                    this.detectedEntities.computeIfAbsent(living, e -> new HashSet<>()).add(eventMessage.getEvent());
+            public boolean listen(ServerWorld world, GameEvent gameEvent, GameEvent.Context context, Vec3d vec3d) {
+                if (context.sourceEntity() instanceof LivingEntity living) {
+                    this.detectedEntities.computeIfAbsent(living, e -> new HashSet<>()).add(gameEvent);
                     return true;
                 }
                 return false;
             }
         };
-        ctx.getWorld().getChunk(regularPlayer.getBlockPos()).getGameEventDispatcher(ChunkSectionPos.getSectionCoord(regularPlayer.getY())).addListener(listener);
+        ctx.getWorld().getChunk(regularPlayer.getBlockPos()).m_fbrqbtve(ChunkSectionPos.getSectionCoord(regularPlayer.getY())).m_zgxgxcnm(listener);
         Vec3d movement = new Vec3d(2, 0, 0);
         regularPlayer.move(MovementType.SELF, movement);
         vagrantPlayer.move(MovementType.SELF, movement);
@@ -128,7 +128,7 @@ public class VagrantPlayerTests implements FabricGameTest {
         ctx.getWorld().emitGameEvent(regularPlayer, GameEvent.TELEPORT, regularPlayer.getPos());
         ctx.getWorld().emitGameEvent(vagrantPlayer, GameEvent.TELEPORT, regularPlayer.getPos());
         ctx.getWorld().emitGameEvent(possessor, GameEvent.TELEPORT, regularPlayer.getPos());
-        ctx.runAtTick(1, () -> ctx.addInstantFinalTask(() -> {
+        ctx.succeedAtTickIf(1, () -> {
             GameTestUtil.assertTrue("Mortal players should send step game events", listener.detected(regularPlayer, GameEvent.STEP));
             GameTestUtil.assertTrue("Mortal players should send other game events", listener.detected(regularPlayer, GameEvent.TELEPORT));
             GameTestUtil.assertFalse("Vagrant players should not send step game events", listener.detected(vagrantPlayer, GameEvent.STEP));
@@ -138,6 +138,6 @@ public class VagrantPlayerTests implements FabricGameTest {
             GameTestUtil.assertTrue("Possessed mobs should send step game events", listener.detected(zombie, GameEvent.STEP));
             GameTestUtil.assertTrue("Possessed mobs should send other game events", listener.detected(zombie, GameEvent.TELEPORT));
             ctx.complete();
-        }));
+        });
     }
 }

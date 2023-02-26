@@ -87,7 +87,7 @@ public class SimpleBakedModel extends AbstractBakedModel {
 
     protected class ItemProxy extends ModelOverrideList {
         public ItemProxy() {
-            super(null, null, null, List.of());
+            super(null, null, List.of());
         }
 
         @Override

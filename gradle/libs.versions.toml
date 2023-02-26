@@ -13,7 +13,7 @@ locki = "0.8.0"
 modmenu = "4.0.5"
 pal = "1.6.0"
 rea = "2.3.1"
-satin = "1.9.0"
+satin = "1.10.0"
 
 [libraries]
 automatone = { group = "io.github.ladysnake", name = "automatone", version.ref = "automatone" }

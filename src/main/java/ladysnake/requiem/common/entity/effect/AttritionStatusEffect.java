@@ -60,7 +60,7 @@ public class AttritionStatusEffect extends StatusEffect implements StickyStatusE
     public static final int DEFAULT_DURATION = 300;
 
     public static void apply(PlayerEntity target) {
-        apply(target, target.world.getLevelProperties().isHardcore() ? 2 : 1);
+        apply(target, target.world.getProperties().isHardcore() ? 2 : 1);
     }
 
     public static void apply(LivingEntity target, @Nonnegative int amount) {
@@ -76,7 +76,7 @@ public class AttritionStatusEffect extends StatusEffect implements StickyStatusE
         int duration = Math.max(attrition == null ? 0 : attrition.getDuration(), minDuration);
         addAttrition(target, amplifier, duration);
 
-        if (expectedAmplifier > MAX_LEVEL && (!(target instanceof PlayerEntity) || target.world.getLevelProperties().isHardcore())) {
+        if (expectedAmplifier > MAX_LEVEL && (!(target instanceof PlayerEntity) || target.world.getProperties().isHardcore())) {
             target.damage(ATTRITION_HARDCORE_DEATH, Float.MAX_VALUE);
         }
     }

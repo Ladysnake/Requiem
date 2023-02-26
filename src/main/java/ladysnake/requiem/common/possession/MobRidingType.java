@@ -43,7 +43,7 @@ import net.minecraft.entity.mob.SkeletonEntity;
 import net.minecraft.entity.mob.SpiderEntity;
 import net.minecraft.entity.passive.ChickenEntity;
 import net.minecraft.entity.passive.StriderEntity;
-import net.minecraft.tag.EntityTypeTags;
+import net.minecraft.registry.tag.EntityTypeTags;
 
 public enum MobRidingType {
     DEFAULT, MOUNT, RIDE;
