@@ -90,10 +90,9 @@ public abstract class GameRendererMixin implements GameRendererAccessor {
         UpdateTargetedEntityCallback.EVENT.invoker().updateTargetedEntity(tickDelta);
     }
 
-    @SuppressWarnings("UnresolvedMixinReference") // Synthetic method
     @Inject(
         // Inject into the synthetic method corresponding to the lambda in updateTargetedEntity
-        method = "method_18144",
+        method = "m_vziixqvb",
         at = @At(
             value = "RETURN"
         ),

@@ -34,11 +34,11 @@
  */
 package ladysnake.requiem.core.util.reflection;
 
-import net.fabricmc.loader.api.FabricLoader;
-import net.fabricmc.loader.api.MappingResolver;
 import net.fabricmc.loader.launch.common.FabricLauncherBase;
 import org.apiguardian.api.API;
 import org.objectweb.asm.Type;
+import org.quiltmc.loader.api.MappingResolver;
+import org.quiltmc.loader.api.QuiltLoader;
 
 import java.lang.invoke.CallSite;
 import java.lang.invoke.LambdaMetafactory;
@@ -110,7 +110,7 @@ public class ReflectionHelper {
      * Finds a method with the specified Intermediary name and parameters in the given class and generates a {@link Method} for it.
      *
      * @param owner            The class to find the method on.
-     * @param intermediaryName The intermediary name of the method to find (used in obfuscated environments, e.g. "method_1234").
+     * @param intermediaryName The intermediary name of the method to find (used in obfuscated environments, e.g. "m_abcdef").
      *                         If the method has no intermediary name (ie. not obfuscated), the visible name should be used.
      * @param returnType       The return type of the method to find.
      * @param parameterTypes   The parameter types of the method to find.
@@ -136,7 +136,7 @@ public class ReflectionHelper {
      * Finds a field with the specified name and type in the given class and returns an accessible {@link Field} object representing it.
      *
      * @param owner            The class to find the method on.
-     * @param intermediaryName The intermediary name of the field to find (used in obfuscated environments, i.e. "field_1234").
+     * @param intermediaryName The intermediary name of the field to find (used in obfuscated environments, i.e. "f_abcdef").
      * @param type             The type of the field to find.
      * @return A handle for the getter of the field with the specified name and type in the given class.
      * @throws UnableToFindFieldException if an issue prevents the field from being reflected
@@ -199,6 +199,6 @@ public class ReflectionHelper {
     }
 
     private static MappingResolver getMappingResolver() {
-        return FabricLoader.getInstance().getMappingResolver();
+        return QuiltLoader.getMappingResolver();
     }
 }

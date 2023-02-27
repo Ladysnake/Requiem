@@ -39,9 +39,6 @@ import com.mojang.blaze3d.vertex.VertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormats;
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.client.RequiemClient;
-import ladysnake.requiem.core.util.reflection.ReflectionHelper;
-import ladysnake.requiem.core.util.reflection.UnableToFindMethodException;
-import ladysnake.requiem.core.util.reflection.UncheckedReflectionException;
 import ladysnake.satin.api.managed.ManagedFramebuffer;
 import ladysnake.satin.api.managed.ManagedShaderEffect;
 import ladysnake.satin.api.managed.ShaderEffectManager;
@@ -52,44 +49,28 @@ import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.RenderPhase;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-
 public final class RequiemRenderPhases extends RenderLayer {
     public static final ManagedShaderEffect GHOST_PARTICLE_SHADER = ShaderEffectManager.getInstance().manage(Requiem.id("shaders/post/ghost_particles.json"));
     public static final ManagedFramebuffer GHOST_PARTICLE_FRAMEBUFFER = GHOST_PARTICLE_SHADER.getTarget("ghost_particles");
-    public static final RenderLayer GHOST_PARTICLE_LAYER;
-
-    static {
-        try {
-            Method renderlayer$of = ReflectionHelper.findMethodFromIntermediary(
-                RenderLayer.class, "method_24049",
-                ReflectionHelper.findClass("net.minecraft.class_1921$class_4687"),
-                String.class, VertexFormat.class, VertexFormat.DrawMode.class, int.class, boolean.class, boolean.class, RenderLayer.MultiPhaseParameters.class
-            );
-            GHOST_PARTICLE_LAYER = (RenderLayer) renderlayer$of.invoke(null,
-                "requiem:ghost_particle",
-                VertexFormats.POSITION_TEXTURE_COLOR_LIGHT,
-                VertexFormat.DrawMode.QUADS,
-                256,
-                false,
-                true,
-                MultiPhaseParameters.builder()
-                    .texture(new Texture(SpriteAtlasTexture.PARTICLE_ATLAS_TEXTURE, false, false))
-                    .shader(new Shader(GameRenderer::getParticleShader))
-                    .transparency(RenderPhase.TRANSLUCENT_TRANSPARENCY)
-                    .lightmap(RenderPhase.ENABLE_LIGHTMAP)
-                    .depthTest(RenderPhase.ALWAYS_DEPTH_TEST)
-                    .writeMaskState(RenderPhase.COLOR_MASK)
-                    .target(new Target("requiem:ghost_particles_target",
-                        () -> GHOST_PARTICLE_FRAMEBUFFER.beginWrite(false),
-                        () -> MinecraftClient.getInstance().getFramebuffer().beginWrite(false)))
-                    .build(false)
-            );
-        } catch (IllegalAccessException | InvocationTargetException | ClassNotFoundException | UnableToFindMethodException e) {
-            throw new UncheckedReflectionException(e);
-        }
-    }
+    public static final RenderLayer GHOST_PARTICLE_LAYER = RenderLayer.of(
+        "requiem:ghost_particle",
+        VertexFormats.POSITION_TEXTURE_COLOR_LIGHT,
+        VertexFormat.DrawMode.QUADS,
+        256,
+        false,
+        true,
+        MultiPhaseParameters.builder()
+            .texture(new Texture(SpriteAtlasTexture.PARTICLE_ATLAS_TEXTURE, false, false))
+            .shader(new Shader(GameRenderer::getParticleShader))
+            .transparency(RenderPhase.TRANSLUCENT_TRANSPARENCY)
+            .lightmap(RenderPhase.ENABLE_LIGHTMAP)
+            .depthTest(RenderPhase.ALWAYS_DEPTH_TEST)
+            .writeMaskState(RenderPhase.COLOR_MASK)
+            .target(new Target("requiem:ghost_particles_target",
+                () -> GHOST_PARTICLE_FRAMEBUFFER.beginWrite(false),
+                () -> MinecraftClient.getInstance().getFramebuffer().beginWrite(false)))
+            .build(false)
+    );
 
     public static final Target shadowPlayerTarget = new Target(
         "requiem:shadow_players_target",

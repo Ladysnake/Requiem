@@ -51,7 +51,6 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Pair;
 import net.minecraft.util.profiler.Profiler;
-import org.quiltmc.qsl.resource.loader.api.reloader.ResourceReloaderKeys;
 import org.quiltmc.qsl.resource.loader.api.reloader.SimpleResourceReloader;
 
 import javax.annotation.Nullable;
@@ -59,7 +58,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -122,11 +120,6 @@ public final class ResurrectionDataLoader implements SimpleResourceReloader<List
             }
             Collections.sort(this.resurrectionData);
         }, executor);
-    }
-
-    @Override
-    public Collection<Identifier> getQuiltDependencies() {
-        return List.of(ResourceReloaderKeys.Server.TAGS);
     }
 
     @Override

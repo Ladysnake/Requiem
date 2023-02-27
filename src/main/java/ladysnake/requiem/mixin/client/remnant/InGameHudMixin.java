@@ -191,7 +191,7 @@ public abstract class InGameHudMixin extends DrawableHelper {
     @ModifyArg(
         method = "renderStatusBars",
         slice = @Slice(from = @At(value = "CONSTANT", args = "stringValue=air")),
-        at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerEntity;isSubmergedIn(Lnet/minecraft/tag/TagKey;)Z")
+        at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerEntity;isSubmergedIn(Lnet/minecraft/registry/tag/TagKey;)Z")
     )
     private TagKey<Fluid> preventAirRender(TagKey<Fluid> fluid) {
         PlayerEntity playerEntity = this.getCameraPlayer();
