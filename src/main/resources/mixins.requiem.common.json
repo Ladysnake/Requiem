@@ -37,6 +37,7 @@
     "opus.LecternBlockEntityMixin",
     "possession.PlayerManagerMixin",
     "possession.gameplay.AbstractPiglinEntityMixin",
+    "possession.gameplay.BatEntityMixin",
     "possession.gameplay.BlockItemMixin",
     "possession.gameplay.BowItemMixin",
     "possession.gameplay.CatEntityMixin",
