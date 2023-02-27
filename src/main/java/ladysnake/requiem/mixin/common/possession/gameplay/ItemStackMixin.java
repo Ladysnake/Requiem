@@ -51,7 +51,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@Mixin(value = ItemStack.class, priority = 998) // Collective is doing a dumb so we have to be first
+@Mixin(value = ItemStack.class)
 public abstract class ItemStackMixin implements OverridableItemStack {
     @Shadow
     public abstract void decrement(int amount);
