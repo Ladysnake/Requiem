@@ -34,10 +34,11 @@
  */
 package ladysnake.requiem.common.entity;
 
+import ladysnake.requiem.Requiem;
 import net.minecraft.entity.data.TrackedDataHandler;
-import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.math.Vec3d;
+import org.quiltmc.qsl.entity.networking.api.tracked_data.QuiltTrackedDataHandlerRegistry;
 
 import java.util.Optional;
 
@@ -70,6 +71,6 @@ public final class RequiemTrackedDataHandlers {
     };
 
     public static void init() {
-        TrackedDataHandlerRegistry.register(OPTIONAL_VEC_3D);
+        QuiltTrackedDataHandlerRegistry.register(Requiem.id("optional_vec3d"), OPTIONAL_VEC_3D);
     }
 }

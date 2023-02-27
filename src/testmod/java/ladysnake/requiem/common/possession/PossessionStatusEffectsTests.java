@@ -36,7 +36,6 @@ package ladysnake.requiem.common.possession;
 
 import io.github.ladysnake.elmendorf.GameTestUtil;
 import ladysnake.requiemtest.RequiemTestUtil;
-import net.fabricmc.fabric.api.gametest.v1.FabricGameTest;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
@@ -44,8 +43,9 @@ import net.minecraft.entity.mob.ZombieEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.test.GameTest;
 import net.minecraft.test.TestContext;
+import org.quiltmc.qsl.testing.api.game.QuiltGameTest;
 
-public class PossessionStatusEffectsTests implements FabricGameTest {
+public class PossessionStatusEffectsTests implements QuiltGameTest {
     @GameTest(structureName = EMPTY_STRUCTURE)
     public void statusEffectsGetTransferred(TestContext ctx) {
         ServerPlayerEntity player = ctx.spawnServerPlayer(0, 0, 0);

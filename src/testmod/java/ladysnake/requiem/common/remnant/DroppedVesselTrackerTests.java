@@ -39,7 +39,6 @@ import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.common.entity.RequiemEntities;
 import ladysnake.requiem.common.gamerule.RequiemGamerules;
-import net.fabricmc.fabric.api.gametest.v1.FabricGameTest;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -49,8 +48,9 @@ import net.minecraft.test.BeforeBatch;
 import net.minecraft.test.GameTest;
 import net.minecraft.test.TestContext;
 import net.minecraft.text.Text;
+import org.quiltmc.qsl.testing.api.game.QuiltGameTest;
 
-public class DroppedVesselTrackerTests implements FabricGameTest {
+public class DroppedVesselTrackerTests implements QuiltGameTest {
     public static final String DROP_VESSEL_ON_DISCONNECT_BATCH = "dropVesselOnDisconnect";
 
     @BeforeBatch(batchId = DROP_VESSEL_ON_DISCONNECT_BATCH)

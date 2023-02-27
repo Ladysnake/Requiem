@@ -40,7 +40,6 @@ import ladysnake.requiem.api.v1.event.requiem.SoulCaptureEvents;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.common.remnant.RemnantTypes;
 import ladysnake.requiem.core.entity.SoulHolderComponent;
-import net.fabricmc.fabric.api.gametest.v1.FabricGameTest;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.boss.WitherEntity;
@@ -51,8 +50,9 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.test.GameTest;
 import net.minecraft.test.TestContext;
 import net.minecraft.util.Hand;
+import org.quiltmc.qsl.testing.api.game.QuiltGameTest;
 
-public class EmptySoulVesselItemTests implements FabricGameTest {
+public class EmptySoulVesselItemTests implements QuiltGameTest {
     @GameTest(structureName = EMPTY_STRUCTURE)
     public void computeSoulDefense(TestContext ctx) {
         LivingEntity mob = new PiglinBruteEntity(EntityType.PIGLIN_BRUTE, ctx.getWorld());

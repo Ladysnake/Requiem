@@ -37,7 +37,6 @@ package ladysnake.requiem.common.remnant;
 import io.github.ladysnake.elmendorf.GameTestUtil;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
-import net.fabricmc.fabric.api.gametest.v1.FabricGameTest;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.WeightedPressurePlateBlock;
 import net.minecraft.entity.EntityType;
@@ -55,14 +54,15 @@ import net.minecraft.world.event.BlockPositionSource;
 import net.minecraft.world.event.GameEvent;
 import net.minecraft.world.event.PositionSource;
 import net.minecraft.world.event.listener.GameEventListener;
+import org.quiltmc.qsl.testing.api.game.QuiltGameTest;
 
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
 
-public class VagrantPlayerTests implements FabricGameTest {
-    @GameTest(structureName = EMPTY_STRUCTURE, required = false)
+public class VagrantPlayerTests implements QuiltGameTest {
+    @GameTest(structureName = EMPTY_STRUCTURE)
     public void vagrantPlayersDoNotTriggerPressurePlates(TestContext ctx) {
         ServerPlayerEntity regularPlayer = ctx.spawnServerPlayer(2, 0, 2);
         RemnantComponent.get(regularPlayer).become(RemnantTypes.MORTAL);
@@ -76,7 +76,7 @@ public class VagrantPlayerTests implements FabricGameTest {
         ctx.getBlockState(regularPlatePos).onEntityCollision(ctx.getWorld(), ctx.getAbsolutePos(regularPlatePos), regularPlayer);
         ctx.getBlockState(vagrantPlatePos).onEntityCollision(ctx.getWorld(), ctx.getAbsolutePos(vagrantPlatePos), vagrantPlayer);
         ctx.succeedIf(() -> {
-            ctx.expectBlockProperty(regularPlatePos, WeightedPressurePlateBlock.POWER, 5);  // FIXME I have no idea why 4 player shells appear on this block
+            ctx.expectBlockProperty(regularPlatePos, WeightedPressurePlateBlock.POWER, 1);
             ctx.expectBlockProperty(vagrantPlatePos, WeightedPressurePlateBlock.POWER, 0);
         });
     }
@@ -128,7 +128,7 @@ public class VagrantPlayerTests implements FabricGameTest {
         ctx.getWorld().emitGameEvent(regularPlayer, GameEvent.TELEPORT, regularPlayer.getPos());
         ctx.getWorld().emitGameEvent(vagrantPlayer, GameEvent.TELEPORT, regularPlayer.getPos());
         ctx.getWorld().emitGameEvent(possessor, GameEvent.TELEPORT, regularPlayer.getPos());
-        ctx.succeedAtTickIf(1, () -> {
+        ctx.waitAndRun(1, () -> ctx.succeedIf(() -> {
             GameTestUtil.assertTrue("Mortal players should send step game events", listener.detected(regularPlayer, GameEvent.STEP));
             GameTestUtil.assertTrue("Mortal players should send other game events", listener.detected(regularPlayer, GameEvent.TELEPORT));
             GameTestUtil.assertFalse("Vagrant players should not send step game events", listener.detected(vagrantPlayer, GameEvent.STEP));
@@ -138,6 +138,6 @@ public class VagrantPlayerTests implements FabricGameTest {
             GameTestUtil.assertTrue("Possessed mobs should send step game events", listener.detected(zombie, GameEvent.STEP));
             GameTestUtil.assertTrue("Possessed mobs should send other game events", listener.detected(zombie, GameEvent.TELEPORT));
             ctx.complete();
-        });
+        }));
     }
 }

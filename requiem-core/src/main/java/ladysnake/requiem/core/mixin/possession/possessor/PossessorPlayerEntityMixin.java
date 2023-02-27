@@ -54,7 +54,6 @@ import net.minecraft.entity.player.HungerManager;
 import net.minecraft.entity.player.ItemCooldownManager;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
-import net.minecraft.network.encryption.PlayerPublicKey;
 import net.minecraft.network.packet.s2c.play.PlayerPositionLookS2CPacket;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -81,7 +80,7 @@ public abstract class PossessorPlayerEntityMixin extends PossessorLivingEntityMi
     public abstract ItemCooldownManager getItemCooldownManager();
 
     @Inject(method = "<init>", at = @At("RETURN"))
-    private void initAttributes(World world, BlockPos blockPos, float f, GameProfile gameProfile, PlayerPublicKey playerPublicKey, CallbackInfo ci) {
+    private void initAttributes(World world, BlockPos pos, float f, GameProfile gameProfile, CallbackInfo ci) {
         PossessionDelegatingModifier.replaceAttributes((PlayerEntity) (Object) this);
     }
 

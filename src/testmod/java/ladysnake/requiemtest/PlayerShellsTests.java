@@ -47,7 +47,6 @@ import ladysnake.requiem.common.gamerule.RequiemGamerules;
 import ladysnake.requiem.common.network.RequiemNetworking;
 import ladysnake.requiem.common.remnant.RemnantTypes;
 import ladysnake.requiem.core.record.EntityPositionClerk;
-import net.fabricmc.fabric.api.gametest.v1.FabricGameTest;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityType;
 import net.minecraft.item.ItemStack;
@@ -61,11 +60,12 @@ import net.minecraft.test.GameTest;
 import net.minecraft.test.TestContext;
 import net.minecraft.util.Hand;
 import org.jetbrains.annotations.NotNull;
+import org.quiltmc.qsl.testing.api.game.QuiltGameTest;
 
 import java.util.Objects;
 import java.util.UUID;
 
-public class PlayerShellsTests implements FabricGameTest {
+public class PlayerShellsTests implements QuiltGameTest {
     public static final String POSSESSION_KEEPS_INVENTORY_BATCH = "possessionKeepsInventory";
 
     @BeforeBatch(batchId = POSSESSION_KEEPS_INVENTORY_BATCH)

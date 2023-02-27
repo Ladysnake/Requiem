@@ -1,7 +1,6 @@
 // Credits to UpcraftLP for the base build script
 
 plugins {
-    id 'org.quiltmc.loom' version '1.+'
     alias(libs.plugins.chenille)
 }
 
@@ -114,11 +113,6 @@ allprojects {
         mappings "org.quiltmc:quilt-mappings:${minecraft_version}+build.${quilt_mappings}:intermediary-v2"
         modImplementation "org.quiltmc:quilt-loader:${project.loader_version}"
         modImplementation "org.quiltmc:qsl:${qsl_version}+${minecraft_version}"
-        constraints {
-            modImplementation("org.quiltmc.qsl.core:registry:4.0.0-beta.12-SNAPSHOT+1.19.3") {
-                because("We are using the DynamicMetaregistry API, which has not been merged yet")
-            }
-        }
         modImplementation "org.quiltmc.quilted-fabric-api:quilted-fabric-api:${quilted_fabric_api_version}-${minecraft_version}"
 
         compileOnly metaLibs.bundles.devAnnotations

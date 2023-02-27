@@ -34,18 +34,17 @@
  */
 package ladysnake.requiem.compat;
 
-import io.github.ladysnake.elmendorf.Elmendorf;
 import ladysnake.requiem.api.v1.annotation.CalledThroughReflection;
-import org.quiltmc.loader.api.ModContainer;
 import org.quiltmc.loader.api.QuiltLoader;
-import org.quiltmc.qsl.base.api.entrypoint.ModInitializer;
+import org.quiltmc.qsl.testing.api.game.QuiltGameTest;
+import org.quiltmc.qsl.testing.api.game.TestRegistrationContext;
 
 @CalledThroughReflection
-public class RequiemCompatTestManager implements ModInitializer {
+public class RequiemCompatTestManager implements QuiltGameTest {
     @Override
-    public void onInitialize(ModContainer mod) {
+    public void registerTests(TestRegistrationContext context) {
         if (QuiltLoader.isModLoaded("origins")) {
-            Elmendorf.registerTestClass(OriginsCompatTest.class, "requiem-test");
+            context.register(OriginsCompatTest.class);
         }
     }
 }

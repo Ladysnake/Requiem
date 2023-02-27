@@ -19,10 +19,7 @@
       }
     },
     "entrypoints": {
-      "init": [
-        "ladysnake.requiem.compat.RequiemCompatTestManager"
-      ],
-      "fabric-gametest": [
+      "quilt:game_test": [
         "ladysnake.requiemtest.RequiemTestSuite",
         "ladysnake.requiem.common.block.obelisk.ObeliskTests",
         "ladysnake.requiem.common.effect.SoulboundEffectTests",
@@ -33,6 +30,7 @@
         "ladysnake.requiem.common.possession.PossessionStatusEffectsTests",
         "ladysnake.requiem.common.remnant.DroppedVesselTrackerTests",
         "ladysnake.requiem.common.remnant.VagrantPlayerTests",
+        "ladysnake.requiem.compat.RequiemCompatTestManager",
         "ladysnake.requiemtest.PlayerShellsTests"
       ]
     },

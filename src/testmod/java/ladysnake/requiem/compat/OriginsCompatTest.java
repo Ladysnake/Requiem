@@ -43,13 +43,13 @@ import io.github.apace100.origins.registry.ModComponents;
 import io.github.ladysnake.elmendorf.GameTestUtil;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.common.remnant.RemnantTypes;
-import net.fabricmc.fabric.api.gametest.v1.FabricGameTest;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.test.GameTest;
 import net.minecraft.test.TestContext;
 import net.minecraft.util.Identifier;
+import org.quiltmc.qsl.testing.api.game.QuiltGameTest;
 
-public class OriginsCompatTest implements FabricGameTest {
+public class OriginsCompatTest implements QuiltGameTest {
     @GameTest(structureName = EMPTY_STRUCTURE)
     public void vagrantPlayersGetVagrantOrigin(TestContext ctx) {
         ServerPlayerEntity player = ctx.spawnServerPlayer(1, 0, 1);

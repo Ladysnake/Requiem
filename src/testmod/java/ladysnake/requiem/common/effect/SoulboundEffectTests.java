@@ -38,21 +38,21 @@ import io.github.ladysnake.elmendorf.GameTestUtil;
 import ladysnake.requiem.common.entity.effect.RequiemStatusEffects;
 import ladysnake.requiemtest.RequiemTestUtil;
 import ladysnake.requiemtest.mixin.EffectCommandAccessor;
-import net.fabricmc.fabric.api.gametest.v1.FabricGameTest;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.test.GameTest;
 import net.minecraft.test.TestContext;
+import org.quiltmc.qsl.testing.api.game.QuiltGameTest;
 
 import java.util.List;
 
-public class SoulboundEffectTests implements FabricGameTest {
+public class SoulboundEffectTests implements QuiltGameTest {
     @GameTest(structureName = EMPTY_STRUCTURE)
     public void attritionSticksToSpirits(TestContext ctx) {
         ServerPlayerEntity ghost = RequiemTestUtil.spawnGhost(ctx);
         ghost.addStatusEffect(new StatusEffectInstance(RequiemStatusEffects.ATTRITION, 30, 0));
         ghost.clearStatusEffects();
-        ctx.succeedAtTickIf(1, () -> GameTestUtil.assertTrue("Player should keep attrition", ghost.hasStatusEffect(RequiemStatusEffects.ATTRITION)));
+        ctx.waitAndRun(1, () -> ctx.succeedIf(() -> GameTestUtil.assertTrue("Player should keep attrition", ghost.hasStatusEffect(RequiemStatusEffects.ATTRITION))));
     }
 
     @GameTest(structureName = EMPTY_STRUCTURE)
@@ -60,6 +60,6 @@ public class SoulboundEffectTests implements FabricGameTest {
         ServerPlayerEntity ghost = RequiemTestUtil.spawnGhost(ctx);
         ghost.addStatusEffect(new StatusEffectInstance(RequiemStatusEffects.ATTRITION, 30, 0));
         EffectCommandAccessor.invokeExecuteClear(ghost.getCommandSource(), List.of(ghost));
-        ctx.succeedAtTickIf(1, () -> GameTestUtil.assertFalse("Player should lose attrition", ghost.hasStatusEffect(RequiemStatusEffects.ATTRITION)));
+        ctx.waitAndRun(1, () -> ctx.succeedIf(() -> GameTestUtil.assertFalse("Player should lose attrition", ghost.hasStatusEffect(RequiemStatusEffects.ATTRITION))));
     }
 }

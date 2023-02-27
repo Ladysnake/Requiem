@@ -41,7 +41,6 @@ import ladysnake.requiem.common.block.RequiemBlocks;
 import ladysnake.requiem.common.block.obelisk.ObeliskTests;
 import ladysnake.requiem.common.block.obelisk.RunestoneBlockEntity;
 import ladysnake.requiem.core.record.EntityPositionClerk;
-import net.fabricmc.fabric.api.gametest.v1.FabricGameTest;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.test.GameTest;
 import net.minecraft.test.GameTestException;
@@ -49,16 +48,17 @@ import net.minecraft.test.TestContext;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+import org.quiltmc.qsl.testing.api.game.QuiltGameTest;
 
-import java.util.Objects;
-
-public class MorticianEntityTests implements FabricGameTest {
+public class MorticianEntityTests implements QuiltGameTest {
     @GameTest(structureName = ObeliskTests.POWERED_SMALL_OBELISK)
     public void oldEtherealMorticiansGetConverted(TestContext ctx) {
         BlockPos controllerPos = new BlockPos(20, 3, 20);
         ctx.setBlockState(controllerPos.up(), RequiemBlocks.RIFT_RUNE);
-        ctx.succeedIf(() -> {
-            RunestoneBlockEntity controller = Objects.requireNonNull(((RunestoneBlockEntity) ctx.getBlockEntity(controllerPos)));
+        ctx.succeedWhen(() -> {
+            RunestoneBlockEntity controller = (RunestoneBlockEntity) ctx.getBlockEntity(controllerPos);
+            ctx.assertTrue(controller != null, "Controller should be available");
+            assert controller != null : "TestContext#assertTrue is not doing its job";
             GlobalRecord obeliskRecord = controller.getDescriptorRecord().orElseThrow(() -> new GameTestException("Unavailable obelisk"));
             NbtCompound morticianNbt = Util.make(new NbtCompound(), nbt -> {
                 MorticianEntity m = new MorticianEntity(RequiemEntities.MORTICIAN, ctx.getWorld());

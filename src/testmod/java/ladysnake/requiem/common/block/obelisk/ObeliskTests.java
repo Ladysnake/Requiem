@@ -43,7 +43,6 @@ import ladysnake.requiem.common.entity.effect.RequiemStatusEffects;
 import ladysnake.requiem.common.remnant.RemnantTypes;
 import ladysnake.requiem.common.screen.RiftScreenHandler;
 import ladysnake.requiemtest.mixin.WorldAccessor;
-import net.fabricmc.fabric.api.gametest.v1.FabricGameTest;
 import net.minecraft.block.BlockState;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.test.GameTest;
@@ -53,12 +52,13 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
+import org.quiltmc.qsl.testing.api.game.QuiltGameTest;
 
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
-public class ObeliskTests implements FabricGameTest {
+public class ObeliskTests implements QuiltGameTest {
     public static final String SMALL_OBELISK = "requiem-test:small_obelisk";
     public static final String POWERED_SMALL_OBELISK = "requiem-test:powered_small_obelisk";
 

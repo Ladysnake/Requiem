@@ -38,13 +38,13 @@ import io.github.ladysnake.elmendorf.GameTestUtil;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.common.network.RequiemNetworking;
 import ladysnake.requiem.common.remnant.RemnantTypes;
-import net.fabricmc.fabric.api.gametest.v1.FabricGameTest;
 import net.minecraft.item.ItemStack;
 import net.minecraft.test.GameTest;
 import net.minecraft.test.TestContext;
 import net.minecraft.util.Hand;
+import org.quiltmc.qsl.testing.api.game.QuiltGameTest;
 
-public class DemonSoulVesselItemTests implements FabricGameTest {
+public class DemonSoulVesselItemTests implements QuiltGameTest {
 
     @GameTest(structureName = EMPTY_STRUCTURE)
     public void sealedVesselWorks(TestContext ctx) {
