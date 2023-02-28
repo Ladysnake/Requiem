@@ -27,6 +27,7 @@
     "possession.possessed.PossessableEntityMixin",
     "possession.possessed.PossessableLivingEntityMixin",
     "possession.possessed.PossessableMobEntityMixin",
+    "possession.possessed.RevengeGoalMixin",
     "possession.possessed.snowflakes.TameableEntityMixin",
     "possession.possessor.HungerManagerMixin",
     "possession.possessor.PlayerManagerMixin",

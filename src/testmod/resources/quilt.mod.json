@@ -28,6 +28,7 @@
         "ladysnake.requiem.common.item.FilledSoulVesselItemTests",
         "ladysnake.requiem.common.item.DemonSoulVesselItemTests",
         "ladysnake.requiem.common.possession.PossessionStatusEffectsTests",
+        "ladysnake.requiem.common.possession.PossessionAiTests",
         "ladysnake.requiem.common.remnant.DroppedVesselTrackerTests",
         "ladysnake.requiem.common.remnant.VagrantPlayerTests",
         "ladysnake.requiem.compat.RequiemCompatTestManager",

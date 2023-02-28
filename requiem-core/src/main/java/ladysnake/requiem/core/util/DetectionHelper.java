@@ -75,6 +75,9 @@ public final class DetectionHelper {
      * @param hostile the mob you want to anger.
      */
     public static void inciteMob(MobEntity host, MobEntity hostile) {
+        // do not incite yourself smh
+        if (host == hostile) return;
+
         for (PrioritizedGoal goal : ((MobEntityAccessor) hostile).getTargetSelector().getGoals()) {
             if (goal.getGoal() instanceof TargetGoalAccessor g && g.getTargetClass().isAssignableFrom(ServerPlayerEntity.class)) {
                 g.setTargetEntity(host);
