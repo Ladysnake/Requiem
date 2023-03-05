@@ -37,17 +37,19 @@ package ladysnake.pandemonium.common.item;
 import ladysnake.pandemonium.Pandemonium;
 import ladysnake.pandemonium.common.remnant.PandemoniumRemnantTypes;
 import ladysnake.requiem.common.item.DemonSoulVesselItem;
+import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroup;
+import net.minecraft.item.ItemGroups;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.util.Formatting;
 
 public final class PandemoniumItems {
-    public static final DemonSoulVesselItem BALEFUL_SOUL_VESSEL = new DemonSoulVesselItem(PandemoniumRemnantTypes.WANDERING_SPIRIT, Formatting.GRAY, new Item.Settings().group(ItemGroup.MISC).maxCount(1), "requiem:remnant_vessel.banishment");
+    public static final DemonSoulVesselItem BALEFUL_SOUL_VESSEL = new DemonSoulVesselItem(PandemoniumRemnantTypes.WANDERING_SPIRIT, Formatting.GRAY, new Item.Settings().maxCount(1), "requiem:remnant_vessel.banishment");
 
     public static void init() {
         registerItem(PandemoniumItems.BALEFUL_SOUL_VESSEL, "baleful_soul_vessel");
+        ItemGroupEvents.modifyEntriesEvent(ItemGroups.TOOLS.getId()).register(entries -> entries.addItem(BALEFUL_SOUL_VESSEL));
     }
 
     public static <T extends Item> void registerItem(T item, String name) {
