@@ -53,6 +53,7 @@ import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.hit.BlockHitResult;
+import org.spongepowered.asm.mixin.Dynamic;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -75,7 +76,7 @@ public abstract class GameRendererMixin implements GameRendererAccessor {
 
     // synthetic method corresponding to the ProjectileUtil#raycast lambda predicate in updateTargetedEntity
     @SuppressWarnings("ShadowTarget")
-    @Shadow(remap = false)
+    @Shadow(remap = false, aliases = "method_18144")
     private static boolean m_vziixqvb(Entity tested) {
         return false;
     }
@@ -90,14 +91,17 @@ public abstract class GameRendererMixin implements GameRendererAccessor {
         UpdateTargetedEntityCallback.EVENT.invoker().updateTargetedEntity(tickDelta);
     }
 
+    @Dynamic
     @Inject(
         // Inject into the synthetic method corresponding to the lambda in updateTargetedEntity
-        method = "m_vziixqvb",
+        method = {"m_vziixqvb", "method_18144"},
         at = @At(
             value = "RETURN"
         ),
         cancellable = true,
-        remap = false
+        remap = false,
+        require = 1,
+        allow = 1
     )
     private static void unselectPossessedEntity(Entity tested, CallbackInfoReturnable<Boolean> info) {
         if (((ProtoPossessable) tested).getPossessor() == MinecraftClient.getInstance().getCameraEntity()) {

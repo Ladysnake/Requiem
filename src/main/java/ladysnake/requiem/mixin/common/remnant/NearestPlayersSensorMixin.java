@@ -47,7 +47,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(NearestPlayersSensor.class)
 public abstract class NearestPlayersSensorMixin {
     @Dynamic("Lambda method injection")
-    @Inject(method = "m_rzdyqmrf", at = @At("RETURN"), cancellable = true)
+    @Inject(method = {"m_rzdyqmrf", "method_19098"}, at = @At("RETURN"), cancellable = true, require = 1, allow = 1)
     private static void preventSensingVagrantPlayers(LivingEntity subject, ServerPlayerEntity player, CallbackInfoReturnable<Boolean> cir) {
         if (cir.getReturnValueZ() && RemnantComponent.isVagrant(player)) {
             cir.setReturnValue(false);
