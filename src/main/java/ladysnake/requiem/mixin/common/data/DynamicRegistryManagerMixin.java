@@ -58,7 +58,8 @@ public interface DynamicRegistryManagerMixin {
     }
 
     @Shadow
-    private static void register(ImmutableMap.Builder<RegistryKey<? extends Registry<?>>, ?> infosBuilder, RegistryKey<? extends Registry<?>> registryRef, Codec<?> entryCodec, Codec<?> networkEntryCodec) {}
+    private static void register(ImmutableMap.Builder<RegistryKey<? extends Registry<?>>, ?> infosBuilder, RegistryKey<? extends Registry<?>> registryRef, Codec<?> entryCodec, Codec<?> networkEntryCodec) {
+    }
 
     @Dynamic("Lambda for INFOS initialization through Util#make")
     @Inject(method = "method_30531", at = @At(value = "INVOKE", target = "Lcom/google/common/collect/ImmutableMap$Builder;build()Lcom/google/common/collect/ImmutableMap;"), locals = LocalCapture.CAPTURE_FAILHARD)

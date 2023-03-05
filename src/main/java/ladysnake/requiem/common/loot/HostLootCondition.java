@@ -85,6 +85,10 @@ public class HostLootCondition implements LootCondition {
         );
     }
 
+    public enum CheckedEntity {
+        HOST, POSSESSOR
+    }
+
     public static class Serializer implements JsonSerializer<HostLootCondition> {
         private final CheckedEntity checkedEntity;
 
@@ -106,9 +110,5 @@ public class HostLootCondition implements LootCondition {
                 EntityPredicate.fromJson(jsonObject.get("predicate"))
             );
         }
-    }
-
-    public enum CheckedEntity {
-        HOST, POSSESSOR
     }
 }

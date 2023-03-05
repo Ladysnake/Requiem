@@ -54,6 +54,18 @@ public record EntityRefPredicate(DistancePredicate distance, LocationPredicate l
         EntityPredicate.ANY
     );
 
+    public static EntityRefPredicate fromJson(@Nullable JsonElement json) {
+        if (json == null || json.isJsonNull()) {
+            return ANY;
+        } else {
+            JsonObject jsonObject = JsonHelper.asObject(json, "entity_ref");
+            DistancePredicate distance = DistancePredicate.fromJson(jsonObject.get("distance"));
+            LocationPredicate location = LocationPredicate.fromJson(jsonObject.get("location"));
+            EntityPredicate entity = EntityPredicate.fromJson(jsonObject.get("entity"));
+            return new EntityRefPredicate(distance, location, entity);
+        }
+    }
+
     public boolean test(ServerWorld world, @Nullable Vec3d origin, @Nullable EntityPointer entityPointer) {
         if (this == ANY) {
             return true;
@@ -88,18 +100,6 @@ public record EntityRefPredicate(DistancePredicate distance, LocationPredicate l
             json.add("location", this.location.toJson());
             json.add("entity", this.entity.toJson());
             return json;
-        }
-    }
-
-    public static EntityRefPredicate fromJson(@Nullable JsonElement json) {
-        if (json == null || json.isJsonNull()) {
-            return ANY;
-        } else {
-            JsonObject jsonObject = JsonHelper.asObject(json, "entity_ref");
-            DistancePredicate distance = DistancePredicate.fromJson(jsonObject.get("distance"));
-            LocationPredicate location = LocationPredicate.fromJson(jsonObject.get("location"));
-            EntityPredicate entity = EntityPredicate.fromJson(jsonObject.get("entity"));
-            return new EntityRefPredicate(distance, location, entity);
         }
     }
 }

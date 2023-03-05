@@ -55,6 +55,24 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 public abstract class LocationPredicateMixin {
     private @Nullable TagKey<Biome> requiem$biomeTag;
 
+    // ANY return is actually an early return in the bytecode
+    @Inject(method = "fromJson", at = @At(value = "RETURN", ordinal = 1), locals = LocalCapture.CAPTURE_FAILSOFT)
+    private static void fromJson(JsonElement json, CallbackInfoReturnable<LocationPredicate> cir, JsonObject locationData) {
+        JsonElement biomeCategory;
+        if (locationData.has("requiem:biome_tag")) {
+            biomeCategory = locationData.get("requiem:biome_tag");
+        } else {
+            if (locationData.has("requiem$biome_category") || locationData.has("requiem:biome_category")) {
+                Requiem.LOGGER.error("[Requiem] Unsupported biome category extension on LocationPredicate, please switch to requiem:biome_tag");
+            }
+            return;
+        }
+        //noinspection ConstantConditions
+        ((LocationPredicateMixin) (Object) cir.getReturnValue()).requiem$biomeTag
+            = TagKey.createCodec(Registry.BIOME_KEY).parse(JsonOps.INSTANCE, biomeCategory)
+            .getOrThrow(false, msg -> Requiem.LOGGER.error("[Requiem] Failed to parse biome_tag extension to LocationPredicate: {}", msg));
+    }
+
     /**
      * For... reasons, we run tests on clients with a null server world. This does not work well with {@code LocationPredicate}s, so we skip all the world checks.
      */
@@ -72,23 +90,5 @@ public abstract class LocationPredicateMixin {
                 cir.setReturnValue(false);
             }
         }
-    }
-
-    // ANY return is actually an early return in the bytecode
-    @Inject(method = "fromJson", at = @At(value = "RETURN", ordinal = 1), locals = LocalCapture.CAPTURE_FAILSOFT)
-    private static void fromJson(JsonElement json, CallbackInfoReturnable<LocationPredicate> cir, JsonObject locationData) {
-        JsonElement biomeCategory;
-        if (locationData.has("requiem:biome_tag")) {
-            biomeCategory = locationData.get("requiem:biome_tag");
-        } else {
-            if (locationData.has("requiem$biome_category") || locationData.has("requiem:biome_category")) {
-                Requiem.LOGGER.error("[Requiem] Unsupported biome category extension on LocationPredicate, please switch to requiem:biome_tag");
-            }
-            return;
-        }
-        //noinspection ConstantConditions
-        ((LocationPredicateMixin) (Object) cir.getReturnValue()).requiem$biomeTag
-            = TagKey.createCodec(Registry.BIOME_KEY).parse(JsonOps.INSTANCE, biomeCategory)
-            .getOrThrow(false, msg -> Requiem.LOGGER.error("[Requiem] Failed to parse biome_tag extension to LocationPredicate: {}", msg));
     }
 }

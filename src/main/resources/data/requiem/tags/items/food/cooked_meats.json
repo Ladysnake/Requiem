@@ -2,9 +2,21 @@
   "replace": false,
   "values": [
     "#c:cooked_meats",
-    { "id": "beefjerky:beef_jerky", "required": false },
-    { "id": "biomemakeover:cooked_toad", "required": false },
-    { "id": "chocobacon:cooked_bacon", "required": false },
-    { "id": "llamarama:roasted_llama_meat", "required": false }
+    {
+      "id": "beefjerky:beef_jerky",
+      "required": false
+    },
+    {
+      "id": "biomemakeover:cooked_toad",
+      "required": false
+    },
+    {
+      "id": "chocobacon:cooked_bacon",
+      "required": false
+    },
+    {
+      "id": "llamarama:roasted_llama_meat",
+      "required": false
+    }
   ]
 }

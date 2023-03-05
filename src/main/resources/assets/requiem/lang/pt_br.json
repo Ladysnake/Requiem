@@ -3,9 +3,7 @@
   "requiem:advancements.requiem.i_hate_sand.description": "Renascer como um Husk.",
   "requiem:advancements.adventure.the_choice.title": "Um dilema diabólico",
   "requiem:advancements.adventure.the_choice.description": "Escolha entre uma vida normal e uma eternidade bizarra",
-
   "requiem:argument.entity.options.possessor.description": "Entidades possuídas por",
-
   "requiem:commands.query.success.other": "%2$s é %1$s",
   "requiem:commands.query.success.self": "Você é %s",
   "requiem:commands.ethereal.set.fail.mortal": "Falha ao fazer %s etéreo porque ele já é Mortal",
@@ -26,10 +24,8 @@
   "requiem:commands.possession.start.success.self": "Começou a possuir %s",
   "requiem:commands.possession.stop.success.other": "%s parou de possuir %s",
   "requiem:commands.possession.stop.success.self": "Parou de possuir %s",
-
   "requiem:opus.mortal_sentence": "Ad Vitam Mortale",
   "requiem:opus.remnant_sentence": "Ad Vitam Aeternam",
-
   "requiem:dialogue.first_contact.introduction.text": "Você ouve uma voz falando com você, mas você não consegue saber de onde está vindo.",
   "requiem:dialogue.first_contact.introduction.explain": "O que está acontecendo?",
   "requiem:dialogue.first_contact.introduction.yes": "Faça eu ser um demônio logo.",
@@ -44,12 +40,10 @@
   "requiem:dialogue.first_contact.very_disinterested.text": "Tem certeza que quer ficar humano?",
   "requiem:dialogue.first_contact.final_confirm": "Confirmar",
   "requiem:dialogue.first_contact.final_doubt": "Voltar",
-
   "requiem:subtitles.effect.become.mortal": "Se tornando mortal",
   "requiem:subtitles.effect.become.remnant": "Adquirindo um demônio",
   "requiem:subtitles.effect.possession.attempt": "Tentativa de Possessão",
   "requiem:subtitles.effect.time.stop": "ZA WARUDO! TOKI WO TOMARE",
-
   "requiem:tooltip.bony_prosthesis": "Prótese Óssea",
   "requiem:tooltip.calcium_bucket": "Balde de Cálcio",
   "requiem:tooltip.cure_catalyst": "Catalisador da Cura",
@@ -58,13 +52,9 @@
   "requiem:tooltip.drowned_grip": "Punho de Afogado",
   "requiem:tooltip.skeletal_efficiency": "Eficiência esqueletal",
   "requiem:tooltip.zombie_food": "Comida de Zumbi",
-
   "death.attack.requiem.attrition.hardcore": "%1$s foi posto para dormir, para sempre.",
   "death.attack.requiem.attrition.hardcore.player": "%2$s fez %1$s dormir, para sempre.",
-
   "effect.requiem.attrition": "Atrito",
-
   "enchantment.requiem.humanity": "Humanidade",
-
   "item.requiem.opus_daemonium": "Opus Daemonium"
 }

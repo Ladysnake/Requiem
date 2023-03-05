@@ -76,27 +76,8 @@ public class PenanceStatusEffect extends StatusEffect implements StickyStatusEff
             getLevel(possessor) >= MOB_BAN_THRESHOLD ? PossessionStartCallback.Result.DENY : PossessionStartCallback.Result.PASS);
     }
 
-    @Override
-    public void onApplied(LivingEntity entity, AttributeContainer attributes, int amplifier) {
-        super.onApplied(entity, attributes, amplifier);
-        if (PenanceComponent.KEY.maybeGet(entity).filter(PenanceComponent::shouldApplyPenance).isPresent()) {
-            applyPenance(entity, amplifier);
-        }
-    }
-
-    @Override
-    public boolean shouldStick(LivingEntity entity) {
-        return RemnantComponent.KEY.maybeGet(entity).map(rc -> rc.getRemnantType().isDemon()).orElse(false);
-    }
-
-    @Override
-    public boolean shouldFreezeDuration(LivingEntity entity) {
-        return false;
-    }
-
     /**
-     *
-     * @param entity the entity getting affected with penance
+     * @param entity    the entity getting affected with penance
      * @param amplifier {@link StatusEffectInstance#getAmplifier()}
      * @return the respawned player if the target got split, otherwise {@code null}
      */
@@ -131,6 +112,24 @@ public class PenanceStatusEffect extends StatusEffect implements StickyStatusEff
     public static boolean canMerge(PlayerEntity possessor, PlayerEntity target, GameProfile shellProfile) {
         StatusEffectInstance penance = possessor.getStatusEffect(RequiemStatusEffects.PENANCE);
         return penance == null || penance.getAmplifier() < PLAYER_BAN_THRESHOLD;
+    }
+
+    @Override
+    public void onApplied(LivingEntity entity, AttributeContainer attributes, int amplifier) {
+        super.onApplied(entity, attributes, amplifier);
+        if (PenanceComponent.KEY.maybeGet(entity).filter(PenanceComponent::shouldApplyPenance).isPresent()) {
+            applyPenance(entity, amplifier);
+        }
+    }
+
+    @Override
+    public boolean shouldStick(LivingEntity entity) {
+        return RemnantComponent.KEY.maybeGet(entity).map(rc -> rc.getRemnantType().isDemon()).orElse(false);
+    }
+
+    @Override
+    public boolean shouldFreezeDuration(LivingEntity entity) {
+        return false;
     }
 
     public record Result(boolean split, @Nullable ServerPlayerEntity soul) {

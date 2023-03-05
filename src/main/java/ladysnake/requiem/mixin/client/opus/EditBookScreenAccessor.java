@@ -47,26 +47,37 @@ import java.util.List;
 public interface EditBookScreenAccessor {
     @Accessor
     PageTurnWidget getPreviousPageButton();
+
     @Accessor
     PageTurnWidget getNextPageButton();
+
     @Accessor
     ButtonWidget getDoneButton();
-    @Accessor
-    ButtonWidget getSignButton();
-    @Accessor
-    void setSignButton(ButtonWidget button);
+
     @Accessor
     void setDoneButton(ButtonWidget button);
+
+    @Accessor
+    ButtonWidget getSignButton();
+
+    @Accessor
+    void setSignButton(ButtonWidget button);
+
     @Accessor
     boolean isDirty();
+
     @Accessor
     Hand getHand();
+
     @Accessor
     List<String> getPages();
+
     @Accessor
     ButtonWidget getFinalizeButton();
+
     @Accessor
     ButtonWidget getCancelButton();
+
     @Accessor
     int getTickCounter();
 }

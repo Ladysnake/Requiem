@@ -56,6 +56,11 @@ public class LivingForgetAttackTargetTask<E extends LivingEntity> extends Task<E
         this((livingEntity) -> false);
     }
 
+    private static <E extends LivingEntity> boolean cannotReachTarget(E entity) {
+        Optional<Long> optional = entity.getBrain().getOptionalMemory(MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE);
+        return optional.isPresent() && entity.world.getTime() - optional.get() > 200L;
+    }
+
     @Override
     protected void run(ServerWorld serverWorld, E mobEntity, long l) {
         LivingEntity livingEntity = this.getAttackTarget(mobEntity);
@@ -78,11 +83,6 @@ public class LivingForgetAttackTargetTask<E extends LivingEntity> extends Task<E
 
     private LivingEntity getAttackTarget(E entity) {
         return entity.getBrain().getOptionalMemory(MemoryModuleType.ATTACK_TARGET).orElseThrow(IllegalStateException::new);
-    }
-
-    private static <E extends LivingEntity> boolean cannotReachTarget(E entity) {
-        Optional<Long> optional = entity.getBrain().getOptionalMemory(MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE);
-        return optional.isPresent() && entity.world.getTime() - optional.get() > 200L;
     }
 
     private boolean isAttackTargetDead(E entity) {

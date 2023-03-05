@@ -41,8 +41,15 @@ import net.minecraft.village.TradeOffer;
 public class RemnantTradeOffer extends TradeOffer {
     private final TradeOffer vanillaOffer, demonOffer;
     private final boolean exorcism;
-    private boolean tempDisabled;
     boolean demonCustomer;
+    private boolean tempDisabled;
+
+    public RemnantTradeOffer(TradeOffer vanillaOffer, TradeOffer demonOffer, boolean exorcism) {
+        super(vanillaOffer.getOriginalFirstBuyItem(), vanillaOffer.getSecondBuyItem(), vanillaOffer.getSellItem(), vanillaOffer.getUses(), vanillaOffer.getMaxUses(), vanillaOffer.getMerchantExperience(), vanillaOffer.getPriceMultiplier(), vanillaOffer.getDemandBonus());
+        this.vanillaOffer = vanillaOffer;
+        this.demonOffer = demonOffer;
+        this.exorcism = exorcism;
+    }
 
     public static RemnantTradeOffer fromNbt(NbtCompound compound) {
         TradeOffer vanillaOffer = new TradeOffer(compound.getCompound("vanilla_offer"));
@@ -53,13 +60,6 @@ public class RemnantTradeOffer extends TradeOffer {
         if (compound.getBoolean("demon_customer")) offer.demonCustomer = true;
         if (compound.getBoolean("temp_disabled")) offer.tempDisabled = true;
         return offer;
-    }
-
-    public RemnantTradeOffer(TradeOffer vanillaOffer, TradeOffer demonOffer, boolean exorcism) {
-        super(vanillaOffer.getOriginalFirstBuyItem(), vanillaOffer.getSecondBuyItem(), vanillaOffer.getSellItem(), vanillaOffer.getUses(), vanillaOffer.getMaxUses(), vanillaOffer.getMerchantExperience(), vanillaOffer.getPriceMultiplier(), vanillaOffer.getDemandBonus());
-        this.vanillaOffer = vanillaOffer;
-        this.demonOffer = demonOffer;
-        this.exorcism = exorcism;
     }
 
     private TradeOffer getDelegate() {

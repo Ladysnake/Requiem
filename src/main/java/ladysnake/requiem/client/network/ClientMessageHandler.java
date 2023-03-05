@@ -42,7 +42,6 @@ import ladysnake.requiem.api.v1.util.SubDataManagerHelper;
 import ladysnake.requiem.client.RequiemClient;
 import ladysnake.requiem.client.RequiemFx;
 import ladysnake.requiem.client.gui.RiftWitnessedToast;
-import ladysnake.requiem.common.block.obelisk.RunestoneBlockEntity;
 import ladysnake.requiem.common.particle.RequiemParticleTypes;
 import ladysnake.requiem.common.remnant.RemnantTypes;
 import ladysnake.requiem.common.sound.RequiemSoundEvents;
@@ -78,6 +77,11 @@ public class ClientMessageHandler {
         this.rc = requiemClient;
     }
 
+    private static <T> void syncSubDataManager(PacketByteBuf buffer, SubDataManager<T> subManager, ThreadExecutor<?> taskQueue) {
+        T data = subManager.loadFromPacket(buffer);
+        taskQueue.execute(() -> subManager.apply(data));
+    }
+
     public void init() {
         ClientPlayNetworking.registerGlobalReceiver(ANCHOR_DAMAGE, (client, handler, buf, responseSender) -> {
             boolean dead = buf.readBoolean();
@@ -90,7 +94,7 @@ public class ClientMessageHandler {
             client.execute(() -> {
                 Entity entity = handler.getWorld().getEntityById(entityId);
                 if (entity != null) {
-                    for(int i = 0; i < 40; ++i) {
+                    for (int i = 0; i < 40; ++i) {
                         double vx = entity.world.random.nextGaussian() * 0.05D;
                         double vy = entity.world.random.nextGaussian() * 0.05D;
                         double vz = entity.world.random.nextGaussian() * 0.05D;
@@ -107,7 +111,7 @@ public class ClientMessageHandler {
                 Entity entity = world.getEntityById(entityId);
                 if (entity != null) {
                     world.playSound(entity.getX(), entity.getY(), entity.getZ(), SoundEvents.ITEM_TOTEM_USE, entity.getSoundCategory(), 1.0F, 1.0F, false);
-                    if (entity == this.mc.player || ((Possessable)entity).getPossessor() == this.mc.player) {
+                    if (entity == this.mc.player || ((Possessable) entity).getPossessor() == this.mc.player) {
                         this.mc.gameRenderer.showFloatingItem(stack);
                     }
                 }
@@ -155,8 +159,6 @@ public class ClientMessageHandler {
             int coreWidth = buf.readVarInt();
             int coreHeight = buf.readVarInt();
             float powerRate = buf.readFloat();
-
-            client.execute(() -> RunestoneBlockEntity.updateObeliskPower(client.world, controllerPos, coreWidth, coreHeight, powerRate));
         });
         ClientPlayNetworking.registerGlobalReceiver(RIFT_WITNESSED, (client, handler, buf, responseSender) -> {
             Text riftName = buf.readText();
@@ -164,9 +166,4 @@ public class ClientMessageHandler {
             client.execute(() -> client.getToastManager().add(new RiftWitnessedToast(riftName)));
         });
     }
-
-    private static <T> void syncSubDataManager(PacketByteBuf buffer, SubDataManager<T> subManager, ThreadExecutor<?> taskQueue) {
-        T data = subManager.loadFromPacket(buffer);
-        taskQueue.execute(() -> subManager.apply(data));
-    }
- }
+}

@@ -41,14 +41,7 @@ package ladysnake.requiem.client.render.entity.model;
 
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import ladysnake.requiem.Requiem;
-import net.minecraft.client.model.Dilation;
-import net.minecraft.client.model.Model;
-import net.minecraft.client.model.ModelData;
-import net.minecraft.client.model.ModelPart;
-import net.minecraft.client.model.ModelPartBuilder;
-import net.minecraft.client.model.ModelPartData;
-import net.minecraft.client.model.ModelTransform;
-import net.minecraft.client.model.TexturedModelData;
+import net.minecraft.client.model.*;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.entity.model.EntityModelLayer;
 import net.minecraft.client.util.math.MatrixStack;
@@ -74,11 +67,11 @@ public class WillOWispModel extends Model {
         ModelData modelData = new ModelData();
         ModelPartData root = modelData.getRoot();
         root.addChild("skull", ModelPartBuilder.create()
-                        .uv(0, 0)
-                        .cuboid(-3.0F, -3.0F, -3.0F, 6.0F, 6.0F, 6.0F)
-                        .uv(0, 16)
-                        .cuboid(-3.0F, -3.0F, -3.0F, 6.0F, 7.0F, 6.0F, new Dilation(0.25F)),
-                ModelTransform.pivot(0.0F, 16.0F, 0.0F)
+                .uv(0, 0)
+                .cuboid(-3.0F, -3.0F, -3.0F, 6.0F, 6.0F, 6.0F)
+                .uv(0, 16)
+                .cuboid(-3.0F, -3.0F, -3.0F, 6.0F, 7.0F, 6.0F, new Dilation(0.25F)),
+            ModelTransform.pivot(0.0F, 16.0F, 0.0F)
         );
         return modelData;
     }

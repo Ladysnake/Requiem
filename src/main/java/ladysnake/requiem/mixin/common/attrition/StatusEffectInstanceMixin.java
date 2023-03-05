@@ -47,10 +47,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(StatusEffectInstance.class)
 public abstract class StatusEffectInstanceMixin {
     @Shadow
-    public abstract StatusEffect getEffectType();
+    private int duration;
 
     @Shadow
-    private int duration;
+    public abstract StatusEffect getEffectType();
 
     @Inject(method = "update", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/effect/StatusEffectInstance;updateDuration()I"))
     private void preventSoulboundCountdown(LivingEntity livingEntity, Runnable r, CallbackInfoReturnable<Boolean> cir) {

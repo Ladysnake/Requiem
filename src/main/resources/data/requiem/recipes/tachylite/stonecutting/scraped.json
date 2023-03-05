@@ -1,8 +1,0 @@
-{
-  "type": "minecraft:stonecutting",
-  "ingredient": {
-    "tag": "requiem:tachylite"
-  },
-  "result": "requiem:tachylite/scraped",
-  "count": 1
-}

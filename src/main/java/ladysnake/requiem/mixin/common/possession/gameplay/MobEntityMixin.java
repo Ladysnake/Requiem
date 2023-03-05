@@ -60,12 +60,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class MobEntityMixin extends LivingEntityMixin implements Possessable {
     private @Nullable Float requiem$previousStepHeight;
 
-    @Shadow
-    public abstract void setMovementSpeed(float movementSpeed);
-
     public MobEntityMixin(EntityType<?> type, World world) {
         super(type, world);
     }
+
+    @Shadow
+    public abstract void setMovementSpeed(float movementSpeed);
 
     @Override
     protected Vec3d requiem$travelStart(Vec3d movementInput) {

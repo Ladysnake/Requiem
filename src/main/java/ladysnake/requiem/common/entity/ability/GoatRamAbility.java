@@ -71,6 +71,28 @@ import java.util.function.ToIntFunction;
 public class GoatRamAbility<O extends PathAwareEntity> extends DirectAbilityBase<O, Entity> {
     private static final long RAM_DURATION = 40;
     private static final UUID SPEED_MODIFIER_UUID = UUID.fromString("2f3f65e2-a322-4a33-8d04-db7187941025");
+    private final MeleeAbility backup;
+    private final ToIntFunction<? super O> cooldownFactory;
+    private final Function<? super O, SoundEvent> prepareRamSoundFactory;
+    private final Function<? super O, SoundEvent> impactRamSoundFactory;
+    private final ToDoubleFunction<? super O> strengthMultiplierFactory;
+    private final TargetPredicate targetPredicate;
+    private final float speed;
+    private long ramStartTime;
+    private boolean started;
+    private Vec3d direction = Vec3d.ZERO;
+    private Vec3d target = Vec3d.ZERO;
+
+    protected GoatRamAbility(O owner, ToIntFunction<? super O> cooldownFactory, Function<? super O, SoundEvent> prepareRamSoundFactory, Function<? super O, SoundEvent> impactRamSoundFactory, ToDoubleFunction<? super O> strengthMultiplierFactory, TargetPredicate targetPredicate, float speed, int maxRange) {
+        super(owner, cooldownFactory.applyAsInt(owner), maxRange, Entity.class);
+        this.backup = new MeleeAbility(owner, false);
+        this.cooldownFactory = cooldownFactory;
+        this.prepareRamSoundFactory = prepareRamSoundFactory;
+        this.impactRamSoundFactory = impactRamSoundFactory;
+        this.strengthMultiplierFactory = strengthMultiplierFactory;
+        this.targetPredicate = targetPredicate;
+        this.speed = speed;
+    }
 
     public static <O extends PathAwareEntity> GoatRamAbility<O> create(O owner) {
         @SuppressWarnings("unchecked") BrainAccessor<O> brain = (BrainAccessor<O>) owner.getBrain();
@@ -112,29 +134,6 @@ public class GoatRamAbility<O extends PathAwareEntity> extends DirectAbilityBase
             speed,
             maxRange
         );
-    }
-
-    private final MeleeAbility backup;
-    private final ToIntFunction<? super O> cooldownFactory;
-    private final Function<? super O, SoundEvent> prepareRamSoundFactory;
-    private final Function<? super O, SoundEvent> impactRamSoundFactory;
-    private final ToDoubleFunction<? super O> strengthMultiplierFactory;
-    private final TargetPredicate targetPredicate;
-    private final float speed;
-    private long ramStartTime;
-    private boolean started;
-    private Vec3d direction = Vec3d.ZERO;
-    private Vec3d target = Vec3d.ZERO;
-
-    protected GoatRamAbility(O owner, ToIntFunction<? super O> cooldownFactory, Function<? super O, SoundEvent> prepareRamSoundFactory, Function<? super O, SoundEvent> impactRamSoundFactory, ToDoubleFunction<? super O> strengthMultiplierFactory, TargetPredicate targetPredicate, float speed, int maxRange) {
-        super(owner, cooldownFactory.applyAsInt(owner), maxRange, Entity.class);
-        this.backup = new MeleeAbility(owner, false);
-        this.cooldownFactory = cooldownFactory;
-        this.prepareRamSoundFactory = prepareRamSoundFactory;
-        this.impactRamSoundFactory = impactRamSoundFactory;
-        this.strengthMultiplierFactory = strengthMultiplierFactory;
-        this.targetPredicate = targetPredicate;
-        this.speed = speed;
     }
 
     @Override
@@ -190,14 +189,14 @@ public class GoatRamAbility<O extends PathAwareEntity> extends DirectAbilityBase
                 List<LivingEntity> list = world.getTargets(LivingEntity.class, this.targetPredicate, this.owner, this.owner.getBoundingBox());
                 if (!list.isEmpty()) {
                     LivingEntity livingEntity = list.get(0);
-                    livingEntity.damage(DamageSource.mob(this.owner).setNeutral(), (float)this.owner.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE));
+                    livingEntity.damage(DamageSource.mob(this.owner).setNeutral(), (float) this.owner.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE));
                     int speedAmount = this.owner.hasStatusEffect(StatusEffects.SPEED) ? this.owner.getStatusEffect(StatusEffects.SPEED).getAmplifier() + 1 : 0;
                     int slownessAmount = this.owner.hasStatusEffect(StatusEffects.SLOWNESS) ? this.owner.getStatusEffect(StatusEffects.SLOWNESS).getAmplifier() + 1 : 0;
-                    float multiplier = 0.25F * (float)(speedAmount - slownessAmount);
+                    float multiplier = 0.25F * (float) (speedAmount - slownessAmount);
                     // arbitrary constant empirically chosen to roughly replicate a natural goat's knockback strength
                     float knockbackSpeed = (float) MathHelper.clamp(owner.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED) * 2.4, 0.2F, 3.0F) + multiplier;
                     float knockbackModifier = livingEntity.blockedByShield(DamageSource.mob(this.owner)) ? 0.5F : 1.0F;
-                    livingEntity.takeKnockback((double)(knockbackModifier * knockbackSpeed) * this.strengthMultiplierFactory.applyAsDouble(this.owner), this.direction.getX(), this.direction.getZ());
+                    livingEntity.takeKnockback((double) (knockbackModifier * knockbackSpeed) * this.strengthMultiplierFactory.applyAsDouble(this.owner), this.direction.getX(), this.direction.getZ());
                     world.playSoundFromEntity(null, this.owner, this.impactRamSoundFactory.apply(this.owner), SoundCategory.HOSTILE, 1.0F, 1.0F);
                     this.finishRam();
                 } else if (this.owner.getPos().distanceTo(this.target) < 0.25) {

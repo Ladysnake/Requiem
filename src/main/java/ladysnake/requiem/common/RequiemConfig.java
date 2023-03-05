@@ -53,12 +53,6 @@ import java.nio.file.Path;
 
 public final class RequiemConfig {
     public static final Graphics graphics = new Graphics();
-
-    public static class Graphics {
-        @Comment("Toggles the fancy shader render for incorporeal players. May impact performance.")
-        public boolean fancyDemonRender = true;
-    }
-
     private static final AnnotatedSettings settings = AnnotatedSettings.builder()
         .useNamingConvention(SettingNamingConvention.SNAKE_CASE)
         .build();
@@ -66,7 +60,6 @@ public final class RequiemConfig {
         .fork("graphics").applyFromPojo(graphics, settings).finishBranch()
         .fork("more").withSeparateSerialization().finishBranch()
         .build();
-
     private static final Path configPath = FabricLoader.getInstance().getConfigDir().resolve("requiem.json5");
     private static final JanksonValueSerializer serializer = new JanksonValueSerializer(false);
 
@@ -91,5 +84,10 @@ public final class RequiemConfig {
         } catch (IOException e) {
             Requiem.LOGGER.error("[Requiem] Failed to save config", e);
         }
+    }
+
+    public static class Graphics {
+        @Comment("Toggles the fancy shader render for incorporeal players. May impact performance.")
+        public boolean fancyDemonRender = true;
     }
 }

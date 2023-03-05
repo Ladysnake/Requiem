@@ -40,21 +40,27 @@ import ladysnake.requiem.client.render.RequiemRenderPhases;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.particle.AbstractSlowingParticle;
-import net.minecraft.client.particle.Particle;
-import net.minecraft.client.particle.ParticleFactory;
-import net.minecraft.client.particle.ParticleTextureSheet;
-import net.minecraft.client.particle.SpriteProvider;
+import net.minecraft.client.particle.*;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.particle.DefaultParticleType;
 
 public final class GhostParticle extends AbstractSlowingParticle {
-    private static boolean renderedGhostParticle;
     private static final VertexConsumerProvider.Immediate ghostVertexConsumers = VertexConsumerProvider.immediate(
         new BufferBuilder(RequiemRenderPhases.GHOST_PARTICLE_LAYER.getExpectedBufferSize())
     );
+    private static boolean renderedGhostParticle;
+    private final SpriteProvider spriteProvider;
+
+    private GhostParticle(ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, SpriteProvider spriteProvider) {
+        super(world, x, y, z, velocityX, velocityY, velocityZ);
+        this.spriteProvider = spriteProvider;
+        this.scale(1.5F);
+        // if the particle spawns within a block, ghost mode goes brr
+        this.collidesWithWorld = !this.isColliding();
+        this.setSpriteForAge(spriteProvider);
+    }
 
     public static void draw(float tickDelta) {
         if (renderedGhostParticle) {
@@ -65,17 +71,6 @@ public final class GhostParticle extends AbstractSlowingParticle {
             MinecraftClient.getInstance().gameRenderer.getLightmapTextureManager().enable();
             renderedGhostParticle = false;
         }
-    }
-
-    private final SpriteProvider spriteProvider;
-
-    private GhostParticle(ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, SpriteProvider spriteProvider) {
-        super(world, x, y, z, velocityX, velocityY, velocityZ);
-        this.spriteProvider = spriteProvider;
-        this.scale(1.5F);
-        // if the particle spawns within a block, ghost mode goes brr
-        this.collidesWithWorld = !this.isColliding();
-        this.setSpriteForAge(spriteProvider);
     }
 
     @Override

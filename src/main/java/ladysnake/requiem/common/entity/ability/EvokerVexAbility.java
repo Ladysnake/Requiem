@@ -47,6 +47,18 @@ import java.lang.reflect.InvocationTargetException;
 public class EvokerVexAbility extends IndirectAbilityBase<EvokerEntity> {
     private static final Constructor<? extends Goal> VEX_GOAL_FACTORY;
 
+    static {
+        try {
+            Class<? extends Goal> clazz = ReflectionHelper.findClass("net.minecraft.class_1564$class_1567");
+            VEX_GOAL_FACTORY = clazz.getDeclaredConstructor(EvokerEntity.class);
+            VEX_GOAL_FACTORY.setAccessible(true);
+        } catch (ClassNotFoundException e) {
+            throw new UncheckedReflectionException("Could not find the SummonVexGoal class", e);
+        } catch (NoSuchMethodException e) {
+            throw new UncheckedReflectionException("Could not get the SummonVexGoal constructor", e);
+        }
+    }
+
     private final Goal summonVexGoal;
     private boolean started;
 
@@ -98,18 +110,6 @@ public class EvokerVexAbility extends IndirectAbilityBase<EvokerEntity> {
             } finally {
                 if (!hasTarget) owner.setTarget(null);
             }
-        }
-    }
-
-    static {
-        try {
-            Class<? extends Goal> clazz = ReflectionHelper.findClass("net.minecraft.class_1564$class_1567");
-            VEX_GOAL_FACTORY = clazz.getDeclaredConstructor(EvokerEntity.class);
-            VEX_GOAL_FACTORY.setAccessible(true);
-        } catch (ClassNotFoundException e) {
-            throw new UncheckedReflectionException("Could not find the SummonVexGoal class", e);
-        } catch (NoSuchMethodException e) {
-            throw new UncheckedReflectionException("Could not get the SummonVexGoal constructor", e);
         }
     }
 }

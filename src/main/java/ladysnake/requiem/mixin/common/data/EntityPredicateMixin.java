@@ -58,6 +58,19 @@ public abstract class EntityPredicateMixin {
     private @Nullable Boolean requiem$canBeCured;
     private NumberRange.FloatRange requiem$healthFraction = NumberRange.FloatRange.ANY;
 
+    // ANY return is actually an early return in the bytecode
+    @Inject(method = "fromJson", at = @At(value = "RETURN", ordinal = 1), locals = LocalCapture.CAPTURE_FAILSOFT)
+    private static void fromJson(JsonElement json, CallbackInfoReturnable<EntityPredicate> cir, JsonObject entityData) {
+        //noinspection ConstantConditions
+        EntityPredicateMixin ret = (EntityPredicateMixin) (Object) cir.getReturnValue();
+
+        if (entityData.has("requiem:can_be_cured")) {
+            ret.requiem$canBeCured
+                = JsonHelper.getBoolean(entityData, "requiem:can_be_cured");
+        }
+        ret.requiem$healthFraction = NumberRange.FloatRange.fromJson(entityData.get("requiem:health_fraction"));
+    }
+
     @Inject(method = "test(Lnet/minecraft/server/world/ServerWorld;Lnet/minecraft/util/math/Vec3d;Lnet/minecraft/entity/Entity;)Z", at = @At("RETURN"), cancellable = true)
     private void test(ServerWorld world, Vec3d pos, Entity entity, CallbackInfoReturnable<Boolean> cir) {
         if (cir.getReturnValueZ() && entity instanceof LivingEntity) {
@@ -72,18 +85,5 @@ public abstract class EntityPredicateMixin {
                 cir.setReturnValue(false);
             }
         }
-    }
-
-    // ANY return is actually an early return in the bytecode
-    @Inject(method = "fromJson", at = @At(value = "RETURN", ordinal = 1), locals = LocalCapture.CAPTURE_FAILSOFT)
-    private static void fromJson(JsonElement json, CallbackInfoReturnable<EntityPredicate> cir, JsonObject entityData) {
-        //noinspection ConstantConditions
-        EntityPredicateMixin ret = (EntityPredicateMixin) (Object) cir.getReturnValue();
-
-        if (entityData.has("requiem:can_be_cured")) {
-            ret.requiem$canBeCured
-                = JsonHelper.getBoolean(entityData, "requiem:can_be_cured");
-        }
-        ret.requiem$healthFraction = NumberRange.FloatRange.fromJson(entityData.get("requiem:health_fraction"));
     }
 }

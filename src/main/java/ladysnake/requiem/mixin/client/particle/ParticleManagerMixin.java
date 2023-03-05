@@ -47,22 +47,17 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Queue;
+import java.util.*;
 
 @Mixin(ParticleManager.class)
 public abstract class ParticleManagerMixin {
-    @Shadow
-    @Final
-    private Map<ParticleTextureSheet, Queue<Particle>> particles;
-
     @Mutable
     @Shadow
     @Final
     private static List<ParticleTextureSheet> PARTICLE_TEXTURE_SHEETS;
+    @Shadow
+    @Final
+    private Map<ParticleTextureSheet, Queue<Particle>> particles;
 
     @Inject(method = "tick", at = @At("RETURN"))
     private void addMissingSheets(CallbackInfo ci) {

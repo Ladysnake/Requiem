@@ -36,15 +36,17 @@ package ladysnake.requiem.common.remnant;
 
 import ladysnake.requiem.api.v1.remnant.RemnantType;
 import ladysnake.requiem.common.RequiemRegistries;
-import ladysnake.requiem.common.item.RequiemItems;
 import ladysnake.requiem.core.remnant.NullRemnantState;
+import net.minecraft.item.Items;
 import net.minecraft.util.Identifier;
 
 public final class RemnantTypes {
-    private RemnantTypes() { throw new AssertionError(); }
+    public static final RemnantType MORTAL = new SimpleRemnantType(p -> NullRemnantState.INSTANCE, false, "requiem:opus.mortal_sentence", () -> Items.BLACKSTONE_WALL);
+    public static final RemnantType REMNANT = new SimpleRemnantType(DemonRemnantState::new, true, "requiem:opus.remnant_sentence", () -> Items.GOLDEN_SHOVEL);
 
-    public static final RemnantType MORTAL = new SimpleRemnantType(p -> NullRemnantState.INSTANCE, false, "requiem:opus.mortal_sentence", () -> RequiemItems.PURE_SOUL_VESSEL);
-    public static final RemnantType REMNANT = new SimpleRemnantType(DemonRemnantState::new, true, "requiem:opus.remnant_sentence", () -> RequiemItems.SEALED_REMNANT_VESSEL);
+    private RemnantTypes() {
+        throw new AssertionError();
+    }
 
     public static RemnantType get(Identifier id) {
         return RequiemRegistries.REMNANT_STATES.get(id);

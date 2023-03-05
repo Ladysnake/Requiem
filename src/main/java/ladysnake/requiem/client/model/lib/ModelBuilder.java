@@ -33,25 +33,23 @@ import java.util.function.Function;
 
 public final class ModelBuilder {
 
+    public static final int FULL_BRIGHTNESS = 15 << 20 | 15 << 4;
     private static ModelBuilder instance;
-
     private static Function<SpriteIdentifier, Sprite> spriteFunc;
-
-    public static ModelBuilder prepare(Function<SpriteIdentifier, Sprite> spriteFuncIn) {
-        if(instance == null) {
-            instance = new ModelBuilder(Objects.requireNonNull(RendererAccess.INSTANCE.getRenderer()));
-        }
-        spriteFunc = spriteFuncIn;
-        return instance;
-    }
-
     public final MeshBuilder builder;
     private final MaterialFinder finder;
-    public static final int FULL_BRIGHTNESS = 15 << 20 | 15 << 4;
 
     private ModelBuilder(Renderer renderer) {
         builder = renderer.meshBuilder();
         finder = renderer.materialFinder();
+    }
+
+    public static ModelBuilder prepare(Function<SpriteIdentifier, Sprite> spriteFuncIn) {
+        if (instance == null) {
+            instance = new ModelBuilder(Objects.requireNonNull(RendererAccess.INSTANCE.getRenderer()));
+        }
+        spriteFunc = spriteFuncIn;
+        return instance;
     }
 
     public MaterialFinder finder() {
@@ -70,7 +68,7 @@ public final class ModelBuilder {
 
         builder.getEmitter()
             .material(material)
-            .square(Direction.UP, minX, minZ, maxX, maxZ, 1-maxY)
+            .square(Direction.UP, minX, minZ, maxX, maxZ, 1 - maxY)
             .spriteColor(0, color, color, color, color)
             .spriteUnitSquare(0)
             .spriteBake(0, sprites.apply(Direction.UP), MutableQuadView.BAKE_NORMALIZED)
@@ -84,7 +82,7 @@ public final class ModelBuilder {
             .emit()
 
             .material(material)
-            .square(Direction.EAST, minZ, minY, maxZ, maxY, 1-maxX)
+            .square(Direction.EAST, minZ, minY, maxZ, maxY, 1 - maxX)
             .spriteColor(0, color, color, color, color)
             .spriteUnitSquare(0)
             .spriteBake(0, sprites.apply(Direction.EAST), MutableQuadView.BAKE_NORMALIZED)
@@ -98,7 +96,7 @@ public final class ModelBuilder {
             .emit()
 
             .material(material)
-            .square(Direction.SOUTH, minX, minY, maxX, maxY, 1-maxZ)
+            .square(Direction.SOUTH, minX, minY, maxX, maxY, 1 - maxZ)
             .spriteColor(0, color, color, color, color)
             .spriteUnitSquare(0)
             .spriteBake(0, sprites.apply(Direction.SOUTH), MutableQuadView.BAKE_NORMALIZED)

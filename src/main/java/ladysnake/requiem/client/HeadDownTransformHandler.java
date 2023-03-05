@@ -52,6 +52,10 @@ public class HeadDownTransformHandler implements ApplyCameraTransformsCallback {
     public static final Quaternion QUATERNION_180_X = Vec3f.POSITIVE_X.getDegreesQuaternion(180.0F);
     public static final Quaternion QUATERNION_180_Y = Vec3f.POSITIVE_Y.getDegreesQuaternion(180.0F);
 
+    private static boolean isUpsideDown(@Nullable Entity possessed) {
+        return possessed instanceof ShulkerEntity && ((ShulkerEntity) possessed).getAttachedFace() == Direction.UP || possessed instanceof BatEntity && ((BatEntity) possessed).isRoosting();
+    }
+
     @Override
     public void applyCameraTransformations(Camera camera, MatrixStack matrices, float tickDelta) {
         if (!camera.isThirdPerson()) {
@@ -66,9 +70,5 @@ public class HeadDownTransformHandler implements ApplyCameraTransformsCallback {
                 }
             }
         }
-    }
-
-    private static boolean isUpsideDown(@Nullable Entity possessed) {
-        return possessed instanceof ShulkerEntity && ((ShulkerEntity) possessed).getAttachedFace() == Direction.UP || possessed instanceof BatEntity && ((BatEntity) possessed).isRoosting();
     }
 }

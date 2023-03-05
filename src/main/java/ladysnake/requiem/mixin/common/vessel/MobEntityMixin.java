@@ -34,7 +34,6 @@
  */
 package ladysnake.requiem.mixin.common.vessel;
 
-import ladysnake.requiem.common.item.EmptySoulVesselItem;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.MobEntity;
@@ -57,7 +56,7 @@ public abstract class MobEntityMixin extends LivingEntity {
     @Inject(method = "interactWithItem", at = @At("RETURN"), cancellable = true)
     private void interactWithVessel(PlayerEntity player, Hand hand, CallbackInfoReturnable<ActionResult> cir) {
         ItemStack stack = player.getStackInHand(hand);
-        if (cir.getReturnValue() == ActionResult.PASS && stack.getItem() instanceof EmptySoulVesselItem) {
+        if (cir.getReturnValue() == ActionResult.PASS) {
             ActionResult result = stack.useOnEntity(player, this, hand);
             if (result != ActionResult.PASS) {
                 cir.setReturnValue(result);

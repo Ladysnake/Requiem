@@ -57,7 +57,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(ClientPlayerEntity.class)
 public abstract class ClientPlayerEntityMixin extends PlayerEntity implements RequiemPlayer {
-    @Shadow public Input input;
+    @Shadow
+    public Input input;
 
     public ClientPlayerEntityMixin(World world, BlockPos pos, float yaw, GameProfile profile, PlayerPublicKey key) {
         super(world, pos, yaw, profile, key);
@@ -89,9 +90,9 @@ public abstract class ClientPlayerEntityMixin extends PlayerEntity implements Re
     }
 
     @ModifyArg(
-            method = "tickMovement",
-            slice = @Slice(from = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/ClientPlayerEntity;isSwimming()Z", ordinal = 1)),
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/ClientPlayerEntity;setSprinting(Z)V", ordinal = 0)
+        method = "tickMovement",
+        slice = @Slice(from = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/ClientPlayerEntity;isSwimming()Z", ordinal = 1)),
+        at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/ClientPlayerEntity;setSprinting(Z)V", ordinal = 0)
     )
     private boolean continueFlyingLikeSuperman(boolean value) {
         if (this.getAbilities().flying && this.input.forwardMovement > 0F && this.isSprinting() && RemnantComponent.get(this).isIncorporeal()) {

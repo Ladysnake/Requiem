@@ -34,11 +34,7 @@
  */
 package ladysnake.requiem.client.particle;
 
-import net.minecraft.client.particle.Particle;
-import net.minecraft.client.particle.ParticleFactory;
-import net.minecraft.client.particle.ParticleTextureSheet;
-import net.minecraft.client.particle.SpriteBillboardParticle;
-import net.minecraft.client.particle.SpriteProvider;
+import net.minecraft.client.particle.*;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.util.math.MathHelper;
@@ -51,7 +47,7 @@ public class CureParticle extends SpriteBillboardParticle {
         this.velocityX = velocityX;
         this.velocityY = velocityY;
         this.velocityZ = velocityZ;
-        this.maxAge = (int)(20.0D / ((double)this.random.nextFloat() * 0.8D + 0.2D));
+        this.maxAge = (int) (20.0D / ((double) this.random.nextFloat() * 0.8D + 0.2D));
         this.reachedGround = false;
         this.collidesWithWorld = false;
     }
@@ -104,12 +100,12 @@ public class CureParticle extends SpriteBillboardParticle {
     // taken from FlameParticle
     @Override
     public int getBrightness(float tickDelta) {
-        float progress = ((float)this.age + tickDelta) / (float)this.maxAge;
+        float progress = ((float) this.age + tickDelta) / (float) this.maxAge;
         progress = MathHelper.clamp(progress, 0.0F, 1.0F);
         int lightCoords = super.getBrightness(tickDelta);
         int u = lightCoords & 255;
         int v = lightCoords >> 16 & 255;
-        u += (int)(progress * 15.0F * 16.0F);
+        u += (int) (progress * 15.0F * 16.0F);
         if (u > 240) {
             u = 240;
         }

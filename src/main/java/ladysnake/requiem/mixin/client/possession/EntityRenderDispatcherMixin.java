@@ -62,6 +62,13 @@ public abstract class EntityRenderDispatcherMixin {
     @Nullable
     private Entity requiem_camerasPossessed;
 
+    @Inject(method = "renderShadow", at = @At("HEAD"), cancellable = true)
+    private static void preventShadowRender(MatrixStack matrices, VertexConsumerProvider vertices, Entity rendered, float distance, float tickDelta, WorldView world, float radius, CallbackInfo ci) {
+        if (RemnantComponent.isVagrant(rendered)) {
+            ci.cancel();
+        }
+    }
+
     /**
      * Called once per frame, used to update the entity
      */
@@ -81,13 +88,6 @@ public abstract class EntityRenderDispatcherMixin {
             if (camera.isThirdPerson() || !RenderSelfPossessedEntityCallback.EVENT.invoker().allowRender(entity)) {
                 info.setReturnValue(false);
             }
-        }
-    }
-
-    @Inject(method = "renderShadow", at = @At("HEAD"), cancellable = true)
-    private static void preventShadowRender(MatrixStack matrices, VertexConsumerProvider vertices, Entity rendered, float distance, float tickDelta, WorldView world, float radius, CallbackInfo ci) {
-        if (RemnantComponent.isVagrant(rendered)) {
-            ci.cancel();
         }
     }
 }

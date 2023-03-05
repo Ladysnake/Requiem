@@ -72,6 +72,10 @@ public abstract class LivingEntityMixin extends Entity implements Possessable {
 
     private @Nullable UUID requiem$previousPossessorUuid;
 
+    public LivingEntityMixin(EntityType<?> type, World world) {
+        super(type, world);
+    }
+
     @Shadow
     public abstract float getMovementSpeed();
 
@@ -83,10 +87,6 @@ public abstract class LivingEntityMixin extends Entity implements Possessable {
 
     @Accessor("flyingSpeed")
     protected abstract void requiem$setFlyingSpeed(float speed);
-
-    public LivingEntityMixin(EntityType<?> type, World world) {
-        super(type, world);
-    }
 
     @ModifyVariable(method = "travel", at = @At("HEAD"), argsOnly = true)
     protected Vec3d requiem$travelStart(Vec3d movementInput) {

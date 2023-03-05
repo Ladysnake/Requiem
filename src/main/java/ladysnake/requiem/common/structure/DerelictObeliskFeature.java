@@ -48,11 +48,7 @@ import net.minecraft.structure.pool.StructurePoolElement;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Holder;
 import net.minecraft.util.Util;
-import net.minecraft.util.math.BlockBox;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3i;
+import net.minecraft.util.math.*;
 import net.minecraft.util.random.RandomGenerator;
 import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.Heightmap;
@@ -77,6 +73,45 @@ public class DerelictObeliskFeature extends StructureFeature {
     public DerelictObeliskFeature(StructureSettings settings, Holder<StructurePool> startPool) {
         super(settings);
         this.startPool = startPool;
+    }
+
+    /**
+     * Stolen from {@link net.minecraft.world.gen.feature.RuinedPortalFeature}
+     */
+    static OptionalInt getFloorHeight(RandomGenerator random, RandomState randomState, ChunkGenerator chunkGenerator, BlockBox box, HeightLimitView world) {
+        int maxY = MathHelper.nextBetween(random, 60, 100);
+
+        List<BlockPos> corners = ImmutableList.of(new BlockPos(box.getMinX(), 0, box.getMinZ()), new BlockPos(box.getMaxX(), 0, box.getMinZ()), new BlockPos(box.getMinX(), 0, box.getMaxZ()), new BlockPos(box.getMaxX(), 0, box.getMaxZ()));
+        List<VerticalBlockSample> cornerColumns = corners.stream().map(blockPos -> chunkGenerator.getColumnSample(blockPos.getX(), blockPos.getZ(), world, randomState)).toList();
+        Heightmap.Type heightmapType = Heightmap.Type.OCEAN_FLOOR_WG;
+
+        int y;
+        for (y = maxY; y > 15; --y) {
+            int validCorners = 0;
+
+            for (VerticalBlockSample cornerColumn : cornerColumns) {
+                BlockState blockState = cornerColumn.getState(y);
+                if (heightmapType.getBlockPredicate().test(blockState)) {
+                    ++validCorners;
+                }
+            }
+
+            if (validCorners >= 3) {
+                validCorners = 0;
+
+                for (VerticalBlockSample cornerColumn : cornerColumns) {
+                    BlockState blockState = cornerColumn.getState(y + box.getBlockCountY() - 1);
+                    if (blockState.isAir()) {
+                        ++validCorners;
+                        if (validCorners == 2) {
+                            return OptionalInt.of(y + 1);
+                        }
+                    }
+                }
+            }
+        }
+
+        return OptionalInt.empty();
     }
 
     @Override
@@ -131,44 +166,5 @@ public class DerelictObeliskFeature extends StructureFeature {
     @Override
     public StructureType<?> getType() {
         return RequiemStructures.DERELICT_OBELISK;
-    }
-
-    /**
-     * Stolen from {@link net.minecraft.world.gen.feature.RuinedPortalFeature}
-     */
-    static OptionalInt getFloorHeight(RandomGenerator random, RandomState randomState, ChunkGenerator chunkGenerator, BlockBox box, HeightLimitView world) {
-        int maxY = MathHelper.nextBetween(random, 60, 100);
-
-        List<BlockPos> corners = ImmutableList.of(new BlockPos(box.getMinX(), 0, box.getMinZ()), new BlockPos(box.getMaxX(), 0, box.getMinZ()), new BlockPos(box.getMinX(), 0, box.getMaxZ()), new BlockPos(box.getMaxX(), 0, box.getMaxZ()));
-        List<VerticalBlockSample> cornerColumns = corners.stream().map(blockPos -> chunkGenerator.getColumnSample(blockPos.getX(), blockPos.getZ(), world, randomState)).toList();
-        Heightmap.Type heightmapType = Heightmap.Type.OCEAN_FLOOR_WG;
-
-        int y;
-        for (y = maxY; y > 15; --y) {
-            int validCorners = 0;
-
-            for (VerticalBlockSample cornerColumn : cornerColumns) {
-                BlockState blockState = cornerColumn.getState(y);
-                if (heightmapType.getBlockPredicate().test(blockState)) {
-                    ++validCorners;
-                }
-            }
-
-            if (validCorners >= 3) {
-                validCorners = 0;
-
-                for (VerticalBlockSample cornerColumn : cornerColumns) {
-                    BlockState blockState = cornerColumn.getState(y + box.getBlockCountY() - 1);
-                    if (blockState.isAir()) {
-                        ++validCorners;
-                        if (validCorners == 2) {
-                            return OptionalInt.of(y + 1);
-                        }
-                    }
-                }
-            }
-        }
-
-        return OptionalInt.empty();
     }
 }

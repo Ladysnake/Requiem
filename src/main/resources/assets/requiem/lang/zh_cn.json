@@ -17,12 +17,9 @@
   "requiem:advancements.requiem.piglin_seppukku.description": "使僵尸猪灵后悔自己的行为",
   "requiem:advancements.requiem.kung_fu_panda.title": "功夫熊猫",
   "requiem:advancements.requiem.kung_fu_panda.description": "作为熊猫，使用木剑击打生物。",
-
   "requiem:argument.entity.options.possessor.description": "附身于实体的是",
-
   "requiem:remnant_type.requiem.mortal.name": "凡人",
   "requiem:remnant_type.requiem.remnant.name": "残魂",
-
   "requiem:commands.query.success.other": "%2$s 是 %1$s",
   "requiem:commands.query.success.self": "你是 %s",
   "requiem:commands.ethereal.set.fail.mortal": "在%s是凡人时无法唤化为灵体",
@@ -58,16 +55,12 @@
   "requiem:commands.soul.set.fail.permanently_soulless": "%s不能拥有自己的灵魂",
   "requiem:commands.soul.remove.success": "成功从%s移除了灵魂",
   "requiem:commands.soul.restore.success": "成功给%s归还了灵魂",
-
   "requiem:container.obelisk_rift": "裂谷",
   "requiem:toast.rift_witnessed": "裂谷已见证！",
-
   "requiem:block.minecraft.bed.invalid_body": "这种形态无法睡觉",
-
   "requiem:opus.mortal_sentence": "过凡人生活",
   "requiem:opus.remnant_sentence": "过永生生活",
   "requiem:opus.wanderer_sentence": "过游魂生活",
-
   "requiem:dialogue.first_contact.introduction.text": "你听见一个声音正对你说话,但你不能完全确定它来自哪里。",
   "requiem:dialogue.first_contact.introduction.explain": "这是怎么回事？",
   "requiem:dialogue.first_contact.introduction.yes": "让我成为恶魔吧。",
@@ -82,7 +75,6 @@
   "requiem:dialogue.first_contact.very_disinterested.text": "你确定你想继续做普通人吗？",
   "requiem:dialogue.first_contact.final_confirm": "确定",
   "requiem:dialogue.first_contact.final_doubt": "返回",
-
   "requiem:subtitles.block.obelisk.activate": "方尖碑：形成",
   "requiem:subtitles.block.obelisk.ambient": "方尖碑：低语",
   "requiem:subtitles.block.obelisk.deactivate": "方尖碑：瓦解",
@@ -107,9 +99,7 @@
   "requiem:subtitles.item.empty_vessel.use": "容器：激活",
   "requiem:subtitles.item.filled_vessel.use": "灵魂：得到释放",
   "requiem:subtitles.item.soul_vessel.use": "灵魂容器：激活",
-
   "requiem:tooltip.filled_vessel": "%s灵魂",
-
   "requiem:tooltip.ammo_generator": "弹药生成",
   "requiem:tooltip.bolt_hoarder": "螺栓囤积者",
   "requiem:tooltip.bony_prosthesis": "骨质身体",
@@ -128,7 +118,6 @@
   "requiem:tooltip.witch_brew_base": "女巫的酿造基地",
   "requiem:tooltip.witch_food": "女巫的饮食",
   "requiem:tooltip.zombie_food": "僵尸的点心",
-
   "block.requiem.tachylite.runestone": "玄武玻璃符文石",
   "block.requiem.tachylite.runic.attrition": "带有损耗效果的玄武玻璃符文石",
   "block.requiem.tachylite.runic.emancipation": "带有解放效果的玄武玻璃符文石",
@@ -146,7 +135,6 @@
   "block.requiem.tachylite.tachylite": "玄武玻璃",
   "block.requiem.tachylite.tachylite_slab": "玄武玻璃台阶",
   "block.requiem.tachylite.tachylite_stairs": "玄武玻璃楼梯",
-
   "config.requiem.title": "安魂曲配置菜单",
   "config.requiem.graphics": "图像设置",
   "config.requiem.fancy_demon_render": "恶魔视觉效果渲染",
@@ -155,11 +143,9 @@
   "config.requiem.more_info.datapacks": "数据包",
   "config.requiem.more_info.gamerules": "游戏规则",
   "config.requiem.more_info.official_doc": "Ladysnake网站上的官方文档",
-
   "death.attack.requiem.attrition.hardcore": "%1$s永远地安息。",
   "death.attack.requiem.attrition.hardcore.player": "%2$s使%1$s永远地安息。",
   "death.attack.requiem.mortal_dysmorphia": "%1$s的灵魂与%2$s的身体不适配。",
-
   "gamerule.requiem:showPossessorNameTag": "(安魂曲)显示附身者名称",
   "gamerule.requiem:showPossessorNameTag.description": "显示附身实体的玩家名称标签",
   "gamerule.requiem:disableCure": "(安魂曲)禁用治愈",
@@ -178,25 +164,20 @@
   "gamerule.requiem:possessionDetection.normal": "正常",
   "gamerule.requiem:possessionDetection.hard": "困难",
   "gamerule.requiem:possessionDetection.description": "在某些情况下，怪物会发现被附身的生物",
-
   "effect.requiem.attrition": "损耗",
   "effect.requiem.emancipation": "解放",
   "effect.requiem.penance": "忏悔",
   "effect.requiem.reclamation": "再生",
-
   "enchantment.requiem.humanity": "人性",
-
   "key.requiem.dissociation": "[安魂曲] 解离",
   "requiem:shulker.onboard": "按下%s或%s解离",
   "requiem:dissociate_hint": "按下%s解离",
   "requiem:possess.incompatible_body": "这个身体与你的灵魂不相容",
   "requiem:merge_hint": "按下%s返回",
-
   "entity.requiem.cured_piglin": "猪人",
   "entity.requiem.mortician": "唤魂师",
   "entity.requiem.cured_piglin_brute": "猪人蛮兵",
   "entity.requiem.player_shell": "玩家躯体",
-
   "item.requiem.totem_of_skeletonization": "骷髅图腾",
   "item.requiem.opus_daemonium": "恶魔之作",
   "item.requiem.empty_soul_vessel": "空的灵魂容器",
@@ -212,7 +193,6 @@
   "item.requiem.shattered_soul_vessel": "破碎的灵魂容器",
   "requiem:remnant_vessel.curse": "诅咒",
   "requiem:remnant_vessel.cure": "治愈",
-
   "origins:layer.requiem.soul_type.name": "灵魂状态",
   "origins:layer.requiem.soul_type.missing_origin.name": "丢失",
   "origins:layer.requiem.soul_type.missing_origin.description": "你没有灵魂状态",
@@ -238,8 +218,6 @@
   "origins:power.requiem.banished.description": "你不能通过治愈亡灵生物来获得新的人体。",
   "origins:power.requiem.mortal.name": "再生",
   "origins:power.requiem.mortal.description": "当你死了，如果一切顺利，你会发现自己处于最后的安息之地，拥有全新的身体。",
-
   "stat.requiem.interact_with_rift": "[安魂曲]与方尖碑裂谷的互动",
-  
   "requiem.message.peaceful_despawn": "这个宿主似乎不属于这样一个和平的世界"
 }

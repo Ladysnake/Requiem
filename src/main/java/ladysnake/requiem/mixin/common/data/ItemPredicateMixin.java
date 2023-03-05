@@ -47,19 +47,19 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 @Mixin(ItemPredicate.class)
 public abstract class ItemPredicateMixin {
-    private FoodComponentPredicate requiem$foodComponent= FoodComponentPredicate.ANY;
-
-    @Inject(method = "test", at = @At("RETURN"), cancellable = true)
-    private void test(ItemStack stack, CallbackInfoReturnable<Boolean> cir) {
-        if (!this.requiem$foodComponent.test(stack)) {
-            cir.setReturnValue(false);
-        }
-    }
+    private FoodComponentPredicate requiem$foodComponent = FoodComponentPredicate.ANY;
 
     // ANY return is actually an early return in the bytecode
     @Inject(method = "fromJson", at = @At(value = "RETURN", ordinal = 1), locals = LocalCapture.CAPTURE_FAILHARD)
     private static void fromJson(JsonElement el, CallbackInfoReturnable<ItemPredicate> cir, JsonObject itemData) {
         //noinspection ConstantConditions
         ((ItemPredicateMixin) (Object) cir.getReturnValue()).requiem$foodComponent = FoodComponentPredicate.fromJson(itemData.get("requiem:food"));
+    }
+
+    @Inject(method = "test", at = @At("RETURN"), cancellable = true)
+    private void test(ItemStack stack, CallbackInfoReturnable<Boolean> cir) {
+        if (!this.requiem$foodComponent.test(stack)) {
+            cir.setReturnValue(false);
+        }
     }
 }

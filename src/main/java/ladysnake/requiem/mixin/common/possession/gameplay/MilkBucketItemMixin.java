@@ -55,7 +55,7 @@ public abstract class MilkBucketItemMixin {
     private void regenSkeletons(ItemStack stack, World world, LivingEntity user, CallbackInfoReturnable<ItemStack> cir) {
         LivingEntity possessed = PossessionComponent.getHost(user);
         if (possessed != null && possessed.getType().isIn(RequiemEntityTypeTags.SKELETONS)) {
-            possessed.addStatusEffect(new StatusEffectInstance(StatusEffects.RESISTANCE, 30*20));
+            possessed.addStatusEffect(new StatusEffectInstance(StatusEffects.RESISTANCE, 30 * 20));
         }
     }
 }

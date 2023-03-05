@@ -57,10 +57,10 @@ public final class RequiemTrackedDataHandlers {
         public Optional<Vec3d> read(PacketByteBuf buf) {
             return buf.readBoolean()
                 ? Optional.of(new Vec3d(
-                    buf.readDouble(),
-                    buf.readDouble(),
-                    buf.readDouble()
-                )) : Optional.empty();
+                buf.readDouble(),
+                buf.readDouble(),
+                buf.readDouble()
+            )) : Optional.empty();
         }
 
         @Override

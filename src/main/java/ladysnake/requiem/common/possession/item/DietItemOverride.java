@@ -53,20 +53,19 @@ import java.util.Optional;
 
 public class DietItemOverride implements PossessionItemOverride, InstancedItemOverride {
     public static final Identifier ID = Requiem.id("diet");
-
-    public static Codec<DietItemOverride> codec(Codec<JsonElement> jsonCodec) {
-        return RecordCodecBuilder.create(instance -> instance.group(
-            LazyItemPredicate.codec(jsonCodec).fieldOf("food").forGetter(o -> o.food),
-            MoreCodecs.enumeration(Filter.class).optionalFieldOf("filter", Filter.NONE).forGetter(o -> o.filter)
-        ).apply(instance, DietItemOverride::new));
-    }
-
     private final LazyItemPredicate food;
     private final Filter filter;
 
     public DietItemOverride(LazyItemPredicate food, Filter filter) {
         this.food = food;
         this.filter = filter;
+    }
+
+    public static Codec<DietItemOverride> codec(Codec<JsonElement> jsonCodec) {
+        return RecordCodecBuilder.create(instance -> instance.group(
+            LazyItemPredicate.codec(jsonCodec).fieldOf("food").forGetter(o -> o.food),
+            MoreCodecs.enumeration(Filter.class).optionalFieldOf("filter", Filter.NONE).forGetter(o -> o.filter)
+        ).apply(instance, DietItemOverride::new));
     }
 
     @Override

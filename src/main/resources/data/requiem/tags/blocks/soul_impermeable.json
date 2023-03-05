@@ -2,7 +2,6 @@
   "replace": false,
   "values": [
     "#minecraft:portals",
-
     "minecraft:barrier",
     "minecraft:bedrock",
     "minecraft:end_portal_frame",

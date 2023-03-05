@@ -53,22 +53,22 @@ import java.util.List;
 
 @Mixin(RecipeBookWidget.class)
 public abstract class RecipeBookWidgetMixin {
-    @Shadow
-    public abstract void render(MatrixStack matrices, int mouseX, int mouseY, float delta);
-
+    private static final ThreadLocal<Boolean> REQUIEM$REENTRANT = ThreadLocal.withInitial(() -> false);
     @Shadow
     protected MinecraftClient client;
+    @Shadow
+    protected ToggleButtonWidget toggleCraftableButton;
     @Shadow
     private TextFieldWidget searchField;
     @Shadow
     @Final
     private List<RecipeGroupButtonWidget> tabButtons;
     @Shadow
-    protected ToggleButtonWidget toggleCraftableButton;
-    @Shadow
     @Final
     private RecipeBookResults recipesArea;
-    private static final ThreadLocal<Boolean> REQUIEM$REENTRANT = ThreadLocal.withInitial(() -> false);
+
+    @Shadow
+    public abstract void render(MatrixStack matrices, int mouseX, int mouseY, float delta);
 
     @Inject(method = "render", at = @At("HEAD"), cancellable = true)
     private void requiem$tryDebugNpe(MatrixStack matrices, int mouseX, int mouseY, float delta, CallbackInfo ci) {
@@ -81,11 +81,11 @@ public abstract class RecipeBookWidgetMixin {
                 Requiem.LOGGER.error("Caught exception while rendering recipe book widget", e);
                 Requiem.LOGGER.error(
                     "client: {}\n" +
-                    "searchField: {}\n" +
-                    "searchField.getText(): {}\n" +
-                    "tabButtons: {}\n" +
-                    "toggleCraftableButton: {}\n" +
-                    "recipesArea: {}\n",
+                        "searchField: {}\n" +
+                        "searchField.getText(): {}\n" +
+                        "tabButtons: {}\n" +
+                        "toggleCraftableButton: {}\n" +
+                        "recipesArea: {}\n",
                     this.client, this.searchField, this.searchField == null ? null : this.searchField.getText(), this.tabButtons, this.toggleCraftableButton, this.recipesArea);
                 throw e;
             } finally {

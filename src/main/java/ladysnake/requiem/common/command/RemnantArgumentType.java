@@ -57,9 +57,9 @@ import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
 
 public class RemnantArgumentType implements ArgumentType<RemnantType> {
+    public static final DynamicCommandExceptionType NOT_FOUND_EXCEPTION = new DynamicCommandExceptionType(o -> Text.translatable("requiem:remnant_type.not_found", o));
     private static final Collection<String> EXAMPLES = Arrays.asList("requiem:mortal", "remnant");
     private static final SimpleCommandExceptionType BAD_IDENTIFIER = new SimpleCommandExceptionType(Text.translatable("argument.id.invalid"));
-    public static final DynamicCommandExceptionType NOT_FOUND_EXCEPTION = new DynamicCommandExceptionType(o -> Text.translatable("requiem:remnant_type.not_found", o));
 
     public static RemnantArgumentType remnantType() {
         return new RemnantArgumentType();
@@ -69,20 +69,10 @@ public class RemnantArgumentType implements ArgumentType<RemnantType> {
         return context.getArgument(name, RemnantType.class);
     }
 
-    @Override
-    public RemnantType parse(StringReader stringReader) throws CommandSyntaxException {
-        try {
-            return stringReader.readBoolean() ? RemnantTypes.REMNANT : RemnantTypes.MORTAL;
-        } catch (CommandSyntaxException e) {
-            Identifier identifier = parseIdentifier(stringReader);
-            return RequiemRegistries.REMNANT_STATES.getOrEmpty(identifier).orElseThrow(() -> NOT_FOUND_EXCEPTION.create(identifier));
-        }
-    }
-
     private static Identifier parseIdentifier(StringReader reader) throws CommandSyntaxException {
         int i = reader.getCursor();
 
-        while(reader.canRead() && Identifier.isCharValid(reader.peek())) {
+        while (reader.canRead() && Identifier.isCharValid(reader.peek())) {
             reader.skip();
         }
 
@@ -97,6 +87,16 @@ public class RemnantArgumentType implements ArgumentType<RemnantType> {
         } catch (InvalidIdentifierException var4) {
             reader.setCursor(i);
             throw BAD_IDENTIFIER.createWithContext(reader);
+        }
+    }
+
+    @Override
+    public RemnantType parse(StringReader stringReader) throws CommandSyntaxException {
+        try {
+            return stringReader.readBoolean() ? RemnantTypes.REMNANT : RemnantTypes.MORTAL;
+        } catch (CommandSyntaxException e) {
+            Identifier identifier = parseIdentifier(stringReader);
+            return RequiemRegistries.REMNANT_STATES.getOrEmpty(identifier).orElseThrow(() -> NOT_FOUND_EXCEPTION.create(identifier));
         }
     }
 

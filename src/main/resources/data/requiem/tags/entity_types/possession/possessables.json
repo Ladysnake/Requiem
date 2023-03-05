@@ -5,6 +5,9 @@
     "requiem:cured_piglin",
     "requiem:cured_piglin_brute",
     "requiem:cured_villager",
-    {"id": "betterend:shadow_walker", "required": false}
+    {
+      "id": "betterend:shadow_walker",
+      "required": false
+    }
   ]
 }

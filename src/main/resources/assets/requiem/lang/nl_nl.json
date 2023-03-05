@@ -11,12 +11,9 @@
   "requiem:advancements.requiem.makeshift_makeover.description": "Vervang ieder bot van een Wither Skelet",
   "requiem:advancements.adventure.the_choice.title": "Een duivels raadsel",
   "requiem:advancements.adventure.the_choice.description": "Kies tussen een normaal leven en een bizar bestaan",
-
   "requiem:argument.entity.options.possessor.description": "Entiteiten bezeten door",
-
   "requiem:remnant_type.requiem.mortal.name": "Sterveling",
   "requiem:remnant_type.requiem.remnant.name": "Overblijfsel",
-
   "requiem:commands.query.success.other": "%2$s is %1$s",
   "requiem:commands.query.success.self": "Jij bent %s",
   "requiem:commands.ethereal.set.fail.mortal": "%s's bestaan veranderen mislukt omdat ze Sterveling zijn",
@@ -37,11 +34,9 @@
   "requiem:commands.possession.start.success.self": "%s is nu bezeten",
   "requiem:commands.possession.stop.success.other": "%s bezit %s niet meer",
   "requiem:commands.possession.stop.success.self": "%s is niet meer bezeten",
-
   "requiem:opus.mortal_sentence": "Ad Vitam Mortale",
   "requiem:opus.remnant_sentence": "Ad Vitam Aeternam",
   "requiem:opus.wanderer_sentence": "Ad Vitam Vagrate",
-
   "requiem:dialogue.first_contact.introduction.text": "Je hoort een stem tegen je praten, maar je weet niet precies waar het vandaan komt.",
   "requiem:dialogue.first_contact.introduction.explain": "Wat is er aan de hand?",
   "requiem:dialogue.first_contact.introduction.yes": "Maak mij nu een demoon.",
@@ -56,13 +51,11 @@
   "requiem:dialogue.first_contact.very_disinterested.text": "Weet je zeker dat je mens wilt blijven?",
   "requiem:dialogue.first_contact.final_confirm": "Bevestigen",
   "requiem:dialogue.first_contact.final_doubt": "Ga terug",
-
   "requiem:subtitles.effect.become.mortal": "Sterfelijk worden",
   "requiem:subtitles.effect.become.remnant": "Een demoon worden",
   "requiem:subtitles.effect.phasing": "Speler Fasering",
   "requiem:subtitles.effect.possession.attempt": "Bezits Poging",
   "requiem:subtitles.effect.time.stop": "ZA WARUDO! TOKI WO TOMARE",
-
   "requiem:tooltip.ammo_generator": "Munitie Generatie",
   "requiem:tooltip.bolt_hoarder": "Pijlen Bewaarder",
   "requiem:tooltip.bony_prosthesis": "Bottige Prothese",
@@ -80,7 +73,6 @@
   "requiem:tooltip.villager_food": "Vegetarisch",
   "requiem:tooltip.witch_food": "Heksen Dieet",
   "requiem:tooltip.zombie_food": "Zombie Snack",
-
   "config.requiem.title": "Requiem Configuratie Menu",
   "config.requiem.graphics": "Grafisch",
   "config.requiem.fancy_demon_render": "Fraaie demoon render",
@@ -89,10 +81,8 @@
   "config.requiem.more_info.datapacks": "Data Pakketen",
   "config.requiem.more_info.gamerules": "Spelregels",
   "config.requiem.more_info.official_doc": "de officiele documentatie op de Ladysnake website",
-
   "death.attack.requiem.attrition.hardcore": "%1$s werd tot rust gebracht, voor altijd.",
   "death.attack.requiem.attrition.hardcore.player": "%2$s heeft %1$s tot rust gebracht, voor altijd.",
-
   "gamerule.requiem:showPossessorNameTag": "(Requiem) Laat bezitters hun naam zien",
   "gamerule.requiem:showPossessorNameTag.description": "Laat de naam zien van spelers die entiteiten bezitten",
   "gamerule.requiem:disableCure": "(Requiem) Zet genezing uit",
@@ -100,22 +90,16 @@
   "gamerule.requiem:startingRemnantType": "(Requiem) Overblijfsel Type",
   "gamerule.requiem:startingRemnantType.description": "Vervangt de keuze als een speler dood gaat tussen demoon and sterveling",
   "gamerule.requiem:possessionKeepInventory": "(Requiem) Hou inventaris         nadat bezitting stopt",
-
   "effect.requiem.attrition": "Uitputting",
-
   "enchantment.requiem.humanity": "De Mensheid",
-
   "key.requiem.dissociation": "[Requiem] Uiteenval",
   "requiem:shulker.onboard": "Druk %s of %s in om uiteen te vallen",
   "requiem:dissociate_hint": "Druk %s in om uiteen te vallen",
   "requiem:possess.incompatible_body": "Dit lichaam is niet verenigbaar met jouw ziel",
-
   "entity.requiem.cured_piglin": "Pigman",
   "entity.requiem.cured_piglin_brute": "Pigman Bruut",
-
   "item.requiem.totem_of_skeletonization": "Totem der Skelettonizatie",
   "item.requiem.opus_daemonium": "Opus Daemonium",
-
   "origins:layer.requiem.soul_type.name": "Ziel Type",
   "origins:layer.requiem.soul_type.missing_origin.name": "Missend",
   "origins:layer.requiem.soul_type.missing_origin.description": "Je hebt geen Ziel Type.",

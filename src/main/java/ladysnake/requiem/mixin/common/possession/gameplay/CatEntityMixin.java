@@ -46,12 +46,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(CatEntity.class)
 public abstract class CatEntityMixin extends LivingEntityMixin {
-    @Shadow
-    public abstract void setInSleepingPose(boolean sleeping);
-
     protected CatEntityMixin(EntityType<? extends TameableEntity> entityType, World world) {
         super(entityType, world);
     }
+
+    @Shadow
+    public abstract void setInSleepingPose(boolean sleeping);
 
     @Override
     protected void requiem$sleep(BlockPos pos, CallbackInfo ci) {

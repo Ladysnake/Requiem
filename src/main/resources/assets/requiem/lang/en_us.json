@@ -17,12 +17,9 @@
   "requiem:advancements.requiem.piglin_seppukku.description": "Cause a zombified piglin to regret its actions",
   "requiem:advancements.requiem.kung_fu_panda.title": "Kung Fu Panda",
   "requiem:advancements.requiem.kung_fu_panda.description": "As a panda, hit something with a wooden sword",
-
   "requiem:argument.entity.options.possessor.description": "Entities possessed by",
-
   "requiem:remnant_type.requiem.mortal.name": "Mortal",
   "requiem:remnant_type.requiem.remnant.name": "Remnant",
-
   "requiem:commands.query.success.other": "%2$s is %1$s",
   "requiem:commands.query.success.self": "You are %s",
   "requiem:commands.ethereal.set.fail.mortal": "Failed to make %s ethereal as they are Mortal",
@@ -58,16 +55,12 @@
   "requiem:commands.soul.set.fail.permanently_soulless": "%s cannot have a soul of its own",
   "requiem:commands.soul.remove.success": "Successfully removed the soul from %s",
   "requiem:commands.soul.restore.success": "Successfully restored its soul to %s",
-
   "requiem:container.obelisk_rift": "Rift",
   "requiem:toast.rift_witnessed": "Rift Witnessed!",
-
   "requiem:block.minecraft.bed.invalid_body": "This form does not sleep",
-
   "requiem:opus.mortal_sentence": "Ad Vitam Mortale",
   "requiem:opus.remnant_sentence": "Ad Vitam Aeternam",
   "requiem:opus.wanderer_sentence": "Ad Vitam Vagrate",
-
   "requiem:dialogue.first_contact.introduction.text": "You hear a voice talking to you, but you can't quite put your finger on where it's coming from.",
   "requiem:dialogue.first_contact.introduction.explain": "What is going on?",
   "requiem:dialogue.first_contact.introduction.yes": "Make me a demon already.",
@@ -82,7 +75,6 @@
   "requiem:dialogue.first_contact.very_disinterested.text": "Are you sure you want to stay human?",
   "requiem:dialogue.first_contact.final_confirm": "Confirm",
   "requiem:dialogue.first_contact.final_doubt": "Go back",
-
   "requiem:subtitles.block.obelisk.activate": "Obelisk forms",
   "requiem:subtitles.block.obelisk.ambient": "Obelisk whispers",
   "requiem:subtitles.block.obelisk.deactivate": "Obelisk collapses",
@@ -107,9 +99,7 @@
   "requiem:subtitles.item.empty_vessel.use": "Vessel activates",
   "requiem:subtitles.item.filled_vessel.use": "Soul gets released",
   "requiem:subtitles.item.soul_vessel.use": "Soul Vessel Activates",
-
   "requiem:tooltip.filled_vessel": "%s Soul",
-
   "requiem:tooltip.ammo_generator": "Ammo Generation",
   "requiem:tooltip.bolt_hoarder": "Bolt Hoarder",
   "requiem:tooltip.bony_prosthesis": "Bony Prosthesis",
@@ -128,7 +118,6 @@
   "requiem:tooltip.witch_brew_base": "Witch's Brew Base",
   "requiem:tooltip.witch_food": "Witch Diet",
   "requiem:tooltip.zombie_food": "Zombie Snack",
-
   "block.requiem.tachylite.runestone": "Tachylite Runestone",
   "block.requiem.tachylite.runic.attrition": "Tachylite Runestone of Attrition",
   "block.requiem.tachylite.runic.emancipation": "Tachylite Runestone of Emancipation",
@@ -146,7 +135,6 @@
   "block.requiem.tachylite.tachylite": "Tachylite",
   "block.requiem.tachylite.tachylite_slab": "Tachylite Slab",
   "block.requiem.tachylite.tachylite_stairs": "Tachylite Stairs",
-
   "config.requiem.title": "Requiem Config Menu",
   "config.requiem.graphics": "Graphics",
   "config.requiem.fancy_demon_render": "Fancy demon render",
@@ -155,11 +143,9 @@
   "config.requiem.more_info.datapacks": "Data Packs",
   "config.requiem.more_info.gamerules": "Game Rules",
   "config.requiem.more_info.official_doc": "the official documentation on the Ladysnake website",
-
   "death.attack.requiem.attrition.hardcore": "%1$s was put to rest, forever.",
   "death.attack.requiem.attrition.hardcore.player": "%2$s put %1$s to rest, forever.",
   "death.attack.requiem.mortal_dysmorphia": "The soul of %1$s did not belong in the body of %2$s.",
-
   "gamerule.requiem:showPossessorNameTag": "(Requiem) Show Possessor Nameplates",
   "gamerule.requiem:showPossessorNameTag.description": "Show the nameplates of players possessing entities",
   "gamerule.requiem:disableCure": "(Requiem) Disable Cure",
@@ -178,25 +164,20 @@
   "gamerule.requiem:possessionDetection.disabled": "disabled",
   "gamerule.requiem:possessionDetection.normal": "normal",
   "gamerule.requiem:possessionDetection.hard": "hard",
-
   "effect.requiem.attrition": "Attrition",
   "effect.requiem.emancipation": "Emancipation",
   "effect.requiem.penance": "Penance",
   "effect.requiem.reclamation": "Reclamation",
-
   "enchantment.requiem.humanity": "Humanity",
-
   "key.requiem.dissociation": "[Requiem] Dissociation",
   "requiem:shulker.onboard": "Press %s or %s to dissociate",
   "requiem:dissociate_hint": "Press %s to dissociate",
   "requiem:possess.incompatible_body": "This body is incompatible with your soul",
   "requiem:merge_hint": "Press %s to return",
-
   "entity.requiem.cured_piglin": "Pigman",
   "entity.requiem.mortician": "Mortician",
   "entity.requiem.cured_piglin_brute": "Pigman Brute",
   "entity.requiem.player_shell": "Player Shell",
-
   "item.requiem.totem_of_skeletonization": "Totem of Skeletonization",
   "item.requiem.opus_daemonium": "Opus Daemonium",
   "item.requiem.empty_soul_vessel": "Empty Soul Vessel",
@@ -212,7 +193,6 @@
   "item.requiem.shattered_soul_vessel": "Shattered Soul Vessel",
   "requiem:remnant_vessel.curse": "Curse",
   "requiem:remnant_vessel.cure": "Cure",
-
   "origins:layer.requiem.soul_type.name": "Soul Type",
   "origins:layer.requiem.soul_type.missing_origin.name": "Missing",
   "origins:layer.requiem.soul_type.missing_origin.description": "You do not have a Soul Type.",
@@ -238,8 +218,6 @@
   "origins:power.requiem.banished.description": "You cannot get a new human body by curing other creatures.",
   "origins:power.requiem.mortal.name": "Respawn",
   "origins:power.requiem.mortal.description": "When you die, and if all goes well, you find yourself at your last resting point with a whole new body.",
-
   "stat.requiem.interact_with_rift": "[Requiem] Interactions with Obelisk Rift",
-
   "requiem.message.peaceful_despawn": "This host may not belong to such a peaceful world"
 }

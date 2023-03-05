@@ -2,6 +2,9 @@
   "replace": false,
   "values": [
     "#c:illagers",
-    { "id": "biomemakeover:cowboy", "required": false }
+    {
+      "id": "biomemakeover:cowboy",
+      "required": false
+    }
   ]
 }

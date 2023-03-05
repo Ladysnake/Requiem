@@ -1,6 +1,9 @@
 {
   "replace": false,
   "values": [
-    { "id": "biomemakeover:stone_golem", "required": false }
+    {
+      "id": "biomemakeover:stone_golem",
+      "required": false
+    }
   ]
 }

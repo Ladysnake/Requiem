@@ -31,8 +31,8 @@ import java.util.Set;
 import java.util.function.Function;
 
 public class SimpleUnbakedModel implements UnbakedModel {
-    Function<ModelBuilder, BakedModel> baker;
     private final Set<SpriteIdentifier> textureDependencies;
+    Function<ModelBuilder, BakedModel> baker;
 
     public SimpleUnbakedModel(Function<ModelBuilder, BakedModel> baker, Set<SpriteIdentifier> textureDependencies) {
         this.baker = baker;

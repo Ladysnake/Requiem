@@ -54,11 +54,11 @@ public final class FractureKeyBinding {
     public static final String ETHEREAL_FRACTURE = "key.requiem.dissociation";
 
     public static final KeyBind etherealFractureKey = new KeyBind(
-            ETHEREAL_FRACTURE,
-            InputUtil.Type.KEYSYM,
-            GLFW.GLFW_KEY_COMMA,  // '<'
-            "key.categories.gameplay"
-        );
+        ETHEREAL_FRACTURE,
+        InputUtil.Type.KEYSYM,
+        GLFW.GLFW_KEY_COMMA,  // '<'
+        "key.categories.gameplay"
+    );
 
     public static void init() {
         KeyBindingHelper.registerKeyBinding(etherealFractureKey);

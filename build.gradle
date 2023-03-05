@@ -1,6 +1,7 @@
 // Credits to UpcraftLP for the base build script
 
 plugins {
+    id 'org.quiltmc.loom' version '1.+' // Required for the loader to work.
     alias(libs.plugins.chenille)
     id 'io.github.juuxel.loom-quiltflower' version "1.6.0"
 }
@@ -98,9 +99,7 @@ allprojects {
     dependencies {
         //to change the versions see the gradle.properties file
         minecraft "com.mojang:minecraft:${project.minecraft_version}"
-        mappings(loom.layered {
-            addLayer(quiltMappings.mappings("org.quiltmc:quilt-mappings:${minecraft_version}+build.${quilt_mappings}:v2"))
-        })
+        mappings "org.quiltmc:quilt-mappings:${minecraft_version}+build.${quilt_mappings}:intermediary-v2"
         modImplementation "org.quiltmc:quilt-loader:${project.loader_version}"
         modImplementation "org.quiltmc:qsl:${qsl_version}+${minecraft_version}"
         modImplementation "org.quiltmc.quilted-fabric-api:quilted-fabric-api:${quilted_fabric_api_version}-${minecraft_version}"
@@ -146,35 +145,6 @@ dependencies {
     modCompileOnly (libs.bundles.cloth) { transitive = false }
     modLocalRuntime (libs.bundles.cloth) { transitive = false }
     include libs.fiberToCloth
-
-    // Extra compatibility dependencies
-//    modLocalRuntime compatLibs.mobz
-    modCompileOnly (compatLibs.betterGraves) { transitive = false }
-//    modLocalRuntime compatLibs.betterGraves
-//    modCompileOnly compatLibs.biomeMakeover
-//    modLocalRuntime compatLibs.biomeMakeover
-    modCompileOnly (compatLibs.trinkets) { transitive = false }
-//    modLocalRuntime compatLibs.trinkets
-    modCompileOnly (compatLibs.pehkui) { transitive = false }
-//    modLocalRuntime compatLibs.pehkui
-    modCompileOnly (compatLibs.snowmercy) { transitive = false }
-//    modLocalRuntime compatLibs.snowmercy
-    modCompileOnly (compatLibs.bundles.origins) { transitive = false }
-    modLocalRuntime (compatLibs.bundles.origins)
-    modLocalImplementation (compatLibs.additionalEntityAttributes)
-
-    modCompileOnly (compatLibs.eldritchMobs) { transitive = false }
-//    modLocalRuntime compatLibs.eldritchMobs
-    modCompileOnly (compatLibs.haema) { transitive = false }
-//    modLocalRuntime compatLibs.bundles.haema
-    modCompileOnly (compatLibs.golemsGalore) { transitive = false }
-//    modLocalRuntime compatLibs.bundles.golemsGalore
-    modCompileOnly (compatLibs.bumblezone) { transitive = false }
-//    modLocalRuntime compatLibs.bumblezone
-    modCompileOnly (compatLibs.bewitchment) { transitive = false }
-//    modLocalRuntime compatLibs.bundles.bewitchment
-    modLocalImplementation (compatLibs.trinkets)
-    modLocalRuntime compatLibs.collective
 }
 
 remapJar.dependsOn(project(":requiem-core").tasks.remapJar)

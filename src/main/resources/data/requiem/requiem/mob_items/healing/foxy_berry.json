@@ -10,7 +10,9 @@
   "override": {
     "type": "requiem:healing",
     "item": {
-      "items": ["minecraft:sweet_berries"]
+      "items": [
+        "minecraft:sweet_berries"
+      ]
     },
     "use_time": 16,
     "cooldown": 48,

@@ -58,9 +58,9 @@ public abstract class MinecraftClientMixin {
     public ClientPlayerEntity player;
 
     @Inject(
-            method = "setScreen",
-            at = @At(value = "FIELD", target = "Lnet/minecraft/client/MinecraftClient;currentScreen:Lnet/minecraft/client/gui/screen/Screen;", ordinal = 0, opcode = Opcodes.PUTFIELD),
-            cancellable = true
+        method = "setScreen",
+        at = @At(value = "FIELD", target = "Lnet/minecraft/client/MinecraftClient;currentScreen:Lnet/minecraft/client/gui/screen/Screen;", ordinal = 0, opcode = Opcodes.PUTFIELD),
+        cancellable = true
     )
     private void skipDeathScreen(Screen screen, CallbackInfo ci) {
         if (screen instanceof DeathScreen) {
@@ -77,7 +77,7 @@ public abstract class MinecraftClientMixin {
             && MovementAlterer.get(this.player).isNoClipping()
             && this.player != null
             && (entity.getType() == RequiemEntities.PLAYER_SHELL || entity instanceof MobEntity mob && PossessionComponent.get(this.player).startPossessing(mob, true))
-            && this.player.squaredDistanceTo(entity) < 48*48
+            && this.player.squaredDistanceTo(entity) < 48 * 48
         ) {
             cir.setReturnValue(true);
         }

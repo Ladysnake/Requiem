@@ -47,6 +47,12 @@ import net.minecraft.server.network.ServerPlayerEntity;
 
 public class WololoComponent implements AutoSyncedComponent {
     public static final ComponentKey<WololoComponent> KEY = ComponentRegistry.getOrCreate(RequiemCore.id("wololo"), WololoComponent.class);
+    private final LivingEntity entity;
+    private boolean converted = false;
+
+    public WololoComponent(LivingEntity entity) {
+        this.entity = entity;
+    }
 
     public static boolean canBeConverted(Entity entity) {
         WololoComponent w = KEY.getNullable(entity);
@@ -60,13 +66,6 @@ public class WololoComponent implements AutoSyncedComponent {
 
     public static WololoComponent create(LivingEntity entity) {
         return entity.world.isClient ? new ClientWololoComponent(entity) : new WololoComponent(entity);
-    }
-
-    private final LivingEntity entity;
-    private boolean converted = false;
-
-    public WololoComponent(LivingEntity entity) {
-        this.entity = entity;
     }
 
     public boolean isConverted() {

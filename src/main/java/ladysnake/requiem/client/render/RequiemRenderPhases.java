@@ -59,6 +59,14 @@ public final class RequiemRenderPhases extends RenderLayer {
     public static final ManagedShaderEffect GHOST_PARTICLE_SHADER = ShaderEffectManager.getInstance().manage(Requiem.id("shaders/post/ghost_particles.json"));
     public static final ManagedFramebuffer GHOST_PARTICLE_FRAMEBUFFER = GHOST_PARTICLE_SHADER.getTarget("ghost_particles");
     public static final RenderLayer GHOST_PARTICLE_LAYER;
+    public static final Target shadowPlayerTarget = new Target(
+        "requiem:shadow_players_target",
+        RequiemClient.instance().shadowPlayerFxRenderer()::beginPlayersFbWrite,
+        () -> {
+            MinecraftClient.getInstance().getFramebuffer().beginWrite(false);
+            RenderSystem.depthMask(true);
+        }
+    );
 
     static {
         try {
@@ -86,19 +94,11 @@ public final class RequiemRenderPhases extends RenderLayer {
                         () -> MinecraftClient.getInstance().getFramebuffer().beginWrite(false)))
                     .build(false)
             );
-        } catch (IllegalAccessException | InvocationTargetException | ClassNotFoundException | UnableToFindMethodException e) {
+        } catch (IllegalAccessException | InvocationTargetException | ClassNotFoundException |
+                 UnableToFindMethodException e) {
             throw new UncheckedReflectionException(e);
         }
     }
-
-    public static final Target shadowPlayerTarget = new Target(
-        "requiem:shadow_players_target",
-        RequiemClient.instance().shadowPlayerFxRenderer()::beginPlayersFbWrite,
-        () -> {
-            MinecraftClient.getInstance().getFramebuffer().beginWrite(false);
-            RenderSystem.depthMask(true);
-        }
-    );
 
     private RequiemRenderPhases(String name, VertexFormat vertexFormat, VertexFormat.DrawMode drawMode, int expectedBufferSize, boolean hasCrumbling, boolean translucent, Runnable startAction, Runnable endAction) {
         super(name, vertexFormat, drawMode, expectedBufferSize, hasCrumbling, translucent, startAction, endAction);

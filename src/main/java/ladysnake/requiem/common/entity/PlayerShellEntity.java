@@ -217,8 +217,8 @@ public class PlayerShellEntity extends FakeServerPlayerEntity {
                 return ActionResult.SUCCESS;
             } else {
                 return stack.isEmpty() && !this.hasStackEquipped(this.getClickedSlot(vec))
-                        ? ActionResult.PASS
-                        : ActionResult.SUCCESS;
+                    ? ActionResult.PASS
+                    : ActionResult.SUCCESS;
             }
         } else {
             return ActionResult.PASS;
@@ -239,7 +239,7 @@ public class PlayerShellEntity extends FakeServerPlayerEntity {
         if (d0 >= 0.1D && d0 < 0.1D + (flag ? 0.8D : 0.45D) && this.hasStackEquipped(EquipmentSlot.FEET)) {
             slot = EquipmentSlot.FEET;
         } else if (d0 >= 0.9D + (flag ? 0.3D : 0.0D) && d0 < 0.9D + (flag ? 1.0D : 0.7D)
-                && this.hasStackEquipped(EquipmentSlot.CHEST)) {
+            && this.hasStackEquipped(EquipmentSlot.CHEST)) {
             slot = EquipmentSlot.CHEST;
         } else if (d0 >= 0.4D && d0 < 0.4D + (flag ? 1.0D : 0.8D) && this.hasStackEquipped(EquipmentSlot.LEGS)) {
             slot = EquipmentSlot.LEGS;

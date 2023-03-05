@@ -59,6 +59,10 @@ public class AttritionStatusEffect extends StatusEffect implements StickyStatusE
     public static final int MAX_LEVEL = 3;
     public static final int DEFAULT_DURATION = 300;
 
+    public AttritionStatusEffect(StatusEffectType type, int color) {
+        super(type, color);
+    }
+
     public static void apply(PlayerEntity target) {
         apply(target, target.world.getLevelProperties().isHardcore() ? 2 : 1);
     }
@@ -101,16 +105,12 @@ public class AttritionStatusEffect extends StatusEffect implements StickyStatusE
         int amplifier = attrition.getAmplifier() - amount;
         target.removeStatusEffect(RequiemStatusEffects.ATTRITION);
         StatusEffectReapplicator.KEY.maybeGet(target)
-            .or(() -> StatusEffectReapplicator.KEY.maybeGet(((Possessable)target).getPossessor()))
+            .or(() -> StatusEffectReapplicator.KEY.maybeGet(((Possessable) target).getPossessor()))
             .ifPresent(r -> r.definitivelyClear(RequiemStatusEffects.ATTRITION));
 
         if (amplifier >= 0) {
             addAttrition(target, amplifier, DEFAULT_DURATION);
         }
-    }
-
-    public AttritionStatusEffect(StatusEffectType type, int color) {
-        super(type, color);
     }
 
     @Override
@@ -128,7 +128,7 @@ public class AttritionStatusEffect extends StatusEffect implements StickyStatusE
     public boolean shouldFreezeDuration(LivingEntity entity) {
         if (this.shouldStick(entity)) return true;
         // No ticking down for possessed entities either
-        return ((Possessable)entity).getPossessor() != null;
+        return ((Possessable) entity).getPossessor() != null;
     }
 
     @Override

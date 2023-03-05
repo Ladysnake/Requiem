@@ -60,7 +60,9 @@ import static org.spongepowered.asm.mixin.injection.At.Shift.AFTER;
 public abstract class PlayerManagerMixin {
     private static final ThreadLocal<ServerWorld> REQUIEM$RESPAWN_WORLD = new ThreadLocal<>();
 
-    @Shadow @Final private List<ServerPlayerEntity> players;
+    @Shadow
+    @Final
+    private List<ServerPlayerEntity> players;
 
     @Inject(method = "onPlayerConnect", at = @At(value = "NEW", target = "net/minecraft/network/packet/s2c/play/SynchronizeTagsS2CPacket"))
     private void synchronizeServerData(ClientConnection conn, ServerPlayerEntity player, CallbackInfo ci) {
@@ -89,7 +91,7 @@ public abstract class PlayerManagerMixin {
         PrepareRespawnCallback.EVENT.invoker().prepareRespawn(original, clone, returnFromEnd);
         REQUIEM$RESPAWN_WORLD.set(clone.getWorld());
         // Prevent players from respawning in fairly bad conditions
-        while(!clone.world.isSpaceEmpty(clone) && clone.getY() < 256.0D) {
+        while (!clone.world.isSpaceEmpty(clone) && clone.getY() < 256.0D) {
             clone.setPosition(clone.getX(), clone.getY() + 1.0D, clone.getZ());
         }
         return clone;
@@ -113,9 +115,9 @@ public abstract class PlayerManagerMixin {
 
     @Inject(method = "respawnPlayer", at = @At("RETURN"))
     private void firePlayerRespawnEvent(
-            ServerPlayerEntity original,
-            boolean returnFromEnd,
-            CallbackInfoReturnable<ServerPlayerEntity> cir
+        ServerPlayerEntity original,
+        boolean returnFromEnd,
+        CallbackInfoReturnable<ServerPlayerEntity> cir
     ) {
         PlayerRespawnCallback.EVENT.invoker().onPlayerRespawn(cir.getReturnValue(), returnFromEnd);
     }

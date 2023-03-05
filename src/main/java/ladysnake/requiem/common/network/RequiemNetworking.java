@@ -40,7 +40,6 @@ import ladysnake.requiem.api.v1.entity.ability.AbilityType;
 import ladysnake.requiem.api.v1.remnant.RemnantType;
 import ladysnake.requiem.api.v1.util.SubDataManager;
 import ladysnake.requiem.api.v1.util.SubDataManagerHelper;
-import ladysnake.requiem.common.block.obelisk.RunestoneBlockEntity;
 import ladysnake.requiem.common.remnant.RemnantTypes;
 import ladysnake.requiem.core.RequiemCoreNetworking;
 import net.minecraft.client.MinecraftClient;
@@ -54,7 +53,6 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Contract;
 import org.quiltmc.qsl.networking.api.PacketByteBufs;
-import org.quiltmc.qsl.networking.api.PlayerLookup;
 import org.quiltmc.qsl.networking.api.ServerPlayNetworking;
 
 import java.util.List;
@@ -162,15 +160,6 @@ public final class RequiemNetworking {
         PacketByteBuf buf = PacketByteBufs.create();
         buf.writeBoolean(dead);
         ServerPlayNetworking.send(player, ANCHOR_DAMAGE, buf);
-    }
-
-    public static void sendObeliskPowerUpdateMessage(RunestoneBlockEntity runestone) {
-        PacketByteBuf buf = PacketByteBufs.create();
-        buf.writeBlockPos(runestone.getPos());
-        buf.writeVarInt(runestone.getCoreWidth());
-        buf.writeVarInt(runestone.getCoreHeight());
-        buf.writeFloat(runestone.getPowerRate());
-        ServerPlayNetworking.send(PlayerLookup.tracking(runestone), OBELISK_POWER_UPDATE, buf);
     }
 
     public static void sendRiftWitnessedMessage(ServerPlayerEntity player, Text obeliskName) {

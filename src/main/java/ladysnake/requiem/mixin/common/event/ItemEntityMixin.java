@@ -54,16 +54,16 @@ public abstract class ItemEntityMixin extends Entity {
     }
 
     @Inject(
-            method = "onPlayerCollision",
-            at = @At(
-                    value = "INVOKE",
-                    target = "Lnet/minecraft/entity/ItemEntity;getStack()Lnet/minecraft/item/ItemStack;",
-                    ordinal = 0
-            ),
-            cancellable = true
+        method = "onPlayerCollision",
+        at = @At(
+            value = "INVOKE",
+            target = "Lnet/minecraft/entity/ItemEntity;getStack()Lnet/minecraft/item/ItemStack;",
+            ordinal = 0
+        ),
+        cancellable = true
     )
     private void fireItemPickupEvent(PlayerEntity playerEntity_1, CallbackInfo info) {
-        if (ItemPickupCallback.EVENT.invoker().onItemPickup(playerEntity_1, (ItemEntity)(Object)this) != ActionResult.PASS) {
+        if (ItemPickupCallback.EVENT.invoker().onItemPickup(playerEntity_1, (ItemEntity) (Object) this) != ActionResult.PASS) {
             info.cancel();
         }
     }

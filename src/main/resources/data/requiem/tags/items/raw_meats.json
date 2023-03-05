@@ -3,7 +3,13 @@
   "values": [
     "#c:raw_meats",
     "minecraft:rotten_flesh",
-    { "id": "biomemakeover:raw_toad", "required": false },
-    { "id": "llamarama:raw_llama_meat", "required": false }
+    {
+      "id": "biomemakeover:raw_toad",
+      "required": false
+    },
+    {
+      "id": "llamarama:raw_llama_meat",
+      "required": false
+    }
   ]
 }

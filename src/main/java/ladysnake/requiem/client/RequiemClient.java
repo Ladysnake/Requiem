@@ -34,55 +34,27 @@
  */
 package ladysnake.requiem.client;
 
-import com.google.common.collect.ImmutableSet;
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.annotation.CalledThroughReflection;
-import ladysnake.requiem.client.model.lib.SimpleBakedModel;
-import ladysnake.requiem.client.model.lib.SimpleUnbakedModel;
 import ladysnake.requiem.client.network.ClientMessageHandler;
 import ladysnake.requiem.client.particle.CureParticle;
 import ladysnake.requiem.client.particle.EntityDustParticle;
 import ladysnake.requiem.client.particle.GhostParticle;
 import ladysnake.requiem.client.particle.wisp.WispTrailParticle;
-import ladysnake.requiem.client.render.block.RunestoneBlockEntityRenderer;
-import ladysnake.requiem.client.render.entity.CuredPiglinEntityRenderer;
-import ladysnake.requiem.client.render.entity.CuredVillagerEntityRenderer;
-import ladysnake.requiem.client.render.entity.MorticianEntityRenderer;
-import ladysnake.requiem.client.render.entity.ObeliskSoulEntityRenderer;
-import ladysnake.requiem.client.render.entity.SoulEntityRenderer;
-import ladysnake.requiem.client.render.entity.model.MorticianEntityModel;
 import ladysnake.requiem.client.render.entity.model.WillOWispModel;
 import ladysnake.requiem.client.screen.RiftScreen;
-import ladysnake.requiem.common.block.RequiemBlockEntities;
-import ladysnake.requiem.common.block.RequiemBlocks;
-import ladysnake.requiem.common.entity.RequiemEntities;
 import ladysnake.requiem.common.entity.effect.RequiemStatusEffects;
 import ladysnake.requiem.common.particle.RequiemParticleTypes;
 import ladysnake.requiem.common.screen.RequiemScreenHandlers;
-import net.fabricmc.fabric.api.client.model.ModelLoadingRegistry;
 import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry;
-import net.fabricmc.fabric.api.client.rendering.v1.BlockEntityRendererRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityModelLayerRegistry;
-import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
-import net.fabricmc.fabric.api.renderer.v1.material.BlendMode;
-import net.fabricmc.fabric.api.renderer.v1.model.ModelHelper;
 import net.minecraft.client.gui.screen.ingame.HandledScreens;
-import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.particle.PortalParticle;
 import net.minecraft.client.particle.SoulParticle;
 import net.minecraft.client.particle.SpellParticle;
-import net.minecraft.client.render.entity.PlayerEntityRenderer;
-import net.minecraft.client.render.entity.model.EntityModelLayers;
-import net.minecraft.client.texture.Sprite;
-import net.minecraft.client.texture.SpriteAtlasTexture;
-import net.minecraft.client.util.SpriteIdentifier;
-import net.minecraft.entity.EntityType;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.Direction;
 import org.quiltmc.loader.api.ModContainer;
-
-import java.util.Map;
 
 public final class RequiemClient {
 
@@ -90,22 +62,11 @@ public final class RequiemClient {
     public static final Identifier SOULBOUND_BACKGROUND = Requiem.id("textures/gui/soulbound_background.png");
 
     private static final RequiemClient INSTANCE = new RequiemClient();
-
-    @CalledThroughReflection
-    public static void onInitializeClient(ModContainer mod) {
-        INSTANCE.init();
-    }
-
-    public static RequiemClient instance() {
-        return INSTANCE;
-    }
-
     private final ClientMessageHandler messageHandler;
     private final RequiemClientListener listener;
     private final RequiemTargetHandler targetHandler;
     private final RequiemEntityShaderPicker shaderPicker;
     private final RequiemStatusEffectSpriteManager statusEffectSpriteManager;
-
     private final RequiemFx requiemFxRenderer;
     private final ShadowPlayerFx shadowPlayerFxRenderer;
     private final ZaWorldFx worldFreezeFxRenderer;
@@ -119,6 +80,15 @@ public final class RequiemClient {
         this.statusEffectSpriteManager = new RequiemStatusEffectSpriteManager();
         this.shadowPlayerFxRenderer = new ShadowPlayerFx();
         this.worldFreezeFxRenderer = new ZaWorldFx();
+    }
+
+    @CalledThroughReflection
+    public static void onInitializeClient(ModContainer mod) {
+        INSTANCE.init();
+    }
+
+    public static RequiemClient instance() {
+        return INSTANCE;
     }
 
     public RequiemStatusEffectSpriteManager statusEffectSpriteManager() {
@@ -155,29 +125,6 @@ public final class RequiemClient {
     }
 
     private void registerBlockModels() {
-        ModelLoadingRegistry.INSTANCE.registerModelProvider((manager, out) ->
-            RequiemBlocks.streamRunestones().map(Map.Entry::getValue).map(RunestoneBlockEntityRenderer::createRuneIdentifier).forEach(out));
-        ModelLoadingRegistry.INSTANCE.registerResourceProvider(resourceManager -> (modelId, context) -> {
-            if (modelId.getNamespace().equals(Requiem.MOD_ID)) {
-                if (modelId.getPath().startsWith("tachylite_rune/")) {
-                    String effect = modelId.getPath().substring(modelId.getPath().lastIndexOf('/') + 1);
-                    String sideRuneSpriteId = ifExistsOrElse(resourceManager, "block/%s_rune_side".formatted(effect), "block/%s_rune".formatted(effect));
-                    String topRuneSpriteId = ifExistsOrElse(resourceManager, "block/%s_rune_top".formatted(effect), "block/neutral_rune");
-                    return new SimpleUnbakedModel(mb -> {
-                        Sprite sideRuneSprite = mb.getSprite(sideRuneSpriteId);
-                        Sprite topRuneSprite = mb.getSprite(topRuneSpriteId);
-                        mb.box(mb.finder().emissive(0, true).disableAo(0, true).disableDiffuse(0, true).blendMode(0, BlendMode.CUTOUT).find(),
-                            -1, d -> d.getAxis() == Direction.Axis.Y ? topRuneSprite : sideRuneSprite,
-                            -0.0001f, -0.0001f, -0.0001f, 1.0001f, 1.0001f, 1.0001f);
-                        return new SimpleBakedModel(mb.builder.build(), ModelHelper.MODEL_TRANSFORM_BLOCK, sideRuneSprite, null);
-                    }, ImmutableSet.of( // Set.of throws on duplicate elements! (ImmutableSet.of does not)
-                        new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(topRuneSpriteId)),
-                        new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(sideRuneSpriteId))
-                    ));
-                }
-            }
-            return null;
-        });
     }
 
     private String ifExistsOrElse(ResourceManager resources, String attempt, String fallback) {
@@ -204,24 +151,13 @@ public final class RequiemClient {
     }
 
     private void registerEntityModels() {
-        EntityModelLayerRegistry.registerModelLayer(MorticianEntityModel.MODEL_LAYER, MorticianEntityModel::getTexturedModelData);
         EntityModelLayerRegistry.registerModelLayer(WillOWispModel.BASE_MODEL_LAYER, WillOWispModel::getTexturedModelData);
     }
 
     private void registerBlockEntityRenderers() {
-        BlockEntityRendererRegistry.register(RequiemBlockEntities.RUNIC_OBSIDIAN, RunestoneBlockEntityRenderer::new);
     }
 
     private void registerEntityRenderers() {
-        EntityRendererRegistry.register(RequiemEntities.OBELISK_SOUL, ObeliskSoulEntityRenderer::new);
-        EntityRendererRegistry.register(RequiemEntities.RELEASED_SOUL, SoulEntityRenderer::new);
-        EntityRendererRegistry.register(RequiemEntities.CURED_VILLAGER, CuredVillagerEntityRenderer::new);
-        EntityRendererRegistry.register(RequiemEntities.CURED_PIGLIN, (ctx) -> new CuredPiglinEntityRenderer(ctx, EntityModelLayers.PIGLIN, EntityModelLayers.PIGLIN_INNER_ARMOR, EntityModelLayers.PIGLIN_OUTER_ARMOR, false));
-        EntityRendererRegistry.register(RequiemEntities.CURED_PIGLIN_BRUTE, (ctx) -> new CuredPiglinEntityRenderer(ctx, EntityModelLayers.PIGLIN_BRUTE, EntityModelLayers.PIGLIN_BRUTE_INNER_ARMOR, EntityModelLayers.PIGLIN_BRUTE_OUTER_ARMOR, false));
-        // shh, it's fine
-        @SuppressWarnings({"unchecked", "RedundantCast"}) EntityType<? extends AbstractClientPlayerEntity> playerShellType = (EntityType<? extends AbstractClientPlayerEntity>) (EntityType<?>) RequiemEntities.PLAYER_SHELL;
-        EntityRendererRegistry.register(playerShellType, ctx -> new PlayerEntityRenderer(ctx, false));
-        EntityRendererRegistry.register(RequiemEntities.MORTICIAN, MorticianEntityRenderer::new);
     }
 
     private void initListeners() {

@@ -35,22 +35,16 @@
 package ladysnake.requiem.mixin.common.remnant;
 
 import com.mojang.authlib.GameProfile;
-import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.RequiemPlayer;
 import ladysnake.requiem.api.v1.remnant.DeathSuspender;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
-import ladysnake.requiem.api.v1.remnant.RemnantType;
-import ladysnake.requiem.common.gamerule.RequiemGamerules;
 import ladysnake.requiem.common.remnant.RemnantTypes;
-import net.minecraft.advancement.Advancement;
-import net.minecraft.advancement.AdvancementProgress;
 import net.minecraft.advancement.PlayerAdvancementTracker;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.encryption.PlayerPublicKey;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
@@ -81,20 +75,20 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity implements Re
 
     @Inject(method = "onDeath", at = @At("HEAD"), cancellable = true)
     private void suspendDeath(DamageSource killingBlow, CallbackInfo ci) {
-        Identifier advancementId = Requiem.id("adventure/the_choice");
-        Advancement theChoice = this.getWorld().getServer().getAdvancementLoader().get(advancementId);
-        AdvancementProgress progress = this.getAdvancementTracker().getProgress(theChoice);
-        if (progress == null) {
-            Requiem.LOGGER.error("Advancement '{}' is missing", advancementId);
-        } else if (!progress.isDone() && !world.getLevelProperties().isHardcore()) {
-            RemnantType startingRemnantType = world.getGameRules().get(RequiemGamerules.STARTING_SOUL_MODE).get().getRemnantType();
-            if (startingRemnantType == null) {
-                DeathSuspender.get(this).suspendDeath(killingBlow);
-                ci.cancel();
-            } else {
-                RemnantComponent.get(this).become(startingRemnantType, true);
-            }
-        }
+//        Identifier advancementId = Requiem.id("adventure/the_choice");
+//        Advancement theChoice = this.getWorld().getServer().getAdvancementLoader().get(advancementId);
+//        AdvancementProgress progress = this.getAdvancementTracker().getProgress(theChoice);
+//        if (progress == null) {
+//            Requiem.LOGGER.error("Advancement '{}' is missing", advancementId);
+//        } else if (!progress.isDone() && !world.getLevelProperties().isHardcore()) {
+//            RemnantType startingRemnantType = world.getGameRules().get(RequiemGamerules.STARTING_SOUL_MODE).get().getRemnantType();
+//            if (startingRemnantType == null) {
+//                DeathSuspender.get(this).suspendDeath(killingBlow);
+//                ci.cancel();
+//            } else {
+//                RemnantComponent.get(this).become(startingRemnantType, true);
+//            }
+//        }
     }
 
     /**

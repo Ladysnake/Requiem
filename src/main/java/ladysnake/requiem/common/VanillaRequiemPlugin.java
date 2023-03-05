@@ -48,51 +48,18 @@ import ladysnake.requiem.api.v1.entity.ability.AbilityType;
 import ladysnake.requiem.api.v1.entity.ability.MobAbilityConfig;
 import ladysnake.requiem.api.v1.entity.ability.MobAbilityController;
 import ladysnake.requiem.api.v1.entity.ability.MobAbilityRegistry;
-import ladysnake.requiem.api.v1.event.minecraft.AllowUseEntityCallback;
-import ladysnake.requiem.api.v1.event.minecraft.LivingEntityDropCallback;
-import ladysnake.requiem.api.v1.event.minecraft.MobTravelRidingCallback;
-import ladysnake.requiem.api.v1.event.minecraft.PlayerRespawnCallback;
-import ladysnake.requiem.api.v1.event.minecraft.PrepareRespawnCallback;
-import ladysnake.requiem.api.v1.event.requiem.CanCurePossessedCallback;
-import ladysnake.requiem.api.v1.event.requiem.ConsumableItemEvents;
-import ladysnake.requiem.api.v1.event.requiem.HumanityCheckCallback;
-import ladysnake.requiem.api.v1.event.requiem.InitiateFractureCallback;
-import ladysnake.requiem.api.v1.event.requiem.PlayerShellEvents;
-import ladysnake.requiem.api.v1.event.requiem.PossessionEvents;
-import ladysnake.requiem.api.v1.event.requiem.PossessionStateChangeCallback;
-import ladysnake.requiem.api.v1.event.requiem.RemnantStateChangeCallback;
-import ladysnake.requiem.api.v1.event.requiem.RemnantTypeChangeCallback;
-import ladysnake.requiem.api.v1.event.requiem.SoulCaptureEvents;
+import ladysnake.requiem.api.v1.event.minecraft.*;
+import ladysnake.requiem.api.v1.event.requiem.*;
 import ladysnake.requiem.api.v1.possession.PossessedData;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.api.v1.possession.item.PossessionItemAction;
-import ladysnake.requiem.api.v1.remnant.DeathSuspender;
-import ladysnake.requiem.api.v1.remnant.MobResurrectable;
-import ladysnake.requiem.api.v1.remnant.RemnantComponent;
-import ladysnake.requiem.api.v1.remnant.RemnantType;
-import ladysnake.requiem.api.v1.remnant.SoulbindingRegistry;
-import ladysnake.requiem.api.v1.remnant.VagrantInteractionRegistry;
+import ladysnake.requiem.api.v1.remnant.*;
 import ladysnake.requiem.common.advancement.criterion.RequiemCriteria;
 import ladysnake.requiem.common.enchantment.RequiemEnchantments;
 import ladysnake.requiem.common.entity.PlayerShellEntity;
 import ladysnake.requiem.common.entity.RequiemEntities;
 import ladysnake.requiem.common.entity.SkeletonBoneComponent;
-import ladysnake.requiem.common.entity.ability.AxolotlPlayingDeadAbility;
-import ladysnake.requiem.common.entity.ability.BlazeFireballAbility;
-import ladysnake.requiem.common.entity.ability.BlinkAbility;
-import ladysnake.requiem.common.entity.ability.CreeperPrimingAbility;
-import ladysnake.requiem.common.entity.ability.EvokerFangAbility;
-import ladysnake.requiem.common.entity.ability.EvokerVexAbility;
-import ladysnake.requiem.common.entity.ability.EvokerWololoAbility;
-import ladysnake.requiem.common.entity.ability.FrogCatchAbility;
-import ladysnake.requiem.common.entity.ability.GhastFireballAbility;
-import ladysnake.requiem.common.entity.ability.GoatRamAbility;
-import ladysnake.requiem.common.entity.ability.GuardianBeamAbility;
-import ladysnake.requiem.common.entity.ability.PufferfishInflationAbility;
-import ladysnake.requiem.common.entity.ability.ShulkerPeekAbility;
-import ladysnake.requiem.common.entity.ability.ShulkerShootAbility;
-import ladysnake.requiem.common.entity.ability.VagrantPossessAbility;
-import ladysnake.requiem.common.entity.ability.WitherSkullAbility;
+import ladysnake.requiem.common.entity.ability.*;
 import ladysnake.requiem.common.entity.effect.ReclamationStatusEffect;
 import ladysnake.requiem.common.entity.effect.RequiemStatusEffects;
 import ladysnake.requiem.common.gamerule.PossessionDetection;
@@ -116,11 +83,7 @@ import ladysnake.requiem.core.resurrection.ResurrectionDataLoader;
 import ladysnake.requiem.core.tag.RequiemCoreTags;
 import ladysnake.requiem.core.util.RayHelper;
 import net.fabricmc.fabric.api.entity.event.v1.EntitySleepEvents;
-import net.fabricmc.fabric.api.event.player.AttackBlockCallback;
-import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
-import net.fabricmc.fabric.api.event.player.UseBlockCallback;
-import net.fabricmc.fabric.api.event.player.UseEntityCallback;
-import net.fabricmc.fabric.api.event.player.UseItemCallback;
+import net.fabricmc.fabric.api.event.player.*;
 import net.fabricmc.fabric.api.util.TriState;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
@@ -160,6 +123,98 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
         .directAttack(player -> new DelegatingDirectAbility<>(player, LivingEntity.class, AbilityType.INTERACT))
         .directInteract(VagrantPossessAbility::new)
         .build();
+
+    private static void resetIdentity(PlayerEntity player) {
+        GameProfile previouslyImpersonated = Impersonate.IMPERSONATION.get(player).stopImpersonation(PlayerSplitter.BODY_IMPERSONATION);
+        if (previouslyImpersonated != null && player instanceof ServerPlayerEntity sp) {
+            PlayerShellEvents.RESET_IDENTITY.invoker().resetIdentity(sp, previouslyImpersonated);
+        }
+    }
+
+    private static boolean canUseItems(MobEntity possessed) {
+        if (possessed.getType().isIn(RequiemCoreTags.Entity.ITEM_USERS)) {
+            return true;
+        }
+        return possessed.canPickUpLoot();
+    }
+
+    private static boolean canCarryHotbar(MobEntity possessed) {
+        return possessed.getType().isIn(RequiemEntityTypeTags.HOTBAR_CARRIERS);
+    }
+
+    private static boolean canWearArmor(MobEntity possessed) {
+        if (possessed.getType().isIn(RequiemCoreTags.Entity.ARMOR_BANNED)) {
+            return false;
+        }
+        if (possessed.getType().isIn(RequiemEntityTypeTags.ARMOR_USERS)) {
+            return true;
+        }
+        return !possessed.getEquippedStack(EquipmentSlot.HEAD).isEmpty() || possessed.canEquip(new ItemStack(Items.LEATHER_HELMET));
+    }
+
+    public static TypedActionResult<ItemStack> cure(PlayerEntity player, MobEntity possessed, ItemStack stack, World world, Hand hand) {
+        if (RemnantComponent.get(player).canCurePossessed(possessed)) {
+            PossessionComponent.get(player).startCuring();
+            stack.decrement(1);
+            return TypedActionResult.success(stack);
+        }
+
+        return TypedActionResult.fail(stack);
+    }
+
+    public static TypedActionResult<ItemStack> healWithFood(PlayerEntity player, MobEntity possessed, ItemStack stack, World world, Hand hand) {
+        FoodComponent food = stack.getItem().getFoodComponent();
+
+        if (food != null) {
+            possessed.heal(food.getHunger());
+            player.eatFood(world, stack);
+            return TypedActionResult.success(stack);
+        }
+
+        return TypedActionResult.fail(stack);
+    }
+
+    public static TypedActionResult<ItemStack> replaceBone(PlayerEntity player, MobEntity possessed, ItemStack stack, World world, Hand hand) {
+        if (SkeletonBoneComponent.KEY.get(possessed).replaceBone()) {
+            stack.decrement(1);
+            return TypedActionResult.success(stack);
+        }
+
+        return TypedActionResult.fail(stack);
+    }
+
+    public static TypedActionResult<ItemStack> eatWitchFood(PlayerEntity player, MobEntity possessed, ItemStack stack, World world, Hand hand) {
+        Map<StatusEffect, StatusEffectInstance> before = new HashMap<>(possessed.getActiveStatusEffects());
+        ItemStack ret = stack.getItem().finishUsing(stack, world, player);
+        Map<StatusEffect, StatusEffectInstance> after = new HashMap<>(possessed.getActiveStatusEffects());
+        // Remove all negative status effects from the food
+        revertHarmfulEffects(player, before, after);
+        return TypedActionResult.success(ret);
+    }
+
+    private static void revertHarmfulEffects(PlayerEntity player, Map<StatusEffect, StatusEffectInstance> before, Map<StatusEffect, StatusEffectInstance> after) {
+        for (StatusEffect statusEffect : after.keySet()) {
+            if (statusEffect.getType() == StatusEffectType.HARMFUL) {
+                StatusEffectInstance previous = before.get(statusEffect);
+                StatusEffectInstance current = after.get(statusEffect);
+                if (!Objects.equals(previous, current)) {
+                    player.removeStatusEffect(statusEffect);
+                    if (previous != null) {
+                        player.addStatusEffect(new StatusEffectInstance(
+                            statusEffect,
+                            Math.min(previous.getDuration(), current.getDuration()),
+                            Math.min(previous.getAmplifier(), current.getAmplifier()),
+                            previous.isAmbient(),
+                            previous.shouldShowParticles(),
+                            previous.shouldShowIcon(),
+                            previous,
+                            statusEffect.getFactorData()
+                        ));
+                    }
+                }
+            }
+        }
+    }
 
     @Override
     public void onRequiemInitialize() {
@@ -292,13 +347,6 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
         });
     }
 
-    private static void resetIdentity(PlayerEntity player) {
-        GameProfile previouslyImpersonated = Impersonate.IMPERSONATION.get(player).stopImpersonation(PlayerSplitter.BODY_IMPERSONATION);
-        if (previouslyImpersonated != null && player instanceof ServerPlayerEntity sp) {
-            PlayerShellEvents.RESET_IDENTITY.invoker().resetIdentity(sp, previouslyImpersonated);
-        }
-    }
-
     @Nonnull
     private ActionResult getInteractionResult(PlayerEntity player) {
         return isInteractionForbidden(player) ? ActionResult.FAIL : ActionResult.PASS;
@@ -404,27 +452,6 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
         }
     }
 
-    private static boolean canUseItems(MobEntity possessed) {
-        if (possessed.getType().isIn(RequiemCoreTags.Entity.ITEM_USERS)) {
-            return true;
-        }
-        return possessed.canPickUpLoot();
-    }
-
-    private static boolean canCarryHotbar(MobEntity possessed) {
-        return possessed.getType().isIn(RequiemEntityTypeTags.HOTBAR_CARRIERS);
-    }
-
-    private static boolean canWearArmor(MobEntity possessed) {
-        if (possessed.getType().isIn(RequiemCoreTags.Entity.ARMOR_BANNED)) {
-            return false;
-        }
-        if (possessed.getType().isIn(RequiemEntityTypeTags.ARMOR_USERS)) {
-            return true;
-        }
-        return !possessed.getEquippedStack(EquipmentSlot.HEAD).isEmpty() || possessed.canEquip(new ItemStack(Items.LEATHER_HELMET));
-    }
-
     @Override
     public void registerMobAbilities(MobAbilityRegistry reg) {
         reg.beginRegistration(EntityType.AXOLOTL).indirectInteract(AxolotlPlayingDeadAbility::new).build();
@@ -504,69 +531,5 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
         Registry.register(registry, Requiem.id("eat_to_heal"), VanillaRequiemPlugin::healWithFood);
         Registry.register(registry, Requiem.id("replace_bone"), VanillaRequiemPlugin::replaceBone);
         Registry.register(registry, Requiem.id("witch_eat"), VanillaRequiemPlugin::eatWitchFood);
-    }
-
-    public static TypedActionResult<ItemStack> cure(PlayerEntity player, MobEntity possessed, ItemStack stack, World world, Hand hand) {
-        if (RemnantComponent.get(player).canCurePossessed(possessed)) {
-            PossessionComponent.get(player).startCuring();
-            stack.decrement(1);
-            return TypedActionResult.success(stack);
-        }
-
-        return TypedActionResult.fail(stack);
-    }
-
-    public static TypedActionResult<ItemStack> healWithFood(PlayerEntity player, MobEntity possessed, ItemStack stack, World world, Hand hand) {
-        FoodComponent food = stack.getItem().getFoodComponent();
-
-        if (food != null) {
-            possessed.heal(food.getHunger());
-            player.eatFood(world, stack);
-            return TypedActionResult.success(stack);
-        }
-
-        return TypedActionResult.fail(stack);
-    }
-
-    public static TypedActionResult<ItemStack> replaceBone(PlayerEntity player, MobEntity possessed, ItemStack stack, World world, Hand hand) {
-        if (SkeletonBoneComponent.KEY.get(possessed).replaceBone()) {
-            stack.decrement(1);
-            return TypedActionResult.success(stack);
-        }
-
-        return TypedActionResult.fail(stack);
-    }
-
-    public static TypedActionResult<ItemStack> eatWitchFood(PlayerEntity player, MobEntity possessed, ItemStack stack, World world, Hand hand) {
-        Map<StatusEffect, StatusEffectInstance> before = new HashMap<>(possessed.getActiveStatusEffects());
-        ItemStack ret = stack.getItem().finishUsing(stack, world, player);
-        Map<StatusEffect, StatusEffectInstance> after = new HashMap<>(possessed.getActiveStatusEffects());
-        // Remove all negative status effects from the food
-        revertHarmfulEffects(player, before, after);
-        return TypedActionResult.success(ret);
-    }
-
-    private static void revertHarmfulEffects(PlayerEntity player, Map<StatusEffect, StatusEffectInstance> before, Map<StatusEffect, StatusEffectInstance> after) {
-        for (StatusEffect statusEffect : after.keySet()) {
-            if (statusEffect.getType() == StatusEffectType.HARMFUL) {
-                StatusEffectInstance previous = before.get(statusEffect);
-                StatusEffectInstance current = after.get(statusEffect);
-                if (!Objects.equals(previous, current)) {
-                    player.removeStatusEffect(statusEffect);
-                    if (previous != null) {
-                        player.addStatusEffect(new StatusEffectInstance(
-                            statusEffect,
-                            Math.min(previous.getDuration(), current.getDuration()),
-                            Math.min(previous.getAmplifier(), current.getAmplifier()),
-                            previous.isAmbient(),
-                            previous.shouldShowParticles(),
-                            previous.shouldShowIcon(),
-                            previous,
-                            statusEffect.getFactorData()
-                        ));
-                    }
-                }
-            }
-        }
     }
 }

@@ -45,19 +45,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
 public class GuardianBeamAbility extends TickingGoalAbility<GuardianEntity, LivingEntity> {
-    public GuardianBeamAbility(GuardianEntity owner) {
-        super(owner, makeGoal(owner), 20*4, 15, LivingEntity.class);
-    }
-
     private static final Constructor<? extends Goal> BEAM_GOAL_FACTORY;
-
-    private static Goal makeGoal(GuardianEntity owner) {
-        try {
-            return BEAM_GOAL_FACTORY.newInstance(owner);
-        } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
-            throw new UncheckedReflectionException("Failed to instantiate FireBeamGoal", e);
-        }
-    }
 
     static {
         try {
@@ -68,6 +56,18 @@ public class GuardianBeamAbility extends TickingGoalAbility<GuardianEntity, Livi
             throw new UncheckedReflectionException("Could not find the FireBeamGoal class", e);
         } catch (NoSuchMethodException e) {
             throw new UncheckedReflectionException("Could not find the FireBeamGoal constructor", e);
+        }
+    }
+
+    public GuardianBeamAbility(GuardianEntity owner) {
+        super(owner, makeGoal(owner), 20 * 4, 15, LivingEntity.class);
+    }
+
+    private static Goal makeGoal(GuardianEntity owner) {
+        try {
+            return BEAM_GOAL_FACTORY.newInstance(owner);
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
+            throw new UncheckedReflectionException("Failed to instantiate FireBeamGoal", e);
         }
     }
 }

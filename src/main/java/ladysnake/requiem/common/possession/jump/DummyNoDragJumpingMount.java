@@ -40,7 +40,7 @@ import net.minecraft.sound.SoundEvent;
 
 /**
  * Currently unused because setting noDrag means you have to revert it when dissociating and lazy
- *
+ * <p>
  * But it allows doing epic jumps as a goat
  */
 public class DummyNoDragJumpingMount extends DummyJumpingMount {

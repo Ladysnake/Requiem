@@ -49,10 +49,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(targets = "net/minecraft/server/network/ServerPlayNetworkHandler$C_wsexhymd")
 public abstract class ServerPlayNetworkHandler1Mixin implements PlayerInteractEntityC2SPacket.Handler {
-    @Shadow(aliases = "field_28963")
+    @Shadow(aliases = {"field_28963", "f_bxwhxzqa"})
     public ServerPlayNetworkHandler networkHandler;
 
-    @Shadow(aliases = "field_28962")
+    @Shadow(aliases = {"field_28962", "f_uquadnuk"})
     public Entity entity;
 
     // The qualifier is 100% not unnecessary, refmaps get broken otherwise

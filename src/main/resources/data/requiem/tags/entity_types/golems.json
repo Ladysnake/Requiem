@@ -4,20 +4,65 @@
     "minecraft:iron_golem",
     "minecraft:snow_golem",
     "minecraft:shulker",
-    {"id": "biomemakeover:stone_golem", "required": false},
-    {"id": "snowmercy:mister_snuggles", "required": false},
-    {"id": "snowmercy:mister_chill_snuggles", "required": false},
-    {"id": "snowmercy:aftermarket_snowman", "required": false},
-    {"id": "snowmercy:ice_mortar", "required": false},
-    {"id": "snowmercy:sawman", "required": false},
-    {"id": "golemsgalore:anti_creeper_golem", "required": false},
-    {"id": "golemsgalore:diamond_golem", "required": false},
-    {"id": "golemsgalore:diamond_laser_golem", "required": false},
-    {"id": "golemsgalore:golden_golem", "required": false},
-    {"id": "golemsgalore:hay_golem", "required": false},
-    {"id": "golemsgalore:laser_golem", "required": false},
-    {"id": "golemsgalore:netherite_golem", "required": false},
-    {"id": "golemsgalore:obsidian_golem", "required": false},
-    {"id": "golemsgalore:quartz_golem", "required": false}
+    {
+      "id": "biomemakeover:stone_golem",
+      "required": false
+    },
+    {
+      "id": "snowmercy:mister_snuggles",
+      "required": false
+    },
+    {
+      "id": "snowmercy:mister_chill_snuggles",
+      "required": false
+    },
+    {
+      "id": "snowmercy:aftermarket_snowman",
+      "required": false
+    },
+    {
+      "id": "snowmercy:ice_mortar",
+      "required": false
+    },
+    {
+      "id": "snowmercy:sawman",
+      "required": false
+    },
+    {
+      "id": "golemsgalore:anti_creeper_golem",
+      "required": false
+    },
+    {
+      "id": "golemsgalore:diamond_golem",
+      "required": false
+    },
+    {
+      "id": "golemsgalore:diamond_laser_golem",
+      "required": false
+    },
+    {
+      "id": "golemsgalore:golden_golem",
+      "required": false
+    },
+    {
+      "id": "golemsgalore:hay_golem",
+      "required": false
+    },
+    {
+      "id": "golemsgalore:laser_golem",
+      "required": false
+    },
+    {
+      "id": "golemsgalore:netherite_golem",
+      "required": false
+    },
+    {
+      "id": "golemsgalore:obsidian_golem",
+      "required": false
+    },
+    {
+      "id": "golemsgalore:quartz_golem",
+      "required": false
+    }
   ]
 }

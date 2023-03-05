@@ -73,7 +73,7 @@ public abstract class TridentItemMixin extends Item {
     @Inject(method = "onStoppedUsing", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerEntity;incrementStat(Lnet/minecraft/stat/Stat;)V"))
     private void revertCreativeMode(ItemStack stack, World world, LivingEntity user, int ticks, CallbackInfo ci) {
         if (REVERT_CREATIVE_MODE.get()) {
-            ((PlayerEntity)user).getAbilities().creativeMode = false;
+            ((PlayerEntity) user).getAbilities().creativeMode = false;
             REVERT_CREATIVE_MODE.set(false);
         }
     }

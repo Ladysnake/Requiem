@@ -4,6 +4,9 @@
     "minecraft:golden_carrot",
     "minecraft:golden_apple",
     "minecraft:enchanted_golden_apple",
-    { "id": "goldenberry:golden_berries", "required": false }
+    {
+      "id": "goldenberry:golden_berries",
+      "required": false
+    }
   ]
 }

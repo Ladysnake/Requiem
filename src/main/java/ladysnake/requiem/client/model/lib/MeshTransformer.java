@@ -27,7 +27,11 @@ import net.minecraft.world.BlockRenderView;
 import java.util.function.Supplier;
 
 public interface MeshTransformer extends QuadTransform {
-    default MeshTransformer prepare(BlockRenderView blockView, BlockState state, BlockPos pos, Supplier<RandomGenerator> randomSupplier) { return this;}
+    default MeshTransformer prepare(BlockRenderView blockView, BlockState state, BlockPos pos, Supplier<RandomGenerator> randomSupplier) {
+        return this;
+    }
 
-    default MeshTransformer prepare(ItemStack stack, Supplier<RandomGenerator> randomSupplier) { return this;}
+    default MeshTransformer prepare(ItemStack stack, Supplier<RandomGenerator> randomSupplier) {
+        return this;
+    }
 }

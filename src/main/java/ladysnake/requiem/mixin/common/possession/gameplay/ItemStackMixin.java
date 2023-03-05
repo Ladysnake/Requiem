@@ -53,10 +53,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(value = ItemStack.class, priority = 998) // Collective is doing a dumb so we have to be first
 public abstract class ItemStackMixin implements OverridableItemStack {
+    private Integer requiem$overriddenUseTime = null;
+
     @Shadow
     public abstract void decrement(int amount);
-
-    private Integer requiem$overriddenUseTime = null;
 
     @Inject(method = "use", at = @At("HEAD"), cancellable = true)
     private void use(World world, PlayerEntity player, Hand hand, CallbackInfoReturnable<TypedActionResult<ItemStack>> cir) {

@@ -47,17 +47,16 @@ import org.jetbrains.annotations.Nullable;
 
 public class RequiemSyncedGamerules implements AutoSyncedComponent, TransientComponent {
     public static final ComponentKey<RequiemSyncedGamerules> KEY = ComponentRegistry.getOrCreate(Requiem.id("synced_gamerules"), RequiemSyncedGamerules.class);
-
-    public static RequiemSyncedGamerules get(World world) {
-        return KEY.get(world.getScoreboard());
-    }
-
     private final @Nullable MinecraftServer server;
     private boolean showPossessorNametag;
     private StartingRemnantType startingRemnantType;
 
     public RequiemSyncedGamerules(@Nullable MinecraftServer server) {
         this.server = server;
+    }
+
+    public static RequiemSyncedGamerules get(World world) {
+        return KEY.get(world.getScoreboard());
     }
 
     public boolean shouldShowPossessorNametag() {

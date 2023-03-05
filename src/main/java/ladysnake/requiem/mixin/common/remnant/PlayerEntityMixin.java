@@ -63,15 +63,21 @@ public abstract class PlayerEntityMixin extends LivingEntity implements RequiemP
 
     /* Implementation of RequiemPlayer */
 
-    @Shadow @Final private PlayerAbilities abilities;
     private static final EntityDimensions REQUIEM$SOUL_SNEAKING_SIZE = EntityDimensions.changing(0.6f, 0.6f);
+    @Shadow
+    @Final
+    private PlayerAbilities abilities;
+
+    protected PlayerEntityMixin(EntityType<? extends PlayerEntity> type, World world) {
+        super(type, world);
+    }
+
+    /* Actual modifications of vanilla behaviour */
 
     @Inject(method = "createPlayerAttributes", at = @At("RETURN"))
     private static void addSoulOffenseAttribute(CallbackInfoReturnable<DefaultAttributeContainer.Builder> cir) {
         cir.getReturnValue().add(RequiemEntityAttributes.SOUL_OFFENSE);
     }
-
-    /* Actual modifications of vanilla behaviour */
 
     @Inject(method = "isSwimming", at = @At("HEAD"), cancellable = true)
     private void flyLikeSuperman(CallbackInfoReturnable<Boolean> cir) {
@@ -134,10 +140,6 @@ public abstract class PlayerEntityMixin extends LivingEntity implements RequiemP
         if (RemnantComponent.KEY.get(this).isIncorporeal()) {
             cir.setReturnValue(0.4f);
         }
-    }
-
-    protected PlayerEntityMixin(EntityType<? extends PlayerEntity> type, World world) {
-        super(type, world);
     }
 
 }

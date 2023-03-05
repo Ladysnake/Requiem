@@ -8,7 +8,9 @@
     }
   },
   "consumable": {
-    "items": ["requiem:totem_of_skeletonization"]
+    "items": [
+      "requiem:totem_of_skeletonization"
+    ]
   },
   "entity": {
     "type": "minecraft:wither_skeleton"

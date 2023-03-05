@@ -52,7 +52,7 @@ public class EntityMixin {
 
     @Inject(method = "fall", at = @At(value = "FIELD", opcode = Opcodes.GETFIELD, target = "Lnet/minecraft/entity/Entity;fallDistance:F", ordinal = 0))
     private void preventFallEffects(double heightDifference, boolean onGround, BlockState landedState, BlockPos landedPosition, CallbackInfo ci) {
-        if (RemnantComponent.isIncorporeal((Entity)(Object)this)) {
+        if (RemnantComponent.isIncorporeal((Entity) (Object) this)) {
             this.fallDistance = 0;
         }
     }

@@ -55,7 +55,8 @@ public abstract class MinecraftClientMixin {
     @Shadow
     public ClientPlayerEntity player;
 
-    @Shadow public ClientPlayerInteractionManager interactionManager;
+    @Shadow
+    public ClientPlayerInteractionManager interactionManager;
 
     @Inject(method = "doAttack", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/hit/HitResult;getType()Lnet/minecraft/util/hit/HitResult$Type;"), cancellable = true)
     private void tryUseDirectAttackAbility(CallbackInfoReturnable<Boolean> ci) {
@@ -69,11 +70,11 @@ public abstract class MinecraftClientMixin {
     }
 
     @Inject(
-            method = "doAttack",
-            at = @At(
-                    value = "INVOKE",
-                    target = "Lnet/minecraft/client/network/ClientPlayerEntity;resetLastAttackedTicks()V"
-            )
+        method = "doAttack",
+        at = @At(
+            value = "INVOKE",
+            target = "Lnet/minecraft/client/network/ClientPlayerEntity;resetLastAttackedTicks()V"
+        )
     )
     private void onShakeFistAtAir(CallbackInfoReturnable<Boolean> info) {
         if (MobAbilityController.get(player).useIndirect(AbilityType.ATTACK)) {
@@ -84,7 +85,7 @@ public abstract class MinecraftClientMixin {
     /**
      * Calls special interact abilities when the player cannot interact with anything else
      */
-    @Inject(method = "doItemUse", at=@At("TAIL"))
+    @Inject(method = "doItemUse", at = @At("TAIL"))
     private void onInteractWithAir(CallbackInfo info) {
         // Check that the player is qualified to interact with something
         if (!this.interactionManager.isBreakingBlock() && !this.player.isRiding()) {

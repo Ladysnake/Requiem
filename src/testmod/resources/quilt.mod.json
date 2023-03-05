@@ -20,7 +20,6 @@
     },
     "entrypoints": {
       "init": [
-        "ladysnake.requiem.compat.RequiemCompatTestManager"
       ],
       "fabric-gametest": [
         "ladysnake.requiemtest.RequiemTestSuite",

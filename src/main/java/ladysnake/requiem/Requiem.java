@@ -46,27 +46,21 @@ import ladysnake.requiem.common.RequiemRecordTypes;
 import ladysnake.requiem.common.RequiemRegistries;
 import ladysnake.requiem.common.advancement.RequiemStats;
 import ladysnake.requiem.common.advancement.criterion.RequiemCriteria;
-import ladysnake.requiem.common.block.RequiemBlockEntities;
-import ladysnake.requiem.common.block.RequiemBlocks;
 import ladysnake.requiem.common.command.RemnantArgumentType;
 import ladysnake.requiem.common.command.RequiemCommand;
 import ladysnake.requiem.common.dialogue.RemnantChoiceDialogueAction;
-import ladysnake.requiem.common.enchantment.RequiemEnchantments;
 import ladysnake.requiem.common.entity.RequiemEntities;
 import ladysnake.requiem.common.entity.RequiemEntityAttributes;
 import ladysnake.requiem.common.entity.RequiemTrackedDataHandlers;
 import ladysnake.requiem.common.entity.effect.RequiemStatusEffects;
 import ladysnake.requiem.common.gamerule.RequiemGamerules;
-import ladysnake.requiem.common.item.RequiemItems;
 import ladysnake.requiem.common.loot.RequiemLootTables;
 import ladysnake.requiem.common.network.RequiemNetworking;
 import ladysnake.requiem.common.network.ServerMessageHandling;
 import ladysnake.requiem.common.particle.RequiemParticleTypes;
 import ladysnake.requiem.common.screen.RequiemScreenHandlers;
 import ladysnake.requiem.common.sound.RequiemSoundEvents;
-import ladysnake.requiem.common.structure.RequiemStructures;
 import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
-import ladysnake.requiem.compat.RequiemCompatibilityManager;
 import ladysnake.requiem.core.remnant.VagrantInteractionRegistryImpl;
 import ladysnake.requiem.core.resurrection.ResurrectionDataLoader;
 import net.minecraft.command.argument.SingletonArgumentInfo;
@@ -94,15 +88,15 @@ public final class Requiem implements ModInitializer {
         RequiemConfig.load();
         ApiInitializer.init();
         RequiemCriteria.init();
-        RequiemBlocks.init();
-        RequiemBlockEntities.init();
+//        RequiemBlocks.init();
+//        RequiemBlockEntities.init();
         RequiemTrackedDataHandlers.init();
-        RequiemEnchantments.init();
+//        RequiemEnchantments.init();
         RequiemEntities.init();
         RequiemEntityAttributes.init();
         RequiemEntityTypeTags.init();
         RequiemGamerules.init();
-        RequiemItems.init();
+//        RequiemItems.init();
         RequiemLootTables.init();
         RequiemParticleTypes.init();
         RequiemRecordTypes.init();
@@ -110,7 +104,7 @@ public final class Requiem implements ModInitializer {
         RequiemSoundEvents.init();
         RequiemStats.init();
         RequiemStatusEffects.init();
-        RequiemStructures.init();
+//        RequiemStructures.init();
         ServerMessageHandling.init();
         ApiInitializer.discoverEntryPoints();
         Blabber.registerAction(id("remnant_choice"), RemnantChoiceDialogueAction.CODEC);
@@ -120,7 +114,6 @@ public final class Requiem implements ModInitializer {
         ResourceLoader.get(ResourceType.SERVER_DATA).registerReloader(ResurrectionDataLoader.INSTANCE);
         SyncServerResourcesCallback.EVENT.register(player -> RequiemNetworking.sendTo(player, RequiemNetworking.createDataSyncMessage(SubDataManagerHelper.getServerHelper())));
         ApiInitializer.setPluginCallback(this::registerPlugin);
-        RequiemCompatibilityManager.init();
     }
 
     private void registerPlugin(RequiemPlugin plugin) {

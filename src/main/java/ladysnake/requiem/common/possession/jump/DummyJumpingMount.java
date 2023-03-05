@@ -56,10 +56,12 @@ import net.minecraft.util.math.Vec3d;
 public class DummyJumpingMount implements ExternalJumpingMount, TransientComponent {
     protected final LivingEntity mob;
     private final SoundEvent stepSound;
-    private float jumpStrength;
-    /**@see HorseBaseEntity#isInAir()*/
-    private boolean inAir;
     private final double baseJumpStrength;
+    private float jumpStrength;
+    /**
+     * @see HorseBaseEntity#isInAir()
+     */
+    private boolean inAir;
 
     public DummyJumpingMount(LivingEntity mob, double baseJumpStrength, SoundEvent stepSound) {
         this.mob = mob;
@@ -81,7 +83,7 @@ public class DummyJumpingMount implements ExternalJumpingMount, TransientCompone
         if (strength >= 90) {
             this.jumpStrength = 1.0F;
         } else {
-            this.jumpStrength = 0.4F + 0.4F * (float)strength / 90.0F;
+            this.jumpStrength = 0.4F + 0.4F * (float) strength / 90.0F;
         }
     }
 

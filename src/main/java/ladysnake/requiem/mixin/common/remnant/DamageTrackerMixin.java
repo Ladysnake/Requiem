@@ -47,7 +47,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(DamageTracker.class)
 public abstract class DamageTrackerMixin {
-    @Shadow @Final private LivingEntity entity;
+    @Shadow
+    @Final
+    private LivingEntity entity;
 
     @Inject(method = "update", at = @At("HEAD"), cancellable = true)
     private void stopUpdating(CallbackInfo ci) {

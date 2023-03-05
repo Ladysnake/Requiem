@@ -61,10 +61,6 @@ public abstract class RemnantTypePredicate {
     };
     private static final Joiner COMMA_JOINER = Joiner.on(", ");
 
-    public abstract boolean matches(RemnantType var1);
-
-    public abstract JsonElement serialize();
-
     public static RemnantTypePredicate deserialize(@Nullable JsonElement json) {
         if (json != null && !json.isJsonNull()) {
             Identifier id = new Identifier(JsonHelper.asString(json, "type"));
@@ -74,6 +70,11 @@ public abstract class RemnantTypePredicate {
             return ANY;
         }
     }
+
+    public abstract boolean matches(RemnantType var1);
+
+    public abstract JsonElement serialize();
+
     static class Single extends RemnantTypePredicate {
         private final RemnantType type;
 

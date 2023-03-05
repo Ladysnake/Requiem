@@ -3,6 +3,9 @@
   "values": [
     "minecraft:piglin_brute",
     "requiem:cured_piglin_brute",
-    {"id": "adventurez:wither_puppet", "required": false}
+    {
+      "id": "adventurez:wither_puppet",
+      "required": false
+    }
   ]
 }

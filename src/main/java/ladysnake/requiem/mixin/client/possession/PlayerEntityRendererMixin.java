@@ -81,7 +81,7 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
         LivingEntity possessedEntity = PossessionComponent.get(renderedPlayer).getHost();
         if (possessedEntity != null) {
             if (renderedPlayer == MinecraftClient.getInstance().player) {
-                if (((VariableMobilityEntity)possessedEntity).requiem_isImmovable()) {
+                if (((VariableMobilityEntity) possessedEntity).requiem_isImmovable()) {
                     double relativeX = possessedEntity.getX() - renderedPlayer.getX();
                     double relativeY = possessedEntity.getY() - renderedPlayer.getY();
                     double relativeZ = possessedEntity.getZ() - renderedPlayer.getZ();

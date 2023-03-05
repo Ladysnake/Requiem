@@ -63,17 +63,17 @@ public class RequiemEntityParticleEffect implements ParticleEffect {
     private final int targetEntityId;
     private final int sourceEntityId;
 
+    public RequiemEntityParticleEffect(ParticleType<RequiemEntityParticleEffect> type, int sourceEntityId, int targetEntityId) {
+        this.type = type;
+        this.sourceEntityId = sourceEntityId;
+        this.targetEntityId = targetEntityId;
+    }
+
     public static Codec<RequiemEntityParticleEffect> codec(ParticleType<RequiemEntityParticleEffect> particleType) {
         return RecordCodecBuilder.create(instance -> instance.group(
             Codec.INT.fieldOf("srcId").forGetter(RequiemEntityParticleEffect::getSourceEntityId),
             Codec.INT.fieldOf("destId").forGetter(RequiemEntityParticleEffect::getTargetEntityId)
         ).apply(instance, (sourceEntityId, id) -> new RequiemEntityParticleEffect(particleType, sourceEntityId, id)));
-    }
-
-    public RequiemEntityParticleEffect(ParticleType<RequiemEntityParticleEffect> type, int sourceEntityId, int targetEntityId) {
-        this.type = type;
-        this.sourceEntityId = sourceEntityId;
-        this.targetEntityId = targetEntityId;
     }
 
     @Override

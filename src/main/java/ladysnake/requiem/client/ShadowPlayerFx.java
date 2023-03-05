@@ -62,9 +62,6 @@ public final class ShadowPlayerFx implements EntitiesPreRenderCallback, ShaderEf
     public static final Identifier SHADOW_PLAYER_SHADER_ID = Requiem.id("shaders/post/shadow_player.json");
 
     private final MinecraftClient client = MinecraftClient.getInstance();
-    private final ManagedShaderEffect shadowPlayerEffect = ShaderEffectManager.getInstance().manage(SHADOW_PLAYER_SHADER_ID, this::assignDepthTexture);
-
-    private final ManagedFramebuffer playersFramebuffer = shadowPlayerEffect.getTarget("players");
     private boolean renderedSoulPlayers;
 
     void registerCallbacks() {
@@ -80,7 +77,7 @@ public final class ShadowPlayerFx implements EntitiesPreRenderCallback, ShaderEf
             // Use the same depth texture for our framebuffer as the main one
             GlStateManager._glFramebufferTexture2D(GL30.GL_FRAMEBUFFER, GL30.GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthTexture, 0);
         }
-    }
+    }    private final ManagedShaderEffect shadowPlayerEffect = ShaderEffectManager.getInstance().manage(SHADOW_PLAYER_SHADER_ID, this::assignDepthTexture);
 
     public void beginPlayersFbWrite() {
         Framebuffer playersFramebuffer = this.playersFramebuffer.getFramebuffer();
@@ -115,9 +112,15 @@ public final class ShadowPlayerFx implements EntitiesPreRenderCallback, ShaderEf
         if (this.renderedSoulPlayers) {
             shadowPlayerEffect.render(tickDelta);
         }
-    }
+    }    private final ManagedFramebuffer playersFramebuffer = shadowPlayerEffect.getTarget("players");
 
     public RenderLayer getRenderLayer(RenderLayer base) {
         return RequiemRenderPhases.getShadowRenderLayer(base);
     }
+
+
+
+
+
+
 }

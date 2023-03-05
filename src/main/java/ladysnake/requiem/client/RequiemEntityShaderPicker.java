@@ -53,17 +53,18 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public final class RequiemEntityShaderPicker implements PickEntityShaderCallback {
-    private static final boolean haemaAvailable = FabricLoader.getInstance().isModLoaded("haema");
-
     public static final Identifier DICHROMATIC_SHADER_ID = shader("dichromatic");
     public static final Identifier TETRACHROMATIC_SHADER_ID = shader("tetrachromatic");
     public static final Identifier VAMPIRE_SHADER_ID = new Identifier("haema", "shaders/post/vampirevision.json");
-
     public static final Identifier BEE_SHADER_ID = shader("bee");
     public static final Identifier DOLPHIN_SHADER_ID = shader("dolphin");
     public static final Identifier FISH_EYE_SHADER_ID = shader("fish_eye");
-
     public static final Identifier MOOSHROOM_SHADER_ID = shader("mooshroom");
+    private static final boolean haemaAvailable = FabricLoader.getInstance().isModLoaded("haema");
+
+    private static Identifier shader(String id) {
+        return Requiem.id("shaders/post/" + id + ".json");
+    }
 
     public void registerCallbacks() {
         PickEntityShaderCallback.EVENT.register(this);
@@ -93,9 +94,5 @@ public final class RequiemEntityShaderPicker implements PickEntityShaderCallback
                 loadShaderFunc.accept(FISH_EYE_SHADER_ID);
             }
         }
-    }
-
-    private static Identifier shader(String id) {
-        return Requiem.id("shaders/post/" + id + ".json");
     }
 }

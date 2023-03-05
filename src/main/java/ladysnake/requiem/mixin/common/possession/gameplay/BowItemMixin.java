@@ -75,7 +75,7 @@ public abstract class BowItemMixin extends RangedWeaponItem {
     private PersistentProjectileEntity useSkeletonArrow(PersistentProjectileEntity firedArrow, ItemStack item, World world, LivingEntity user, int charge) {
         LivingEntity possessed = PossessionComponent.getHost(user);
         if (possessed instanceof ArrowShooter) {
-            return ((ArrowShooter)possessed).requiem$invokeCreateArrow(((ProjectileEntityAccessor)firedArrow).requiem$invokeAsItemStack(), 1f);
+            return ((ArrowShooter) possessed).requiem$invokeCreateArrow(((ProjectileEntityAccessor) firedArrow).requiem$invokeAsItemStack(), 1f);
         }
         return firedArrow;
     }

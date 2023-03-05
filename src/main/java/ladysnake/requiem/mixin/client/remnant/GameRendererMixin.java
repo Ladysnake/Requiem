@@ -80,16 +80,6 @@ public abstract class GameRendererMixin implements GameRendererAccessor {
         return false;
     }
 
-    @Override
-    public boolean requiem$isEligibleForTargeting(Entity tested) {
-        return method_18144(tested);
-    }
-
-    @Inject(method = "updateTargetedEntity", at = @At(value = "FIELD", target = "Lnet/minecraft/client/MinecraftClient;targetedEntity:Lnet/minecraft/entity/Entity;", ordinal = 0))
-    private void updateTargetedEntity(float tickDelta, CallbackInfo ci) {
-        UpdateTargetedEntityCallback.EVENT.invoker().updateTargetedEntity(tickDelta);
-    }
-
     @SuppressWarnings("UnresolvedMixinReference") // Synthetic method
     @Inject(
         // Inject into the synthetic method corresponding to the lambda in updateTargetedEntity
@@ -104,6 +94,16 @@ public abstract class GameRendererMixin implements GameRendererAccessor {
         if (((ProtoPossessable) tested).getPossessor() == MinecraftClient.getInstance().getCameraEntity()) {
             info.setReturnValue(false);
         }
+    }
+
+    @Override
+    public boolean requiem$isEligibleForTargeting(Entity tested) {
+        return method_18144(tested);
+    }
+
+    @Inject(method = "updateTargetedEntity", at = @At(value = "FIELD", target = "Lnet/minecraft/client/MinecraftClient;targetedEntity:Lnet/minecraft/entity/Entity;", ordinal = 0))
+    private void updateTargetedEntity(float tickDelta, CallbackInfo ci) {
+        UpdateTargetedEntityCallback.EVENT.invoker().updateTargetedEntity(tickDelta);
     }
 
     @Inject(method = "renderWorld", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/Camera;update(Lnet/minecraft/world/BlockView;Lnet/minecraft/entity/Entity;ZZF)V"))

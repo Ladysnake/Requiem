@@ -173,7 +173,8 @@ public final class PenanceComponent implements ServerTickingComponent, ClientTic
         byte op = buf.readByte();
         switch (op) {
             case DATA_SYNC -> this.timeWithPenance = buf.readVarInt();
-            case FX_SYNC -> RequiemClient.instance().fxRenderer().playEtherealPulseAnimation(PENANCE_FLASH_INTENSITY, RequiemStatusEffects.PENANCE.getColor());
+            case FX_SYNC ->
+                RequiemClient.instance().fxRenderer().playEtherealPulseAnimation(PENANCE_FLASH_INTENSITY, RequiemStatusEffects.PENANCE.getColor());
         }
     }
 

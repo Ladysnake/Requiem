@@ -48,14 +48,6 @@ import net.minecraft.tag.EntityTypeTags;
 public enum MobRidingType {
     DEFAULT, MOUNT, RIDE;
 
-    public boolean canMount() {
-        return this != DEFAULT;
-    }
-
-    public boolean canSteer() {
-        return this == RIDE;
-    }
-
     public static MobRidingType get(Entity entity, LivingEntity possessed) {
         if (entity instanceof SpiderEntity) {
             return possessed instanceof SkeletonEntity ? MOUNT : DEFAULT;
@@ -68,5 +60,13 @@ public enum MobRidingType {
         }
 
         return DEFAULT;
+    }
+
+    public boolean canMount() {
+        return this != DEFAULT;
+    }
+
+    public boolean canSteer() {
+        return this == RIDE;
     }
 }

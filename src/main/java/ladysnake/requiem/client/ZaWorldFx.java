@@ -81,6 +81,10 @@ public class ZaWorldFx implements PostWorldRenderCallback, ClientTickEvents.EndT
     private float radius;
     private boolean renderingEffect;
 
+    private static float lerpf(double n, double prevN, float tickDelta) {
+        return (float) MathHelper.lerp(tickDelta, prevN, n);
+    }
+
     void registerCallbacks() {
         PostWorldRenderCallback.EVENT.register(this);
         ClientTickEvents.END_CLIENT_TICK.register(this);
@@ -135,9 +139,5 @@ public class ZaWorldFx implements PostWorldRenderCallback, ClientTickEvents.EndT
         if (this.renderingEffect) {
             shader.render(tickDelta);
         }
-    }
-
-    private static float lerpf(double n, double prevN, float tickDelta) {
-        return (float) MathHelper.lerp(tickDelta, prevN, n);
     }
 }

@@ -55,6 +55,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(PandaEntity.class)
 public abstract class PandaEntityMixin extends AnimalEntity implements Possessable {
+    @Shadow
+    private float scaredAnimationProgress;
+    @Shadow
+    private float lastScaredAnimationProgress;
+
     protected PandaEntityMixin(EntityType<? extends AnimalEntity> entityType, World world) {
         super(entityType, world);
     }
@@ -64,12 +69,6 @@ public abstract class PandaEntityMixin extends AnimalEntity implements Possessab
 
     @Shadow
     public abstract void setScared(boolean scared);
-
-    @Shadow
-    private float scaredAnimationProgress;
-
-    @Shadow
-    private float lastScaredAnimationProgress;
 
     @Shadow
     public abstract void setLyingOnBack(boolean lyingOnBack);

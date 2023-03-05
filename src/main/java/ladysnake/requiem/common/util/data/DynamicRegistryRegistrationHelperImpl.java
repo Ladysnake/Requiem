@@ -38,11 +38,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.Lifecycle;
 import ladysnake.requiem.api.v1.event.minecraft.DynamicRegistryRegistrationCallback;
 import ladysnake.requiem.common.RequiemRegistries;
-import net.minecraft.util.registry.BuiltinRegistries;
-import net.minecraft.util.registry.MutableRegistry;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryKey;
-import net.minecraft.util.registry.SimpleRegistry;
+import net.minecraft.util.registry.*;
 
 public final class DynamicRegistryRegistrationHelperImpl implements DynamicRegistryRegistrationCallback.Helper {
     private final RegistrationSink backing;

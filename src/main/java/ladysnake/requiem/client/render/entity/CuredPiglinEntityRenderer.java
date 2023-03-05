@@ -52,6 +52,10 @@ public class CuredPiglinEntityRenderer extends PiglinEntityRenderer {
         RequiemEntities.CURED_PIGLIN_BRUTE, Requiem.id("textures/entity/cured_piglin_brute.png")
     );
 
+    public CuredPiglinEntityRenderer(EntityRendererFactory.Context ctx, EntityModelLayer mainLayer, EntityModelLayer innerArmorLayer, EntityModelLayer outerArmorLayer, boolean zombified) {
+        super(ctx, mainLayer, innerArmorLayer, outerArmorLayer, zombified);
+    }
+
     @Override
     public Identifier getTexture(MobEntity mobEntity) {
         Identifier identifier = piglinTextures.get(mobEntity.getType());
@@ -60,9 +64,5 @@ public class CuredPiglinEntityRenderer extends PiglinEntityRenderer {
         } else {
             return identifier;
         }
-    }
-
-    public CuredPiglinEntityRenderer(EntityRendererFactory.Context ctx, EntityModelLayer mainLayer, EntityModelLayer innerArmorLayer, EntityModelLayer outerArmorLayer, boolean zombified) {
-        super(ctx, mainLayer, innerArmorLayer, outerArmorLayer, zombified);
     }
 }

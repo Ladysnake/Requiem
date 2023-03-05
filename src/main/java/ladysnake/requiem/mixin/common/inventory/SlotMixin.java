@@ -58,13 +58,13 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(Slot.class)
 public abstract class SlotMixin {
 
-    @Shadow
-    @Final
-    private int index;
     protected @Nullable PlayerEntity requiem$player;
     protected @Nullable InventoryLimiter requiem$limiter;
     @Unique
     protected boolean craftingSlot;
+    @Shadow
+    @Final
+    private int index;
 
     @Inject(method = "<init>", at = @At("RETURN"))
     private void constructor(Inventory inventory, int index, int x, int y, CallbackInfo ci) {

@@ -10,8 +10,6 @@ dependencies {
     modImplementation libs.bundles.requiredLibraries
     modCompileOnly libs.modmenu
     modCompileOnly libs.bundles.cloth
-    modCompileOnly (compatLibs.origins) { transitive = false }
-    modCompileOnly compatLibs.haema
 }
 
 jar {

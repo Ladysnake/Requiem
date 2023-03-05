@@ -2,25 +2,85 @@
   "replace": false,
   "values": [
     "#requiem:villager_folk",
-    {"id": "mobz:archer_entity", "required": false},
-    {"id": "mobz:archer2_entity", "required": false},
-    {"id": "mobz:dwarf_entity", "required": false},
-    {"id": "mobz:fulliron_entity", "required": false},
-    {"id": "mobz:friend_entity", "required": false},
-    {"id": "mobz:knight_entity", "required": false},
-    {"id": "mobz:knight3_entity", "required": false},
-    {"id": "mobz:knight2_entity", "required": false},
-    {"id": "mobz:knight4_entity", "required": false},
-    {"id": "mobz:knight5_entity", "required": false},
-    {"id": "mobz:mage_entity", "required": false},
-    {"id": "mobz:mage2_entity", "required": false},
-    {"id": "mobz:islandking_entity", "required": false},
-    {"id": "mobz:islandknightspecial_entity", "required": false},
-    {"id": "mobz:islandknightspecial2_entity","required": false},
-    {"id": "mobz:islandknightnormal_entity","required": false},
-    {"id": "mobz:islandknightspecial2_entity","required": false},
-    {"id": "mobz:illusioner_entity","required": false},
-    {"id": "hwg:merc","required": false},
-    {"id": "hwg:spy","required": false}
+    {
+      "id": "mobz:archer_entity",
+      "required": false
+    },
+    {
+      "id": "mobz:archer2_entity",
+      "required": false
+    },
+    {
+      "id": "mobz:dwarf_entity",
+      "required": false
+    },
+    {
+      "id": "mobz:fulliron_entity",
+      "required": false
+    },
+    {
+      "id": "mobz:friend_entity",
+      "required": false
+    },
+    {
+      "id": "mobz:knight_entity",
+      "required": false
+    },
+    {
+      "id": "mobz:knight3_entity",
+      "required": false
+    },
+    {
+      "id": "mobz:knight2_entity",
+      "required": false
+    },
+    {
+      "id": "mobz:knight4_entity",
+      "required": false
+    },
+    {
+      "id": "mobz:knight5_entity",
+      "required": false
+    },
+    {
+      "id": "mobz:mage_entity",
+      "required": false
+    },
+    {
+      "id": "mobz:mage2_entity",
+      "required": false
+    },
+    {
+      "id": "mobz:islandking_entity",
+      "required": false
+    },
+    {
+      "id": "mobz:islandknightspecial_entity",
+      "required": false
+    },
+    {
+      "id": "mobz:islandknightspecial2_entity",
+      "required": false
+    },
+    {
+      "id": "mobz:islandknightnormal_entity",
+      "required": false
+    },
+    {
+      "id": "mobz:islandknightspecial2_entity",
+      "required": false
+    },
+    {
+      "id": "mobz:illusioner_entity",
+      "required": false
+    },
+    {
+      "id": "hwg:merc",
+      "required": false
+    },
+    {
+      "id": "hwg:spy",
+      "required": false
+    }
   ]
 }

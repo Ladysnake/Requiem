@@ -82,7 +82,7 @@ public abstract class WitchEntityMixin extends HostileEntity {
         )
     )
     private void giveBottleBack(CallbackInfo ci) {
-        if (((Possessable)this).isBeingPossessed()) {
+        if (((Possessable) this).isBeingPossessed()) {
             this.equipStack(EquipmentSlot.MAINHAND, new ItemStack(Items.GLASS_BOTTLE));
         }
     }

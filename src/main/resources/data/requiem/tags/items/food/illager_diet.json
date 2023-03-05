@@ -2,6 +2,9 @@
   "replace": false,
   "values": [
     "#requiem:food/meat_based",
-    { "id": "bonecheese:bone_cheese", "required": false }
+    {
+      "id": "bonecheese:bone_cheese",
+      "required": false
+    }
   ]
 }

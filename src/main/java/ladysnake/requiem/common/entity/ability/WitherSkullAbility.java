@@ -57,9 +57,9 @@ public class WitherSkullAbility extends AbilityBase<WitherEntity> {
         if (headIndex <= 0) {
             return owner.getX();
         } else {
-            float f = (owner.bodyYaw + (float)(180 * (headIndex - 1))) * 0.017453292F;
+            float f = (owner.bodyYaw + (float) (180 * (headIndex - 1))) * 0.017453292F;
             float g = MathHelper.cos(f);
-            return owner.getX() + (double)g * 1.3D;
+            return owner.getX() + (double) g * 1.3D;
         }
     }
 
@@ -71,9 +71,9 @@ public class WitherSkullAbility extends AbilityBase<WitherEntity> {
         if (headIndex <= 0) {
             return owner.getZ();
         } else {
-            float f = (owner.bodyYaw + (float)(180 * (headIndex - 1))) * 0.017453292F;
+            float f = (owner.bodyYaw + (float) (180 * (headIndex - 1))) * 0.017453292F;
             float g = MathHelper.sin(f);
-            return owner.getZ() + (double)g * 1.3D;
+            return owner.getZ() + (double) g * 1.3D;
         }
     }
 
@@ -108,7 +108,7 @@ public class WitherSkullAbility extends AbilityBase<WitherEntity> {
         }
 
         public BlueWitherSkullAbility(WitherEntity owner) {
-            this(owner,40);
+            this(owner, 40);
         }
 
         /**
@@ -131,7 +131,7 @@ public class WitherSkullAbility extends AbilityBase<WitherEntity> {
         }
 
         public BlackWitherSkullAbility(WitherEntity owner) {
-            this(owner,40);
+            this(owner, 40);
         }
 
         /**
@@ -159,7 +159,7 @@ public class WitherSkullAbility extends AbilityBase<WitherEntity> {
             double h = getHeadY(headIndex);
             double i = getHeadZ(headIndex);
             double dirX = target.getX() - g;
-            double dirY = target.getY() + (double)target.getStandingEyeHeight() * 0.5D - h;
+            double dirY = target.getY() + (double) target.getStandingEyeHeight() * 0.5D - h;
             double dirZ = target.getZ() - i;
             this.summonSkullWithTarget(g, h, i, dirX, dirY, dirZ);
             return ActionResult.SUCCESS;

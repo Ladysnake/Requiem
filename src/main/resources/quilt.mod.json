@@ -42,10 +42,8 @@
       "client_init": "ladysnake.requiem.client.RequiemClient::onInitializeClient",
       "requiem:plugin": "ladysnake.requiem.common.VanillaRequiemPlugin",
       "cardinal-components": "ladysnake.requiem.common.RequiemComponents",
-      "cardinal-components-entity": "ladysnake.requiem.compat.RequiemCompatibilityManager::registerEntityComponentFactories",
       "modmenu": "ladysnake.requiem.compat.ModMenuCompat"
     },
-
     "depends": [
       {
         "id": "minecraft",
@@ -96,7 +94,6 @@
   },
   "mixin": [
     "mixins.requiem.client.json",
-    "mixins.requiem.common.json",
-    "mixins.requiem.compat.json"
+    "mixins.requiem.common.json"
   ]
 }

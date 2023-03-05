@@ -69,21 +69,23 @@ public final class RequiemFx implements ShaderEffectRenderCallback, ClientTickEv
 
     public static final Identifier SPECTRE_SHADER_ID = Requiem.id("shaders/post/spectre.json");
     public static final Identifier ZOOM_SHADER_ID = Requiem.id("shaders/post/zoom.json");
-    private static final Identifier PENANCE_OVERLAY = new Identifier("textures/misc/nausea.png");
-
-    private static final float[] ETHEREAL_COLOR = {0.0f, 0.7f, 1.0f};
-
     public static final int PULSE_ANIMATION_TIME = 20;
     public static final float[] ETHEREAL_DAMAGE_COLOR = {0.5f, 0.0f, 0.0f};
-
+    private static final Identifier PENANCE_OVERLAY = new Identifier("textures/misc/nausea.png");
+    private static final float[] ETHEREAL_COLOR = {0.0f, 0.7f, 1.0f};
     private final MinecraftClient mc = MinecraftClient.getInstance();
     private final ManagedShaderEffect spectreShader = ShaderEffectManager.getInstance().manage(SPECTRE_SHADER_ID);
     private final ManagedShaderEffect zoomShader = ShaderEffectManager.getInstance().manage(ZOOM_SHADER_ID);
     private final ManagedFramebuffer zoomFramebuffer = zoomShader.getTarget("zoom_focus");
+    private final Uniform3f uniformOverlayColor = spectreShader.findUniform3f("OverlayColor");
+    private final Uniform1f uniformZoom = spectreShader.findUniform1f("Zoom");
+    private final Uniform1f uniformRaysIntensity = spectreShader.findUniform1f("RaysIntensity");
+    private final Uniform1f uniformSolidIntensity = spectreShader.findUniform1f("SolidIntensity");
+    private final Uniform1f uniformSlider = zoomShader.findUniform1f("Slider");
+    private final Uniform1f uniformSTime = spectreShader.findUniform1f("STime");
     private float accentColorR;
     private float accentColorG;
     private float accentColorB;
-
     private int fishEyeAnimation = -1;
     private int etherealAnimation = 0;
     private int pulseAnimation;
@@ -93,12 +95,6 @@ public final class RequiemFx implements ShaderEffectRenderCallback, ClientTickEv
      */
     private int ticks = 0;
     private WeakReference<Entity> possessionTarget = new WeakReference<>(null);
-    private final Uniform3f uniformOverlayColor = spectreShader.findUniform3f("OverlayColor");
-    private final Uniform1f uniformZoom = spectreShader.findUniform1f("Zoom");
-    private final Uniform1f uniformRaysIntensity = spectreShader.findUniform1f("RaysIntensity");
-    private final Uniform1f uniformSolidIntensity = spectreShader.findUniform1f("SolidIntensity");
-    private final Uniform1f uniformSlider = zoomShader.findUniform1f("Slider");
-    private final Uniform1f uniformSTime = spectreShader.findUniform1f("STime");
 
     public static void setupRenderDelegate(LivingEntity rendered, LivingEntity delegate) {
         delegate.bodyYaw = rendered.bodyYaw;
@@ -223,14 +219,14 @@ public final class RequiemFx implements ShaderEffectRenderCallback, ClientTickEv
         float r = ((rgb >> 16 & 0xFF) / 255f) * intensity;
         float g = ((rgb >> 8 & 0xFF) / 255f) * intensity;
         float b = ((rgb & 0xFF) / 255f) * intensity;
-        double effectWidth = (double)windowWidth * stretch;
-        double effectHeight = (double)windowHeight * stretch;
-        double left = ((double)windowWidth - effectWidth) / 2.0;
-        double top = ((double)windowHeight - effectHeight) / 2.0;
+        double effectWidth = (double) windowWidth * stretch;
+        double effectHeight = (double) windowHeight * stretch;
+        double left = ((double) windowWidth - effectWidth) / 2.0;
+        double top = ((double) windowHeight - effectHeight) / 2.0;
         RenderSystem.disableDepthTest();
         RenderSystem.depthMask(false);
         RenderSystem.enableBlend();
-        RenderSystem.blendFuncSeparate(GlStateManager.class_4535.ONE, GlStateManager.class_4534.ONE, GlStateManager.class_4535.ONE, GlStateManager.class_4534.ONE);
+        RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE);
         RenderSystem.setShaderColor(r, g, b, 1.0F);
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderTexture(0, PENANCE_OVERLAY);

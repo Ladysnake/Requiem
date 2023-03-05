@@ -46,7 +46,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(value = PlayerScreenHandler.class, priority = 900)   // Trinkets assumes it is the last mod to add slots, so make sure we get first
+@Mixin(value = PlayerScreenHandler.class, priority = 900)
+// Trinkets assumes it is the last mod to add slots, so make sure we get first
 public abstract class PlayerScreenHandlerMixin extends AbstractRecipeScreenHandler<CraftingInventory> {
     public PlayerScreenHandlerMixin(ScreenHandlerType<?> type, int syncId) {
         super(type, syncId);

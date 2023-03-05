@@ -3,6 +3,9 @@
   "values": [
     "#c:raw_fish",
     "#c:raw_fishes",
-    { "id": "biomemakeover:raw_glowfish", "required": false }
+    {
+      "id": "biomemakeover:raw_glowfish",
+      "required": false
+    }
   ]
 }

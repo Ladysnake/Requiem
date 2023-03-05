@@ -154,7 +154,7 @@ public abstract class PossessorPlayerEntityMixin extends PossessorLivingEntityMi
         @SuppressWarnings("ConstantConditions") Entity self = (Entity) (Object) this;
         // This method can be called in the constructor
         //noinspection ConstantConditions
-        if (self.asComponentProvider().getComponentContainer() != null) {
+        if (((ComponentProvider) self).asComponentProvider().getComponentContainer() != null) {
             Entity possessedEntity = PossessionComponent.getHost(self);
             if (possessedEntity != null) {
                 cir.setReturnValue(possessedEntity.getAir());
@@ -233,7 +233,7 @@ public abstract class PossessorPlayerEntityMixin extends PossessorLivingEntityMi
     @Inject(method = "getActiveEyeHeight", at = @At("HEAD"), cancellable = true)
     private void adjustEyeHeight(EntityPose pose, EntityDimensions size, CallbackInfoReturnable<Float> cir) {
         // This method can be called in the Entity constructor, before CCA is initialized
-        if (((ComponentProvider)this).getComponentContainer() != null) {
+        if (((ComponentProvider) this).getComponentContainer() != null) {
             @SuppressWarnings("ConstantConditions") LivingEntity possessed = PossessionComponent.getHost((Entity) (Object) this);
             if (possessed != null) {
                 cir.setReturnValue(((LivingEntityAccessor) possessed).requiem$invokeGetEyeHeight(pose, possessed.getDimensions(pose)));

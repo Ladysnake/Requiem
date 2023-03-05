@@ -1,7 +1,7 @@
 [versions]
-automatone = "0.9.0"
+automatone = "0.9.1"
 blabber = "0.3.0"
-cca = "5.0.1"
+cca = "5.0.2"
 chenille = "0.9.0"
 chime = "1.3.0"
 cloth = "7.0.+"

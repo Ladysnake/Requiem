@@ -41,8 +41,8 @@ import java.util.function.Supplier;
 public class SimpleBakedModel extends AbstractBakedModel {
     protected final Mesh mesh;
     protected final Supplier<MeshTransformer> transformerFactory;
-    protected WeakReference<List<BakedQuad>[]> quadLists = null;
     protected final ItemProxy itemProxy = new ItemProxy();
+    protected WeakReference<List<BakedQuad>[]> quadLists = null;
 
     public SimpleBakedModel(Mesh mesh, ModelTransformation transformation, Sprite sprite, @Nullable Supplier<MeshTransformer> transformerFactory) {
         super(sprite, transformation);
@@ -58,7 +58,7 @@ public class SimpleBakedModel extends AbstractBakedModel {
     @Override
     public List<BakedQuad> getQuads(BlockState state, Direction face, RandomGenerator rand) {
         List<BakedQuad>[] lists = quadLists == null ? null : quadLists.get();
-        if(lists == null) {
+        if (lists == null) {
             lists = ModelHelper.toQuadLists(mesh);
             quadLists = new WeakReference<>(lists);
         }
@@ -69,13 +69,13 @@ public class SimpleBakedModel extends AbstractBakedModel {
     @Override
     public void emitBlockQuads(BlockRenderView blockView, BlockState state, BlockPos pos, Supplier<RandomGenerator> randomSupplier, RenderContext context) {
         final MeshTransformer transform = transformerFactory == null ? null : transformerFactory.get().prepare(blockView, state, pos, randomSupplier);
-        if(transform != null) {
+        if (transform != null) {
             context.pushTransform(transform);
         }
-        if(mesh != null) {
+        if (mesh != null) {
             context.meshConsumer().accept(mesh);
         }
-        if(transform != null) {
+        if (transform != null) {
             context.popTransform();
         }
     }
@@ -83,6 +83,20 @@ public class SimpleBakedModel extends AbstractBakedModel {
     @Override
     public ModelOverrideList getOverrides() {
         return itemProxy;
+    }
+
+    @Override
+    public void emitItemQuads(ItemStack stack, Supplier<RandomGenerator> randomSupplier, RenderContext context) {
+        final RenderContext.QuadTransform transform = transformerFactory == null ? null : transformerFactory.get().prepare(stack, randomSupplier);
+        if (transform != null) {
+            context.pushTransform(transform);
+        }
+        if (mesh != null) {
+            context.meshConsumer().accept(mesh);
+        }
+        if (transform != null) {
+            context.popTransform();
+        }
     }
 
     protected class ItemProxy extends ModelOverrideList {
@@ -93,20 +107,6 @@ public class SimpleBakedModel extends AbstractBakedModel {
         @Override
         public BakedModel apply(BakedModel bakedModel, ItemStack itemStack, @Nullable ClientWorld clientWorld, @Nullable LivingEntity livingEntity, int seed) {
             return SimpleBakedModel.this;
-        }
-    }
-
-    @Override
-    public void emitItemQuads(ItemStack stack, Supplier<RandomGenerator> randomSupplier, RenderContext context) {
-        final RenderContext.QuadTransform transform = transformerFactory == null ? null : transformerFactory.get().prepare(stack, randomSupplier);
-        if(transform != null) {
-            context.pushTransform(transform);
-        }
-        if(mesh != null) {
-            context.meshConsumer().accept(mesh);
-        }
-        if(transform != null) {
-            context.popTransform();
         }
     }
 }

@@ -11,12 +11,9 @@
   "requiem:advancements.requiem.makeshift_makeover.description": "Înlocuiti fiecare os al unui Wither Skeleton",
   "requiem:advancements.adventure.the_choice.title": "O enigmă diabolică",
   "requiem:advancements.adventure.the_choice.description": "Alege din o viata normala sau o eternitate bizara",
-
   "requiem:argument.entity.options.possessor.description": "Entitati posedate de",
-
   "requiem:remnant_type.requiem.mortal.name": "Mortal",
   "requiem:remnant_type.requiem.remnant.name": "Ramasit",
-
   "requiem:commands.query.success.other": "%2$s is %1$s",
   "requiem:commands.query.success.self": "You are %s",
   "requiem:commands.ethereal.set.fail.mortal": "Failed to make %s ethereal as they are Mortal",
@@ -37,11 +34,9 @@
   "requiem:commands.possession.start.success.self": "Started possessing %s",
   "requiem:commands.possession.stop.success.other": "%s stopped possessing %s",
   "requiem:commands.possession.stop.success.self": "Stopped possessing %s",
-
   "requiem:opus.mortal_sentence": "Ad Vitam Mortale",
   "requiem:opus.remnant_sentence": "Ad Vitam Aeternam",
   "requiem:opus.wanderer_sentence": "Ad Vitam Vagrate",
-
   "requiem:dialogue.first_contact.introduction.text": "Auzi o voce vorbind inspre tine, dar nu poti sa iti pui degetul de unde vine.",
   "requiem:dialogue.first_contact.introduction.explain": "Ce se intampla?",
   "requiem:dialogue.first_contact.introduction.yes": "Fa ma un demon deja.",
@@ -56,13 +51,11 @@
   "requiem:dialogue.first_contact.very_disinterested.text": "Esti sigur ca vrei stai Om?",
   "requiem:dialogue.first_contact.final_confirm": "Confirma",
   "requiem:dialogue.first_contact.final_doubt": "Dute Inapoi",
-
   "requiem:subtitles.effect.become.mortal": "Devenine muritor",
   "requiem:subtitles.effect.become.remnant": "Transoformarea in demon",
   "requiem:subtitles.effect.phasing": "Player trecand prin pereti",
   "requiem:subtitles.effect.possession.attempt": "Încercare de pozedare",
   "requiem:subtitles.effect.time.stop": "ZA WARUDO! TOKI WO TOMARE",
-
   "requiem:tooltip.ammo_generator": "Generare de Amunitie",
   "requiem:tooltip.bolt_hoarder": "Acumulator de Bolturi",
   "requiem:tooltip.bony_prosthesis": "Proteza osoasa",
@@ -80,7 +73,6 @@
   "requiem:tooltip.villager_food": "Vegeterian",
   "requiem:tooltip.witch_food": "Dieta de Vrajitoare",
   "requiem:tooltip.zombie_food": "Snack pentru Zombie",
-
   "config.requiem.title": "Meniul de configurare Requiem",
   "config.requiem.graphics": "Graphici",
   "config.requiem.fancy_demon_render": "Redare fantastica de Demon",
@@ -89,10 +81,8 @@
   "config.requiem.more_info.datapacks": "Data Packuri",
   "config.requiem.more_info.gamerules": "Reguli de Joc",
   "config.requiem.more_info.official_doc": "Documentarea oficiala de pe situl requiem",
-
   "death.attack.requiem.attrition.hardcore": "%1$s A fpst pus la somn, mereu.",
   "death.attack.requiem.attrition.hardcore.player": "%2$s a pus %1$s la somn, mereu.",
-
   "gamerule.requiem:showPossessorNameTag": "(Requiem) Afișați plăcuțele de identificare ale posesorului",
   "gamerule.requiem:showPossessorNameTag.description": "Afișați plăcuțele de identificare ale jucătorilor care dețin entități",
   "gamerule.requiem:disableCure": "(Requiem) Dezactiveaza Vindecarea",
@@ -100,22 +90,16 @@
   "gamerule.requiem:startingRemnantType": "(Requiem) Tipul Rămășiței",
   "gamerule.requiem:startingRemnantType.description": "Înlocuiește alegerea la prima moarte între demon și muritor",
   "gamerule.requiem:possessionKeepInventory": "(Requiem) Păstrează inventarul după oprirea posesiei",
-
   "effect.requiem.attrition": "Attritie",
-
   "enchantment.requiem.humanity": "Umanitate",
-
   "key.requiem.dissociation": "[Requiem] Dissociare",
   "requiem:shulker.onboard": "Apasa %s Sau %s ca sa Disociezi",
   "requiem:dissociate_hint": "Apasa %s ca sa disociezi",
   "requiem:possess.incompatible_body": "Corpul asta nu esti compatibil cu sufletul tau",
-
   "entity.requiem.cured_piglin": "Pigman",
   "entity.requiem.cured_piglin_brute": "Pigman Brute",
-
   "item.requiem.totem_of_skeletonization": "Totem de Skelotizare",
   "item.requiem.opus_daemonium": "Opus Daemonium",
-
   "origins:layer.requiem.soul_type.name": "Tip de suflet",
   "origins:origin.requiem.mortal.name": "Mortal",
   "origins:origin.requiem.mortal.description": "Doar un mortal. Experienta ta normala de minecraft incepe.",

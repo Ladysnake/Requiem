@@ -2,15 +2,45 @@
   "replace": false,
   "values": [
     "#minecraft:skeletons",
-    {"id": "betternether:jungle_skeleton", "required": false},
-    {"id": "mobz:skeli1_entity", "required": false},
-    {"id": "mobz:skeli2_entity", "required": false},
-    {"id": "mobz:skeli3_entity", "required": false},
-    {"id": "mobz:skeli4_entity", "required": false},
-    {"id": "adventurez:soul_reaper", "required": false},
-    {"id": "adventurez:wither_puppet", "required": false},
-    {"id": "adventurez:skeleton_vanguard", "required": false},
-    {"id": "adventurez:summoner", "required": false},
-    {"id": "adventurez:necromancer", "required": false}
+    {
+      "id": "betternether:jungle_skeleton",
+      "required": false
+    },
+    {
+      "id": "mobz:skeli1_entity",
+      "required": false
+    },
+    {
+      "id": "mobz:skeli2_entity",
+      "required": false
+    },
+    {
+      "id": "mobz:skeli3_entity",
+      "required": false
+    },
+    {
+      "id": "mobz:skeli4_entity",
+      "required": false
+    },
+    {
+      "id": "adventurez:soul_reaper",
+      "required": false
+    },
+    {
+      "id": "adventurez:wither_puppet",
+      "required": false
+    },
+    {
+      "id": "adventurez:skeleton_vanguard",
+      "required": false
+    },
+    {
+      "id": "adventurez:summoner",
+      "required": false
+    },
+    {
+      "id": "adventurez:necromancer",
+      "required": false
+    }
   ]
 }

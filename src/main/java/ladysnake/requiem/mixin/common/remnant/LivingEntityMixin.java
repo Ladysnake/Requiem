@@ -59,15 +59,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class LivingEntityMixin extends Entity {
 
     @Shadow
-    public abstract ItemStack getStackInHand(Hand hand);
-
-    @Shadow
-    public abstract Hand getActiveHand();
-
-    @Shadow
-    public abstract void setStackInHand(Hand hand, ItemStack stack);
-
-    @Shadow
     public int deathTime;
 
     public LivingEntityMixin(EntityType<?> type, World world) {
@@ -78,6 +69,15 @@ public abstract class LivingEntityMixin extends Entity {
     private static void addSoulDefenseAttribute(CallbackInfoReturnable<DefaultAttributeContainer.Builder> cir) {
         cir.getReturnValue().add(RequiemEntityAttributes.SOUL_DEFENSE);
     }
+
+    @Shadow
+    public abstract ItemStack getStackInHand(Hand hand);
+
+    @Shadow
+    public abstract Hand getActiveHand();
+
+    @Shadow
+    public abstract void setStackInHand(Hand hand, ItemStack stack);
 
     @Inject(
         method = "drop",

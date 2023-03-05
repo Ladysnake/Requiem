@@ -57,6 +57,16 @@ import net.minecraft.util.math.Vec3d;
 public final class RequiemTargetHandler implements UpdateTargetedEntityCallback, CrosshairRenderCallback {
     private final MinecraftClient client = MinecraftClient.getInstance();
 
+    static void drawCrosshairIcon(MatrixStack matrices, int scaledWidth, int scaledHeight, Identifier abilityIcon, float progress) {
+        int x = (scaledWidth - 32) / 2 + 8;
+        int y = (scaledHeight - 16) / 2 + 16;
+        RenderSystem.setShaderTexture(0, abilityIcon);
+        int height = (int) (progress * 8.0F);
+        DrawableHelper.drawTexture(matrices, x, y, 16, 8, 0, 0, 16, 8, 16, 16);
+        DrawableHelper.drawTexture(matrices, x, y + 8 - height, 16, height, 0, 16 - height, 16, height, 16, 16);
+        RenderSystem.setShaderTexture(0, DrawableHelper.GUI_ICONS_TEXTURE);
+    }
+
     void registerCallbacks() {
         CrosshairRenderCallback.EVENT.register(Requiem.id("target_handler"), this);
         UpdateTargetedEntityCallback.EVENT.register(this);
@@ -134,15 +144,5 @@ public final class RequiemTargetHandler implements UpdateTargetedEntityCallback,
                 drawCrosshairIcon(matrices, scaledWidth, scaledHeight, abilityController.getIconTexture(renderedType), f);
             }
         }
-    }
-
-    static void drawCrosshairIcon(MatrixStack matrices, int scaledWidth, int scaledHeight, Identifier abilityIcon, float progress) {
-        int x = (scaledWidth - 32) / 2 + 8;
-        int y = (scaledHeight - 16) / 2 + 16;
-        RenderSystem.setShaderTexture(0, abilityIcon);
-        int height = (int)(progress * 8.0F);
-        DrawableHelper.drawTexture(matrices, x, y, 16, 8, 0, 0, 16, 8, 16, 16);
-        DrawableHelper.drawTexture(matrices, x, y + 8 - height, 16, height, 0, 16 - height, 16, height, 16, 16);
-        RenderSystem.setShaderTexture(0, DrawableHelper.GUI_ICONS_TEXTURE);
     }
 }

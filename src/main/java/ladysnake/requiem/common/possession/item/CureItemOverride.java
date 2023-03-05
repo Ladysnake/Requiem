@@ -54,20 +54,19 @@ import java.util.Optional;
 
 public class CureItemOverride implements PossessionItemOverride, InstancedItemOverride {
     public static final Identifier ID = RequiemCore.id("cure");
-
-    public static Codec<CureItemOverride> codec(Codec<JsonElement> jsonCodec) {
-        return RecordCodecBuilder.create(instance -> instance.group(
-            LazyEntityPredicate.codec(jsonCodec).fieldOf("possessed_state").forGetter(o -> o.possessedState),
-            LazyItemPredicate.codec(jsonCodec).fieldOf("reagent").forGetter(o -> o.reagent)
-        ).apply(instance, CureItemOverride::new));
-    }
-
     private final LazyEntityPredicate possessedState;
     private final LazyItemPredicate reagent;
 
     public CureItemOverride(LazyEntityPredicate possessedState, LazyItemPredicate reagent) {
         this.possessedState = possessedState;
         this.reagent = reagent;
+    }
+
+    public static Codec<CureItemOverride> codec(Codec<JsonElement> jsonCodec) {
+        return RecordCodecBuilder.create(instance -> instance.group(
+            LazyEntityPredicate.codec(jsonCodec).fieldOf("possessed_state").forGetter(o -> o.possessedState),
+            LazyItemPredicate.codec(jsonCodec).fieldOf("reagent").forGetter(o -> o.reagent)
+        ).apply(instance, CureItemOverride::new));
     }
 
     @Override

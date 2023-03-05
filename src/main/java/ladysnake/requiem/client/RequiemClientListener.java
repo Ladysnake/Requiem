@@ -57,20 +57,9 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.CrossbowUser;
-import net.minecraft.entity.mob.AbstractSkeletonEntity;
-import net.minecraft.entity.mob.DrownedEntity;
-import net.minecraft.entity.mob.EndermanEntity;
-import net.minecraft.entity.mob.GuardianEntity;
-import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.entity.mob.ShulkerEntity;
-import net.minecraft.entity.mob.WitchEntity;
+import net.minecraft.entity.mob.*;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.BowItem;
-import net.minecraft.item.CrossbowItem;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.MilkBucketItem;
-import net.minecraft.item.RangedWeaponItem;
-import net.minecraft.item.TridentItem;
+import net.minecraft.item.*;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.world.World;
@@ -85,6 +74,12 @@ public final class RequiemClientListener implements
     ItemTooltipCallback {
 
     private static boolean skipNextGuardian = false;
+    private final RequiemClient rc;
+    private final MinecraftClient mc = MinecraftClient.getInstance();
+
+    public RequiemClientListener(RequiemClient requiemClient) {
+        this.rc = requiemClient;
+    }
 
     public static boolean shouldSkipNextGuardian() {
         if (skipNextGuardian) {
@@ -92,13 +87,6 @@ public final class RequiemClientListener implements
             return true;
         }
         return false;
-    }
-
-    private final RequiemClient rc;
-    private final MinecraftClient mc = MinecraftClient.getInstance();
-
-    public RequiemClientListener(RequiemClient requiemClient) {
-        this.rc = requiemClient;
     }
 
     void registerCallbacks() {

@@ -44,9 +44,9 @@ import net.minecraft.entity.ai.brain.MemoryModuleType;
 import org.jetbrains.annotations.Nullable;
 
 public class ShellPathfindingProcess implements IBaritoneProcess {
+    private final IBaritone baritone;
     private boolean executing;
     private @Nullable Goal goal;
-    private final IBaritone baritone;
 
     public ShellPathfindingProcess(IBaritone baritone) {
         this.baritone = baritone;

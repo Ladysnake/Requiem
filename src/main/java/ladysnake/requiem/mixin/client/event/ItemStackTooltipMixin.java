@@ -50,11 +50,11 @@ import java.util.List;
 @Mixin(ItemStack.class)
 public abstract class ItemStackTooltipMixin {
     @Inject(
-            method = "getTooltip",
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;hasNbt()Z", ordinal = 0),
-            locals = LocalCapture.CAPTURE_FAILSOFT
+        method = "getTooltip",
+        at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;hasNbt()Z", ordinal = 0),
+        locals = LocalCapture.CAPTURE_FAILSOFT
     )
     private void fireTooltipEvent(PlayerEntity player, TooltipContext context, CallbackInfoReturnable<List<Text>> cir, List<Text> lines) {
-        ItemTooltipCallback.EVENT.invoker().onTooltipBuilt((ItemStack)(Object)this, player, context, lines);
+        ItemTooltipCallback.EVENT.invoker().onTooltipBuilt((ItemStack) (Object) this, player, context, lines);
     }
 }

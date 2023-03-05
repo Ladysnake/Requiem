@@ -6,8 +6,17 @@
     "#requiem:raw_meats",
     "#requiem:food/cooked_meats",
     "minecraft:rabbit_stew",
-    { "id": "#origins:meat", "required": false },
-    { "id": "enhanced_mushrooms:beef_stew", "required": false },
-    { "id": "chocobacon:chocolate_bacon", "required": false }
+    {
+      "id": "#origins:meat",
+      "required": false
+    },
+    {
+      "id": "enhanced_mushrooms:beef_stew",
+      "required": false
+    },
+    {
+      "id": "chocobacon:chocolate_bacon",
+      "required": false
+    }
   ]
 }

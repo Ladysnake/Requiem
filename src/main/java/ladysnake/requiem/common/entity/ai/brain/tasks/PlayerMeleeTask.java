@@ -64,6 +64,24 @@ public class PlayerMeleeTask extends Task<FakeServerPlayerEntity> {
         return ReachEntityAttributes.getAttackRange(attacker, 3.);
     }
 
+    /**
+     * Copied from {@link PlayerEntity#attack(Entity)}
+     */
+    public static float estimateDamage(PlayerEntity player, Entity target) {
+        float baseDamage = (float) player.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE);
+        float enchantmentBonus;
+        if (target instanceof LivingEntity) {
+            enchantmentBonus = EnchantmentHelper.getAttackDamage(player.getMainHandStack(), ((LivingEntity) target).getGroup());
+        } else {
+            enchantmentBonus = EnchantmentHelper.getAttackDamage(player.getMainHandStack(), EntityGroup.DEFAULT);
+        }
+
+        float i = player.getAttackCooldownProgress(0.5F);
+        baseDamage *= 0.2F + i * i * 0.8F;
+        enchantmentBonus *= i;
+        return baseDamage + enchantmentBonus;
+    }
+
     @Override
     protected boolean shouldRun(ServerWorld world, FakeServerPlayerEntity executor) {
         LivingEntity target = this.getAttackTarget(executor);
@@ -96,23 +114,5 @@ public class PlayerMeleeTask extends Task<FakeServerPlayerEntity> {
 
     private LivingEntity getAttackTarget(LivingEntity executor) {
         return executor.getBrain().getOptionalMemory(MemoryModuleType.ATTACK_TARGET).orElseThrow(IllegalStateException::new);
-    }
-
-    /**
-     * Copied from {@link PlayerEntity#attack(Entity)}
-     */
-    public static float estimateDamage(PlayerEntity player, Entity target) {
-        float baseDamage = (float) player.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE);
-        float enchantmentBonus;
-        if (target instanceof LivingEntity) {
-            enchantmentBonus = EnchantmentHelper.getAttackDamage(player.getMainHandStack(), ((LivingEntity) target).getGroup());
-        } else {
-            enchantmentBonus = EnchantmentHelper.getAttackDamage(player.getMainHandStack(), EntityGroup.DEFAULT);
-        }
-
-        float i = player.getAttackCooldownProgress(0.5F);
-        baseDamage *= 0.2F + i * i * 0.8F;
-        enchantmentBonus *= i;
-        return baseDamage + enchantmentBonus;
     }
 }

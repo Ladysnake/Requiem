@@ -59,7 +59,7 @@ public abstract class ShulkerEntityModelMixin {
     private void removeNerdFace(ShulkerEntity shulkerEntity, float f, float g, float h, float i, float j, CallbackInfo ci) {
         MinecraftClient mc = MinecraftClient.getInstance();
 
-        if (((Possessable)shulkerEntity).getPossessor() == mc.player && mc.options.getPerspective().isFirstPerson()) {
+        if (((Possessable) shulkerEntity).getPossessor() == mc.player && mc.options.getPerspective().isFirstPerson()) {
             this.head.visible = false;
             this.disabledNerdFace = true;
         } else if (disabledNerdFace) {  // probably slightly incompatible, but who's going to do the same thing ?!

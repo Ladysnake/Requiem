@@ -54,6 +54,20 @@ public class WandererRemnantState extends MutableRemnantState {
         super(player);
     }
 
+    public static void spawnAttritionParticles(ServerPlayerEntity player, LivingEntity body) {
+        player.getWorld().spawnParticles(
+            RequiemParticleTypes.ATTRITION,
+            body.getX(),
+            body.getBodyY(0.5),
+            body.getZ(),
+            60,
+            body.getWidth() * 0.8,
+            body.getHeight() * 0.6,
+            body.getWidth() * 0.8,
+            1.0
+        );
+    }
+
     @Override
     public void setup(RemnantState oldHandler) {
         this.setVagrant(true);
@@ -95,20 +109,6 @@ public class WandererRemnantState extends MutableRemnantState {
 
             spawnAttritionParticles(player, body);
         }
-    }
-
-    public static void spawnAttritionParticles(ServerPlayerEntity player, LivingEntity body) {
-        player.getWorld().spawnParticles(
-            RequiemParticleTypes.ATTRITION,
-            body.getX(),
-            body.getBodyY(0.5),
-            body.getZ(),
-            60,
-            body.getWidth() * 0.8,
-            body.getHeight() * 0.6,
-            body.getWidth() *0.8,
-            1.0
-        );
     }
 
     @Override

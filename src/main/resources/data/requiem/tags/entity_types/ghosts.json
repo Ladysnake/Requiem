@@ -1,7 +1,13 @@
 {
   "replace": false,
   "values": [
-    {"id": "bewitchment:ghost", "required": false},
-    {"id": "biomemakeover:ghost", "required": false}
+    {
+      "id": "bewitchment:ghost",
+      "required": false
+    },
+    {
+      "id": "biomemakeover:ghost",
+      "required": false
+    }
   ]
 }

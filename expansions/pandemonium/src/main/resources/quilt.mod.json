@@ -22,8 +22,7 @@
     },
     "entrypoints": {
       "client": "ladysnake.pandemonium.client.PandemoniumClient",
-      "main": "ladysnake.pandemonium.Pandemonium",
-      "modmenu": "ladysnake.pandemonium.compat.PandemoniumModMenuCompat"
+      "main": "ladysnake.pandemonium.Pandemonium"
     },
     "intermediate_mappings": "net.fabricmc:intermediary",
     "depends": [

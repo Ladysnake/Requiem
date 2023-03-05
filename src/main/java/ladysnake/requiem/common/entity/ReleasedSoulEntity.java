@@ -58,17 +58,21 @@ import java.util.Optional;
 import java.util.UUID;
 
 public class ReleasedSoulEntity extends SoulEntity {
+    /**
+     * The entity is not found anywhere, probably dead
+     */
+    public static final byte BODY_MISSING = -1;
+    /**
+     * The entity is loaded and close enough to the soul to fly there
+     */
+    public static final byte BODY_FOUND = 0;
+    /**
+     * The entity is in the wrong world, way too far, or unloaded with a player
+     */
+    public static final byte BODY_ISEKAI = 1;
+    public static final TrackedData<Byte> BODY_STATUS = DataTracker.registerData(ReleasedSoulEntity.class, TrackedDataHandlerRegistry.BYTE);
     private static final byte TELEPORT_AWAY_STATUS = 2;
     private static final byte MERGE_WITH_BODY_STATUS = 3;
-
-    /**The entity is not found anywhere, probably dead*/
-    public static final byte BODY_MISSING = -1;
-    /**The entity is loaded and close enough to the soul to fly there*/
-    public static final byte BODY_FOUND = 0;
-    /**The entity is in the wrong world, way too far, or unloaded with a player*/
-    public static final byte BODY_ISEKAI = 1;
-
-    public static final TrackedData<Byte> BODY_STATUS = DataTracker.registerData(ReleasedSoulEntity.class, TrackedDataHandlerRegistry.BYTE);
     private @Nullable UUID ownerRecord;
 
     public ReleasedSoulEntity(EntityType<? extends ReleasedSoulEntity> type, World world) {
@@ -138,17 +142,17 @@ public class ReleasedSoulEntity extends SoulEntity {
         }
     }
 
-    private void setBodyStatus(byte value) {
-        this.getDataTracker().set(BODY_STATUS, value);
-    }
-
     private byte getBodyStatus() {
         return this.getDataTracker().get(BODY_STATUS);
     }
 
+    private void setBodyStatus(byte value) {
+        this.getDataTracker().set(BODY_STATUS, value);
+    }
+
     private boolean isCollidingWithOwner() {
         return this.getOwnerRef()
-            .flatMap(ptr -> ptr.resolve(((ServerWorld)this.world).getServer()))
+            .flatMap(ptr -> ptr.resolve(((ServerWorld) this.world).getServer()))
             .filter(e -> e.getBoundingBox().intersects(this.getBoundingBox()))
             .isPresent();
     }
@@ -165,8 +169,10 @@ public class ReleasedSoulEntity extends SoulEntity {
     @Override
     protected void spawnTrailParticle() {
         switch (this.getBodyStatus()) {
-            case BODY_ISEKAI -> this.world.addParticle(ParticleTypes.PORTAL, this.getParticleX(0.5D), this.getRandomBodyY() - 0.25D, this.getParticleZ(0.5D), (this.random.nextDouble() - 0.5D) * 2.0D, -this.random.nextDouble(), (this.random.nextDouble() - 0.5D) * 2.0D);
-            case BODY_MISSING -> world.addParticle(ParticleTypes.SMOKE, this.getX() + random.nextDouble() / 5.0D, this.getY() + random.nextDouble() / 3, this.getZ() + random.nextDouble() / 5.0D, 0.0D, 0.05D, 0.0D);
+            case BODY_ISEKAI ->
+                this.world.addParticle(ParticleTypes.PORTAL, this.getParticleX(0.5D), this.getRandomBodyY() - 0.25D, this.getParticleZ(0.5D), (this.random.nextDouble() - 0.5D) * 2.0D, -this.random.nextDouble(), (this.random.nextDouble() - 0.5D) * 2.0D);
+            case BODY_MISSING ->
+                world.addParticle(ParticleTypes.SMOKE, this.getX() + random.nextDouble() / 5.0D, this.getY() + random.nextDouble() / 3, this.getZ() + random.nextDouble() / 5.0D, 0.0D, 0.05D, 0.0D);
             default -> super.spawnTrailParticle();
         }
     }
@@ -196,7 +202,7 @@ public class ReleasedSoulEntity extends SoulEntity {
         switch (status) {
             case TELEPORT_AWAY_STATUS -> {
                 this.playSound(RequiemSoundEvents.ENTITY_SOUL_TELEPORT, 1, 1);
-                for(double angle = 0.0D; angle < Math.PI * 2; angle += Math.PI / 20.0) {
+                for (double angle = 0.0D; angle < Math.PI * 2; angle += Math.PI / 20.0) {
                     this.world.addParticle(ParticleTypes.PORTAL, this.getX() + Math.cos(angle) * 5.0D, this.getY() - 0.4D, this.getZ() + Math.sin(angle) * 5.0D, Math.cos(angle) * -5.0D, 0.0D, Math.sin(angle) * -5.0D);
                     this.world.addParticle(ParticleTypes.PORTAL, this.getX() + Math.cos(angle) * 5.0D, this.getY() - 0.4D, this.getZ() + Math.sin(angle) * 5.0D, Math.cos(angle) * -7.0D, 0.0D, Math.sin(angle) * -7.0D);
                 }

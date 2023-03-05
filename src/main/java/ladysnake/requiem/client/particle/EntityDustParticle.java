@@ -120,9 +120,9 @@ public class EntityDustParticle extends BillboardParticle {
     private void moveTowardsGoal(Vec3d nextStep) {
         Vec3d desiredDir = nextStep.subtract(this.x, this.y, this.z).normalize();
         this.setVelocity(
-            MathHelper.lerp(0.4, this.velocityX, desiredDir.x*0.7),
-            MathHelper.lerp(0.4, this.velocityY, desiredDir.y*0.7),
-            MathHelper.lerp(0.4, this.velocityZ, desiredDir.z*0.7)
+            MathHelper.lerp(0.4, this.velocityX, desiredDir.x * 0.7),
+            MathHelper.lerp(0.4, this.velocityY, desiredDir.y * 0.7),
+            MathHelper.lerp(0.4, this.velocityZ, desiredDir.z * 0.7)
         );
     }
 
@@ -221,7 +221,7 @@ public class EntityDustParticle extends BillboardParticle {
             RenderSystem.setShader(GameRenderer::getParticleShader);
             RenderSystem.setShaderTexture(0, texture);
             RenderSystem.enableBlend();
-            RenderSystem.blendFunc(GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE_MINUS_SRC_ALPHA);
+            RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
             bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR_LIGHT);
         }
 

@@ -109,14 +109,6 @@ public record OldPossessionItemOverride(
     }
 
     public static class Requirements {
-        public static Codec<Requirements> codec(Codec<JsonElement> jsonCodec) {
-            return RecordCodecBuilder.create(instance -> instance.group(
-                LazyEntityPredicate.codec(jsonCodec).optionalFieldOf("possessed", LazyEntityPredicate.ANY).forGetter(o -> o.possessed),
-                LazyItemPredicate.codec(jsonCodec).optionalFieldOf("used_item", LazyItemPredicate.ANY).forGetter(o -> o.usedItem),
-                Codec.BOOL.optionalFieldOf("can_eat").forGetter(o -> o.canEat)
-            ).apply(instance, Requirements::new));
-        }
-
         final LazyEntityPredicate possessed;
         private final LazyItemPredicate usedItem;
         private final Optional<Boolean> canEat;
@@ -125,6 +117,14 @@ public record OldPossessionItemOverride(
             this.possessed = possessed;
             this.usedItem = usedItem;
             this.canEat = canEat;
+        }
+
+        public static Codec<Requirements> codec(Codec<JsonElement> jsonCodec) {
+            return RecordCodecBuilder.create(instance -> instance.group(
+                LazyEntityPredicate.codec(jsonCodec).optionalFieldOf("possessed", LazyEntityPredicate.ANY).forGetter(o -> o.possessed),
+                LazyItemPredicate.codec(jsonCodec).optionalFieldOf("used_item", LazyItemPredicate.ANY).forGetter(o -> o.usedItem),
+                Codec.BOOL.optionalFieldOf("can_eat").forGetter(o -> o.canEat)
+            ).apply(instance, Requirements::new));
         }
 
         public boolean test(PlayerEntity player, MobEntity possessed, ItemStack stack) {
@@ -150,8 +150,8 @@ public record OldPossessionItemOverride(
 
     public static class Result {
         public static final Codec<Result> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            RequiemRegistries.MOB_ACTIONS.getCodec().fieldOf("action").forGetter(Result::getAction),
-            Codec.INT.optionalFieldOf("cooldown", 0).forGetter(Result::getCooldown)
+                RequiemRegistries.MOB_ACTIONS.getCodec().fieldOf("action").forGetter(Result::getAction),
+                Codec.INT.optionalFieldOf("cooldown", 0).forGetter(Result::getCooldown)
             ).apply(instance, Result::new)
         );
 

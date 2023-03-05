@@ -64,16 +64,17 @@ public final class RequiemLootTables {
     public static final LootConditionType BOUND_SHELL_CONDITION = new LootConditionType(new BoundShellLootCondition.Serializer());
     public static final LootConditionType HOST_CONDITION = new LootConditionType(new HostLootCondition.Serializer(HostLootCondition.CheckedEntity.HOST));
     public static final LootConditionType POSSESSOR_CONDITION = new LootConditionType(new HostLootCondition.Serializer(HostLootCondition.CheckedEntity.POSSESSOR));
-    public static final LootConditionType RIFT_MORTICIAN_CONDITION = new LootConditionType(new RiftMorticianLootCondition.Serializer());
-
-    private static final Pattern NETHER_CHEST = Pattern.compile("chests/.*nether.*");
-    /** The chance that a nether chest gets a Humanity enchanted book */
+    /**
+     * The chance that a nether chest gets a Humanity enchanted book
+     */
     public static final float HUMANITY_CHANCE = 0.7f;
-    /** The chance that a humanity book gets level I enchant */
+    /**
+     * The chance that a humanity book gets level I enchant
+     */
     public static final double BASIC_HUMANITY_CHANCE = 0.9;
+    private static final Pattern NETHER_CHEST = Pattern.compile("chests/.*nether.*");
 
     public static void init() {
-        Registry.register(Registry.LOOT_CONDITION_TYPE, Requiem.id("rift_mortician"), RIFT_MORTICIAN_CONDITION);
         Registry.register(Registry.LOOT_CONDITION_TYPE, Requiem.id("bound_shell"), BOUND_SHELL_CONDITION);
         Registry.register(Registry.LOOT_CONDITION_TYPE, Requiem.id("host"), HOST_CONDITION);
         Registry.register(Registry.LOOT_CONDITION_TYPE, Requiem.id("possessor"), POSSESSOR_CONDITION);

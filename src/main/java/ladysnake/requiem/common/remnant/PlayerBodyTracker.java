@@ -54,11 +54,6 @@ import java.util.UUID;
 
 public final class PlayerBodyTracker implements ServerTickingComponent {
     public static final ComponentKey<PlayerBodyTracker> KEY = ComponentRegistry.getOrCreate(Requiem.id("body_tracker"), PlayerBodyTracker.class);
-
-    public static PlayerBodyTracker get(PlayerEntity player) {
-        return KEY.get(player);
-    }
-
     private final PlayerEntity player;
     @Nullable
     private UUID anchorUuid;
@@ -66,6 +61,10 @@ public final class PlayerBodyTracker implements ServerTickingComponent {
 
     public PlayerBodyTracker(PlayerEntity player) {
         this.player = player;
+    }
+
+    public static PlayerBodyTracker get(PlayerEntity player) {
+        return KEY.get(player);
     }
 
     @Override
@@ -78,12 +77,12 @@ public final class PlayerBodyTracker implements ServerTickingComponent {
         );
     }
 
-    public void setAnchor(GlobalRecord anchor) {
-        this.anchorUuid = anchor.getUuid();
-    }
-
     public Optional<GlobalRecord> getAnchor() {
         return Optional.ofNullable(this.anchorUuid).flatMap(GlobalRecordKeeper.get(this.player.world)::getRecord);
+    }
+
+    public void setAnchor(GlobalRecord anchor) {
+        this.anchorUuid = anchor.getUuid();
     }
 
     @Override

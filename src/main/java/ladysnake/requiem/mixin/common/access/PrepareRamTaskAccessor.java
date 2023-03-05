@@ -47,10 +47,13 @@ import java.util.function.ToIntFunction;
 public interface PrepareRamTaskAccessor<E extends PathAwareEntity> {
     @Accessor
     ToIntFunction<E> getCooldownFactory();
+
     @Accessor
     Function<E, SoundEvent> getSoundFactory();
+
     @Accessor
     float getSpeed();
+
     @Accessor
     int getMaxRamDistance();
 }

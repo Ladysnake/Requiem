@@ -31,9 +31,6 @@ include "requiem-core"
 
 dependencyResolutionManagement {
     versionCatalogs {
-        compatLibs {
-            from(files('gradle/compat-libs.versions.toml'))
-        }
         metaLibs {
             from(files('gradle/meta-libs.versions.toml'))
         }

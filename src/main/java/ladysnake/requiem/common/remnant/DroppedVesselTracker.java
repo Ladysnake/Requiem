@@ -60,17 +60,16 @@ import java.util.UUID;
 
 public class DroppedVesselTracker implements Component {
     public static final ComponentKey<DroppedVesselTracker> KEY = ComponentRegistry.getOrCreate(Requiem.id("dropped_vessel_tracker"), DroppedVesselTracker.class);
+    private final PlayerEntity player;
+    private @Nullable UUID anchorUuid;
+
+    public DroppedVesselTracker(PlayerEntity player) {
+        this.player = player;
+    }
 
     @Contract(pure = true)
     public static DroppedVesselTracker get(ServerPlayerEntity player) {
         return KEY.get(player);
-    }
-
-    private @Nullable UUID anchorUuid;
-    private final PlayerEntity player;
-
-    public DroppedVesselTracker(PlayerEntity player) {
-        this.player = player;
     }
 
     public ServerPlayerEntity dropVessel() {

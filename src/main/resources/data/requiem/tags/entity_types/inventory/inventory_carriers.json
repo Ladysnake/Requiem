@@ -7,7 +7,13 @@
     "minecraft:piglin",
     "minecraft:enderman",
     "requiem:cured_piglin",
-    {"id": "artifacts:mimic", "required": false},
-    {"id": "adventurez:orc", "required": false}
+    {
+      "id": "artifacts:mimic",
+      "required": false
+    },
+    {
+      "id": "adventurez:orc",
+      "required": false
+    }
   ]
 }

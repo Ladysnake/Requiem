@@ -47,9 +47,21 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
 public class EvokerFangAbility extends DirectAbilityBase<EvokerEntity, LivingEntity> {
-    private static final Constructor<? extends Goal> FANGS_GOAL_FACTORY;
     public static final int FANG_COOLDOWN = 40;
     public static final int HOSTILE_TIME = 200;
+    private static final Constructor<? extends Goal> FANGS_GOAL_FACTORY;
+
+    static {
+        try {
+            Class<? extends Goal> clazz = ReflectionHelper.findClass("net.minecraft.class_1564$class_1565");
+            FANGS_GOAL_FACTORY = clazz.getDeclaredConstructor(EvokerEntity.class);
+            FANGS_GOAL_FACTORY.setAccessible(true);
+        } catch (ClassNotFoundException e) {
+            throw new UncheckedReflectionException("Could not find the ConjureFangsGoal class", e);
+        } catch (NoSuchMethodException e) {
+            throw new UncheckedReflectionException("Could not find the ConjureFangsGoal constructor", e);
+        }
+    }
 
     private final Goal conjureFangsGoal;
     private int hostileTime;
@@ -57,6 +69,14 @@ public class EvokerFangAbility extends DirectAbilityBase<EvokerEntity, LivingEnt
     public EvokerFangAbility(EvokerEntity owner) {
         super(owner, FANG_COOLDOWN, 12, LivingEntity.class);
         conjureFangsGoal = makeGoal(owner);
+    }
+
+    private static Goal makeGoal(EvokerEntity owner) {
+        try {
+            return FANGS_GOAL_FACTORY.newInstance(owner);
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
+            throw new UncheckedReflectionException(e);
+        }
     }
 
     @Override
@@ -88,7 +108,7 @@ public class EvokerFangAbility extends DirectAbilityBase<EvokerEntity, LivingEnt
         if (this.hostileTime > 0) {
             this.hostileTime--;
 
-            if (this.hostileTime == 0 || !((Possessable)this.owner).isBeingPossessed()) {
+            if (this.hostileTime == 0 || !((Possessable) this.owner).isBeingPossessed()) {
                 this.owner.setTarget(null);
             }
         }
@@ -106,26 +126,6 @@ public class EvokerFangAbility extends DirectAbilityBase<EvokerEntity, LivingEnt
     public void onCooldownEnd() {
         if (!this.owner.world.isClient) {
             this.owner.setSpell(SpellcastingIllagerAccess.SPELL_NONE);
-        }
-    }
-
-    private static Goal makeGoal(EvokerEntity owner) {
-        try {
-            return FANGS_GOAL_FACTORY.newInstance(owner);
-        } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
-            throw new UncheckedReflectionException(e);
-        }
-    }
-
-    static {
-        try {
-            Class<? extends Goal> clazz = ReflectionHelper.findClass("net.minecraft.class_1564$class_1565");
-            FANGS_GOAL_FACTORY = clazz.getDeclaredConstructor(EvokerEntity.class);
-            FANGS_GOAL_FACTORY.setAccessible(true);
-        } catch (ClassNotFoundException e) {
-            throw new UncheckedReflectionException("Could not find the ConjureFangsGoal class", e);
-        } catch (NoSuchMethodException e) {
-            throw new UncheckedReflectionException("Could not find the ConjureFangsGoal constructor", e);
         }
     }
 }
