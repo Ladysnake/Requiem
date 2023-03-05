@@ -14,6 +14,13 @@ allprojects {
     version = project.mod_version
 
     chenille {
+        javaVersion = 17
+    }
+
+    sourceCompatibility = 17
+    targetCompatibility = 17
+
+    chenille {
         license = 'GPL_WITH_MC_EXCEPTION'
         displayName = 'Requiem'
         owners = 'Ladysnake'
