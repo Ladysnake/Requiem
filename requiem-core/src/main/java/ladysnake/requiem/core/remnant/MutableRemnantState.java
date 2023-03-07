@@ -46,7 +46,7 @@ import ladysnake.requiem.api.v1.remnant.RemnantState;
 import ladysnake.requiem.api.v1.remnant.StickyStatusEffect;
 import ladysnake.requiem.core.RequiemCore;
 import ladysnake.requiem.core.movement.SerializableMovementConfig;
-import ladysnake.requiem.core.tag.RequiemCoreTags;
+import ladysnake.requiem.core.tag.RequiemCoreEntityTags;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.mob.MobEntity;
@@ -112,7 +112,7 @@ public abstract class MutableRemnantState implements RemnantState {
 
     @Override
     public boolean canDissociateFrom(MobEntity possessed) {
-        return possessed.getType().isIn(RequiemCoreTags.Entity.FRICTIONLESS_HOSTS);
+        return possessed.getType().isIn(RequiemCoreEntityTags.FRICTIONLESS_HOSTS);
     }
 
     @Override

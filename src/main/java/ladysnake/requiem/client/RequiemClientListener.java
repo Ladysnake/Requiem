@@ -49,7 +49,7 @@ import ladysnake.requiem.client.screen.RiftScreen;
 import ladysnake.requiem.common.entity.RequiemEntities;
 import ladysnake.requiem.common.possession.item.PossessionItemOverrideWrapper;
 import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
-import ladysnake.requiem.core.tag.RequiemCoreTags;
+import ladysnake.requiem.core.tag.RequiemCoreEntityTags;
 import ladysnake.requiem.core.util.ItemUtil;
 import ladysnake.satin.api.event.ShaderEffectRenderCallback;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
@@ -109,9 +109,9 @@ public final class RequiemClientListener implements
         ItemTooltipCallback.EVENT.register(this);
         PossessionStateChangeCallback.EVENT.register((possessor, target) -> {
             if (possessor.world.isClient && target != null) {
-                if (target.getType().isIn(RequiemCoreTags.Entity.IMMOVABLE)) {
+                if (target.getType().isIn(RequiemCoreEntityTags.IMMOVABLE)) {
                     this.mc.inGameHud.setOverlayMessage(Text.translatable("requiem:shulker.onboard", mc.options.sneakKey.getKeyName(), FractureKeyBinding.etherealFractureKey.getKeyName()), false);
-                } else if (target.getType().isIn(RequiemCoreTags.Entity.FRICTIONLESS_HOSTS)) {
+                } else if (target.getType().isIn(RequiemCoreEntityTags.FRICTIONLESS_HOSTS)) {
                     this.mc.inGameHud.setOverlayMessage(Text.translatable("requiem:dissociate_hint", FractureKeyBinding.etherealFractureKey.getKeyName()), false);
                 }
             }

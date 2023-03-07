@@ -48,7 +48,7 @@ import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.core.RequiemCore;
 import ladysnake.requiem.core.RequiemCoreNetworking;
 import ladysnake.requiem.core.mixin.access.EntityAccessor;
-import ladysnake.requiem.core.tag.RequiemCoreTags;
+import ladysnake.requiem.core.tag.RequiemCoreEntityTags;
 import net.fabricmc.fabric.api.util.TriState;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
@@ -366,7 +366,7 @@ public abstract class PlayerMovementAlterer implements MovementAlterer {
     private static boolean shouldActuallySinkInWater(MovementConfig config, Entity entity) {
         if (config.shouldSinkInWater() == TriState.DEFAULT) {
             EntityType<?> type = entity.getType();
-            return type.isIn(RequiemCoreTags.Entity.GOLEMS) || entity instanceof LivingEntity && ((LivingEntity) entity).isUndead();
+            return type.isIn(RequiemCoreEntityTags.GOLEMS) || entity instanceof LivingEntity && ((LivingEntity) entity).isUndead();
         }
         return config.shouldSinkInWater().get();
     }

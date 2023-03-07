@@ -41,7 +41,7 @@ import ladysnake.requiem.Requiem;
 import ladysnake.requiem.api.v1.possession.Possessable;
 import ladysnake.requiem.common.advancement.criterion.RequiemCriteria;
 import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
-import ladysnake.requiem.core.tag.RequiemCoreTags;
+import ladysnake.requiem.core.tag.RequiemCoreEntityTags;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.mob.MobEntity;
@@ -88,7 +88,7 @@ public final class SkeletonBoneComponent implements Component {
             }
             if (this.owner instanceof WitherSkeletonEntity
                 && replacement.getEquippedStack(EquipmentSlot.HEAD).isEmpty()
-                && !replacement.getType().isIn(RequiemCoreTags.Entity.ARMOR_BANNED)) {
+                && !replacement.getType().isIn(RequiemCoreEntityTags.ARMOR_BANNED)) {
                 if (this.owner.getRandom().nextInt(5) == 0) {
                     replacement.equipStack(EquipmentSlot.HEAD, new ItemStack(Items.WITHER_SKELETON_SKULL));
                 }

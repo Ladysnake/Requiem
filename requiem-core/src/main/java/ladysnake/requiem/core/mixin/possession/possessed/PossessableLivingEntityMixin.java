@@ -46,7 +46,7 @@ import ladysnake.requiem.core.mixin.access.LivingEntityAccessor;
 import ladysnake.requiem.core.movement.PlayerMovementAlterer;
 import ladysnake.requiem.core.possession.PossessionComponentImpl;
 import ladysnake.requiem.core.resurrection.ResurrectionDataLoader;
-import ladysnake.requiem.core.tag.RequiemCoreTags;
+import ladysnake.requiem.core.tag.RequiemCoreEntityTags;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -85,9 +85,9 @@ import static org.spongepowered.asm.mixin.injection.At.Shift.AFTER;
 @Mixin(LivingEntity.class)
 public abstract class PossessableLivingEntityMixin extends Entity implements Possessable, VariableMobilityEntity {
     @Unique
-    private final boolean requiem_immovable = this.getType().isIn(RequiemCoreTags.Entity.IMMOVABLE);
+    private final boolean requiem_immovable = this.getType().isIn(RequiemCoreEntityTags.IMMOVABLE);
     @Unique
-    private final boolean requiem_regularEater = this.getType().isIn(RequiemCoreTags.Entity.EATERS);
+    private final boolean requiem_regularEater = this.getType().isIn(RequiemCoreEntityTags.EATERS);
     @Nullable
     private UUID requiem$previousPossessorUuid;
 

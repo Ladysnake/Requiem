@@ -36,7 +36,7 @@ package ladysnake.requiem.core.mixin.possession.possessor;
 
 import ladysnake.requiem.api.v1.entity.MovementAlterer;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
-import ladysnake.requiem.core.tag.RequiemCoreTags;
+import ladysnake.requiem.core.tag.RequiemCoreEntityTags;
 import ladysnake.requiem.core.util.DamageHelper;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
@@ -178,7 +178,7 @@ public abstract class PossessorLivingEntityMixin extends PossessorEntityMixin {
     @Inject(method = "sleep", at = @At("RETURN"))
     private void makeHostSleep(BlockPos pos, CallbackInfo ci) {
         LivingEntity host = PossessionComponent.getHost((Entity) (Object) this);
-        if (host != null && host.getType().isIn(RequiemCoreTags.Entity.SLEEPERS)) {
+        if (host != null && host.getType().isIn(RequiemCoreEntityTags.SLEEPERS)) {
             host.sleep(pos);
         }
     }
@@ -186,7 +186,7 @@ public abstract class PossessorLivingEntityMixin extends PossessorEntityMixin {
     @Inject(method = "wakeUp", at = @At("RETURN"))
     private void makeHostWakeUp(CallbackInfo ci) {
         LivingEntity host = PossessionComponent.getHost((Entity) (Object) this);
-        if (host != null && host.getType().isIn(RequiemCoreTags.Entity.SLEEPERS)) {
+        if (host != null && host.getType().isIn(RequiemCoreEntityTags.SLEEPERS)) {
             host.wakeUp();
         }
     }

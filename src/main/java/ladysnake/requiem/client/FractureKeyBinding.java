@@ -37,7 +37,7 @@ package ladysnake.requiem.client;
 import com.mojang.blaze3d.platform.InputUtil;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.common.network.RequiemNetworking;
-import ladysnake.requiem.core.tag.RequiemCoreTags;
+import ladysnake.requiem.core.tag.RequiemCoreEntityTags;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.minecraft.client.MinecraftClient;
@@ -77,7 +77,7 @@ public final class FractureKeyBinding {
         // Immovable mobs are a specific kind of boring, so we let players leave them through a simple sneak
         if (player.isSneaking()) {
             MobEntity possessedEntity = PossessionComponent.getHost(player);
-            return possessedEntity != null && possessedEntity.getType().isIn(RequiemCoreTags.Entity.IMMOVABLE);
+            return possessedEntity != null && possessedEntity.getType().isIn(RequiemCoreEntityTags.IMMOVABLE);
         }
         return false;
     }

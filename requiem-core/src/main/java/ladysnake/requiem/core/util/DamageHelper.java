@@ -37,7 +37,7 @@ package ladysnake.requiem.core.util;
 import ladysnake.requiem.api.v1.event.requiem.HumanityCheckCallback;
 import ladysnake.requiem.api.v1.possession.Possessable;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
-import ladysnake.requiem.core.tag.RequiemCoreTags;
+import ladysnake.requiem.core.tag.RequiemCoreEntityTags;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
@@ -64,7 +64,7 @@ public final class DamageHelper {
         Entity attacker = source.getAttacker() instanceof PlayerEntity ? PossessionComponent.getHost(source.getAttacker()) : source.getAttacker();
 
         // check that the attacker is being possessed, and that it can use its equipment
-        if (attacker instanceof Possessable && ((Possessable) attacker).isBeingPossessed() && attacker.getType().isIn(RequiemCoreTags.Entity.ITEM_USERS)) {
+        if (attacker instanceof Possessable && ((Possessable) attacker).isBeingPossessed() && attacker.getType().isIn(RequiemCoreEntityTags.ITEM_USERS)) {
             return (LivingEntity) attacker;
         }
 

@@ -36,7 +36,7 @@ package ladysnake.requiem.common.command;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import ladysnake.requiem.core.entity.SoulHolderComponent;
-import ladysnake.requiem.core.tag.RequiemCoreTags;
+import ladysnake.requiem.core.tag.RequiemCoreEntityTags;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.entity.Entity;
@@ -81,7 +81,7 @@ public final class RequiemSoulCommand {
                 throw new CommandException(Text.translatable("requiem:commands.soul.set.fail.not_living", target.getDisplayName()));
             }
 
-            if (target.getType().isIn(RequiemCoreTags.Entity.SOULLESS)) {
+            if (target.getType().isIn(RequiemCoreEntityTags.SOULLESS)) {
                 throw new CommandException(Text.translatable("requiem:commands.soul.set.fail.permanently_soulless"));
             }
 

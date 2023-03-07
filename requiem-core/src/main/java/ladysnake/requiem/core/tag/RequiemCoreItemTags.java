@@ -32,22 +32,12 @@
  * The GNU General Public License gives permission to release a modified version without this exception;
  * this exception also makes it possible to release a modified version which carries forward this exception.
  */
-package ladysnake.requiem.mixin.common.inventory.balance;
+package ladysnake.requiem.core.tag;
 
-import ladysnake.requiem.core.tag.RequiemCoreEntityTags;
-import net.minecraft.entity.Entity;
-import net.minecraft.predicate.entity.EntityPredicates;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import ladysnake.requiem.core.RequiemCore;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.tag.TagKey;
 
-@Mixin(EntityPredicates.Equippable.class)
-public class EntityPredicatesEquipableMixin {
-    @Inject(method = "test", at = @At("RETURN"), cancellable = true)
-    private void requiem$noArmorForYou(Entity entity, CallbackInfoReturnable<Boolean> cir) {
-        if (cir.getReturnValueZ() && entity.getType().isIn(RequiemCoreEntityTags.ARMOR_BANNED)) {
-            cir.setReturnValue(false);
-        }
-    }
+public final class RequiemCoreItemTags {
+    public static final TagKey<net.minecraft.item.Item> UNDEAD_CURES = TagKey.of(RegistryKeys.ITEM, RequiemCore.id("undead_cures"));
 }

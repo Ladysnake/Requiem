@@ -38,7 +38,7 @@ import dev.onyxstudios.cca.api.v3.component.ComponentKey;
 import dev.onyxstudios.cca.api.v3.component.ComponentRegistry;
 import dev.onyxstudios.cca.api.v3.component.sync.AutoSyncedComponent;
 import ladysnake.requiem.core.RequiemCore;
-import ladysnake.requiem.core.tag.RequiemCoreTags;
+import ladysnake.requiem.core.tag.RequiemCoreEntityTags;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
@@ -50,7 +50,7 @@ public class SoulHolderComponent implements AutoSyncedComponent {
     public static final Identifier SOUL_CAPTURE_MECHANISM_ID = RequiemCore.id("soul_capture");
 
     public static boolean isSoulless(LivingEntity target) {
-        return target.getType().isIn(RequiemCoreTags.Entity.SOULLESS) || get(target).removedSoul;
+        return target.getType().isIn(RequiemCoreEntityTags.SOULLESS) || get(target).removedSoul;
     }
 
     public static void onMobConverted(LivingEntity original, LivingEntity converted) {
@@ -79,7 +79,7 @@ public class SoulHolderComponent implements AutoSyncedComponent {
     private void setSoulRemoved(boolean removed) {
         if (this.removedSoul != removed) {
             this.removedSoul = removed;
-            EntityAiToggle.get(this.owner).toggleAi(SoulHolderComponent.SOUL_CAPTURE_MECHANISM_ID, !this.owner.getType().isIn(RequiemCoreTags.Entity.SOULLESS) && removed, false);
+            EntityAiToggle.get(this.owner).toggleAi(SoulHolderComponent.SOUL_CAPTURE_MECHANISM_ID, !this.owner.getType().isIn(RequiemCoreEntityTags.SOULLESS) && removed, false);
             KEY.sync(this.owner);
         }
     }

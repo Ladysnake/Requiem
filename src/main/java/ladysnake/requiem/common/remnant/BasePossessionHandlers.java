@@ -50,7 +50,7 @@ import ladysnake.requiem.common.gamerule.RequiemGamerules;
 import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
 import ladysnake.requiem.core.entity.SoulHolderComponent;
 import ladysnake.requiem.core.possession.PossessedDataBase;
-import ladysnake.requiem.core.tag.RequiemCoreTags;
+import ladysnake.requiem.core.tag.RequiemCoreEntityTags;
 import ladysnake.requiem.mixin.common.access.EndermanEntityAccessor;
 import net.fabricmc.fabric.api.util.TriState;
 import net.minecraft.entity.Entity;
@@ -88,7 +88,7 @@ public final class BasePossessionHandlers {
             }
         });
         PossessionStartCallback.EVENT.register(Requiem.id("blacklist"), (target, possessor, simulate) -> {
-            if (target.getType().isIn(RequiemCoreTags.Entity.POSSESSION_BLACKLIST)) {
+            if (target.getType().isIn(RequiemCoreEntityTags.POSSESSION_BLACKLIST)) {
                 return PossessionStartCallback.Result.DENY;
             }
             return PossessionStartCallback.Result.PASS;
@@ -145,7 +145,7 @@ public final class BasePossessionHandlers {
     }
 
     public static void dropArmorIfBanned(LivingEntity converted) {
-        if (converted.getType().isIn(RequiemCoreTags.Entity.ARMOR_BANNED)) {
+        if (converted.getType().isIn(RequiemCoreEntityTags.ARMOR_BANNED)) {
             for (EquipmentSlot slot : EquipmentSlot.values()) {
                 if (slot.getType() == EquipmentSlot.Type.ARMOR) {
                     ItemStack equippedStack = converted.getEquippedStack(slot);

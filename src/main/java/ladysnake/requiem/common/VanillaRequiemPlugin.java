@@ -48,18 +48,51 @@ import ladysnake.requiem.api.v1.entity.ability.AbilityType;
 import ladysnake.requiem.api.v1.entity.ability.MobAbilityConfig;
 import ladysnake.requiem.api.v1.entity.ability.MobAbilityController;
 import ladysnake.requiem.api.v1.entity.ability.MobAbilityRegistry;
-import ladysnake.requiem.api.v1.event.minecraft.*;
-import ladysnake.requiem.api.v1.event.requiem.*;
+import ladysnake.requiem.api.v1.event.minecraft.AllowUseEntityCallback;
+import ladysnake.requiem.api.v1.event.minecraft.LivingEntityDropCallback;
+import ladysnake.requiem.api.v1.event.minecraft.MobTravelRidingCallback;
+import ladysnake.requiem.api.v1.event.minecraft.PlayerRespawnCallback;
+import ladysnake.requiem.api.v1.event.minecraft.PrepareRespawnCallback;
+import ladysnake.requiem.api.v1.event.requiem.CanCurePossessedCallback;
+import ladysnake.requiem.api.v1.event.requiem.ConsumableItemEvents;
+import ladysnake.requiem.api.v1.event.requiem.HumanityCheckCallback;
+import ladysnake.requiem.api.v1.event.requiem.InitiateFractureCallback;
+import ladysnake.requiem.api.v1.event.requiem.PlayerShellEvents;
+import ladysnake.requiem.api.v1.event.requiem.PossessionEvents;
+import ladysnake.requiem.api.v1.event.requiem.PossessionStateChangeCallback;
+import ladysnake.requiem.api.v1.event.requiem.RemnantStateChangeCallback;
+import ladysnake.requiem.api.v1.event.requiem.RemnantTypeChangeCallback;
+import ladysnake.requiem.api.v1.event.requiem.SoulCaptureEvents;
 import ladysnake.requiem.api.v1.possession.PossessedData;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.api.v1.possession.item.PossessionItemAction;
-import ladysnake.requiem.api.v1.remnant.*;
+import ladysnake.requiem.api.v1.remnant.DeathSuspender;
+import ladysnake.requiem.api.v1.remnant.MobResurrectable;
+import ladysnake.requiem.api.v1.remnant.RemnantComponent;
+import ladysnake.requiem.api.v1.remnant.RemnantType;
+import ladysnake.requiem.api.v1.remnant.SoulbindingRegistry;
+import ladysnake.requiem.api.v1.remnant.VagrantInteractionRegistry;
 import ladysnake.requiem.common.advancement.criterion.RequiemCriteria;
 import ladysnake.requiem.common.enchantment.RequiemEnchantments;
 import ladysnake.requiem.common.entity.PlayerShellEntity;
 import ladysnake.requiem.common.entity.RequiemEntities;
 import ladysnake.requiem.common.entity.SkeletonBoneComponent;
-import ladysnake.requiem.common.entity.ability.*;
+import ladysnake.requiem.common.entity.ability.AxolotlPlayingDeadAbility;
+import ladysnake.requiem.common.entity.ability.BlazeFireballAbility;
+import ladysnake.requiem.common.entity.ability.BlinkAbility;
+import ladysnake.requiem.common.entity.ability.CreeperPrimingAbility;
+import ladysnake.requiem.common.entity.ability.EvokerFangAbility;
+import ladysnake.requiem.common.entity.ability.EvokerVexAbility;
+import ladysnake.requiem.common.entity.ability.EvokerWololoAbility;
+import ladysnake.requiem.common.entity.ability.FrogCatchAbility;
+import ladysnake.requiem.common.entity.ability.GhastFireballAbility;
+import ladysnake.requiem.common.entity.ability.GoatRamAbility;
+import ladysnake.requiem.common.entity.ability.GuardianBeamAbility;
+import ladysnake.requiem.common.entity.ability.PufferfishInflationAbility;
+import ladysnake.requiem.common.entity.ability.ShulkerPeekAbility;
+import ladysnake.requiem.common.entity.ability.ShulkerShootAbility;
+import ladysnake.requiem.common.entity.ability.VagrantPossessAbility;
+import ladysnake.requiem.common.entity.ability.WitherSkullAbility;
 import ladysnake.requiem.common.entity.effect.ReclamationStatusEffect;
 import ladysnake.requiem.common.entity.effect.RequiemStatusEffects;
 import ladysnake.requiem.common.gamerule.PossessionDetection;
@@ -80,10 +113,14 @@ import ladysnake.requiem.core.entity.ability.RangedAttackAbility;
 import ladysnake.requiem.core.entity.ability.SnowmanSnowballAbility;
 import ladysnake.requiem.core.record.EntityPositionClerk;
 import ladysnake.requiem.core.resurrection.ResurrectionDataLoader;
-import ladysnake.requiem.core.tag.RequiemCoreTags;
+import ladysnake.requiem.core.tag.RequiemCoreEntityTags;
 import ladysnake.requiem.core.util.RayHelper;
 import net.fabricmc.fabric.api.entity.event.v1.EntitySleepEvents;
-import net.fabricmc.fabric.api.event.player.*;
+import net.fabricmc.fabric.api.event.player.AttackBlockCallback;
+import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
+import net.fabricmc.fabric.api.event.player.UseBlockCallback;
+import net.fabricmc.fabric.api.event.player.UseEntityCallback;
+import net.fabricmc.fabric.api.event.player.UseItemCallback;
 import net.fabricmc.fabric.api.util.TriState;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
@@ -291,7 +328,7 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
         });
         UseItemCallback.EVENT.register((player, world, hand) -> {
             LivingEntity possessed = PossessionComponent.getHost(player);
-            if (possessed != null && !possessed.getType().isIn(RequiemCoreTags.Entity.ITEM_USERS) && !player.isCreative()) {
+            if (possessed != null && !possessed.getType().isIn(RequiemCoreEntityTags.ITEM_USERS) && !player.isCreative()) {
                 return new TypedActionResult<>(ActionResult.FAIL, player.getStackInHand(hand));
             }
             return new TypedActionResult<>(ActionResult.PASS, player.getStackInHand(hand));
@@ -318,7 +355,7 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
         );
         EntitySleepEvents.ALLOW_SLEEPING.register((player, pos) -> {
             MobEntity host = PossessionComponent.getHost(player);
-            if (host != null && !host.getType().isIn(RequiemCoreTags.Entity.SLEEPERS)) {
+            if (host != null && !host.getType().isIn(RequiemCoreEntityTags.SLEEPERS)) {
                 player.sendMessage(Text.translatable("requiem:block.minecraft.bed.invalid_body"), true);
                 return PlayerEntity.SleepFailureReason.OTHER_PROBLEM;
             }
@@ -346,7 +383,7 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
             inventoryLimiter.enable(player);
 
             if (possessed != null) {
-                if (possessed.getType().isIn(RequiemCoreTags.Entity.INVENTORY_CARRIERS)) {
+                if (possessed.getType().isIn(RequiemCoreEntityTags.INVENTORY_CARRIERS)) {
                     inventoryLimiter.unlock(player, DefaultInventoryNodes.MAIN_INVENTORY);
                 }
                 if (canUseItems(possessed)) {
@@ -365,7 +402,7 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
     }
 
     private static boolean canUseItems(MobEntity possessed) {
-        if (possessed.getType().isIn(RequiemCoreTags.Entity.ITEM_USERS)) {
+        if (possessed.getType().isIn(RequiemCoreEntityTags.ITEM_USERS)) {
             return true;
         }
         return possessed.canPickUpLoot();
@@ -376,7 +413,7 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
     }
 
     private static boolean canWearArmor(MobEntity possessed) {
-        if (possessed.getType().isIn(RequiemCoreTags.Entity.ARMOR_BANNED)) {
+        if (possessed.getType().isIn(RequiemCoreEntityTags.ARMOR_BANNED)) {
             return false;
         }
         if (possessed.getType().isIn(RequiemEntityTypeTags.ARMOR_USERS)) {

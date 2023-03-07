@@ -39,25 +39,19 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.tag.TagKey;
 
-public final class RequiemCoreTags {
-    public static final class Entity {
-        public static final TagKey<EntityType<?>> FRICTIONLESS_HOSTS = register("possession/frictionless_hosts");
-        public static final TagKey<EntityType<?>> POSSESSION_BLACKLIST = register("possession/possession_blacklist");
-        public static final TagKey<EntityType<?>> GOLEMS = register("golems");
-        public static final TagKey<EntityType<?>> ITEM_USERS = register("inventory/item_users");
-        public static final TagKey<EntityType<?>> INVENTORY_CARRIERS = register("inventory/inventory_carriers");
-        public static final TagKey<EntityType<?>> EATERS = register("behavior/regular_eaters");
-        public static final TagKey<EntityType<?>> SLEEPERS = register("behavior/regular_sleepers");
-        public static final TagKey<EntityType<?>> IMMOVABLE = register("behavior/immovable");
-        public static final TagKey<EntityType<?>> ARMOR_BANNED = register("inventory/armor_banned");
-        public static final TagKey<EntityType<?>> SOULLESS = register("possession/soulless");
+public final class RequiemCoreEntityTags {
+    public static final TagKey<EntityType<?>> FRICTIONLESS_HOSTS = register("possession/frictionless_hosts");
+    public static final TagKey<EntityType<?>> POSSESSION_BLACKLIST = register("possession/possession_blacklist");
+    public static final TagKey<EntityType<?>> GOLEMS = register("golems");
+    public static final TagKey<EntityType<?>> ITEM_USERS = register("inventory/item_users");
+    public static final TagKey<EntityType<?>> INVENTORY_CARRIERS = register("inventory/inventory_carriers");
+    public static final TagKey<EntityType<?>> EATERS = register("behavior/regular_eaters");
+    public static final TagKey<EntityType<?>> SLEEPERS = register("behavior/regular_sleepers");
+    public static final TagKey<EntityType<?>> IMMOVABLE = register("behavior/immovable");
+    public static final TagKey<EntityType<?>> ARMOR_BANNED = register("inventory/armor_banned");
+    public static final TagKey<EntityType<?>> SOULLESS = register("possession/soulless");
 
-        private static TagKey<EntityType<?>> register(String name) {
-            return TagKey.of(RegistryKeys.ENTITY_TYPE, RequiemCore.id(name));
-        }
-    }
-
-    public static final class Item {
-        public static final TagKey<net.minecraft.item.Item> UNDEAD_CURES = TagKey.of(RegistryKeys.ITEM, RequiemCore.id("undead_cures"));
+    private static TagKey<EntityType<?>> register(String name) {
+        return TagKey.of(RegistryKeys.ENTITY_TYPE, RequiemCore.id(name));
     }
 }
