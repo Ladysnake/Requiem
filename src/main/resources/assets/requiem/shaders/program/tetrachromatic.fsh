@@ -2,8 +2,6 @@
 
 uniform sampler2D DiffuseSampler;
 
-uniform vec2 InSize;
-
 uniform vec3 Gray;
 uniform vec3 RedMatrix;
 uniform vec3 GreenMatrix;
