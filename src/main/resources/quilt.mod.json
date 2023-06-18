@@ -2,12 +2,13 @@
   "schema_version": 1,
   "quilt_loader": {
     "group": "io.github.ladysnake",
-    "id": "requiem",
+    "id": "requiem-lite",
     "version": "${version}",
+    "load_type": "if_possible",
     "metadata": {
-      "name": "Requiem",
+      "name": "Requiem Lite",
       "icon": "assets/requiem/skull_logo.png",
-      "description": "Death revamped and ethereal powers",
+      "description": "Requiem's core mechanics without the actual content",
       "contributors": {
         "Pyrofab": "Owner",
         "doctor4t": "Owner",
@@ -86,6 +87,9 @@
       {
         "id": "sodium",
         "unless": "indium"
+      },
+      {
+        "id": "requiem"
       }
     ]
   },

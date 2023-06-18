@@ -17,7 +17,7 @@ pluginManagement {
     }
 }
 
-rootProject.name = 'requiem'
+rootProject.name = 'requiem-lite'
 
 include "requiem-api"
 include "requiem-core"
