@@ -19,6 +19,8 @@ allprojects {
         license = 'GPL_WITH_MC_EXCEPTION'
         displayName = 'Requiem'
         owners = 'Ladysnake'
+
+        javaVersion = 17
     }
 
     license {
@@ -112,7 +114,7 @@ chenille {
     configureTestmod()
     configurePublishing {
         mainArtifact = remapJar.archiveFile
-        withArtifactory()
+        withLadysnakeMaven()
         withCurseforgeRelease()
         withGithubRelease()
         withModrinthRelease()
