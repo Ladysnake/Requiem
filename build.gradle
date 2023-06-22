@@ -46,7 +46,7 @@ allprojects {
         }
         maven { repo ->
             repo.name = "Ladysnake Mods"
-            repo.setUrl("https://ladysnake.jfrog.io/artifactory/mods")
+            repo.setUrl("https://maven.ladysnake.org/releases")
             repo.content {
                 it.includeGroupByRegex("dev\\.emi.*")
                 it.includeGroup("io.github.ladysnake")
@@ -130,7 +130,7 @@ chenille {
     configureTestmod()
     configurePublishing {
         mainArtifact = remapJar.archiveFile
-        withArtifactory()
+        withLadysnakeMaven()
         withCurseforgeRelease()
         withGithubRelease()
         withModrinthRelease()
@@ -177,7 +177,7 @@ dependencies {
     modCompileOnly (compatLibs.snowmercy) { transitive = false }
 //    modLocalRuntime compatLibs.snowmercy
     modCompileOnly (compatLibs.bundles.origins) { transitive = false }
-    modLocalRuntime (compatLibs.bundles.origins)
+    modLocalRuntime (compatLibs.bundles.origins) { transitive = false }
     modLocalImplementation (compatLibs.additionalEntityAttributes)
 
     modCompileOnly (compatLibs.eldritchMobs) { transitive = false }

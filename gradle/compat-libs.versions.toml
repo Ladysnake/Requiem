@@ -1,6 +1,6 @@
 [versions]
 acu = "3.3.1"
-aea = "e26900f"
+aea = "8d8c414"
 amecs = "1.1.5+mc21w16a"
 autoconfig = "3.2.2"
 apoli = "2.7.1"
