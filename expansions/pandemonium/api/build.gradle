@@ -9,6 +9,6 @@ dependencies {
 chenille {
     license = 'LGPL'
     configurePublishing {
-        withArtifactory()
+        withLadysnakeMaven()
     }
 }

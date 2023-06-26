@@ -20,7 +20,7 @@ jar {
 
 chenille {
     configurePublishing {
-        withArtifactory()
+        withLadysnakeMaven()
         withCurseforgeRelease()
     }
 }
