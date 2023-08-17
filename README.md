@@ -1,7 +1,10 @@
 # Requiem
 
 <p align="center">
-    <img src="requiem-logo-200x125.png" width="250">
+    <picture>
+        <source media="(prefers-color-scheme: dark)" srcset="banners/requiem_logo_light.png" width="250">
+        <img src="banners/requiem_logo_200x125.png" width="250">
+    </picture> 
 </p>
 
 [![Download](https://curse.nikky.moe/api/img/265729?logo)](https://curse.nikky.moe/api/url/265729) ![](https://jitpack.io/v/ladysnake/dissolution.svg) ![](https://img.shields.io/github/issues/ladysnake/requiem.svg)
@@ -9,7 +12,7 @@
 Requiem is a Minecraft (Java Edition) mod aiming at removing the continuity break resulting from death,
 as well as adding new mechanics centered around soul dissociation and body possession.
 
-More information is available on the Ladysnake Website: https://ladysnake.github.io/wiki/requiem.
+More information is available on the Ladysnake Website: https://ladysnake.org/wiki/requiem.
 
 ## Installation
 
