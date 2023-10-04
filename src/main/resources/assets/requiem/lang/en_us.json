@@ -185,6 +185,7 @@
   "effect.requiem.reclamation": "Reclamation",
 
   "enchantment.requiem.humanity": "Humanity",
+  "enchantment.requiem.humanity.desc": "Improves drops obtained by posessed mobs.",
 
   "key.requiem.dissociation": "[Requiem] Dissociation",
   "requiem:shulker.onboard": "Press %s or %s to dissociate",
