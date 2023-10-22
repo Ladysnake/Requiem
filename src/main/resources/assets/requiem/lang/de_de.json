@@ -11,21 +11,21 @@
     "requiem:advancements.requiem.makeshift_makeover.description": "Ersetze jeden Knochen eines Witherskeletts",
     "requiem:advancements.adventure.the_choice.title": "Ein teuflisches Rätsel",
     "requiem:advancements.adventure.the_choice.description": "Wähle zwischen einem ordinären Leben und einer bizarren Ewigkeit",
-        "requiem:advancements.requiem.classic_look.title": "Classic Look",
-        "requiem:advancements.requiem.classic_look.description": "Possess a relooked enderman",
+    "requiem:advancements.requiem.classic_look.title": "Klassisches Aussehen",
+    "requiem:advancements.requiem.classic_look.description": "Beherrschen Sie einen überarbeiteten Enderman",
     "requiem:advancements.requiem.piglin_seppukku.title": "Was habe ich getan?",
     "requiem:advancements.requiem.piglin_seppukku.description": "Bringe einen Zombifizierten Piglin dazu seine Taten zu bereuen",
     "requiem:advancements.requiem.kung_fu_panda.title": "Kung Fu Panda",
     "requiem:advancements.requiem.kung_fu_panda.description": "Schlage als Panda ein Wesen mit einem Holzschwert",
-  
+
     "requiem:argument.entity.options.possessor.description": "Entitäten besessen von",
-  
+
     "requiem:remnant_type.requiem.mortal.name": "Sterblicher",
     "requiem:remnant_type.requiem.remnant.name": "Rest",
-  
+
     "requiem:commands.query.success.other": "%2$s ist %1$s",
     "requiem:commands.query.success.self": "Du bist %s",
-        "requiem:commands.ethereal.set.fail.mortal": "Konnte %s nicht in einen Geist verwandeln da es sterblich ist",
+    "requiem:commands.ethereal.set.fail.mortal": "Konnte %s nicht in einen Geist verwandeln da er/sie sterblich ist",
     "requiem:commands.ethereal.set.fail": "Konnte %s's Körperlichen Status nicht ändern",
     "requiem:commands.ethereal.set.success.other": "Körperlicher Status von %s wurde zu %s geändert",
     "requiem:commands.ethereal.set.success.self": "Eigener Körperlicher Status wurde zu %s geändert",
@@ -49,8 +49,8 @@
     "requiem:commands.possession.start.success.self": "Beherrschung von %s begonnen",
     "requiem:commands.possession.stop.success.other": "%s hat aufgehört %s zu beherrschen",
     "requiem:commands.possession.stop.success.self": "%s wird nicht mehr beherrscht",
-    "requiem:commands.shell.split.fail.mortal": "Konnte %s nicht aufteilen, da sie Sterblich sind",
-    "requiem:commands.shell.split.fail.vagrant": "Konnte %s nicht aufteilen, da sie bereits wandern",
+    "requiem:commands.shell.split.fail.mortal": "Konnte %s nicht aufteilen, da er/sie Sterblich ist",
+    "requiem:commands.shell.split.fail.vagrant": "Konnte %s nicht aufteilen, da er/sie bereits wandern",
     "requiem:commands.shell.fail.not_shell": "%s ist keine Spielerhülle",
     "requiem:commands.soul.query.has_soul": "%s hat momentan eine Seele",
     "requiem:commands.soul.query.no_soul": "%s hat momentan keine Seele",
@@ -58,23 +58,23 @@
     "requiem:commands.soul.set.fail.permanently_soulless": "%s kann keine eigene Seele haben",
     "requiem:commands.soul.remove.success": "Seele von %s wurde erfolgreich entfernt",
     "requiem:commands.soul.restore.success": "Seele von %s wurde erfolgreich wiederhergestellt",
-  
+
     "requiem:container.obelisk_rift": "Riss",
     "requiem:toast.rift_witnessed": "Riss beobachtet!",
-  
+
     "requiem:block.minecraft.bed.invalid_body": "Diese Form schläft nicht",
-  
-        "requiem:opus.mortal_sentence": "Ad Vitam Mortale",
-        "requiem:opus.remnant_sentence": "Ad Vitam Aeternam",
-        "requiem:opus.wanderer_sentence": "Ad Vitam Vagrate",
-  
+
+
+
+
+
     "requiem:dialogue.first_contact.introduction.text": "Du hörst eine Stimme welche mit dir spricht, aber du kannst nicht genau verstehen woher sie kommt.",
     "requiem:dialogue.first_contact.introduction.explain": "Was passiert hier?",
     "requiem:dialogue.first_contact.introduction.yes": "Mach mich zu einem Dämonen.",
-    "requiem:dialogue.first_contact.introduction.no": "Ich will hiermit nicht zu tun haben.",
+    "requiem:dialogue.first_contact.introduction.no": "Ich will hiermit nichts zu tun haben.",
     "requiem:dialogue.first_contact.explanation.text": "Weise deine Menschlichkeit zurück und verfluche dich mit Ewigkeit. Lehne ab und behalte dein ordinäres Leben. Dies ist eine Gelegenheit eine komplett neue Erfahrung zu machen wenn du stirbst, aber diese Möglichkeit zu ergreifen geht mit einer Umstellung deiner Gewohnheiten einher.",
     "requiem:dialogue.first_contact.explanation.ok": "Ich verstehe.",
-    "requiem:dialogue.first_contact.interested.text": "Wenn du diesem Pfad folgst wirst du jedes Mal wenn du stribst einen neuen Körper suchen müssen. Die Fähigkeiten, die du erlangst, werden von großen Nutzen sein, und die Körper welche du findest könnten möglicherweise viel interessanter sein als der normale Menschliche Körper an welchen du gewöhnt bist.",
+    "requiem:dialogue.first_contact.interested.text": "Wenn du diesem Pfad folgst wirst du jedes Mal wenn du stirbst einen neuen Körper suchen müssen. Die Fähigkeiten, die du erlangst, werden von großen Nutzen sein, und die Körper welche du findest könnten möglicherweise viel interessanter sein als der normale Menschliche Körper an welchen du gewöhnt bist.",
     "requiem:dialogue.first_contact.disinterested.text": "Wenn du diesem Pfad folgst wirst du alles, was Requiem zu bieten hat, verpassen. Du wirst wie normal wiederbelebt und lebst sofort nach dem sterben als Mensch weiter.",
     "requiem:dialogue.first_contact.confirm": "Ich will es so.",
     "requiem:dialogue.first_contact.doubt": "Auf den zweiten Blick...",
@@ -82,16 +82,16 @@
     "requiem:dialogue.first_contact.very_disinterested.text": "Bist du sicher dass du ein Mensch bleiben willst?",
     "requiem:dialogue.first_contact.final_confirm": "Bestätigen",
     "requiem:dialogue.first_contact.final_doubt": "Zurück",
-  
+
     "requiem:subtitles.block.obelisk.activate": "Obelisk formt sich",
     "requiem:subtitles.block.obelisk.ambient": "Obelisk flüstert",
     "requiem:subtitles.block.obelisk.deactivate": "Obelisk fällt zusammen",
     "requiem:subtitles.block.runestone.carve": "Runenstein behauen",
     "requiem:subtitles.block.runestone.clear": "Runenstein entweiht",
     "requiem:subtitles.effect.become.mortal": "Sterblichwerdung",
-        "requiem:subtitles.effect.become.remnant": "Dämon wird erworben",
+    "requiem:subtitles.effect.become.remnant": "Dämon wird erworben",
     "requiem:subtitles.effect.dissociating": "Spieler dissoziiert",
-        "requiem:subtitles.effect.phasing": "Spieler phasing",
+    "requiem:subtitles.effect.phasing": "Spieler gleitet durch die Welt",
     "requiem:subtitles.effect.possession.attempt": "Besetzungsversuch",
     "requiem:subtitles.effect.time.stop": "ZA WARUDO! TOKI WO TOMARE",
     "requiem:subtitles.effect.reclamation.clear": "Rückgewinnung abgeschlossen",
@@ -107,16 +107,16 @@
     "requiem:subtitles.item.empty_vessel.use": "Schiff aktivert",
     "requiem:subtitles.item.filled_vessel.use": "Seele wird freigelassen",
     "requiem:subtitles.item.soul_vessel.use": "Seelenschiff wird aktiviert",
-  
+
     "requiem:tooltip.filled_vessel": "%s Seele",
-  
+
     "requiem:tooltip.ammo_generator": "Munitionsgeneration",
     "requiem:tooltip.bolt_hoarder": "Bolzenhorter",
     "requiem:tooltip.bony_prosthesis": "Knochenprothese",
-        "requiem:tooltip.calcium_bucket": "Kalzium-Güte",
+    "requiem:tooltip.calcium_bucket": "Kalzium-Güte",
     "requiem:tooltip.cure_catalyst": "Heilkatalysator",
     "requiem:tooltip.cure_reagent": "Heilreagenz",
-    "requiem:tooltip.drowned_food": "Ertrunkenen-Deliaktesse",
+    "requiem:tooltip.drowned_food": "Ertrunkenen-Delikatesse",
     "requiem:tooltip.drowned_grip": "Ertrunkenen-Griff",
     "requiem:tooltip.foxy_berry": "Fuchsige Beere",
     "requiem:tooltip.illager_food": "Karnist",
@@ -125,28 +125,28 @@
     "requiem:tooltip.skeletal_efficiency": "Skeletteffizienz",
     "requiem:tooltip.villager_base_food": "Dorfessen",
     "requiem:tooltip.villager_food": "Vegetarier",
-        "requiem:tooltip.witch_brew_base": "Hexengebräubasis",
+    "requiem:tooltip.witch_brew_base": "Hexengebräubasis",
     "requiem:tooltip.witch_food": "Hexendiät",
     "requiem:tooltip.zombie_food": "Zombie-Snack",
-  
-    "block.requiem.tachylite.runestone": "Tachalyt-Runenstein",
-    "block.requiem.tachylite.runic.attrition": "Tachalyt-Runenstein der Abnutzung",
-    "block.requiem.tachylite.runic.emancipation": "Tachalyt-Runenstein der Emanzipation",
-    "block.requiem.tachylite.runic.penance": "Tachalyt-Runenstein der Buße",
-    "block.requiem.tachylite.runic.reclamation": "Tachalyt-Runenstein der Rückgewinnung",
+
+    "block.requiem.tachylite.runestone": "Tachylit-Runenstein",
+    "block.requiem.tachylite.runic.attrition": "Tachylit-Runenstein der Abnutzung",
+    "block.requiem.tachylite.runic.emancipation": "Tachylit-Runenstein der Emanzipation",
+    "block.requiem.tachylite.runic.penance": "Tachylit-Runenstein der Buße",
+    "block.requiem.tachylite.runic.reclamation": "Tachylit-Runenstein der Rückgewinnung",
     "block.requiem.tachylite.runic.rift": "Seelenriss",
-    "block.requiem.tachylite.derelict": "Verfallener Tachalyt",
-    "block.requiem.tachylite.chiseled": "Geschnitzter Tachalyt",
-    "block.requiem.tachylite.chiseled_pillar": "Geschnitzte Tachalytsäule",
-    "block.requiem.tachylite.chiseled_slab": "Geschnitzte Tachalytstufe",
-    "block.requiem.tachylite.chiseled_stairs": "Geschnitzte Tachalyttreppe",
-    "block.requiem.tachylite.polished": "Polierter Tachalyt",
-    "block.requiem.tachylite.polished_pillar": "Polierte Tachalytsäule",
-    "block.requiem.tachylite.scraped": "Abgekratzter Tachalyt",
-    "block.requiem.tachylite.tachylite": "Tachalyt",
-    "block.requiem.tachylite.tachylite_slab": "Tachalytstufe",
-    "block.requiem.tachylite.tachylite_stairs": "Tachalyttreppe",
-  
+    "block.requiem.tachylite.derelict": "Verfallener Tachylit",
+    "block.requiem.tachylite.chiseled": "Geschnitzter Tachylit",
+    "block.requiem.tachylite.chiseled_pillar": "Geschnitzte Tachylitsäule",
+    "block.requiem.tachylite.chiseled_slab": "Geschnitzte Tachylitstufe",
+    "block.requiem.tachylite.chiseled_stairs": "Geschnitzte Tachylittreppe",
+    "block.requiem.tachylite.polished": "Polierter Tachylit",
+    "block.requiem.tachylite.polished_pillar": "Polierte Tachylitsäule",
+    "block.requiem.tachylite.scraped": "Abgekratzter Tachylit",
+    "block.requiem.tachylite.tachylite": "Tachylit",
+    "block.requiem.tachylite.tachylite_slab": "Tachylitstufe",
+    "block.requiem.tachylite.tachylite_stairs": "Tachylittreppe",
+
     "config.requiem.title": "Requiem-Konfigurationsbildschirm",
     "config.requiem.graphics": "Grafik",
     "config.requiem.fancy_demon_render": "Schicker Dämonenrenderer",
@@ -155,21 +155,21 @@
     "config.requiem.more_info.datapacks": "Datenpakete",
     "config.requiem.more_info.gamerules": "Spielregeln",
     "config.requiem.more_info.official_doc": "die offizielle Dokumentation auf der Ladysnake Webseite",
-  
+
     "death.attack.requiem.attrition.hardcore": "%1$s wurde schlafen gelegt, für immer.",
     "death.attack.requiem.attrition.hardcore.player": "%2$s hat %1$s schlafen gelegt, für immer.",
     "death.attack.requiem.mortal_dysmorphia": "Die Seele von %1$s gehörte nicht in den Körper von 2$s.",
-  
+
     "gamerule.requiem:showPossessorNameTag": "(Requiem) Zeige Namensschild des Beherrschenden",
     "gamerule.requiem:showPossessorNameTag.description": "Zeigt das Namensschild von Spielern welche Wesen beherrschen",
     "gamerule.requiem:disableCure": "(Requiem) Deaktiviere Heilung",
     "gamerule.requiem:disableCure.description": "Entferne die Fähigkeit Spieler, welche Untote beherrschen, zu heilen",
-        "gamerule.requiem:startingRemnantType": "(Requiem) Resttyp",
+    "gamerule.requiem:startingRemnantType": "(Requiem) Resttyp",
     "gamerule.requiem:startingRemnantType.description": "Ersetze die Aswahl beim ersten Tod zwischen Dämon und Sterblich",
-        "gamerule.requiem:startingRemnantType.choose": "wähle",
-        "gamerule.requiem:startingRemnantType.force_remnant": "erzwinge rest",
-        "gamerule.requiem:startingRemnantType.force_vanilla": "erzwinge normal",
-    "gamerule.requiem:possessionKeepInventory": "(Requiem) Behalte Inventar nachdem Beherrschung endet",
+    "gamerule.requiem:startingRemnantType.choose": "wähle",
+    "gamerule.requiem:startingRemnantType.force_remnant": "erzwinge Rest",
+    "gamerule.requiem:startingRemnantType.force_vanilla": "erzwinge normal",
+    "gamerule.requiem:possessionKeepInventory": "(Requiem) Behalte Inventar nachdem die Beherrschung geendet hat",
     "gamerule.requiem:possessionKeepInventory.never": "niemals",
     "gamerule.requiem:possessionKeepInventory.living": "lebend",
     "gamerule.requiem:possessionKeepInventory.always": "immer",
@@ -178,27 +178,27 @@
     "gamerule.requiem:possessionDetection.disabled": "deaktiviert",
     "gamerule.requiem:possessionDetection.normal": "normal",
     "gamerule.requiem:possessionDetection.hard": "schwer",
-  
+
     "effect.requiem.attrition": "Abnutzung",
     "effect.requiem.emancipation": "Emanzipation",
     "effect.requiem.penance": "Buße",
     "effect.requiem.reclamation": "Rückgewinnung",
-  
+
     "enchantment.requiem.humanity": "Menschlichkeit",
-  
+
     "key.requiem.dissociation": "[Requiem] Dissoziieren",
     "requiem:shulker.onboard": "Drücke %s oder %s um dich zu trennen",
     "requiem:dissociate_hint": "Drücke %s um dich zu trennen",
     "requiem:possess.incompatible_body": "Dieser Körper ist nicht mit deiner Seele kompatibel",
     "requiem:merge_hint": "Drücke %s um zurückzukehren",
-  
-        "entity.requiem.cured_piglin": "Pigman",
+
+    "entity.requiem.cured_piglin": "Pigman",
     "entity.requiem.mortician": "Bestatter",
-        "entity.requiem.cured_piglin_brute": "Pigman Brute",
+    "entity.requiem.cured_piglin_brute": "Pigman-Barbar",
     "entity.requiem.player_shell": "Spielerhülle",
-  
+
     "item.requiem.totem_of_skeletonization": "Totem der Skelettisierung",
-        "item.requiem.opus_daemonium": "Opus Daemonium",
+    "item.requiem.opus_daemonium": "Opus Daemonium",
     "item.requiem.empty_soul_vessel": "Leeres Seelenschiff",
     "item.requiem.creative_soul_vessel": "Kreativ-Seelenschiff",
     "item.requiem.filled_soul_vessel": "Gefülltes Seelenschiff",
@@ -212,7 +212,7 @@
     "item.requiem.shattered_soul_vessel": "Kaputtes Seelenschiff",
     "requiem:remnant_vessel.curse": "Fluch",
     "requiem:remnant_vessel.cure": "Heilung",
-  
+
     "origins:layer.requiem.soul_type.name": "Seelentyp",
     "origins:layer.requiem.soul_type.missing_origin.name": "Nicht vorhanden",
     "origins:layer.requiem.soul_type.missing_origin.description": "Du hast keinen Seelentyp.",
@@ -221,7 +221,7 @@
     "origins:origin.requiem.remnant.name": "Dämon",
     "origins:origin.requiem.remnant.description": "Es gibt Geschichten über mysteriöse Dämonen, welche von den Körpern der toten Besitz ergreifen. Niemand weiß gewiss, was sie sind, aber wenige wollen es wirklich rausfinden.",
     "origins:origin.requiem.vagrant.name": "Wanderer",
-    "origins:origin.requiem.vagrant.description": "Ein Dämon außerhalb eines übereinstimmenden Körpers. Dazu verurteilt zu wandern und schwachere Entitäten zu übernehmen, um über Stellvertreter mit der physischen Welt zu interagieren.",
+    "origins:origin.requiem.vagrant.description": "Ein Dämon außerhalb eines übereinstimmenden Körpers. Dazu verurteilt zu wandern und schwächere Entitäten zu übernehmen, um über Stellvertreter mit der physischen Welt zu interagieren.",
     "origins:power.requiem.remnant.name": "Dissoziation",
     "origins:power.requiem.remnant.description": "Wenn du stirbst, löst sich deine Seele von deinem Körper und du wirst zu einem wandernden Geist.",
     "origins:power.requiem.damned.name": "Verdammt",
@@ -238,9 +238,8 @@
     "origins:power.requiem.banished.description": "Du kannst keinen neuen menschlichen Körper durch das heilen anderer Kreaturen erlangen.",
     "origins:power.requiem.mortal.name": "Wiederbelebung",
     "origins:power.requiem.mortal.description": "Wenn du stirbst, und alles gut geht, wirst du dich mit einem neuen Körper an deinem letzten Ruheort befinden.",
-  
+
     "stat.requiem.interact_with_rift": "[Requiem] Interaktionen mit Rissobelisken",
-  
+
     "requiem.message.peaceful_despawn": "Diese Kreatur gehört möglicherweise nicht zu einer so friedlichen Welt"
   }
-  
