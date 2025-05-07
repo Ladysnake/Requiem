@@ -37,17 +37,22 @@ package ladysnake.requiem.mixin.client.possession;
 import ladysnake.requiem.api.v1.event.requiem.client.RenderSelfPossessedEntityCallback;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
+import ladysnake.requiem.common.entity.warden.WardenSensedComponent;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.Frustum;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.mob.warden.WardenEntity;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
+import org.spongepowered.asm.mixin.Debug;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -55,11 +60,15 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import javax.annotation.Nullable;
 
+@Debug(export=true)
 @Mixin(EntityRenderDispatcher.class)
 public abstract class EntityRenderDispatcherMixin {
     @Shadow
     public Camera camera;
+    @Unique
     @Nullable
+    /*
+    The entity the camera belongs to, or the possessed entity*/
     private Entity requiem_camerasPossessed;
 
     /**
@@ -89,5 +98,28 @@ public abstract class EntityRenderDispatcherMixin {
         if (RemnantComponent.isVagrant(rendered)) {
             ci.cancel();
         }
+    }
+
+    @Inject(method = "shouldRender(Lnet/minecraft/entity/Entity;Lnet/minecraft/client/render/Frustum;DDD)Z", at = @At("HEAD"), cancellable = true)
+    public void notRenderNonDetectedByWarden(Entity entity, Frustum frustum, double x, double y, double z, CallbackInfoReturnable<Boolean> info) {
+
+        /**/if (entity instanceof WardenEntity) {
+            //TODO: by:Redfan2: Fix posessed warden itself not rendering
+            info.setReturnValue(true);
+        }
+
+        ClientPlayerEntity player = MinecraftClient.getInstance().player;
+
+        if (requiem_camerasPossessed != null) {
+            //Check for posession
+            if (requiem_camerasPossessed instanceof WardenEntity) {
+
+                if (!player.getComponent(WardenSensedComponent.KEY).isVisibleToWarden(entity)) {
+                    info.setReturnValue(false);
+
+                }
+            }
+        }
+
     }
 }

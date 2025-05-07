@@ -128,6 +128,12 @@ allprojects {
 
         compileOnly metaLibs.bundles.devAnnotations
     }
+
+    //Fixes Crash with duplicate QuiltLoader and FAPI
+    project.configurations.configureEach {
+        exclude(group: "net.fabricmc", module: "fabric-loader")
+        exclude(group: "net.fabricmc.fabric-api")
+    }
 }
 
 chenille {
@@ -183,7 +189,8 @@ dependencies {
 //    modLocalRuntime compatLibs.biomeMakeover
     modCompileOnly (compatLibs.trinkets) { transitive = false }
 //    modLocalRuntime compatLibs.trinkets
-    modCompileOnly (compatLibs.pehkui) { transitive = false }
+      //Doesn't resolve it because Curseforge's Maven times out
+      //modCompileOnly (compatLibs.pehkui) { transitive = true }
 //    modApi (compatLibs.pehkui) { transitive = false }
 
     modCompileOnly (compatLibs.snowmercy) { transitive = false }
@@ -218,6 +225,14 @@ dependencies {
 }
 
 remapJar.dependsOn(project(":requiem-core").tasks.remapJar)
+
+loom {
+    mods {
+        "requiem" {
+            accessWidenerPath = file("src/main/resources/requiem.accesswidener")
+        }
+    }
+}
 
 jar {
     from 'LICENSE-CODE'

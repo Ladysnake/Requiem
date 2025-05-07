@@ -61,6 +61,12 @@ public final class RequiemParticleTypes {
     };
     public static final DefaultParticleType OBELISK_SOUL = FabricParticleTypes.simple(false);
     public static final DefaultParticleType PENANCE = FabricParticleTypes.simple(false);
+    public static final ParticleType<RequiemSoundParticleEffect> SOUND = new ParticleType<>(false, RequiemSoundParticleEffect.PARAMETERS_FACTORY) {
+        @Override
+        public Codec<RequiemSoundParticleEffect> getCodec() {
+            return RequiemSoundParticleEffect.codec(this);
+        }
+    };
 
     public static void init() {
         Registry.register(Registries.PARTICLE_TYPE, Requiem.id("attrition"), ATTRITION);
@@ -71,5 +77,6 @@ public final class RequiemParticleTypes {
         Registry.register(Registries.PARTICLE_TYPE, Requiem.id("soul_trail"), SOUL_TRAIL);
         Registry.register(Registries.PARTICLE_TYPE, Requiem.id("obelisk_soul"), OBELISK_SOUL);
         Registry.register(Registries.PARTICLE_TYPE, Requiem.id("penance"), PENANCE);
+        Registry.register(Registries.PARTICLE_TYPE, Requiem.id("sound"), SOUND);
     }
 }

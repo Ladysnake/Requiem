@@ -59,6 +59,7 @@ import ladysnake.requiem.common.entity.cure.DelegatingCurableEntityComponent;
 import ladysnake.requiem.common.entity.cure.SimpleCurableEntityComponent;
 import ladysnake.requiem.common.entity.effect.PenanceComponent;
 import ladysnake.requiem.common.entity.effect.StatusEffectReapplicatorImpl;
+import ladysnake.requiem.common.entity.warden.WardenSensedComponent;
 import ladysnake.requiem.common.gamerule.RequiemSyncedGamerules;
 import ladysnake.requiem.common.possession.LootingPossessedData;
 import ladysnake.requiem.common.remnant.DroppedVesselTracker;
@@ -123,6 +124,7 @@ public final class RequiemComponents implements EntityComponentInitializer, Scor
         registry.registerFor(HorseBaseEntity.class, ExternalJumpingMount.KEY, e -> new DummyHorseJumpingMount(e, SoundEvents.ENTITY_HORSE_STEP, getPossessor));
         registry.registerForPlayers(RiftTracker.KEY, PlayerRiftTracker::new, RespawnCopyStrategy.ALWAYS_COPY);
         registry.registerForPlayers(DroppedVesselTracker.KEY, DroppedVesselTracker::new, RespawnCopyStrategy.LOSSLESS_ONLY);
+        registry.registerForPlayers(WardenSensedComponent.KEY, WardenSensedComponent::new,RespawnCopyStrategy.NEVER_COPY);
     }
 
     @Override

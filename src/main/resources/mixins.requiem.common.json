@@ -36,6 +36,8 @@
     "inventory.balance.EntityPredicatesEquipableMixin",
     "opus.LecternBlockEntityMixin",
     "possession.PlayerManagerMixin",
+    "possession.gameplay.ServerWorldMixin",
+    "possession.gameplay.WardenMixin",
     "possession.gameplay.AbstractPiglinEntityMixin",
     "possession.gameplay.BatEntityMixin",
     "possession.gameplay.BlockItemMixin",

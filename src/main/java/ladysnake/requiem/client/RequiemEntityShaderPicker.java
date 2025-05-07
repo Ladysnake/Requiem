@@ -43,6 +43,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.ShaderEffect;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.mob.WaterCreatureEntity;
+import net.minecraft.entity.mob.warden.WardenEntity;
 import net.minecraft.entity.passive.BeeEntity;
 import net.minecraft.entity.passive.DolphinEntity;
 import net.minecraft.entity.passive.MooshroomEntity;
@@ -64,6 +65,7 @@ public final class RequiemEntityShaderPicker implements PickEntityShaderCallback
     public static final Identifier FISH_EYE_SHADER_ID = shader("fish_eye");
 
     public static final Identifier MOOSHROOM_SHADER_ID = shader("mooshroom");
+    public static final Identifier WARDEN_SHADER_ID = shader("warden");
 
     public void registerCallbacks() {
         PickEntityShaderCallback.EVENT.register(this);
@@ -91,6 +93,8 @@ public final class RequiemEntityShaderPicker implements PickEntityShaderCallback
                 loadShaderFunc.accept(DOLPHIN_SHADER_ID);
             } else if (camera instanceof WaterCreatureEntity) {
                 loadShaderFunc.accept(FISH_EYE_SHADER_ID);
+            } else if (camera instanceof WardenEntity) {
+                loadShaderFunc.accept(WARDEN_SHADER_ID);
             }
         }
     }

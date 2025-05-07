@@ -1,0 +1,28 @@
+{
+  "values": [
+    "minecraft:drink",
+    "minecraft:eat",
+    "minecraft:elytra_glide",
+    "minecraft:entity_damage",
+    "minecraft:entity_die",
+    "minecraft:entity_dismount",
+    "minecraft:entity_interact",
+    "minecraft:entity_mount",
+    "minecraft:entity_place",
+    "minecraft:entity_roar",
+    "minecraft:entity_shake",
+    "minecraft:equip",
+    "minecraft:hit_ground",
+    "minecraft:instrument_play",
+    "minecraft:item_interact_finish",
+    "minecraft:lightning_strike",
+    "minecraft:prime_fuse",
+    "minecraft:projectile_land",
+    "minecraft:projectile_shoot",
+    "minecraft:shear",
+    "minecraft:splash",
+    "minecraft:step",
+    "minecraft:swim",
+    "minecraft:teleport"
+  ]
+}

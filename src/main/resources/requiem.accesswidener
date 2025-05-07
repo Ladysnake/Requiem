@@ -1,0 +1,10 @@
+accessWidener   v1  named
+
+accessible method net/minecraft/entity/mob/warden/AngerManager getSuspects ()Ljava/util/List;
+accessible class net/minecraft/client/render/BackgroundRenderer$DarknessFogEffect
+accessible class net/minecraft/client/render/BackgroundRenderer$FogEffect
+accessible class net/minecraft/client/render/BackgroundRenderer$DarknessFogEffect
+accessible class net/minecraft/client/render/BackgroundRenderer$FogParameters
+accessible field net/minecraft/client/render/BackgroundRenderer$FogParameters fogStart F
+accessible field net/minecraft/client/render/BackgroundRenderer$FogParameters fogEnd F
+accessible field net/minecraft/client/render/BackgroundRenderer FOG_EFFECTS Ljava/util/List;

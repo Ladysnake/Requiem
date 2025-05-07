@@ -42,5 +42,9 @@
     "remnant.MinecraftClientMixin",
     "remnant.PlayerRendererLayerMixin",
     "rift.MouseMixin"
+  ],
+  "client": [
+    "possession.wardenvision.BackgroundRendererMixin",
+    "possession.wardenvision.MinecraftClientMixin"
   ]
 }

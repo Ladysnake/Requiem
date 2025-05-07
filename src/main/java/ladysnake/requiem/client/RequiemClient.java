@@ -42,6 +42,7 @@ import ladysnake.requiem.client.network.ClientMessageHandler;
 import ladysnake.requiem.client.particle.CureParticle;
 import ladysnake.requiem.client.particle.EntityDustParticle;
 import ladysnake.requiem.client.particle.GhostParticle;
+import ladysnake.requiem.client.particle.SoundParticle;
 import ladysnake.requiem.client.particle.wisp.WispTrailParticle;
 import ladysnake.requiem.client.render.block.RunestoneBlockEntityRenderer;
 import ladysnake.requiem.client.render.entity.CuredPiglinEntityRenderer;
@@ -193,6 +194,7 @@ public final class RequiemClient {
         registry.register(RequiemParticleTypes.OBELISK_SOUL, SoulParticle.Factory::new);
         registry.register(RequiemParticleTypes.SOUL_TRAIL, WispTrailParticle.Factory::new);
         registry.register(RequiemParticleTypes.PENANCE, SpellParticle.EntityFactory::new);
+        registry.register(RequiemParticleTypes.SOUND, SoundParticle.Factory::new);
     }
 
     private void registerModelPredicates() {

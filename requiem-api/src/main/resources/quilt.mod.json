@@ -60,6 +60,7 @@
     "requiem:soul_holder",
     "requiem:charged_jump",
     "requiem:rift_tracker",
-    "requiem:dropped_vessel_tracker"
+    "requiem:dropped_vessel_tracker",
+    "requiem:warden_sensed"
   ]
 }

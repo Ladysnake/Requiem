@@ -51,6 +51,8 @@ mobz =          { group = "curse.maven",             name = "mobz-336554", versi
 omegaConfig =   { group = "com.github.Draylar.omega-config", name = "omega-config-base", version.ref = "omegaConfig" }
 origins =       { group = "maven.modrinth",     name = "origins", version.ref = "origins" }
 patchouli =     { group = "vazkii.patchouli",        name = "Patchouli", version.ref = "patchouli" }
+# The version from Github didn't compile because it couldn't find KanosConfig. According to Jitpack's log, it made a GET request to the Curseforge Maven which was answered with 522: Connection timed out TODO: by:Redfan2: Investigate Pehkui
+#pehkui =        { module= "maven.modrinth:pehkui", version.ref = "pehkui" }
 pehkui =        { module= "com.github.Virtuoel:Pehkui", version.ref = "pehkui" }
 kano_config =   { module= "com.github.Virtuoel:KanosConfig", version.ref = "kano"}
 snowmercy =     { module = "io.github.ladysnake:Snow-Mercy", version.ref = "snowmercy" }
